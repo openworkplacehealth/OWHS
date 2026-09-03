@@ -130,11 +130,11 @@ Sixteen entities in five clusters, plus two reserved names and one code-list-bac
 
 ### Entity-relationship diagram
 
-The Mermaid source is [`owhs_erd_v0.1.mmd`](diagrams/owhs_erd_v0.1.mmd) (renders natively in GitHub/Markdown); a static render is below. Solid edges are structural references; dashed edges are the aggregation flow into `AggregateReport`; starred nodes are reserved.
+The Mermaid source is [`erd.mmd`](erd.mmd) (renders natively in GitHub/Markdown); a static render is below. Solid lines are structural references; dotted lines are the aggregation flow into `AggregateReport`; dashed outlines are reserved names.
 
-![OWHS v0.1 entity-relationship diagram]({{artifact:art_f0cbd6b9-2ac3-462b-a8d8-2bfdf81ea51c}})
+![OWHS v0.1 entity-relationship diagram](../site/owhs-erd-v0.1.svg)
 
-*Figure, OWHS v0.1 ERD. Identity (blue), measurement (green), absence/RTW/OH (amber/red), benefits (purple), disability (pink), reporting (teal), reserved (grey), shared code list (yellow).*
+*Figure, the OWHS v0.1 entity map. White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; grey boxes are shared definitions; dashed outlines are reserved names.*
 
 ## 3. The privacy profile (normative)
 
