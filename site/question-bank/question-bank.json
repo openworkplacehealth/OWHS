@@ -1,8 +1,8 @@
 {
  "name": "Open Workplace Health Standard: Workplace Wellbeing Question Bank",
  "kind": "resource maintained under OWHS; not part of the normative OWHS specification",
- "version": "0.1.0",
- "updated": "2026-07-11",
+ "version": "0.2.0",
+ "updated": "2026-09-03",
  "ip_boundary_checked": true,
  "summary": "A provenance-tracked catalogue of workplace well-being survey items drawn from the public commons. Item wording is taken from each item's primary source, and only where verified verbatim and licensed for redistribution. Topic groupings are editorial and are not the normative OWHS construct-domain codelist.",
  "editorial_grouping_note": "Topic groupings are an editorial convenience, grounded in widely used public frameworks (the HSE Management Standards for the work-design groups; ONS and OECD for wellbeing outcomes). They are not the OWHS construct-domain codelist, which is normative and changes only by RFC. They reproduce no prior document's selection or arrangement.",
@@ -21,7 +21,7 @@
  "counts": {
   "groups": 13,
   "items_catalogued": 85,
-  "items_verified_rendered": 4
+  "items_verified_rendered": 46
  },
  "groups": [
   {
@@ -107,6 +107,7 @@
    "verification": "verified",
    "render": true,
    "notes": "ONS personal well-being measure 1 of 4.",
+   "source_ref": "personal well-being question 1",
    "benchmark": {
     "value": 7.45,
     "period": "year ending March 2023",
@@ -132,6 +133,7 @@
    "verification": "verified",
    "render": true,
    "notes": "ONS personal well-being measure 2 of 4.",
+   "source_ref": "personal well-being question 2",
    "benchmark": {
     "value": 7.73,
     "period": "year ending March 2023",
@@ -157,6 +159,7 @@
    "verification": "verified",
    "render": true,
    "notes": "ONS personal well-being measure 3 of 4.",
+   "source_ref": "personal well-being question 3",
    "benchmark": {
     "value": 7.39,
     "period": "year ending March 2023",
@@ -182,6 +185,7 @@
    "verification": "verified",
    "render": true,
    "notes": "ONS personal well-being measure 4 of 4. Prior compilations often omitted the anxiety item; it is completed here so the ONS-4 set is whole.",
+   "source_ref": "personal well-being question 4",
    "benchmark": {
     "value": 3.23,
     "period": "year ending March 2023",
@@ -206,7 +210,8 @@
    "benchmark_availability": "Periodic Great Britain estimates (SES series).",
    "verification": "unverified",
    "render": false,
-   "notes": "Single-item overall job satisfaction; also carried in Understanding Society."
+   "notes": "Single-item overall job satisfaction; also carried in Understanding Society.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "perma-joy",
@@ -223,7 +228,8 @@
    "benchmark_availability": "Instrument-specific reference scores.",
    "verification": "unverified",
    "render": false,
-   "notes": "PERMA-Profiler item; referenced only."
+   "notes": "PERMA-Profiler item; referenced only.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "oecd-positive-outlook",
@@ -240,7 +246,8 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ess-wlb-satisfaction",
@@ -253,45 +260,60 @@
    "source_key": "ESS",
    "citation": "European Social Survey ERIC (ESS). Rounds vary by item.",
    "source_url": "https://www.europeansocialsurvey.org/",
-   "copyright_status": "ESS",
+   "copyright_status": "ESS CC BY-NC-SA; non-commercial only",
    "benchmark_availability": "Cross-national benchmarks (ESS).",
    "verification": "unverified",
    "render": false,
-   "notes": "European Social Survey Round 6."
+   "notes": "European Social Survey Round 6.",
+   "held_reason": "source terms are non-commercial only, which this resource cannot carry; permission would be required"
   },
   {
    "id": "aps-self-rated-health",
    "group": "health",
    "group_name": "Health and functioning",
    "topic": "Self-rated general health",
-   "wording": null,
-   "response_scale": "5-point (very good to very bad)",
+   "wording": "How is your health in general; would you say it was\u2026",
+   "response_scale": "Very good / Good / Fair / Bad / Very Bad",
    "source_survey": "ONS personal well-being questions (Annual Population Survey)",
    "source_key": "APS",
    "citation": "Office for National Statistics, personal well-being questions, Annual Population Survey. Crown copyright.",
    "source_url": "https://www.ons.gov.uk/peoplepopulationandcommunity/wellbeing/methodologies/surveysusingthe4officefornationalstatisticspersonalwellbeingquestions",
    "copyright_status": "OGL",
    "benchmark_availability": "UK national annual benchmarks (ONS).",
-   "verification": "unverified",
-   "render": false,
-   "notes": "Self-rated health; carried in APS, EWCS and ESS with varying wording."
+   "verification": "verified",
+   "render": true,
+   "notes": "Self-rated health; carried in APS, EWCS and ESS with varying wording.",
+   "stem": null,
+   "source_ref": "QHEALTH1",
+   "verified_against": {
+    "title": "Labour Force Survey user guide, volume 2: LFS questionnaire 2018 (the Annual Population Survey is the LFS boost; the general health question is asked on all boost waves)",
+    "url": "https://www.ons.gov.uk/file?uri=%2Femploymentandlabourmarket%2Fpeopleinwork%2Femploymentandemployeetypes%2Fmethodologies%2Flabourforcesurveyuserguidance%2Flfsvolume2jm18.pdf",
+    "sha256": "90c7fa72c87e0b44d46db713b765a4cc29e70354a0b321982fcc5dfe9f1009bb"
+   }
   },
   {
    "id": "ewcs-work-health-risk",
    "group": "health",
    "group_name": "Health and functioning",
    "topic": "Perceived health or safety risk from work",
-   "wording": null,
-   "response_scale": "yes / no",
+   "wording": "Do you think your health or safety is at risk because of your work?",
+   "response_scale": "Yes / No",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": null,
+   "source_ref": "Q73",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "nhs-msk",
@@ -308,7 +330,8 @@
    "benchmark_availability": "NHS sector benchmarks (NHS England).",
    "verification": "unverified",
    "render": false,
-   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested."
+   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "nhs-work-stress-illness",
@@ -325,7 +348,8 @@
    "benchmark_availability": "NHS sector benchmarks (NHS England).",
    "verification": "unverified",
    "render": false,
-   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested."
+   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "who5-cheerful",
@@ -342,7 +366,8 @@
    "benchmark_availability": "Instrument-specific reference scores (WHO).",
    "verification": "unverified",
    "render": false,
-   "notes": "WHO-5 item; referenced only, text not reproduced."
+   "notes": "WHO-5 item; referenced only, text not reproduced.",
+   "held_reason": "source terms are non-commercial only, which this resource cannot carry; permission would be required"
   },
   {
    "id": "who5-calm",
@@ -359,7 +384,8 @@
    "benchmark_availability": "Instrument-specific reference scores (WHO).",
    "verification": "unverified",
    "render": false,
-   "notes": "WHO-5 item; referenced only, text not reproduced."
+   "notes": "WHO-5 item; referenced only, text not reproduced.",
+   "held_reason": "source terms are non-commercial only, which this resource cannot carry; permission would be required"
   },
   {
    "id": "who5-active",
@@ -376,7 +402,8 @@
    "benchmark_availability": "Instrument-specific reference scores (WHO).",
    "verification": "unverified",
    "render": false,
-   "notes": "WHO-5 item; referenced only, text not reproduced."
+   "notes": "WHO-5 item; referenced only, text not reproduced.",
+   "held_reason": "source terms are non-commercial only, which this resource cannot carry; permission would be required"
   },
   {
    "id": "who5-fresh",
@@ -393,7 +420,8 @@
    "benchmark_availability": "Instrument-specific reference scores (WHO).",
    "verification": "unverified",
    "render": false,
-   "notes": "WHO-5 item; referenced only, text not reproduced."
+   "notes": "WHO-5 item; referenced only, text not reproduced.",
+   "held_reason": "source terms are non-commercial only, which this resource cannot carry; permission would be required"
   },
   {
    "id": "who5-interest",
@@ -410,7 +438,8 @@
    "benchmark_availability": "Instrument-specific reference scores (WHO).",
    "verification": "unverified",
    "render": false,
-   "notes": "WHO-5 item; referenced only, text not reproduced."
+   "notes": "WHO-5 item; referenced only, text not reproduced.",
+   "held_reason": "source terms are non-commercial only, which this resource cannot carry; permission would be required"
   },
   {
    "id": "nhs-presenteeism",
@@ -427,7 +456,8 @@
    "benchmark_availability": "NHS sector benchmarks (NHS England).",
    "verification": "unverified",
    "render": false,
-   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested."
+   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "nhs-presenteeism-pressure",
@@ -444,7 +474,8 @@
    "benchmark_availability": "NHS sector benchmarks (NHS England).",
    "verification": "unverified",
    "render": false,
-   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested."
+   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "us-physical-activity",
@@ -461,7 +492,8 @@
    "benchmark_availability": "UK population estimates (UK Data Service).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "us-diet",
@@ -478,177 +510,250 @@
    "benchmark_availability": "UK population estimates (UK Data Service).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "csps-workload",
    "group": "demands",
    "group_name": "Job demands and intensity",
    "topic": "Acceptable workload",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I have an acceptable workload",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": null,
+   "source_ref": "B33",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   },
   {
    "id": "ewcs-deadlines",
    "group": "demands",
    "group_name": "Job demands and intensity",
    "topic": "Working to tight deadlines",
-   "wording": null,
-   "response_scale": "7-point (all of the time to never)",
+   "wording": "working to tight deadlines",
+   "response_scale": "All of the time / Almost all of the time / Around \u00be of the time / Around half of the time / Around \u00bc of the time / Almost never / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "And, does your job involve...",
+   "source_ref": "Q49B",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-time-enough",
    "group": "demands",
    "group_name": "Job demands and intensity",
    "topic": "Enough time to do the job",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "You have enough time to get the job done",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61G",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-hide-feelings",
    "group": "demands",
    "group_name": "Job demands and intensity",
    "topic": "Required to hide feelings",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "Your job requires that you hide your feelings",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": "Emotional demand."
+   "verification": "verified",
+   "render": true,
+   "notes": "Emotional demand.",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61O",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-night-work",
    "group": "demands",
    "group_name": "Job demands and intensity",
    "topic": "Frequency of night work",
-   "wording": null,
-   "response_scale": "days per month or never",
+   "wording": "at night, for at least 2 hours between 10.00pm and 05.00am?",
+   "response_scale": "Number of times a month (01 to 31) / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": "Unsocial hours."
+   "verification": "verified",
+   "render": true,
+   "notes": "Unsocial hours.",
+   "stem": "Normally, how many times a month do you work\u2026 ?",
+   "source_ref": "Q37A",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-long-days",
    "group": "demands",
    "group_name": "Job demands and intensity",
    "topic": "Frequency of long (10+ hour) days",
-   "wording": null,
-   "response_scale": "days per month or never",
+   "wording": "more than 10 hours a day?",
+   "response_scale": "Number of times a month (01 to 31) / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "Normally, how many times a month do you work\u2026 ?",
+   "source_ref": "Q37D",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-painful-positions",
    "group": "demands",
    "group_name": "Job demands and intensity",
    "topic": "Tiring or painful positions",
-   "wording": null,
-   "response_scale": "7-point (all of the time to never)",
+   "wording": "Tiring or painful positions",
+   "response_scale": "All of the time / Almost all of the time / Around \u00be of the time / Around half of the time / Around \u00bc of the time / Almost never / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": "Physical load."
+   "verification": "verified",
+   "render": true,
+   "notes": "Physical load. The scale is the show card introduced at Q29.",
+   "stem": "Please tell me, using the same scale, does your main paid job involve...?",
+   "source_ref": "Q30A",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-repetitive-movements",
    "group": "demands",
    "group_name": "Job demands and intensity",
    "topic": "Repetitive hand or arm movements",
-   "wording": null,
-   "response_scale": "7-point (all of the time to never)",
+   "wording": "Repetitive hand or arm movements",
+   "response_scale": "All of the time / Almost all of the time / Around \u00be of the time / Around half of the time / Around \u00bc of the time / Almost never / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": "Physical load."
+   "verification": "verified",
+   "render": true,
+   "notes": "Physical load. The scale is the show card introduced at Q29.",
+   "stem": "Please tell me, using the same scale, does your main paid job involve...?",
+   "source_ref": "Q30E",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-apply-ideas",
    "group": "control",
    "group_name": "Control, autonomy and skill use",
    "topic": "Able to apply own ideas",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "You are able to apply your own ideas in your work",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61I",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-consulted",
    "group": "control",
    "group_name": "Control, autonomy and skill use",
    "topic": "Consulted before objectives are set",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "You are consulted before objectives are set for your work",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61C",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "oecd-influence-decisions",
@@ -665,109 +770,156 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-work-methods",
    "group": "control",
    "group_name": "Control, autonomy and skill use",
    "topic": "Can choose or change work methods",
-   "wording": null,
-   "response_scale": "yes / no",
+   "wording": "your methods of work",
+   "response_scale": "Yes / No",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "Are you able to choose or change...",
+   "source_ref": "Q54B",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-learning",
    "group": "control",
    "group_name": "Control, autonomy and skill use",
    "topic": "Learning new things at work",
-   "wording": null,
-   "response_scale": "yes / no",
+   "wording": "learning new things",
+   "response_scale": "Yes / No",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "Generally, does your main paid job involve...",
+   "source_ref": "Q53F",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-training-employer",
    "group": "control",
    "group_name": "Control, autonomy and skill use",
    "topic": "Employer-provided training",
-   "wording": null,
-   "response_scale": "yes / no",
+   "wording": "Training paid for or provided by your employer",
+   "response_scale": "Yes / No",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "Asked of employees only.",
+   "stem": "Over the past 12 months, have you undergone any of the following types of training to improve your skills?",
+   "source_ref": "Q65A",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-training-otj",
    "group": "control",
    "group_name": "Control, autonomy and skill use",
    "topic": "On-the-job training",
-   "wording": null,
-   "response_scale": "yes / no",
+   "wording": "On-the-job training (co-workers, supervisors)",
+   "response_scale": "Yes / No",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "Over the past 12 months, have you undergone any of the following types of training to improve your skills?",
+   "source_ref": "Q65C",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "csps-ld-access",
    "group": "control",
    "group_name": "Control, autonomy and skill use",
    "topic": "Access to learning and development",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I am able to access the right learning and development opportunities when I need to",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": null,
+   "source_ref": "B21",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   },
   {
    "id": "csps-challenge",
    "group": "control",
    "group_name": "Control, autonomy and skill use",
    "topic": "Sufficiently challenged by work",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I am sufficiently challenged by my work",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": null,
+   "source_ref": "B02",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   },
   {
    "id": "ses-skills-use",
@@ -784,7 +936,8 @@
    "benchmark_availability": "Periodic Great Britain estimates (SES series).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "perma-relationships",
@@ -801,177 +954,250 @@
    "benchmark_availability": "Instrument-specific reference scores.",
    "verification": "unverified",
    "render": false,
-   "notes": "PERMA-Profiler item; referenced only."
+   "notes": "PERMA-Profiler item; referenced only.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-manager-support",
    "group": "support",
    "group_name": "Support and relationships",
    "topic": "Manager provides help and support",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "Your manager helps and supports you",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "Asked of employees only.",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61B",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-manager-respect",
    "group": "support",
    "group_name": "Support and relationships",
    "topic": "Manager respects you",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "respects you as a person",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements? Your immediate boss\u2026",
+   "source_ref": "Q63A",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-manager-recognition",
    "group": "support",
    "group_name": "Support and relationships",
    "topic": "Manager gives praise and recognition",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "gives you praise and recognition when you do a good job",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements? Your immediate boss\u2026",
+   "source_ref": "Q63B",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-manager-feedback",
    "group": "support",
    "group_name": "Support and relationships",
    "topic": "Manager gives useful feedback",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "provides useful feedback on your work",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements? Your immediate boss\u2026",
+   "source_ref": "Q63E",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-manager-development",
    "group": "support",
    "group_name": "Support and relationships",
    "topic": "Manager encourages development",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "encourages and supports your development",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements? Your immediate boss\u2026",
+   "source_ref": "Q63F",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "csps-team",
    "group": "support",
    "group_name": "Support and relationships",
    "topic": "Team improves the service together",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "The people in my team work together to find ways to improve the service we provide",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": null,
+   "source_ref": "B19",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   },
   {
    "id": "ewcs-colleague-support",
    "group": "support",
    "group_name": "Support and relationships",
    "topic": "Colleagues provide help and support",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "Your colleagues help and support you",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61A",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-colleague-relations",
    "group": "support",
    "group_name": "Support and relationships",
    "topic": "Gets on well with colleagues",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I generally get on well with my work colleagues",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements about your job?",
+   "source_ref": "Q89D",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-fair-treatment",
    "group": "fairness",
    "group_name": "Fair treatment and conduct",
    "topic": "Treated fairly at work",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "You are treated fairly at your workplace",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "Asked of employees only.",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61L",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-bullying-harassment",
    "group": "fairness",
    "group_name": "Fair treatment and conduct",
    "topic": "Experience of bullying or harassment",
-   "wording": null,
-   "response_scale": "yes / no",
+   "wording": "bullying / harassment",
+   "response_scale": "Yes / No",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "And over the past 12 months, during the course of your work have you been subjected to any of the following?",
+   "source_ref": "Q81C",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "nhs-values-alignment",
@@ -988,58 +1214,84 @@
    "benchmark_availability": "NHS sector benchmarks (NHS England).",
    "verification": "unverified",
    "render": false,
-   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested."
+   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "csps-clear-objectives",
    "group": "role",
    "group_name": "Role, purpose and recognition",
    "topic": "Clear organisational objectives",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I have a clear understanding of [my organisation]'s objectives",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "'[my organisation]' is the survey's variable term; each participating organisation's name is substituted when the survey is run.",
+   "stem": null,
+   "source_ref": "B06",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   },
   {
    "id": "csps-contribution",
    "group": "role",
    "group_name": "Role, purpose and recognition",
    "topic": "Own work contributes to objectives",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I understand how my work contributes to [my organisation]'s objectives",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "'[my organisation]' is the survey's variable term; each participating organisation's name is substituted when the survey is run.",
+   "stem": null,
+   "source_ref": "B07",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   },
   {
    "id": "ewcs-knows-expectations",
    "group": "role",
    "group_name": "Role, purpose and recognition",
    "topic": "Knows what is expected at work",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "You know what is expected of you at work",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61K",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "perma-direction",
@@ -1056,24 +1308,32 @@
    "benchmark_availability": "Instrument-specific reference scores.",
    "verification": "unverified",
    "render": false,
-   "notes": "PERMA-Profiler item; referenced only."
+   "notes": "PERMA-Profiler item; referenced only.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-motivates-performance",
    "group": "role",
    "group_name": "Role, purpose and recognition",
    "topic": "Organisation motivates good performance",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "The organisation I work for motivates me to give my best job performance",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements about your job?",
+   "source_ref": "Q89E",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "oecd-recognition",
@@ -1090,24 +1350,32 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-work-well-done",
    "group": "role",
    "group_name": "Role, purpose and recognition",
    "topic": "Feeling of work well done",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "Your job gives you the feeling of work well done",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61H",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "perma-achieve-goals",
@@ -1124,24 +1392,32 @@
    "benchmark_availability": "Instrument-specific reference scores.",
    "verification": "unverified",
    "render": false,
-   "notes": "PERMA-Profiler item; referenced only."
+   "notes": "PERMA-Profiler item; referenced only.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-useful-work",
    "group": "role",
    "group_name": "Role, purpose and recognition",
    "topic": "Doing useful work",
-   "wording": null,
-   "response_scale": "5-point (always to never)",
+   "wording": "You have the feeling of doing useful work",
+   "response_scale": "Always / Most of the time / Sometimes / Rarely / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "For each of the following statements, please select the response which best describes your work situation.",
+   "source_ref": "Q61J",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "oecd-help-others",
@@ -1158,7 +1434,8 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "perma-absorption",
@@ -1175,41 +1452,56 @@
    "benchmark_availability": "Instrument-specific reference scores.",
    "verification": "unverified",
    "render": false,
-   "notes": "PERMA-Profiler item; referenced only."
+   "notes": "PERMA-Profiler item; referenced only.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-advancement",
    "group": "change",
    "group_name": "Job security and change",
    "topic": "Opportunities for career advancement",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "My job offers good prospects for career advancement",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements about your job?",
+   "source_ref": "Q89B",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ewcs-job-insecurity",
    "group": "change",
    "group_name": "Job security and change",
    "topic": "Perceived risk of job loss",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I might lose my job in the next 6 months",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements about your job?",
+   "source_ref": "Q89G",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "oecd-undesirable-change",
@@ -1226,24 +1518,34 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "csps-change-managed",
    "group": "change",
    "group_name": "Job security and change",
    "topic": "Change is managed well",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I feel that change is managed well in [my organisation]",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "'[my organisation]' is the survey's variable term; each participating organisation's name is substituted when the survey is run.",
+   "stem": null,
+   "source_ref": "B42",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   },
   {
    "id": "iwbi-commute",
@@ -1260,24 +1562,32 @@
    "benchmark_availability": "None held / proprietary.",
    "verification": "unverified",
    "render": false,
-   "notes": "Proprietary source; referenced only."
+   "notes": "Proprietary source; referenced only.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-flexibility",
    "group": "time",
    "group_name": "Working time and the work-home boundary",
    "topic": "Flexibility for personal or family matters",
-   "wording": null,
-   "response_scale": "4-point (very easy to very difficult)",
+   "wording": "Would you say that for you arranging to take an hour or two off during working hours to take care of personal or family matters is...",
+   "response_scale": "Very easy / Fairly easy / Fairly difficult / Very difficult",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": null,
+   "source_ref": "Q47",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "oecd-breaks",
@@ -1294,24 +1604,32 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-free-time-work",
    "group": "time",
    "group_name": "Working time and the work-home boundary",
    "topic": "Working in free time",
-   "wording": null,
-   "response_scale": "5-point (daily to never)",
+   "wording": "Over the last 12 months, how often have you worked in your free time to meet work demands?",
+   "response_scale": "Daily / Several times a week / Several times a month / Less often / Never",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": null,
+   "source_ref": "Q46",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "ses-worry-after-work",
@@ -1328,7 +1646,8 @@
    "benchmark_availability": "Periodic Great Britain estimates (SES series).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ses-unwinding",
@@ -1345,7 +1664,8 @@
    "benchmark_availability": "Periodic Great Britain estimates (SES series).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ess-fatigue-home",
@@ -1358,28 +1678,38 @@
    "source_key": "ESS",
    "citation": "European Social Survey ERIC (ESS). Rounds vary by item.",
    "source_url": "https://www.europeansocialsurvey.org/",
-   "copyright_status": "ESS",
+   "copyright_status": "ESS CC BY-NC-SA; non-commercial only",
    "benchmark_availability": "Cross-national benchmarks (ESS).",
    "verification": "unverified",
    "render": false,
-   "notes": "European Social Survey Round 5."
+   "notes": "European Social Survey Round 5.",
+   "held_reason": "source terms are non-commercial only, which this resource cannot carry; permission would be required"
   },
   {
    "id": "csps-tools",
    "group": "environment",
    "group_name": "Physical environment and resources",
    "topic": "Has the tools needed for the job",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I have the tools I need to do my job effectively",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": null,
+   "source_ref": "B32",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   },
   {
    "id": "oecd-facilities",
@@ -1396,24 +1726,32 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "ewcs-pay-appropriate",
    "group": "financial",
    "group_name": "Financial security",
    "topic": "Paid appropriately for the work",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "Considering all my efforts and achievements in my job, I feel I get paid appropriately",
+   "response_scale": "Strongly agree / Tend to agree / Neither agree nor disagree / Tend to disagree / Strongly disagree",
    "source_survey": "European Working Conditions Survey 2015 (6th wave)",
    "source_key": "EWCS6",
    "citation": "Eurofound, European Working Conditions Survey 2015.",
    "source_url": "https://www.eurofound.europa.eu/en/surveys/european-working-conditions-surveys",
    "copyright_status": "Eurofound",
    "benchmark_availability": "European and national distributions (Eurofound).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "",
+   "stem": "To what extent do you agree or disagree with the following statements about your job?",
+   "source_ref": "Q89A",
+   "verified_against": {
+    "title": "6th European Working Conditions Survey (2015): source master questionnaire",
+    "url": "https://assets.eurofound.europa.eu/f/279033/d39f2ff970/6th-ewcs-2015-source-master-questionnaire-final.pdf",
+    "sha256": "513ec9426dc9bc35552d567cf390ecada22197a83ba3a283b547b499462d82b9"
+   }
   },
   {
    "id": "oecd-future-living",
@@ -1430,7 +1768,8 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "us-managing-financially",
@@ -1447,7 +1786,8 @@
    "benchmark_availability": "UK population estimates (UK Data Service).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "fincap-resilience",
@@ -1460,11 +1800,12 @@
    "source_key": "FINCAP",
    "citation": "Money and Pensions Service, Financial Capability Survey.",
    "source_url": "https://www.fincap.org.uk/",
-   "copyright_status": "OGL",
+   "copyright_status": "MaPS CC BY-NC-ND; permission required, none requested",
    "benchmark_availability": "UK financial capability benchmarks (MaPS).",
    "verification": "unverified",
    "render": false,
-   "notes": ""
+   "notes": "",
+   "held_reason": "source terms are non-commercial and no-derivatives; permission would be required and none has been requested"
   },
   {
    "id": "nhs-org-action-wellbeing",
@@ -1481,7 +1822,8 @@
    "benchmark_availability": "NHS sector benchmarks (NHS England).",
    "verification": "unverified",
    "render": false,
-   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested."
+   "notes": "NHS Staff Survey item; text withheld; permission would be required to reproduce it and none has been requested.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "mh-know-support-access",
@@ -1498,7 +1840,8 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": "Provisional item; primary source unresolved."
+   "notes": "Provisional item; primary source unresolved.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "mh-org-supports",
@@ -1515,7 +1858,8 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": "Provisional item; primary source unresolved."
+   "notes": "Provisional item; primary source unresolved.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "mh-inclusive",
@@ -1532,7 +1876,8 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": "Provisional item; primary source unresolved."
+   "notes": "Provisional item; primary source unresolved.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "mh-confidence-discuss",
@@ -1549,24 +1894,34 @@
    "benchmark_availability": "Instrument-specific reference material (OECD).",
    "verification": "unverified",
    "render": false,
-   "notes": "Provisional item; primary source unresolved."
+   "notes": "Provisional item; primary source unresolved.",
+   "held_reason": "permission would be required to reproduce it and none has been requested"
   },
   {
    "id": "csps-recommend-workplace",
    "group": "culture",
    "group_name": "Organisational health culture and policy",
    "topic": "Would recommend as a place to work",
-   "wording": null,
-   "response_scale": "5-point agreement",
+   "wording": "I would recommend [my organisation] as a great place to work",
+   "response_scale": "Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree",
    "source_survey": "Civil Service People Survey",
    "source_key": "CSPS",
    "citation": "Cabinet Office, Civil Service People Survey. Crown copyright.",
    "source_url": "https://www.gov.uk/government/collections/civil-service-people-surveys",
    "copyright_status": "OGL",
    "benchmark_availability": "Civil Service benchmarks (Cabinet Office).",
-   "verification": "unverified",
-   "render": false,
-   "notes": ""
+   "verification": "verified",
+   "render": true,
+   "notes": "'[my organisation]' is the survey's variable term; each participating organisation's name is substituted when the survey is run.",
+   "stem": null,
+   "source_ref": "B48",
+   "verified_against": {
+    "title": "Civil Service People Survey 2024: benchmark results (question text by code) and Civil Service People Survey 2020: technical guide (response scale)",
+    "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results",
+    "sha256": "74cde350fe2ea696e2533ce70a474c26621592d5a2d9e32a134b750a8d32f276",
+    "companion_url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/977279/Civil_Service_People_Survey_2020-_Technical_Guide.pdf",
+    "companion_sha256": "362c7d5ca4b3f5054292a40cba701bf7314afe6962801ff6678d1df2f6976d6f"
+   }
   }
  ]
 }
