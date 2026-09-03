@@ -8,6 +8,7 @@ Licences: specification prose CC-BY 4.0; schemas, codelists, examples and toolin
 
 ## Core pages
 - https://openworkplacehealth.org/ : what OWHS is, in plain language
+- https://openworkplacehealth.org/how-it-works.html : the standard on one page, what it is, how a record moves through it without identifying anyone, how the evidence is kept current
 - https://openworkplacehealth.org/standard.html : the full entity list and conformance rules
 - https://openworkplacehealth.org/why.html : the case for the standard
 - https://openworkplacehealth.org/design.html : design decisions and deliberately open questions

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How it works · OWHS</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://openworkplacehealth.org/how-it-works.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/how-it-works.html">
+<meta property="og:title" content="How it works · OWHS">
+<meta property="og:description" content="The Open Workplace Health Standard on one page: what it is, how a record moves through it without identifying anyone, and how the evidence behind it is kept current.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<meta name="description" content="The Open Workplace Health Standard on one page: what it is, how a record moves through it without identifying anyone, and how the evidence behind it is kept current.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --ink:#101418; --body:#33393f; --muted:#5c646c; --line:#e3e6e9;
+  --accent:#0b6e5f; --accent-deep:#095548; --accent-mid:#6fb0a4; --accent-soft:#e6f2f0; --accent-tint:#f2f8f7;
+  --paper:#ffffff; --wash:#f6f7f8; --on-accent:#ffffff;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace; --sans:'Inter',system-ui,-apple-system,sans-serif;
+}
+ *{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--body);background:var(--paper);line-height:1.55;font-size:15.5px;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--line);padding:16px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:20px;font-size:14px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover,.nav-links a[aria-current]{color:var(--accent)}
+
+.hero{padding:52px 0 34px}
+.status{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--accent);background:var(--accent-soft);padding:5px 12px;border-radius:4px;margin-bottom:18px}
+.hero h1{color:var(--ink);font-size:clamp(30px,4.6vw,46px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;max-width:760px;text-wrap:balance}
+.hero .lede{font-size:18px;margin-top:16px;max-width:680px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:32px 0 0}
+.stat{padding:16px 18px;border-right:1px solid var(--line);background:var(--paper)}
+.stat:last-child{border-right:0}
+.stat .v{font-family:var(--mono);font-size:26px;font-weight:500;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat .k{font-size:13px;color:var(--muted);margin-top:8px}
+
+section.band{padding:44px 0;border-top:1px solid var(--line)}
+.band-grid{display:grid;grid-template-columns:1fr;gap:22px;align-items:start}
+.band-grid>div:first-child{display:grid;grid-template-columns:1fr 1fr;gap:12px 40px;align-items:end}
+.band-grid>div:first-child .tag{grid-column:1/-1}
+.band-grid>div:first-child h2{margin:0}.band-grid>div:first-child .why{margin:0 0 4px}
+.band .tag{font-family:var(--mono);font-size:11.5px;color:var(--accent);display:block;margin-bottom:10px;letter-spacing:.02em}
+.band h2{color:var(--ink);font-size:23px;font-weight:700;line-height:1.2;text-wrap:balance}
+.band .why{margin-top:12px;font-size:14.5px;color:var(--muted)}
+
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{border:1px solid var(--line);border-radius:8px;background:var(--paper);display:flex;flex-direction:column;overflow:hidden}
+.card .cap{background:var(--accent-tint);border-bottom:1px solid var(--line);padding:10px 18px;font-family:var(--mono);font-size:11.5px;color:var(--accent)}
+.card .bd{padding:14px 18px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card h4{font-size:16px;font-weight:600;color:var(--ink);line-height:1.3}
+.card p{font-size:14px;color:var(--body)}
+.card .lic{margin-top:auto;padding-top:10px;font-family:var(--mono);font-size:11.5px;color:var(--muted);border-top:1px dashed var(--line)}
+.card .lic b{color:var(--ink);font-weight:500}
+
+.quote{background:var(--wash);border-left:4px solid var(--accent);padding:18px 24px;margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.quote .big{font-family:var(--mono);font-size:24px;color:var(--accent);white-space:nowrap;line-height:1.2;font-variant-numeric:tabular-nums}
+.quote .big small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.quote p{font-size:15px;color:var(--ink);font-weight:500;margin:0}
+.quote p span{display:block;font-weight:400;color:var(--body);font-size:14px;margin-top:4px}
+
+.fig{border:1px solid var(--line);border-radius:8px;background:var(--paper);overflow:hidden}
+.fig .cap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--line);background:var(--wash);font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.fig .cap b{color:var(--accent);font-weight:500}
+.fig svg{width:100%;height:auto;display:block;padding:14px 12px 6px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;padding:10px 18px 12px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--accent)}
+.legend i.s{background:var(--accent-soft);border:1px solid var(--accent-mid)}
+.legend i.o{background:var(--paper);border:1.5px solid var(--ink)}
+
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.rule{background:var(--wash);border-radius:8px;padding:14px 16px;font-size:13.5px;line-height:1.5}
+.rule b{display:block;color:var(--ink);font-weight:600;margin-bottom:4px}
+.rule.stated{background:var(--accent-soft);border-left:4px solid var(--accent)}
+.rule.stated b{color:var(--accent)}
+
+footer{padding:34px 0 52px;font-size:13.5px;color:var(--muted);border-top:1px solid var(--line)}
+footer .fgrid{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:start}
+footer p{max-width:760px}
+footer .mark{font-size:15px;margin-bottom:10px}
+.foot-links{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:12.5px;text-align:right}
+
+@media (max-width:900px){.band-grid{gap:16px}.band-grid>div:first-child{grid-template-columns:1fr}.three,.rules{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.stat{border-bottom:1px solid var(--line)}.stat:nth-child(2n){border-right:0}.stat:last-child{grid-column:1/-1}footer .fgrid{grid-template-columns:1fr}.foot-links{text-align:left}.quote{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.loop-dash{stroke-dasharray:6 8;animation:march 14s linear infinite}@keyframes march{to{stroke-dashoffset:-280}}}
+@media print{header,.nav-links{display:none}.hero{padding-top:12px}section.band{break-inside:avoid;padding:24px 0}body{font-size:12.5px}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="how-it-works.html" aria-current="page">How it works</a>
+    <a href="standard.html">Inside the standard</a>
+    <a href="why.html">The case</a>
+    <a href="governance.html">Governance</a>
+    <a href="methods.html">How we grade</a>
+    <a href="question-bank/index.html">Question bank</a>
+    <a href="instrument-registry/index.html">Instrument registry</a>
+    <a href="search.html">Search</a>
+  </nav>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <span class="status">OWHS v0.1 · early open specification · on one page</span>
+  <h1>What it is, how a record moves through it, and how it stays current.</h1>
+  <p class="lede">An open data standard for UK workplace health, private by design, free for anyone to implement, with the evidence behind it kept up to date by a monthly loop that a named human signs off.</p>
+  <div class="stats">
+    <div class="stat"><div class="v">16</div><div class="k">entities defined, one shared shape, 3 with schemas so far</div></div>
+    <div class="stat"><div class="v">23</div><div class="k">versioned code lists, anchored to ONS, HSE, the fit note</div></div>
+    <div class="stat"><div class="v">27</div><div class="k">instruments graded, stage one of the field, every claim cited</div></div>
+    <div class="stat"><div class="v">85</div><div class="k">survey items with provenance and rights</div></div>
+    <div class="stat"><div class="v">n &ge; 5</div><div class="k">smallest group an employer ever sees</div></div>
+  </div>
+</div></div>
+
+<!-- BAND 1 -->
+<section class="band"><div class="wrap band-grid">
+  <div>
+    <span class="tag">what it is</span>
+    <h2>Three open, versioned things anyone may use</h2>
+    <p class="why">Free to implement, commercially or not, with no permission and no payment. The steward is named on every page, and so is its conflict of interest.</p>
+  </div>
+  <div>
+    <div class="three">
+      <div class="card">
+        <div class="cap">specification · v0.1</div>
+        <div class="bd">
+          <h4>A shared shape for workplace health records</h4>
+          <p>Sickness absence, return to work, occupational health, wellbeing measurement and benefits, defined once in plain language and JSON Schema, using the definitions the UK already trusts.</p>
+          <div class="lic"><b>CC-BY 4.0</b> prose · <b>Apache 2.0</b> schemas · validator included</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cap">instrument registry · v0.7.0</div>
+        <div class="bd">
+          <h4>What the evidence says about 27 questionnaires, stage one of the whole field</h4>
+          <p>The open synthesis of the published evidence on workplace health and wellbeing instruments. Each graded across nine measurement properties, every claim cited, single items linked to the instruments they screen for, licence class verified against the steward's own page and archived. No ranking, no "best": it says what the literature says and leaves the choice to you.</p>
+          <div class="lic"><b>JSON · CSV · PDF</b> · published grading rubric v1.4</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cap">question bank · v0.1</div>
+        <div class="bd">
+          <h4>85 survey items with provenance and rights</h4>
+          <p>Each item traced to its source instrument, its licence position and its evidence record, grouped by topic. Nothing is reproduced that the rights-holder has not permitted.</p>
+          <div class="lic"><b>JSON · CSV · PDF</b> · per-item rights table</div>
+        </div>
+      </div>
+    </div>
+    <div class="quote">
+      <div class="big">n &ge; 5<small>n &ge; 10 for distress</small></div>
+      <p>Privacy is conformance, not a promise.<span>No direct identifiers anywhere. Nothing an employer can see below five people. Individual answers are never employer-visible, by definition. A conformant system refuses to emit a violating record rather than merely hiding it.</span></p>
+    </div>
+  </div>
+</div></section>
+
+<!-- BAND 2 -->
+<section class="band"><div class="wrap band-grid">
+  <div>
+    <span class="tag">how it works</span>
+    <h2>A record goes in. Only a safe aggregate comes out.</h2>
+    <p class="why">The same shape whether it comes from an HR system, an OH provider, a survey tool or a spreadsheet. The privacy rules sit in the schema, not in a policy document.</p>
+  </div>
+  <div>
+    <div class="fig">
+      <div class="cap"><span><b>figure 1</b> · the path of one record</span><span>left to right · any size of employer · no data team required</span></div>
+      <svg viewBox="0 0 1000 268" role="img" aria-label="Flow: records from HR, OH, survey and benefits systems become OWHS entities, pass a conformance check that refuses identifiers and clinical content and pseudonymises the rest, are aggregated with a floor of five, and leave as an aggregate report carrying its completion rate and suppression record.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent-mid)"/></marker>
+        </defs>
+        <g font-family="Inter,system-ui,sans-serif" font-size="12.5">
+          <!-- sources -->
+          <text x="80" y="18" text-anchor="middle" fill="var(--muted)" font-family="IBM Plex Mono,monospace" font-size="11">sources</text>
+          <g fill="var(--paper)" stroke="var(--line)">
+            <rect x="8" y="30" width="144" height="36" rx="18"/>
+            <rect x="8" y="76" width="144" height="36" rx="18"/>
+            <rect x="8" y="122" width="144" height="36" rx="18"/>
+            <rect x="8" y="168" width="144" height="36" rx="18"/>
+          </g>
+          <g fill="var(--ink)" font-weight="500">
+            <text x="80" y="52.5" text-anchor="middle">HR or payroll</text>
+            <text x="80" y="98.5" text-anchor="middle">OH provider</text>
+            <text x="80" y="144.5" text-anchor="middle">Survey tool</text>
+            <text x="80" y="190.5" text-anchor="middle">Benefits, insurer</text>
+          </g>
+          <g stroke="var(--accent-mid)" stroke-width="1.5" fill="none" marker-end="url(#ar)">
+            <path d="M152,48 C 200,48 190,117 232,117"/>
+            <path d="M152,94 C 200,94 190,117 232,117"/>
+            <path d="M152,140 C 200,140 190,117 232,117"/>
+            <path d="M152,186 C 200,186 190,117 232,117"/>
+          </g>
+
+          <!-- entities -->
+          <g>
+            <rect x="236" y="62" width="200" height="110" rx="8" fill="var(--paper)" stroke="var(--accent-mid)"/>
+            <path d="M236,70 a8,8 0 0 1 8,-8 h184 a8,8 0 0 1 8,8 v20 h-200 z" fill="var(--accent)"/>
+            <text x="336" y="81" text-anchor="middle" fill="var(--on-accent)" font-family="IBM Plex Mono,monospace" font-size="11">OWHS entities</text>
+            <g fill="var(--ink)" font-family="IBM Plex Mono,monospace" font-size="11.5">
+              <text x="336" y="110" text-anchor="middle">AbsenceEpisode</text>
+              <text x="336" y="128" text-anchor="middle">ReturnToWorkOutcome</text>
+              <text x="336" y="146" text-anchor="middle">InstrumentAdministration</text>
+              <text x="336" y="164" text-anchor="middle" fill="var(--muted)">+ 13 more</text>
+            </g>
+            <text x="336" y="196" text-anchor="middle" fill="var(--muted)" font-size="11.5">one shape · versioned · code lists pinned</text>
+          </g>
+          <path d="M436,117 L478,117" stroke="var(--accent-mid)" stroke-width="1.5" marker-end="url(#ar)"/>
+
+          <!-- conformance check -->
+          <g>
+            <rect x="482" y="48" width="190" height="138" rx="8" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.5"/>
+            <path d="M482,56 a8,8 0 0 1 8,-8 h174 a8,8 0 0 1 8,8 v20 h-190 z" fill="var(--ink)"/>
+            <text x="577" y="67" text-anchor="middle" fill="var(--paper)" font-family="IBM Plex Mono,monospace" font-size="11">conformance check</text>
+            <g fill="var(--ink)">
+              <text x="577" y="98" text-anchor="middle">refuses names, IDs,</text>
+              <text x="577" y="115" text-anchor="middle">free text, diagnoses</text>
+              <text x="577" y="142" text-anchor="middle">pseudonymises the rest</text>
+              <text x="577" y="159" text-anchor="middle" fill="var(--muted)" font-size="11.5">keyed HMAC, banded ages</text>
+            </g>
+            <path d="M577,186 L577,214" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#ar)"/>
+            <rect x="460" y="218" width="234" height="28" rx="14" fill="var(--wash)" stroke="var(--line)"/>
+            <text x="577" y="236" text-anchor="middle" fill="var(--muted)" font-size="11.5">non-conformant: refused, not hidden</text>
+          </g>
+          <path d="M672,117 L714,117" stroke="var(--accent-mid)" stroke-width="1.5" marker-end="url(#ar)"/>
+
+          <!-- aggregate -->
+          <g>
+            <rect x="718" y="62" width="166" height="110" rx="8" fill="var(--accent-tint)" stroke="var(--accent-mid)"/>
+            <path d="M718,70 a8,8 0 0 1 8,-8 h150 a8,8 0 0 1 8,8 v20 h-166 z" fill="var(--accent)"/>
+            <text x="801" y="81" text-anchor="middle" fill="var(--on-accent)" font-family="IBM Plex Mono,monospace" font-size="11">aggregate</text>
+            <g fill="var(--ink)">
+              <text x="801" y="108" text-anchor="middle">groups of 5 or more</text>
+              <text x="801" y="125" text-anchor="middle">10 or more for distress</text>
+              <text x="801" y="148" text-anchor="middle">safeguarding signals</text>
+              <text x="801" y="165" text-anchor="middle">excluded at any size</text>
+            </g>
+          </g>
+          <path d="M884,117 L916,117" stroke="var(--accent-mid)" stroke-width="1.5" marker-end="url(#ar)"/>
+
+          <!-- output -->
+          <g>
+            <rect x="920" y="70" width="76" height="94" rx="8" fill="var(--accent)"/>
+            <g fill="var(--on-accent)" font-weight="600" font-size="12.5">
+              <text x="958" y="104" text-anchor="middle">Aggregate</text>
+              <text x="958" y="120" text-anchor="middle">report</text>
+            </g>
+            <text x="958" y="140" text-anchor="middle" fill="var(--on-accent)" font-size="10.5" opacity=".85">+ completion</text>
+            <text x="958" y="153" text-anchor="middle" fill="var(--on-accent)" font-size="10.5" opacity=".85">rate</text>
+            <text x="958" y="186" text-anchor="middle" fill="var(--muted)" font-size="11.5">what is not</text>
+            <text x="958" y="200" text-anchor="middle" fill="var(--muted)" font-size="11.5">said, stated</text>
+          </g>
+        </g>
+      </svg>
+      <div class="legend"><span><i></i>standard-defined step</span><span><i class="o"></i>where a record can fail</span><span><i class="s"></i>the only output that leaves an organisation</span></div>
+    </div>
+    <div class="rules">
+      <div class="rule"><b>If you implement systems</b>Adopt one entity or one code list; that is a real test. Map an export you already produce and report where it broke. A failed mapping is worth as much as a clean one.</div>
+      <div class="rule"><b>If you are an employer</b>You never see an individual's answers or episode. You see rates, counts above the floor, and the completion rate that tells you how much the number can bear.</div>
+      <div class="rule"><b>If you set national definitions</b>Built to be overwritten: a namespace is reserved for official definitions, so when they arrive they slot in rather than start over.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- BAND 3 -->
+<section class="band"><div class="wrap band-grid">
+  <div>
+    <span class="tag">how it stays current</span>
+    <h2>A monthly loop that files itself, and a human who signs every change</h2>
+    <p class="why">Most standards die of maintenance. This one is built so that the maintenance is the cheap part and the judgement is the visible part.</p>
+  </div>
+  <div>
+    <div class="fig">
+      <div class="cap"><span><b>figure 2</b> · the maintenance cycle</span><span>runs on the 1st of each month · every step public</span></div>
+      <svg viewBox="0 0 1000 262" role="img" aria-label="Monthly cycle in six numbered steps: an automated evidence sweep; proposed changes filed publicly; a named human rater reviews and merges; the dataset and changelog are versioned; the site and sweep report regenerate; and corrections of fact are accepted any day and take priority. Automation never moves a grade.">
+        <g font-family="Inter,system-ui,sans-serif" font-size="12.5">
+          <!-- racetrack -->
+          <path class="loop-dash" d="M150,53 H850 a34,34 0 0 1 34,34 V167 a34,34 0 0 1 -34,34 H150 a34,34 0 0 1 -34,-34 V87 a34,34 0 0 1 34,-34 z" fill="none" stroke="var(--accent-mid)" stroke-width="2"/>
+          <!-- direction ticks -->
+          <g fill="var(--accent-mid)">
+            <path d="M354,47 l11,6 l-11,6 z"/><path d="M634,47 l11,6 l-11,6 z"/>
+            <path d="M646,207 l-11,-6 l11,-6 z"/><path d="M366,207 l-11,-6 l11,-6 z"/>
+          </g>
+          <g>
+            <rect x="90" y="30" width="260" height="46" rx="8" fill="var(--paper)" stroke="var(--line)"/>
+            <circle cx="112" cy="53" r="11" fill="var(--accent)"/><text x="112" y="57" text-anchor="middle" fill="var(--on-accent)" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="500">1</text>
+            <text x="132" y="49" fill="var(--ink)" font-weight="600">Evidence sweep runs</text>
+            <text x="132" y="66" fill="var(--muted)" font-size="11">automated · Crossref, Europe PMC, PubMed</text>
+          </g>
+          <g>
+            <rect x="370" y="30" width="260" height="46" rx="8" fill="var(--paper)" stroke="var(--line)"/>
+            <circle cx="392" cy="53" r="11" fill="var(--accent)"/><text x="392" y="57" text-anchor="middle" fill="var(--on-accent)" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="500">2</text>
+            <text x="412" y="49" fill="var(--ink)" font-weight="600">Changes proposed in public</text>
+            <text x="412" y="66" fill="var(--muted)" font-size="11">as a pull request anyone can read</text>
+          </g>
+          <g>
+            <rect x="650" y="30" width="260" height="46" rx="8" fill="var(--accent)"/>
+            <circle cx="672" cy="53" r="11" fill="var(--paper)"/><text x="672" y="57" text-anchor="middle" fill="var(--accent)" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="500">3</text>
+            <text x="692" y="49" fill="var(--on-accent)" font-weight="600">A named rater reviews, merges</text>
+            <text x="692" y="66" fill="var(--on-accent)" font-size="11" opacity=".85">the only step that can change data</text>
+          </g>
+          <g>
+            <rect x="650" y="178" width="260" height="46" rx="8" fill="var(--paper)" stroke="var(--line)"/>
+            <circle cx="672" cy="201" r="11" fill="var(--accent)"/><text x="672" y="205" text-anchor="middle" fill="var(--on-accent)" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="500">4</text>
+            <text x="692" y="197" fill="var(--ink)" font-weight="600">Dataset + changelog versioned</text>
+            <text x="692" y="214" fill="var(--muted)" font-size="11">each cell keeps its rubric and dates</text>
+          </g>
+          <g>
+            <rect x="370" y="178" width="260" height="46" rx="8" fill="var(--paper)" stroke="var(--line)"/>
+            <circle cx="392" cy="201" r="11" fill="var(--accent)"/><text x="392" y="205" text-anchor="middle" fill="var(--on-accent)" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="500">5</text>
+            <text x="412" y="197" fill="var(--ink)" font-weight="600">Site + sweep report regenerated</text>
+            <text x="412" y="214" fill="var(--muted)" font-size="11">failures published, not hidden</text>
+          </g>
+          <g>
+            <rect x="90" y="178" width="260" height="46" rx="8" fill="var(--paper)" stroke="var(--line)"/>
+            <circle cx="112" cy="201" r="11" fill="var(--accent)"/><text x="112" y="205" text-anchor="middle" fill="var(--on-accent)" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="500">6</text>
+            <text x="132" y="197" fill="var(--ink)" font-weight="600">Corrections, any day</text>
+            <text x="132" y="214" fill="var(--muted)" font-size="11">errors of fact jump the queue</text>
+          </g>
+
+          <!-- centre statement -->
+          <rect x="250" y="101" width="500" height="52" rx="8" fill="var(--accent-soft)"/>
+          <text x="500" y="123" text-anchor="middle" fill="var(--ink)" font-size="14.5" font-weight="600">Automation adds citations and flags cells for review.</text>
+          <text x="500" y="142" text-anchor="middle" fill="var(--accent)" font-size="12.5" font-family="IBM Plex Mono,monospace">it never moves a grade</text>
+
+          <text x="500" y="252" text-anchor="middle" fill="var(--muted)" font-size="11.5">a month with citations added and no grade moved is a good month</text>
+        </g>
+      </svg>
+    </div>
+    <div class="rules">
+      <div class="rule stated"><b>Stated on every page</b>All grades were assigned by one rater, employed by the steward. Grades are frozen from first publication until two named psychometric raters who are not steward employees have joined.</div>
+      <div class="rule"><b>Reproducible by design</b>Every graded cell names the rubric version, the date its literature was last searched, and the date a human last confirmed it. The rubric is published so anyone can redo a cell, or argue with it.</div>
+      <div class="rule"><b>Correctable in public</b>Errata are listed. Instrument authors have a right of reply, published beside their record, dated and unedited. If stewardship fails, the licences let anyone fork and continue.</div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap fgrid">
+  <div>
+    <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+    <p>The Open Workplace Health Standard is an early open specification, created by Zak Fenton and currently stewarded by Alltoogether, which builds products that may implement it. It is open to inspect, use, challenge and improve. If it earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.</p>
+  </div>
+  <div class="foot-links">
+    <a href="https://openworkplacehealth.org">openworkplacehealth.org</a>
+    <a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a>
+    <span>spec v0.1 · registry v0.7.0 · September 2026</span>
+  </div>
+</div></footer>
+
+</body>
+</html>
