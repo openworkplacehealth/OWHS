@@ -1,0 +1,44 @@
+{
+  "codelist": "oh-referral-reason",
+  "version": "0.1.0",
+  "anchor": "OWHS v0.1; management-facing OH referral reasons (non-diagnostic)",
+  "notes": "Reasons a manager refers to OH; deliberately NOT diagnostic. Surveillance/pre-placement rows are typically exercised under the owhs-ohsurveillance profile.",
+  "values": [
+    {
+      "code": "long-term-absence",
+      "label": "Long-term sickness absence"
+    },
+    {
+      "code": "short-term-frequent",
+      "label": "Frequent short-term absence"
+    },
+    {
+      "code": "fitness-for-task",
+      "label": "Fitness for a specific task/role"
+    },
+    {
+      "code": "adjustments-advice",
+      "label": "Advice on reasonable adjustments"
+    },
+    {
+      "code": "return-to-work",
+      "label": "Return-to-work planning"
+    },
+    {
+      "code": "health-surveillance",
+      "label": "Statutory health surveillance"
+    },
+    {
+      "code": "pre-placement",
+      "label": "Pre-placement / new-starter assessment"
+    },
+    {
+      "code": "dse",
+      "label": "DSE / workstation assessment"
+    },
+    {
+      "code": "other",
+      "label": "Other management referral"
+    }
+  ]
+}

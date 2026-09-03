@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://openworkplacehealth.org/contribute.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/contribute.html">
+<meta property="og:title" content="Contribute · OWHS">
+<meta property="og:description" content="How to contribute to the Open Workplace Health Standard: three small bounded asks, a call for independent psychometric raters, the conflict-of-interest declaration, and what you are not being asked to do.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>Contribute · OWHS</title>
+<meta name="description" content="How to contribute to the Open Workplace Health Standard: three small bounded asks, a call for independent psychometric raters, the conflict-of-interest declaration, and what you are not being asked to do.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:17px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2,h3{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(28px,4.5vw,40px);font-weight:700;letter-spacing:-0.02em;margin-bottom:10px}
+h2{font-size:22px;font-weight:700;margin:40px 0 12px}
+h3{font-size:17px;font-weight:600;margin:24px 0 6px}
+p{margin:14px 0;max-width:760px}
+ul,ol{margin:14px 0 14px 22px}
+li{margin:7px 0}
+header{border-bottom:1px solid var(--line);padding:18px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:880px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:34px}
+article{padding:56px 0 30px}
+.quote{background:var(--wash);border-left:4px solid var(--accent);padding:22px 26px;margin:26px 0}
+.quote p{font-size:17px;color:var(--ink);font-weight:500;margin:0 0 8px}
+.quote p:last-child{margin-bottom:0}
+.callout{background:var(--accent-soft);border-radius:8px;padding:20px 24px;margin:24px 0}
+.callout p{margin:8px 0}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:var(--wash);color:var(--ink);font-weight:600}
+.mono{font-family:var(--mono);font-size:13.5px}
+footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header><div class="nav">
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="standard.html">Inside the standard</a>
+    <a href="why.html">The case</a>
+    <a href="governance.html">Governance</a>
+    <a href="methods.html">How we grade</a>
+    <a href="question-bank/index.html">Question bank</a>
+    <a href="instrument-registry/index.html">Instrument registry</a>
+    <a href="search.html">Search</a>
+  </nav>
+</div></header>
+
+<article><div class="wrap">
+  <h1>Contribute</h1>
+  <p class="meta">contribute · updated 2 September 2026 · spec v0.1 · registry v0.7.0</p>
+
+  <p>OWHS is an early open specification and an instrument evidence registry, both published to be improved. The ask is deliberately small. Nobody is being asked to endorse the standard, join a working group, adopt it, or put their name to anything. The most useful thing an outsider can do is find where it is wrong.</p>
+
+  <div class="callout">
+    <p><strong>You do not need to endorse it or join anything.</strong> A note that says "this field cannot exist in my system" or "this grade is wrong, here is the paper" is a complete contribution. Substantive contributions are reviewed in the next published maintenance cycle. The project makes no response-time promises except one: corrections of factual error take priority over all other work.</p>
+  </div>
+
+  <h2>Three asks</h2>
+
+  <h3>1. Find the flaw</h3>
+  <p>Read one part of the <a href="spec/index.html">specification</a>, one code list, or one <a href="instrument-registry/index.html">registry record</a>, and say where it is wrong, ambiguous or unsafe. The privacy profile is the part that most needs hostile reading: if you can construct a payload that is conformant and still identifies a person, or an aggregate that leaks below the floor, that is the single most valuable report the project can receive. Raise it as a <em>privacy or safeguarding concern</em> in the repository, or by email if you would rather it stayed private until it is fixed.</p>
+
+  <h3>2. Find the missing field</h3>
+  <p>If you hold this kind of data, you know what the entities leave out. A sickness absence episode with no field for the thing your organisation actually records is a defect in the standard, not in your records. Suggest the field, the code list value or the definition, with one sentence on why it is needed and where it comes from. Raise it as a <em>schema, codelist or definition suggestion</em>.</p>
+
+  <h3>3. Test-map one export</h3>
+  <p>Take one export you already produce (an absence report, a return-to-work log, an OH referral summary, a survey extract) and try to map it to one OWHS entity. Report where it broke: which fields had no home, which definitions did not match yours, where the privacy rules made the mapping impossible. A mapping that failed is worth as much to the project as one that succeeded. Raise it as an <em>implementation mapping report</em>. No data leaves your organisation: the report describes the mapping, never the records.</p>
+
+  <h2>The registry needs raters</h2>
+  <p>The evidence grades in the <a href="instrument-registry/index.html">instrument registry</a> were assigned by one rater, who is employed by the steward. Because of that, all grades and statuses are frozen from first publication, and they stay frozen until two named psychometric raters who are not employees of the steward have joined and the inter-rater procedure in the <a href="instrument-registry/rubric.html">grading rubric</a> is in force. This is the registry's critical path and the project's most specific ask.</p>
+  <p>What a rater does: takes one instrument record, applies the published rubric to its cells independently, records agreement or disagreement with the current grade, and is named on the record. The first cell graded under two raters will also be the first to publish its agreement statistics. If you have graded measurement evidence before, or have reviewed instrument validation studies, and would be willing to do one record, write to <a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a> with the record you would take.</p>
+  <p>One rule is fixed in advance: nobody rates an instrument they authored, hold rights in, or are paid to distribute. Instrument creators are welcome as correspondents and have a <a href="instrument-registry/corrections.html">right of reply</a> to their record; they are never judges of their own row.</p>
+
+  <h2>Declare your interest</h2>
+  <p>Every contribution route asks one question: do you have a financial or professional interest in any instrument, product or organisation your contribution touches? Answer it plainly. An interest does not disqualify a contribution; an undeclared one does. The steward answers the same question on every page of this site: Alltoogether develops commercial products that may implement OWHS, and the registry's sole rater is an Alltoogether employee.</p>
+
+  <h2>Where to send it</h2>
+  <table>
+    <tr><th>Route</th><th>Use it for</th></tr>
+    <tr><td>Repository issue (public)</td><td>Any of the three asks, using the matching issue template. Each template carries the interest declaration. The repository opens with the public release; until then, email.</td></tr>
+    <tr><td><a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a></td><td>Anything you would rather not raise in public, privacy concerns you want fixed before they are visible, and rater volunteers.</td></tr>
+    <tr><td><a href="instrument-registry/corrections.html">Registry corrections</a></td><td>A wrong citation, sample size, licence date or grade in a registry record. Quote the cell, the rubric section, and the evidence.</td></tr>
+  </table>
+
+  <h2>What happens to a contribution</h2>
+  <p>Every contribution is logged with its state (received, under review, accepted, declined, deferred) and the reason. Contributors are named only with their consent. Accepted changes appear in the <a href="changelog.html">changelog</a> and, for the registry, in the dataset's corrections entries under the rubric version in force. Declined ones are logged with the reason so the next person does not have to raise them again. Grades in the registry do not move for any contribution while the freeze holds; a contribution that would move a grade is recorded, flagged on the cell, and applied when two raters exist.</p>
+
+  <p class="small">The <a href="governance.html">governance page</a> sets out how contributions bear on the move to multi-stakeholder stewardship: recurring external contributors and independent reviewers are among the evidence that triggers it. Contributing is not a commitment to any of that.</p>
+</div></article>
+
+<footer><div class="wrap">
+  <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
+</div></footer>
+</body>
+</html>

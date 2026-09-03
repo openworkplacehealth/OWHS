@@ -1,0 +1,101 @@
+name: Registry instrument proposal
+description: Propose an instrument for an evidence record in the instrument registry. The rule this template follows is published at site/instrument-registry/admission.html.
+title: "[registry proposal] "
+labels: ["registry", "proposal", "needs-clerical-check"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A proposal that passes the clerical check gets a watchlist record with every property reading not assessed. Nothing here assigns a grade. The steward proposes on this same template, in public, with the same interest declaration. Declined proposals are listed publicly with the reason.
+  - type: input
+    id: instrument
+    attributes:
+      label: Instrument, as its steward names it
+      placeholder: e.g. Effort-Reward Imbalance questionnaire (ERI), 22-item version
+    validations:
+      required: true
+  - type: input
+    id: form
+    attributes:
+      label: Version or form intended for the record
+      placeholder: e.g. long form, 2004 revision; or short form (ERI-S, 16 items)
+    validations:
+      required: true
+  - type: input
+    id: construct
+    attributes:
+      label: Construct-domain code
+      description: A code from codelists/construct-domain.json. If no code fits, write "domain proposal" and describe the domain in the next field.
+      placeholder: e.g. demands
+    validations:
+      required: true
+  - type: textarea
+    id: domain_proposal
+    attributes:
+      label: Domain proposal, if no code fits
+      description: The domain, what it is not, and which of the five conditions in RFC 0001 it meets. Leave blank if a code fits.
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence, cited by DOI
+      description: Two peer-reviewed studies reporting a measurement property of this instrument in working-age samples, in any country and any language. Studies that use the instrument without reporting a measurement property of it do not count. One DOI per line, with the property each reports.
+      placeholder: |
+        10.xxxx/xxxxx  internal consistency, test-retest; n=1,200 Finnish public-sector employees
+        10.xxxx/xxxxx  structural validity; n=640 Brazilian hospital staff
+    validations:
+      required: true
+  - type: textarea
+    id: relevance
+    attributes:
+      label: Use, where known
+      description: The countries, sectors or national surveys in which the instrument is fielded, and, where its construct family already has records, what this instrument adds. This informs grading order. It never decides admission.
+    validations:
+      required: false
+  - type: textarea
+    id: outcome_evidence
+    attributes:
+      label: Evidence against recorded organisational outcomes, if any
+      description: Welcome, and it informs grading order. It never substitutes for the measurement-property evidence above. Recorded outcomes only (absence records, register linkage, actual turnover, independently rated performance, safety incidents); self-reported outcomes are convergent validity, not this.
+    validations:
+      required: false
+  - type: input
+    id: licence
+    attributes:
+      label: Licence position
+      description: The steward's current terms page (URL), or the words "no steward and no instrument-level licence".
+    validations:
+      required: true
+  - type: dropdown
+    id: interest
+    attributes:
+      label: Declaration of interest
+      description: Any financial or professional interest in this instrument. Instrument developers and copyright holders are welcome to propose their own instruments and are asked to say so. An undeclared interest is the only thing that disqualifies a proposal.
+      options:
+        - "No interest to declare"
+        - "I am an author, developer or rights holder of this instrument"
+        - "I distribute, sell or am paid to administer this instrument"
+        - "Other interest, described below"
+    validations:
+      required: true
+  - type: textarea
+    id: interest_detail
+    attributes:
+      label: Interest, if any
+      description: One or two lines is enough.
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmations
+      options:
+        - label: This proposal reproduces no instrument item text
+          required: true
+        - label: You may name me in the contribution log and changelog
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        The clerical check confirms that the DOIs resolve, that the studies concern working-age samples, that they report a measurement property of the named instrument, and that the licence position can be established. It does not assess the quality of the evidence: that is grading, and grading is frozen until independent raters have joined. Grading order is published by construct family; instruments the steward's own products select are graded last within their family.

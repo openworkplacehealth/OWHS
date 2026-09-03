@@ -1,0 +1,73 @@
+name: Privacy or safeguarding concern
+description: A way a conformant payload or aggregate could identify a person, leak below the aggregation floor, or expose a safeguarding signal. The most valuable report the project can receive.
+title: "[privacy] "
+labels: ["privacy", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If the concern is live and exploitable, consider emailing hello@openworkplacehealth.org first so it can be fixed before it is visible. Either route is fine; this one is public.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - Privacy profile (aggregation floor, suppression, completion rate)
+        - A JSON schema (identifier or clinical content that the schema admits)
+        - Pseudonymisation design
+        - Safeguarding-category exclusion
+        - A codelist value
+        - Instrument registry (a record, a licence claim, a citation)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: concern
+    attributes:
+      label: The concern
+      description: What could go wrong, for whom, and under what conditions. If you can construct a payload or aggregate that is conformant and still harmful, describe it (never with real data).
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce or verify it
+      description: Steps, a synthetic example, or a pointer into the spec or schema. Never include real personal data.
+    validations:
+      required: false
+  - type: textarea
+    id: fix
+    attributes:
+      label: What would fix it, if you have a view
+    validations:
+      required: false
+  - type: dropdown
+    id: interest
+    attributes:
+      label: Declaration of interest
+      description: Do you have a financial or professional interest in any instrument, product or organisation this contribution touches? An interest does not disqualify a contribution; an undeclared one does. The steward declares its own on every page of the site.
+      options:
+        - "No interest to declare"
+        - "Yes, and I describe it below"
+        - "Prefer to declare by email to hello@openworkplacehealth.org"
+    validations:
+      required: true
+  - type: textarea
+    id: interest_detail
+    attributes:
+      label: Interest, if any
+      description: One or two lines is enough. Employer, role, instrument authorship or rights, paid distribution, consultancy.
+    validations:
+      required: false
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Naming
+      description: Contributors are named in the public contribution log only with consent. Leave unticked to be logged as anonymous.
+      options:
+        - label: You may name me in the contribution log and changelog
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        Substantive contributions are reviewed in the next published maintenance cycle. Corrections of factual error take priority over all other work. There is no other response-time promise.

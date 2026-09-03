@@ -1,0 +1,22 @@
+{
+  "codelist": "collection-channel",
+  "version": "0.1.0",
+  "anchor": "OWHS survey collection channel",
+  "values": [
+    {
+      "code": "email"
+    },
+    {
+      "code": "sms"
+    },
+    {
+      "code": "app"
+    },
+    {
+      "code": "kiosk"
+    },
+    {
+      "code": "paper"
+    }
+  ]
+}

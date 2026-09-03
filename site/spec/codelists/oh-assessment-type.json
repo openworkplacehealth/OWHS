@@ -1,0 +1,27 @@
+{
+  "codelist": "oh-assessment-type",
+  "version": "0.1.0",
+  "anchor": "OWHS v0.1; OH assessment types",
+  "values": [
+    {
+      "code": "management-referral",
+      "label": "Management referral assessment"
+    },
+    {
+      "code": "health-surveillance",
+      "label": "Statutory health surveillance"
+    },
+    {
+      "code": "pre-placement",
+      "label": "Pre-placement assessment"
+    },
+    {
+      "code": "dse",
+      "label": "DSE assessment"
+    },
+    {
+      "code": "ill-health-retirement",
+      "label": "Ill-health retirement assessment"
+    }
+  ]
+}

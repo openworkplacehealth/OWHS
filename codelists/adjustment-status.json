@@ -1,0 +1,23 @@
+{
+  "codelist": "adjustment-status",
+  "version": "0.1.0",
+  "anchor": "OWHS v0.1; reasonable-adjustment lifecycle status",
+  "values": [
+    {
+      "code": "proposed",
+      "label": "Proposed"
+    },
+    {
+      "code": "in-place",
+      "label": "In place"
+    },
+    {
+      "code": "declined",
+      "label": "Declined"
+    },
+    {
+      "code": "ended",
+      "label": "Ended"
+    }
+  ]
+}

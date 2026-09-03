@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://openworkplacehealth.org/why.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/why.html">
+<meta property="og:title" content="The case for a workplace-health data standard · OWHS">
+<meta property="og:description" content="Why the UK needs an open workplace-health data standard: the standards that exist, the gap between them, and why small employers are the point.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>The case for a workplace-health data standard · OWHS</title>
+<meta name="description" content="Why the UK needs an open workplace-health data standard: the standards that exist, the gap between them, and why small employers are the point.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:17px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(28px,4.5vw,40px);font-weight:700;letter-spacing:-0.02em;margin-bottom:10px}
+h2{font-size:22px;font-weight:700;margin:40px 0 12px}
+p{margin:14px 0;max-width:760px}
+header{border-bottom:1px solid var(--line);padding:18px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:880px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:34px}
+article{padding:56px 0 30px}
+.quote{background:var(--wash);border-left:4px solid var(--accent);padding:22px 26px;margin:26px 0}
+.quote p{font-size:18px;color:var(--ink);font-weight:500;margin:0}
+.quote cite{display:block;margin-top:10px;font-style:normal;font-size:13.5px;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted)}
+ul,ol{max-width:760px}
+</style>
+</head>
+<body>
+
+<header><div class="nav">
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="standard.html">Inside the standard</a>
+    <a href="why.html">The case</a>
+    <a href="governance.html">Governance</a>
+    <a href="methods.html">How we grade</a>
+    <a href="question-bank/index.html">Question bank</a>
+    <a href="instrument-registry/index.html">Instrument registry</a>
+    <a href="search.html">Search</a>
+  </nav>
+</div></header>
+
+<article><div class="wrap">
+  <h1>The case for a workplace-health data standard</h1>
+  <p class="meta">OWHS · essay one of two · July 2026 · <a href="design.html">read the design notes</a></p>
+
+  <p>Ask a UK company what its sickness absence is and you will get an answer. Ask how that number was calculated, and things fall apart. One HR system counts calendar days, another counts working days. One counts an episode from the first missed shift, another from the fit note. Return-to-work outcomes are mostly not recorded at all, and where they are, "returned" can mean anything from a full return to a person quietly back on half duties and gone again within a month. Two companies with identical workforces and identical health can report absence figures that differ by half, and neither is lying.</p>
+
+  <p>This is not a small inconvenience. Workplace health data is the evidence base for decisions that matter: whether an intervention worked, whether a workforce is deteriorating, whether the money an employer spends on support reaches anyone. When the underlying definitions differ between every system, none of those questions can be answered across more than one organisation. The data exists everywhere and means nothing anywhere.</p>
+
+  <h2>Other industries fixed this</h2>
+
+  <p>Payroll data moves between systems because standards exist. Banking built Open Banking, and an entire ecosystem of products now works because account data has one shape. Healthcare built FHIR, so a GP record can follow a patient between systems built by rival vendors. In each case the pattern was the same: the data's shape was separated from the products that hold it, published openly, and everyone competed on what they did with the data rather than on incompatibility.</p>
+
+  <p>Workplace health never got that treatment, and it is worth being precise about why, because the claim "there is no standard" invites the reply "yes there is". We surveyed the landscape properly before writing a line of this specification. What we found is that the existing standards cluster at two poles, with the employer's workplace-health record sitting unclaimed between them.</p>
+
+  <p>On one side sit the HR data standards. HR Open Standards (formerly HR-XML) is open and free, and models the employee record for interchange between HR systems, but its absence constructs are administrative leave objects with no health semantics, no clinical cause, no return-to-work outcome. ISO 30414 defines human-capital reporting metrics for boardrooms and investors: paid, enterprise-shaped, and about aggregate disclosure rather than records. On the other side sit the health data standards. SNOMED CT can code the clinical cause of an absence with great precision, but it is a clinical terminology for care settings, its UK licence is scoped to health-and-care use, and no employer codes absence in it. OMOP is a research model. FHIR's occupational-data work models a patient's job as context for clinicians, in a US implementation guide, and defines nothing about absence episodes or benefit provision.</p>
+
+  <p>In between, the UK has something unusual: authoritative definitions with no data shape attached. The ONS defines the sickness absence rate and a reason taxonomy, but as a population survey estimate, not a record format an employer could populate. The HSE Management Standards define six psychosocial domains with a good free measurement instrument, but no exchange schema. The statutory fit note defines return-to-work adjustment categories on what is essentially a paper form. Statutory Sick Pay defines benefit entitlement in legislation. Everything needed to describe workplace health exists. Nothing joins it into a record a small company's software can hold.</p>
+
+  <h2>Government has now said the quiet part</h2>
+
+  <div class="quote">
+    <p>"Currently, sickness absence is tracked inconsistently, and return-to-work outcomes are rarely measured."</p>
+    <cite><a href="https://www.gov.uk/government/news/keep-britain-working-continues-drive-to-stop-people-falling-out-of-the-workforce">UK Government, Keep Britain Working programme</a>, announcing the Workplace Health Intelligence Unit, July 2026</cite>
+  </div>
+
+  <p>The Keep Britain Working review reached the same conclusion this survey did, and said so in its final report. Its response is the Workplace Health Intelligence Unit: a national body that will collect standardised data from employers and providers, tracking sickness absence, return-to-work outcomes and disability participation, to make workplace health performance visible and benchmarkable for the first time. The review goes further, proposing a "Healthy Working Lifecycle" as a certified national standard.</p>
+
+  <p>What has not yet been published is any data model: no field dictionary, no code lists, no schema, no position on what any of this asks of a twelve-person company. That is not a criticism; it is early days for the unit. But it defines the moment precisely. A national data ask is coming. The definitions it will need mostly exist, scattered. And the shape that joins them has to come from somewhere.</p>
+
+  <h2>Small employers are the point, not an edge case</h2>
+
+  <p>Here is the constraint that shaped this standard more than any other: the UK has over five million small businesses, and they are precisely where the data problem is worst and the existing standards reach least. A large employer has an HR system, possibly an occupational health contract, sometimes a data team. A small one has a spreadsheet, a manager doing their best, and no capacity whatsoever to implement anything designed for an enterprise. Any workplace-health data standard that assumes infrastructure has excluded most of the employers in the country before it starts.</p>
+
+  <p>So the test we applied to every entity and every field was blunt: does this make sense for a twelve-person company with no HR system and no data team? That test produced a standard where the privacy rules are part of conformance rather than left to implementers, where pseudonymisation can be done with one secret and one line of code, and where nothing requires software a small company does not have. It also produced a standard that takes seriously the one question none of the existing standards ask: what support does this workforce already have, and does any of it get used? Most small employers pay for benefits and services their people never touch. A record of workplace health that ignores the help already available is a record of decline, not a tool for prevention.</p>
+
+  <h2>Why open, and why now</h2>
+
+  <p>A data standard owned by one company is a product specification wearing a costume. It cannot be adopted by that company's competitors, which for workplace health means it cannot work at all, because the data lives across thousands of employers served by rival brokers, insurers, software vendors and providers. So OWHS is published under open licences, its change process is public, and its governance is progressive by design: if the standard earns independent use and recurring contribution, governance moves to a multi-stakeholder structure so that no single commercial organisation controls its future. The steward that wrote the first draft intends to end up as one voice among several. That is what makes it a standard.</p>
+
+  <p>And the timing is not incidental. Version 0.1 exists now, before the national definitions do, for a specific reason: so that the conversation about what SME workplace-health data should look like can happen in the open, with a concrete proposal on the table, while the national picture is still forming. Every provisional choice in the specification is marked as provisional, and a namespace is reserved for the WHIU's definitions to supersede ours. If the national unit publishes a schema tomorrow, this standard's position is to adopt it. Until then, the gap is real, government has said so itself, and someone had to put the first draft in public.</p>
+
+  <p class="small">This essay summarises a full landscape survey of HR, health and occupational-safety data standards, with primary sources throughout, available in the specification repository on public release. For how the standard itself was designed, read <a href="design.html">the design notes</a>. To request the draft specification, email <a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a>.</p>
+</div></article>
+
+<footer><div class="wrap">
+  <p>The Open Workplace Health Standard (OWHS) · stewarded by <a href="https://www.alltoogether.com">Alltoogether</a> · early open specification · CC-BY 4.0 · <a href="index.html">openworkplacehealth.org</a></p>
+</div></footer>
+
+</body>
+</html>

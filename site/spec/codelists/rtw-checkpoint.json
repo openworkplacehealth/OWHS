@@ -1,0 +1,20 @@
+{
+  "codelist": "rtw-checkpoint",
+  "version": "0.1.0",
+  "anchor": "OWHS v0.1 provisional sustained-RTW checkpoints",
+  "notes": "RECOMMENDED defaults, not an enum: the ReturnToWorkOutcome schema accepts any integer 1-104 (founder decision 7 Jul 2026). Producers SHOULD use this set for comparability. Explicitly provisional until WHIU defines sustained-RTW windows. whiu: reserved.",
+  "values": [
+    {
+      "code": "wk4",
+      "weeks": 4
+    },
+    {
+      "code": "wk13",
+      "weeks": 13
+    },
+    {
+      "code": "wk26",
+      "weeks": 26
+    }
+  ]
+}

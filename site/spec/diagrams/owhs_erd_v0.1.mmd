@@ -1,0 +1,39 @@
+erDiagram
+    Organisation ||--o{ OrgUnit : "has"
+    Organisation ||--o{ WorkerPseudonym : "scopes"
+    OrgUnit ||--o{ WorkerPseudonym : "groups"
+
+    WorkerPseudonym ||--o{ AbsenceEpisode : "subject_of"
+    WorkerPseudonym ||--o{ OHEpisode : "subject_of"
+    WorkerPseudonym ||--o{ ReasonableAdjustment : "subject_of"
+    WorkerPseudonym ||--o{ WellbeingObservation : "subject_of"
+    WorkerPseudonym ||--o{ InstrumentAdministration : "subject_of"
+
+    AbsenceEpisode ||--o| ReturnToWorkOutcome : "resolved_by"
+    OHEpisode ||--o{ ReasonableAdjustment : "recommends"
+    OHEpisode ||--o| ReturnToWorkOutcome : "informs"
+    ReasonableAdjustment ||--o| ReturnToWorkOutcome : "enacted_in"
+
+    WellbeingObservation }o--|| ConstructDomain : "measures"
+    InstrumentAdministration }o--|| ConstructDomain : "scores"
+    InstrumentAdministration }o--|| MeasurementContext : "produced_under"
+    WellbeingObservation }o--|| MeasurementContext : "produced_under"
+
+    Organisation ||--o{ BenefitEntitlement : "provides"
+    BenefitEntitlement }o--o{ ConstructDomain : "tagged_with"
+    BenefitEntitlement ||--o{ BenefitUtilisation : "used_via"
+
+    Organisation ||--o{ DisabilityParticipation : "reports"
+
+    AggregateReport }o--|| MeasurementContext : "references"
+    AggregateReport }o--|| OrgUnit : "scoped_to"
+    AbsenceEpisode ..> AggregateReport : "aggregated_into"
+    ReturnToWorkOutcome ..> AggregateReport : "aggregated_into"
+    WellbeingObservation ..> AggregateReport : "aggregated_into"
+    BenefitUtilisation ..> AggregateReport : "aggregated_into"
+
+    BenchmarkRelease }o--o{ AggregateReport : "composed_from"
+    Crosswalk }o--|| ConstructDomain : "maps"
+
+    RiskAssessment }o--|| ConstructDomain : "reserved"
+    WorkplaceIncident }o--|| WorkerPseudonym : "reserved"

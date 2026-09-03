@@ -1,0 +1,24 @@
+{
+  "codelist": "fitness-opinion",
+  "version": "0.1.0",
+  "anchor": "OH fitness-for-work opinion (management-facing categorical output)",
+  "notes": "The categorical opinion the employer legitimately receives (Access to Medical Reports Act 1988; GMC confidentiality). No clinical basis is carried.",
+  "values": [
+    {
+      "code": "fit",
+      "label": "Fit for work"
+    },
+    {
+      "code": "fit-with-adjustments",
+      "label": "Fit for work with adjustments"
+    },
+    {
+      "code": "unfit",
+      "label": "Not fit for work"
+    },
+    {
+      "code": "not-assessed",
+      "label": "Not assessed / opinion pending"
+    }
+  ]
+}

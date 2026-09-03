@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://openworkplacehealth.org/design.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/design.html">
+<meta property="og:title" content="Design notes: how OWHS was built · OWHS">
+<meta property="og:description" content="How the Open Workplace Health Standard was designed: borrowed definitions, privacy as conformance, the core-and-profiles boundary, and what was deliberately left open.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>Design notes: how OWHS was built · OWHS</title>
+<meta name="description" content="How the Open Workplace Health Standard was designed: borrowed definitions, privacy as conformance, the core-and-profiles boundary, and what was deliberately left open.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:17px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(28px,4.5vw,40px);font-weight:700;letter-spacing:-0.02em;margin-bottom:10px}
+h2{font-size:22px;font-weight:700;margin:40px 0 12px}
+p{margin:14px 0;max-width:760px}
+code{font-family:var(--mono);font-size:14.5px;background:var(--wash);padding:2px 7px;border-radius:4px;color:var(--ink)}
+header{border-bottom:1px solid var(--line);padding:18px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:880px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:34px}
+article{padding:56px 0 30px}
+footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted)}
+ul,ol{max-width:760px}
+</style>
+</head>
+<body>
+
+<header><div class="nav">
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="standard.html">Inside the standard</a>
+    <a href="why.html">The case</a>
+    <a href="governance.html">Governance</a>
+    <a href="methods.html">How we grade</a>
+    <a href="question-bank/index.html">Question bank</a>
+    <a href="instrument-registry/index.html">Instrument registry</a>
+    <a href="search.html">Search</a>
+  </nav>
+</div></header>
+
+<article><div class="wrap">
+  <h1>Design notes: how OWHS was built</h1>
+  <p class="meta">OWHS · essay two of two · July 2026 · <a href="why.html">read the case first</a></p>
+
+  <p>A data standard is a long series of judgement calls, and the reader deserves to know which calls were made, why, and which ones we are least sure about. These notes summarise the reasoning behind version 0.1. The full specification carries the detail, including a section we think every standard should have and few do: an honest list of our own most disputable decisions.</p>
+
+  <h2>Borrow definitions, never invent them</h2>
+
+  <p>The first rule of the design: where an authoritative UK definition exists, OWHS adopts it verbatim and cites it, and where none exists, OWHS says so openly rather than dressing an invention up as an anchor. Absence reasons use the ONS taxonomy, so an organisation's rate is comparable with the national series. The psychosocial constructs anchor to the HSE Management Standards' six domains, in HSE's own words. Return-to-work adjustments use the statutory fit note's "may be fit" categories, which turn out to be a ready-made controlled vocabulary that nobody had treated as data. Statutory entitlement follows Statutory Sick Pay's own rules. The one place we had no official incumbent to borrow from is the one government itself flags as nationally unmeasured: return-to-work outcomes. Insurer rehabilitation and occupational-health teams do track these case by case, but each in its own vocabulary; no harmonised taxonomy exists. Our five-value outcome list is honest invention, marked provisional, with one deliberate refinement: an exit through ill-health retirement is recorded distinctly, so that "did not return" can never quietly absorb the most serious outcome an absence can have.</p>
+
+  <h2>Privacy is conformance, not a promise</h2>
+
+  <p>Most data specifications treat privacy as guidance for implementers. Workplace-health data is too dangerous for that, because the person the data describes works for the organisation that holds it. So OWHS makes the privacy rules part of the standard's definition of validity. A payload containing a name, an email address or a date of birth is not a badly behaved record: it is structurally invalid, rejected by the schema itself. Aggregates below five people are not hidden by polite convention: a conforming producer refuses to emit them, ten for severe-distress measures, in line with the small-cell suppression used in official statistics. Safeguarding-category signals, bullying and harassment among them, never appear in employer-visible output at any group size, because the employer may be the source of the harm. And every aggregate travels with its completion rate and a record of what was suppressed, so a reader can always see what is not being said.</p>
+
+  <p>The most contestable decision in the whole design sits here, and we prefer to name it ourselves. There is a small, exhaustively enumerated class of information an employer may lawfully hold about an identified individual: a released occupational-health fitness opinion, a reasonable adjustment under the Equality Act, a return-to-work plan the worker is party to. We created a visibility class for exactly these, the only class exempt from the aggregation floor, carrying no clinical content, ever. A privacy purist would argue a workplace-health standard should refuse to normalise any individual-level, employer-visible field. We think that position makes the occupational-health and adjustments entities useless to the small-company manager who lawfully holds this information anyway, and that the bounded, schema-enforced version is safer than the unstandardised status quo. But it is a judgement, not a fact, and it is flagged as such in the specification.</p>
+
+  <h2>Identity that cannot leak</h2>
+
+  <p>Records need to link within an employer over time, and must never link across employers or back to a person. OWHS does this with a keyed one-way hash: each organisation holds one secret, the pseudonym is derived from it, and the secret never appears in any payload. The same person at two employers produces two unrelated identifiers, and no party holds a key that could join them. Cross-employer linkage is not forbidden by policy; it is impossible by construction. A cryptographer would note that a per-worker-salt design in dedicated hardware would be stronger, and they would be right. It would also be unimplementable by a twelve-person company, and a standard small employers cannot implement protects nobody. We chose one secret, one library call, and said so.</p>
+
+  <h2>A vendor-neutral core, with a boundary that gets tested</h2>
+
+  <p>Every field in the core passed one test: would a competing broker, an HR software vendor and an occupational-health provider all recognise this as their concept too? Anything that failed went behind the profile boundary, a labelled extension mechanism through which any vendor can carry product-specific machinery without touching the core. A profile may narrow the core but never widen it, and above all may never weaken a privacy rule. The first profile is the steward's own, and that is deliberate: if the company that wrote the standard can express its own product entirely as an extension, without a single special accommodation in the core, the boundary is in the right place. The standard's first conformance test is aimed at its own author.</p>
+
+  <h2>Occupational health, handled with respect</h2>
+
+  <p>The hardest scoping call was occupational health, which sits closer to a clinical record than anything else an employer touches. We put the referral-to-opinion envelope in the core, because it is precisely what small employers buy OH for, and the categorical fitness opinion is the operational output a manager acts on. But the boundary is enforced in schema: no diagnosis, no symptoms, no report text, no clinical codes can appear in an OHEpisode, and an opinion appears only where its release to the employer is recorded. Statutory health surveillance and sector-specific screening live in a named profile, so the core is never burdened with hazard-specific machinery most companies will never need.</p>
+
+  <h2>What we deliberately left open</h2>
+
+  <p>A proposal published before the national definitions exist should hold its provisional choices loosely, and the specification does this in the open. The sustained return-to-work checkpoints are recommendations, not locked values, because the Workplace Health Intelligence Unit may define different windows. Disability participation, the WHIU's third measure, is a reserved entity, deliberately minimal, because inventing semantics government is about to define would help nobody. A namespace is reserved throughout for national definitions to supersede ours. And the safeguarding-category list, the line that decides what an employer never sees, is explicitly a governance decision rather than an implementer's one: it ships provisional, and ratifying it is reserved as one of the first formal acts of the multi-stakeholder governance this project commits to if it earns independent use, because a line that important should not be drawn by one firm alone.</p>
+
+  <p>That last sentence is the design philosophy in miniature. The specification includes its own list of disputable decisions, its own inventory of assumptions the national unit could contradict, and a public decision log that started before the standard was announced. We would rather publish our reasoning and be corrected than publish conclusions and be believed.</p>
+
+  <p class="small">The full specification, schemas, worked examples and the honesty pass are <a href="spec/index.html">readable and downloadable here</a>; the public repository with an open change process follows at release. To tell us where it breaks, the <a href="contribute.html">contribute page</a> has three small asks. For why the standard exists at all, read <a href="why.html">the case</a>.</p>
+</div></article>
+
+<footer><div class="wrap">
+  <p>The Open Workplace Health Standard (OWHS) · stewarded by <a href="https://www.alltoogether.com">Alltoogether</a> · early open specification · CC-BY 4.0 · <a href="index.html">openworkplacehealth.org</a></p>
+</div></footer>
+
+</body>
+</html>

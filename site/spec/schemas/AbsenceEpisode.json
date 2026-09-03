@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.1/AbsenceEpisode.json",
+  "title": "OWHS AbsenceEpisode v0.1",
+  "description": "One episode of sickness absence, ONS-comparable. No direct identifiers.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "episodeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^owhs:pseudo:[0-9a-f]{16,64}$",
+      "description": "Per-org opaque pseudonym; never a direct identifier"
+    },
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "minor-illness",
+        "musculoskeletal",
+        "mental-health",
+        "respiratory",
+        "gastrointestinal",
+        "other"
+      ],
+      "$comment": "codelist:absence-reason@0.1.0 \u2014 ONS reason taxonomy"
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "workingDaysLost": {
+      "type": "number",
+      "minimum": 0,
+      "$comment": "ONS 7.5-hour working-day unit"
+    },
+    "workingHoursLost": {
+      "type": "number",
+      "minimum": 0
+    },
+    "fitNoteFlag": {
+      "type": "boolean"
+    },
+    "workRelatedFlag": {
+      "type": "boolean"
+    },
+    "clinicalCauseCode": {
+      "type": "string",
+      "pattern": "^[0-9]{6,18}$",
+      "$comment": "OPTIONAL SNOMED CT; affiliate-licence caveat; never conformance-required"
+    },
+    "sourceProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceType"
+      ],
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "enum": [
+            "hris",
+            "manual",
+            "broker",
+            "oh-provider"
+          ]
+        },
+        "sourceProvider": {
+          "type": "string"
+        },
+        "sourceId": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "episodeId",
+    "pseudonymId",
+    "reasonCode",
+    "startDate",
+    "sourceProvenance"
+  ],
+  "allOf": [
+    {
+      "$comment": "P1: forbid direct identifiers anywhere",
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "name"
+            ]
+          },
+          {
+            "required": [
+              "nino"
+            ]
+          },
+          {
+            "required": [
+              "email"
+            ]
+          },
+          {
+            "required": [
+              "dateOfBirth"
+            ]
+          },
+          {
+            "required": [
+              "address"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "$comment": "endDate must not precede startDate \u2014 enforced structurally where possible",
+      "if": {
+        "required": [
+          "endDate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://openworkplacehealth.org/instrument-registry/single-items.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/instrument-registry/single-items.html">
+<meta property="og:title" content="Single-item measures | OWHS Instrument Registry">
+<meta property="og:description" content="Every single-item measure in the registry, what each has been shown to screen for, and the published correspondence with the full instrument.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>Single-item measures | OWHS Instrument Registry</title>
+<meta name="description" content="Every single-item measure in the registry, what each has been shown to screen for, and the published correspondence with the full instrument.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace;--amber:#8a6d1f;--amber-soft:#f4f0e6;--red:#8a2b2b;--red-soft:#f6ecec}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:16.5px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px 30px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2,h3{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(26px,4.5vw,38px);font-weight:700;letter-spacing:-0.02em;margin:8px 0 10px}
+h2{font-size:21px;font-weight:700;margin:36px 0 12px}
+h3{font-size:16px;font-weight:600;margin:20px 0 6px}
+p,li{margin:12px 0}ul,ol{padding-left:20px;max-width:760px}
+.lede{font-size:18.5px;color:var(--body);margin:8px 0 18px;max-width:760px}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+a{overflow-wrap:anywhere}
+p,li,td,.findings,.licok,.licbad,.callout{overflow-wrap:anywhere}
+.status-chip{display:inline-flex;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--accent);background:var(--accent-soft);padding:5px 12px;border-radius:4px;margin-bottom:16px}
+.callout{background:var(--wash);border-left:4px solid var(--accent);padding:14px 18px;margin:16px 0;max-width:780px}
+.caveat{background:var(--amber-soft);border-left:4px solid var(--amber);padding:14px 18px;margin:16px 0;max-width:780px}
+.caveat b{color:var(--amber)}
+.licbad{background:var(--amber-soft);border-left:4px solid var(--amber);padding:12px 16px;margin:12px 0;max-width:780px;font-size:14.5px}
+.licok{background:var(--accent-soft);border-left:4px solid var(--accent);padding:12px 16px;margin:12px 0;max-width:780px;font-size:14.5px}
+.grade{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:600;border-radius:4px;padding:2px 9px;vertical-align:middle}
+.g-high{background:#dff0e9;color:#0b5c46}.g-mod{background:#e6efdb;color:#4a6318}
+.g-low{background:#f4f0e6;color:#8a6d1f}.g-vlow{background:#f6ecec;color:#8a2b2b}
+.g-absent{background:#f0e6e6;color:#7a1f1f}.g-na{background:#eef0f2;color:#5c646c}
+.g-unassessed{background:#ffffff;color:#8a93a0;border:1px dashed #b8c0c8}
+td.g-unassessed{background:repeating-linear-gradient(45deg,#fafbfc,#fafbfc 4px,#f0f2f4 4px,#f0f2f4 8px);color:#8a93a0;font-style:italic}
+.due{color:var(--amber);font-size:9px;vertical-align:middle}
+.cellmeta{font-family:var(--mono);font-size:11px;color:var(--muted);margin:2px 0 6px}
+.cellmeta .rd{color:var(--amber);font-weight:600}
+.freeze{background:#fbf7ea;border:1px solid #e6d9a8;border-radius:8px;padding:12px 16px;margin:14px 0 18px;font-size:14px;max-width:820px}
+.freeze b{color:var(--amber)}
+.verdict{border:2px solid var(--ink);border-radius:10px;padding:18px 22px;margin:18px 0 26px;max-width:820px;background:var(--paper)}
+.verdict h2{margin:0 0 8px;font-size:17px;text-transform:uppercase;letter-spacing:.06em}
+.verdict p{margin:8px 0;font-size:16px;color:var(--ink)}
+.verdict .facts,.si .facts{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 6px}
+.verdict .chip,.si .chip{font-family:var(--mono);font-size:11.5px;background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:3px 8px}
+.verdict .chip.c-high,.si .chip.c-high{background:#dff0e9;color:#0b5c46}.verdict .chip.c-mod,.si .chip.c-mod{background:#e6efdb;color:#4a6318}
+.verdict .chip.c-low,.si .chip.c-low{background:#f4f0e6;color:#8a6d1f}.verdict .chip.c-vlow,.si .chip.c-vlow{background:#f6ecec;color:#8a2b2b}
+.verdict .chip.c-absent,.si .chip.c-absent{background:#f0e6e6;color:#7a1f1f}.verdict .chip.c-na,.si .chip.c-na{color:#8a93a0}
+.verdict .chip.c-lic{background:var(--accent-soft);color:var(--accent)}
+.si .facts{margin-top:4px}
+.verdict .caveat-line{font-size:13.5px;color:var(--muted);margin-top:10px}
+.licclass{display:inline-block;font-family:var(--mono);font-size:11.5px;border-radius:4px;padding:2px 8px;background:var(--paper);border:1px solid var(--line);margin-right:6px}
+.rubric h2{margin-top:30px}.rubric table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+.rubric th,.rubric td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.rubric th{background:var(--wash)}.rubric code{font-family:var(--mono);font-size:12.5px;background:var(--wash);padding:0 4px}
+.rubric .tblwrap{overflow-x:auto}
+.stat{display:inline-block;font-family:var(--mono);font-size:11px;border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+.st-well{background:var(--accent-soft);color:var(--accent)}
+.st-contested{background:#7a1f1f;color:#ffffff;font-weight:700}
+.st-thin{background:var(--amber-soft);color:var(--amber)}
+.st-untested{background:#eef0f2;color:var(--muted)}
+.ef{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:8px}
+.ind{display:inline-block;font-family:var(--mono);font-size:11px;border-radius:4px;padding:1px 7px;margin-left:6px}
+.ind-direct{background:var(--accent-soft);color:var(--accent)}
+.ind-indirect{background:var(--amber-soft);color:var(--amber)}
+.ind-general{background:#e9eef6;color:#2f5480}
+.purpose{max-width:760px;font-size:17px;border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:6px 0 18px}
+.rels{max-width:800px}.rels li{margin:8px 0}.relnote{color:var(--muted);font-size:14.5px}
+.filter{margin:6px 0 0}.filterlabel{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-right:6px}
+.filter>input{position:absolute;opacity:0;width:0;height:0}
+.filter>label{display:inline-block;font-size:13px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;margin:0 4px 6px 0;cursor:pointer;color:var(--body)}
+.filter>input:checked+label{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.filter>input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+#f-single:checked~.matrixwrap tbody tr:not(.n-single){display:none}
+#f-short:checked~.matrixwrap tbody tr:not(.n-short){display:none}
+#f-long:checked~.matrixwrap tbody tr:not(.n-long){display:none}
+#f-set:checked~.matrixwrap tbody tr:not(.n-set){display:none}
+.si{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:14px 0;max-width:820px}
+.si h3{margin-top:0}
+.ind-note{background:#eef0f2;color:var(--muted)}
+.indnote{font-size:12.5px;color:var(--muted)}
+.prop{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:14px 0}
+.prop h3{margin:2px 0 8px}
+.findings{font-size:14.5px;max-width:780px}
+.matrixwrap{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:8px}
+table.matrix{border-collapse:collapse;font-size:12.5px;min-width:980px;width:100%}
+table.matrix th{position:sticky;top:0;background:var(--wash);text-align:left;padding:8px 9px;border-bottom:2px solid var(--ink);font-size:11.5px;color:var(--ink)}
+table.matrix td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap;font-family:var(--mono);font-size:11.5px}
+table.matrix td:first-child{position:sticky;left:0;background:var(--paper);white-space:normal;min-width:170px;font-family:'Inter',sans-serif;font-size:13px}
+table.matrix th:first-child{position:sticky;left:0;z-index:2;background:var(--wash)}
+td.g-high{background:#dff0e9;color:#0b5c46}td.g-mod{background:#e6efdb;color:#4a6318}
+td.g-low{background:#f4f0e6;color:#8a6d1f}td.g-vlow{background:#f6ecec;color:#8a2b2b}
+td.g-absent{background:#f0e6e6;color:#7a1f1f;font-weight:600}
+td.g-na{background:#eef0f2;color:#8a93a0;font-style:italic}
+.legend{font-size:12.5px;color:var(--muted);max-width:820px;margin:10px 0}
+.trwrap{overflow-x:auto;margin:10px 0;max-width:780px}
+table.tr{border-collapse:collapse;width:100%;font-size:13px;min-width:520px}
+table.tr th{text-align:left;padding:7px 9px;border-bottom:2px solid var(--ink);font-size:11.5px;color:var(--ink)}
+table.tr td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.refs{font-size:13px;color:var(--muted);max-width:800px}
+.refs li{margin:6px 0}
+.idgrid{font-size:14px;max-width:780px}
+.idgrid b{color:var(--ink)}
+header.owhs{border-bottom:1px solid var(--line);padding:18px 0}
+.navbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:880px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:20px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a.here{color:var(--accent);font-weight:600}
+article{padding:40px 0 20px}
+footer.owhs{border-top:1px solid var(--line);padding:28px 0 52px;font-size:14px;color:var(--muted)}
+footer.owhs p{max-width:800px}
+.subnav{border-bottom:1px solid var(--line);background:var(--wash)}
+.subnav .wrap{padding:9px 24px;display:flex;gap:18px;flex-wrap:wrap;font-size:14px}
+.subnav a{color:var(--muted);text-decoration:none}
+.subnav a:hover,.subnav a.here{color:var(--accent);font-weight:600}
+.banklink{background:var(--accent-soft);border-radius:6px;padding:10px 14px;font-size:14px;max-width:780px;margin:12px 0}
+@media (max-width:640px){ body{font-size:15.5px} .wrap{padding:0 16px 24px} }
+</style>
+</head>
+<body>
+<header class="owhs"><div class="navbar">
+  <a class="mark" href="../index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../standard.html">Inside the standard</a>
+    <a href="../why.html">The case</a>
+    <a href="../governance.html">Governance</a>
+    <a href="../methods.html">How we grade</a>
+    <a href="../question-bank/index.html">Question bank</a>
+    <a href="index.html" class="here">Instrument registry</a>
+    <a href="../search.html">Search</a>
+  </nav>
+</div></header>
+<div class="subnav"><div class="wrap"><a href="index.html">Overview</a><a href="how-to-read.html">How to read this registry</a><a href="single-items.html" class="here">Single-item measures</a><a href="admission.html">How an instrument enters</a><a href="rubric.html">Grading rubric v1.4</a><a href="corrections.html">Corrections, errata and right of reply</a><a href="downloads.html">Downloads</a></div></div>
+<article><div class="wrap">
+
+<span class="status-chip">4 single-item records &middot; dataset v0.7.0</span>
+<h1>Single-item measures</h1>
+<p class="lede">A single question is what an organisation can field every month. This page gathers every single-item record in
+the registry, what each has been shown to screen for, and the published correspondence with the full instrument.</p>
+<p>A single item cannot carry internal consistency or structural validity; those properties are category errors for it and are
+recorded as not applicable, never as absent. What a single item can carry, and what these records grade, is test-retest
+reliability, criterion validity and convergent validity against a multi-item instrument for the same construct. Where a
+published study reports that correspondence, it is recorded as a relation with the study cited: <b>screens for</b> where the
+study reports sensitivity and specificity against the instrument's threshold, <b>corresponds with</b> where it reports a
+correlation only (convergence, which is not a screening claim), and <b>short form of</b> where the item was derived from the
+instrument.</p>
+<div class="callout">The registry records that a single item has been shown to screen for a construct; it never says that an
+organisation should use the item instead of the instrument, and it never states a threshold for action. Those are the
+implementer's decisions and outside the registry.</div>
+<div class="si"><h3><a href="was.html">Work Ability Score (WAS), single-item</a></h3><p class="findings"><b>What it claims to measure:</b> Global self-assessed current work ability relative to lifetime best.</p><ul class="rels"><li><b>short form of</b> <a href="wai.html">Work Ability Index (WAI)</a>. Single item against the full index: Spearman rs = 0.63 in 12,389 workers (<a target="_blank" rel="noopener" href="https://doi.org/10.1186/1471-2458-13-305">El Fassi 2013</a>); convergent validity of the single item confirmed in Swedish working samples (<a target="_blank" rel="noopener" href="https://doi.org/10.5271/sjweh.2917">Ahlstrom 2010</a>). <span class="relnote">Head-to-head, the single item discriminates less well than the full index for future sickness absence: AUC 0.67 against 0.78 (<a target="_blank" rel="noopener" href="https://doi.org/10.5271/sjweh.3428">Roelen 2014</a>). Recorded as fact; the registry does not say which form an implementer should use.</span></li></ul><div class="facts"><span class="chip c-low">test-retest: Low</span><span class="chip c-absent">criterion, reference standard: Absent</span><span class="chip c-mod">criterion, organisational: Moderate</span><span class="chip c-mod">convergent: Moderate</span></div></div><div class="si"><h3><a href="single-job-satisfaction.html">Single-item overall job satisfaction (Wanous tradition)</a></h3><p class="findings"><b>What it claims to measure:</b> Global (overall) job satisfaction, that is a person's summary evaluative judgement of their job as a whole, captured in one question rather than by aggregating facet items.</p><ul class="rels"><li><b>corresponds with</b> Multi-item overall job satisfaction scales (pooled across scales) <span class="meta">(no registry record yet)</span>. Meta-analytic correlation between single-item and multi-item overall job satisfaction measures: r = 0.63 uncorrected, 0.67 corrected, N = 7,682 (<a target="_blank" rel="noopener" href="https://doi.org/10.1037/0021-9010.82.2.247">Wanous 1997</a>); single-item facet measures against the Job Descriptive Index facets 0.60 to 0.72 (<a target="_blank" rel="noopener" href="https://doi.org/10.1348/096317902167658">Nagy 2002</a>). <span class="relnote">No single multi-item job-satisfaction scale has a registry record yet; the relation targets the pooled multi-item literature and will be re-pointed when one is admitted.</span></li></ul><div class="facts"><span class="chip c-absent">test-retest: Absent</span><span class="chip c-absent">criterion, reference standard: Absent</span><span class="chip c-low">criterion, organisational: Low</span><span class="chip c-high">convergent: High</span></div></div><div class="si"><h3><a href="single-stress.html">Single-item perceived stress measure (Elo tradition, SISQ)</a></h3><p class="findings"><b>What it claims to measure:</b> Perceived psychological stress / stress symptoms, that is subjectively experienced tension, restlessness, nervousness, anxiety or difficulty sleeping attributed to worry, captured in a single global self-rating.</p><ul class="rels"><li><b>screens for</b> <a href="ghq-12.html">General Health Questionnaire-12 (GHQ-12)</a>. The single-item job-stressfulness measure against GHQ-12 caseness: sensitivity and specificity at or above 70 percent at a cut-off of 4 or more on the 5-point scale in high-strain occupational groups, N = 20,658 (<a target="_blank" rel="noopener" href="https://doi.org/10.1037/str0000231">Houdmont 2021</a>). The validation is of the job-stressfulness wording, not the general stress-symptom wording on this record; the two are close variants. <span class="relnote">The record notes the wording distinction.</span></li></ul><div class="facts"><span class="chip c-low">test-retest: Low</span><span class="chip c-low">criterion, reference standard: Low</span><span class="chip c-low">criterion, organisational: Low</span><span class="chip c-mod">convergent: Moderate</span></div></div><div class="si"><h3><a href="single-fatigue.html">Single-item fatigue measure (Van Hooff)</a></h3><p class="findings"><b>What it claims to measure:</b> Momentary (state) subjective fatigue, that is how tired or fatigued a person feels at the moment of measurement, as distinct from chronic fatigue or need for recovery.</p><ul class="rels"><li><b>corresponds with</b> Profile of Mood States, fatigue subscale <span class="meta">(no registry record yet)</span>. Single-item fatigue against the POMS fatigue subscale: r = 0.80 in a Dutch academic-staff diary sample, n = 120 (<a target="_blank" rel="noopener" href="https://doi.org/10.1539/joh.49.224">Van Hooff 2007</a>). <span class="relnote">Single sample, not replicated; the POMS has no registry record.</span></li></ul><div class="facts"><span class="chip c-absent">test-retest: Absent</span><span class="chip c-absent">criterion, reference standard: Absent</span><span class="chip c-absent">criterion, organisational: Absent</span><span class="chip c-low">convergent: Low</span></div></div>
+<h2>Single items still to enter</h2>
+<p>Stage two of the field adds the well-evidenced single items that have been validated against a multi-item instrument for the
+same construct: the single-item burnout measure (validated against the Maslach emotional-exhaustion scale) and the single-item
+work-engagement measure (validated against the UWES). Each enters through the same <a href="admission.html">admission rule</a>;
+single items have exactly the measurement-property literature the rule asks for.</p>
+<p class="meta">The four ONS-4 items are single items administered as a set; they are recorded as item records of
+<a href="ons-4.html">ONS-4</a> and carry their evidence at the set level.</p>
+
+</div></article>
+<footer class="owhs"><div class="wrap">
+  <p>OWHS Instrument Registry, dataset version 0.7.0 (schema 0.7), generated 2026-09-02;
+  grades last confirmed 2026-09-02 under <a href="rubric.html">rubric v1.4</a>. A resource maintained under the
+  Open Workplace Health Standard, distinct from the normative specification. Grades are editorial assessments of published
+  evidence for a working-adult audience in any country; they are not part of the standard and change through the registry's public
+  corrections process, not by RFC. Grades are single-rater and frozen from first publication until independent raters join
+  (see <a href="how-to-read.html#raters">who graded this</a>).</p>
+  <p>Registry text CC BY 4.0 &middot; dataset structure Apache 2.0 &middot; no instrument item text is reproduced anywhere in this
+  registry. See <a href="how-to-read.html">how to read this registry</a>. Stewarded by
+  <a target="_blank" rel="noopener" href="https://www.alltoogether.com">Alltoogether</a> · early open specification.</p>
+</div></footer>
+</body></html>

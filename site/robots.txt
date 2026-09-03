@@ -1,0 +1,4 @@
+# Indexing is set by the robots meta tag on each page; this file does not change between postures.
+User-agent: *
+Allow: /
+Sitemap: https://openworkplacehealth.org/sitemap.xml

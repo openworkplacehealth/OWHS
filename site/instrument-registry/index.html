@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://openworkplacehealth.org/instrument-registry/">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/instrument-registry/">
+<meta property="og:title" content="Instrument Registry | Open Workplace Health Standard">
+<meta property="og:description" content="The open synthesis of the published evidence on instruments used to measure workplace health and wellbeing: graded properties with provenance, licence status, corrections log.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>Instrument Registry | Open Workplace Health Standard</title>
+<meta name="description" content="The open synthesis of the published evidence on instruments used to measure workplace health and wellbeing: graded properties with provenance, licence status, corrections log.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace;--amber:#8a6d1f;--amber-soft:#f4f0e6;--red:#8a2b2b;--red-soft:#f6ecec}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:16.5px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px 30px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2,h3{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(26px,4.5vw,38px);font-weight:700;letter-spacing:-0.02em;margin:8px 0 10px}
+h2{font-size:21px;font-weight:700;margin:36px 0 12px}
+h3{font-size:16px;font-weight:600;margin:20px 0 6px}
+p,li{margin:12px 0}ul,ol{padding-left:20px;max-width:760px}
+.lede{font-size:18.5px;color:var(--body);margin:8px 0 18px;max-width:760px}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+a{overflow-wrap:anywhere}
+p,li,td,.findings,.licok,.licbad,.callout{overflow-wrap:anywhere}
+.status-chip{display:inline-flex;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--accent);background:var(--accent-soft);padding:5px 12px;border-radius:4px;margin-bottom:16px}
+.callout{background:var(--wash);border-left:4px solid var(--accent);padding:14px 18px;margin:16px 0;max-width:780px}
+.caveat{background:var(--amber-soft);border-left:4px solid var(--amber);padding:14px 18px;margin:16px 0;max-width:780px}
+.caveat b{color:var(--amber)}
+.licbad{background:var(--amber-soft);border-left:4px solid var(--amber);padding:12px 16px;margin:12px 0;max-width:780px;font-size:14.5px}
+.licok{background:var(--accent-soft);border-left:4px solid var(--accent);padding:12px 16px;margin:12px 0;max-width:780px;font-size:14.5px}
+.grade{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:600;border-radius:4px;padding:2px 9px;vertical-align:middle}
+.g-high{background:#dff0e9;color:#0b5c46}.g-mod{background:#e6efdb;color:#4a6318}
+.g-low{background:#f4f0e6;color:#8a6d1f}.g-vlow{background:#f6ecec;color:#8a2b2b}
+.g-absent{background:#f0e6e6;color:#7a1f1f}.g-na{background:#eef0f2;color:#5c646c}
+.g-unassessed{background:#ffffff;color:#8a93a0;border:1px dashed #b8c0c8}
+td.g-unassessed{background:repeating-linear-gradient(45deg,#fafbfc,#fafbfc 4px,#f0f2f4 4px,#f0f2f4 8px);color:#8a93a0;font-style:italic}
+.due{color:var(--amber);font-size:9px;vertical-align:middle}
+.cellmeta{font-family:var(--mono);font-size:11px;color:var(--muted);margin:2px 0 6px}
+.cellmeta .rd{color:var(--amber);font-weight:600}
+.freeze{background:#fbf7ea;border:1px solid #e6d9a8;border-radius:8px;padding:12px 16px;margin:14px 0 18px;font-size:14px;max-width:820px}
+.freeze b{color:var(--amber)}
+.verdict{border:2px solid var(--ink);border-radius:10px;padding:18px 22px;margin:18px 0 26px;max-width:820px;background:var(--paper)}
+.verdict h2{margin:0 0 8px;font-size:17px;text-transform:uppercase;letter-spacing:.06em}
+.verdict p{margin:8px 0;font-size:16px;color:var(--ink)}
+.verdict .facts,.si .facts{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 6px}
+.verdict .chip,.si .chip{font-family:var(--mono);font-size:11.5px;background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:3px 8px}
+.verdict .chip.c-high,.si .chip.c-high{background:#dff0e9;color:#0b5c46}.verdict .chip.c-mod,.si .chip.c-mod{background:#e6efdb;color:#4a6318}
+.verdict .chip.c-low,.si .chip.c-low{background:#f4f0e6;color:#8a6d1f}.verdict .chip.c-vlow,.si .chip.c-vlow{background:#f6ecec;color:#8a2b2b}
+.verdict .chip.c-absent,.si .chip.c-absent{background:#f0e6e6;color:#7a1f1f}.verdict .chip.c-na,.si .chip.c-na{color:#8a93a0}
+.verdict .chip.c-lic{background:var(--accent-soft);color:var(--accent)}
+.si .facts{margin-top:4px}
+.verdict .caveat-line{font-size:13.5px;color:var(--muted);margin-top:10px}
+.licclass{display:inline-block;font-family:var(--mono);font-size:11.5px;border-radius:4px;padding:2px 8px;background:var(--paper);border:1px solid var(--line);margin-right:6px}
+.rubric h2{margin-top:30px}.rubric table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+.rubric th,.rubric td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.rubric th{background:var(--wash)}.rubric code{font-family:var(--mono);font-size:12.5px;background:var(--wash);padding:0 4px}
+.rubric .tblwrap{overflow-x:auto}
+.stat{display:inline-block;font-family:var(--mono);font-size:11px;border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+.st-well{background:var(--accent-soft);color:var(--accent)}
+.st-contested{background:#7a1f1f;color:#ffffff;font-weight:700}
+.st-thin{background:var(--amber-soft);color:var(--amber)}
+.st-untested{background:#eef0f2;color:var(--muted)}
+.ef{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:8px}
+.ind{display:inline-block;font-family:var(--mono);font-size:11px;border-radius:4px;padding:1px 7px;margin-left:6px}
+.ind-direct{background:var(--accent-soft);color:var(--accent)}
+.ind-indirect{background:var(--amber-soft);color:var(--amber)}
+.ind-general{background:#e9eef6;color:#2f5480}
+.purpose{max-width:760px;font-size:17px;border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:6px 0 18px}
+.rels{max-width:800px}.rels li{margin:8px 0}.relnote{color:var(--muted);font-size:14.5px}
+.filter{margin:6px 0 0}.filterlabel{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-right:6px}
+.filter>input{position:absolute;opacity:0;width:0;height:0}
+.filter>label{display:inline-block;font-size:13px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;margin:0 4px 6px 0;cursor:pointer;color:var(--body)}
+.filter>input:checked+label{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.filter>input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+#f-single:checked~.matrixwrap tbody tr:not(.n-single){display:none}
+#f-short:checked~.matrixwrap tbody tr:not(.n-short){display:none}
+#f-long:checked~.matrixwrap tbody tr:not(.n-long){display:none}
+#f-set:checked~.matrixwrap tbody tr:not(.n-set){display:none}
+.si{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:14px 0;max-width:820px}
+.si h3{margin-top:0}
+.ind-note{background:#eef0f2;color:var(--muted)}
+.indnote{font-size:12.5px;color:var(--muted)}
+.prop{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:14px 0}
+.prop h3{margin:2px 0 8px}
+.findings{font-size:14.5px;max-width:780px}
+.matrixwrap{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:8px}
+table.matrix{border-collapse:collapse;font-size:12.5px;min-width:980px;width:100%}
+table.matrix th{position:sticky;top:0;background:var(--wash);text-align:left;padding:8px 9px;border-bottom:2px solid var(--ink);font-size:11.5px;color:var(--ink)}
+table.matrix td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap;font-family:var(--mono);font-size:11.5px}
+table.matrix td:first-child{position:sticky;left:0;background:var(--paper);white-space:normal;min-width:170px;font-family:'Inter',sans-serif;font-size:13px}
+table.matrix th:first-child{position:sticky;left:0;z-index:2;background:var(--wash)}
+td.g-high{background:#dff0e9;color:#0b5c46}td.g-mod{background:#e6efdb;color:#4a6318}
+td.g-low{background:#f4f0e6;color:#8a6d1f}td.g-vlow{background:#f6ecec;color:#8a2b2b}
+td.g-absent{background:#f0e6e6;color:#7a1f1f;font-weight:600}
+td.g-na{background:#eef0f2;color:#8a93a0;font-style:italic}
+.legend{font-size:12.5px;color:var(--muted);max-width:820px;margin:10px 0}
+.trwrap{overflow-x:auto;margin:10px 0;max-width:780px}
+table.tr{border-collapse:collapse;width:100%;font-size:13px;min-width:520px}
+table.tr th{text-align:left;padding:7px 9px;border-bottom:2px solid var(--ink);font-size:11.5px;color:var(--ink)}
+table.tr td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.refs{font-size:13px;color:var(--muted);max-width:800px}
+.refs li{margin:6px 0}
+.idgrid{font-size:14px;max-width:780px}
+.idgrid b{color:var(--ink)}
+header.owhs{border-bottom:1px solid var(--line);padding:18px 0}
+.navbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:880px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:20px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a.here{color:var(--accent);font-weight:600}
+article{padding:40px 0 20px}
+footer.owhs{border-top:1px solid var(--line);padding:28px 0 52px;font-size:14px;color:var(--muted)}
+footer.owhs p{max-width:800px}
+.subnav{border-bottom:1px solid var(--line);background:var(--wash)}
+.subnav .wrap{padding:9px 24px;display:flex;gap:18px;flex-wrap:wrap;font-size:14px}
+.subnav a{color:var(--muted);text-decoration:none}
+.subnav a:hover,.subnav a.here{color:var(--accent);font-weight:600}
+.banklink{background:var(--accent-soft);border-radius:6px;padding:10px 14px;font-size:14px;max-width:780px;margin:12px 0}
+@media (max-width:640px){ body{font-size:15.5px} .wrap{padding:0 16px 24px} }
+</style>
+</head>
+<body>
+<header class="owhs"><div class="navbar">
+  <a class="mark" href="../index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../standard.html">Inside the standard</a>
+    <a href="../why.html">The case</a>
+    <a href="../governance.html">Governance</a>
+    <a href="../methods.html">How we grade</a>
+    <a href="../question-bank/index.html">Question bank</a>
+    <a href="index.html" class="here">Instrument registry</a>
+    <a href="../search.html">Search</a>
+  </nav>
+</div></header>
+<div class="subnav"><div class="wrap"><a href="index.html" class="here">Overview</a><a href="how-to-read.html">How to read this registry</a><a href="single-items.html">Single-item measures</a><a href="admission.html">How an instrument enters</a><a href="rubric.html">Grading rubric v1.4</a><a href="corrections.html">Corrections, errata and right of reply</a><a href="downloads.html">Downloads</a></div></div>
+<article><div class="wrap">
+
+<span class="status-chip">OWHS v0.1 &middot; resource, not the normative spec &middot; 27 instruments graded, 31 records, 0 on the watchlist &middot; stage one of the field &middot; dataset v0.7.0</span>
+<h1>Instrument Registry</h1>
+<p class="lede">An evidence registry for the instruments used to measure workplace health and wellbeing: per-property
+grades with provenance, licence status verified against current steward terms, and a public corrections log. It is a resource
+maintained under the Open Workplace Health Standard, distinct from the normative specification. It describes instruments;
+it never reproduces them. It grades evidence about instruments, never evidence about interventions.</p>
+<p class="purpose"><b>The instrument registry is the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing.</b> For every instrument it records what it measures, how well, in which populations and languages, and on what licence terms, drawn from the literature and existing systematic reviews, every claim cited, every grade conservative. It is maintained, machine-readable and free to use, so that nobody choosing, building, licensing or reviewing a workplace measure has to reassemble the field's evidence themselves.</p>
+
+<div class="callout"><b>The founding finding, stated plainly.</b> Two things stand out across the first 27 instruments.
+Test-retest reliability is the field's weakest and most-absent property: practitioners tracking change over time are running
+on far less stability evidence than they assume. And the instruments in common UK workplace use carry little evidence that
+their scores predict recorded work outcomes such as absence or turnover, while the instruments that carry that evidence, built
+in the occupational-epidemiology tradition, are not in common UK use. Organisational criterion validity is absent for
+15 of the 27 and thin for a further 7. The clinical screeners are superbly evidenced for their
+constructs and thinly evidenced for workplaces. The matrix below makes each of those asymmetries citable row by row.</div>
+
+<div class="freeze"><b>Who graded this.</b> Every grade in this registry was assigned by one rater employed by the steward (1 rater, 0 independent), with AI assistance in literature retrieval and drafting. Grades and statuses are single-rater and <b>frozen from first publication</b>; they will not move until two named psychometric raters who are not employees of the steward have joined. Until then, automated sweeps add citations and flag cells for review; corrections of fact are made in public; no grade changes. <a href="how-to-read.html#raters">Why, and how to volunteer</a>.</div>
+<h2>The grade matrix</h2>
+<p class="legend"><b>Reading the cells.</b> Grades run High / Moderate / Low / Very low, assigned under
+<a href="rubric.html">rubric v1.4</a>.
+<b>Absent</b> means the property was searched for and no published evidence was found in the sweep to date: a finding about the literature, not a blank.
+<b>not assessed</b> (hatched) would mean the registry has not yet searched: a gap in our work, not a finding; no cell is in that state in this version.
+<b>n/a</b> means the property is a category error for that instrument type (for example internal consistency of a single
+item): a category difference, never a gap. Suffix <b>*</b> marks a contested evidence base; <b>~</b> marks a thin one;
+<span class="due">&#9679;</span> marks a cell where a sweep added a citation after the grade was last confirmed (review due, grade unchanged).
+Scroll the matrix sideways on small screens; the instrument column stays fixed.</p>
+<div class="filter" role="group" aria-label="Filter the matrix by instrument length. A filter, never a sort: rows keep their order.">
+<span class="filterlabel">Show:</span>
+<input type="radio" name="size" id="f-all" checked><label for="f-all">all 27</label>
+<input type="radio" name="size" id="f-single"><label for="f-single">single items (4)</label>
+<input type="radio" name="size" id="f-short"><label for="f-short">2 to 10 items (11)</label>
+<input type="radio" name="size" id="f-long"><label for="f-long">more than 10 items (7)</label>
+<input type="radio" name="size" id="f-set"><label for="f-set">item sets and surveys (5)</label>
+<div class="matrixwrap">
+<table class="matrix">
+<thead><tr><th>Instrument</th><th>Structural</th><th>Convergent</th><th>Criterion: reference</th><th>Criterion: organisational</th><th>Internal consistency</th><th>Test-retest</th><th>Invariance</th><th>Responsiveness</th></tr></thead>
+<tbody>
+<tr class="n-set"><td><a href="ons-4.html">ONS-4 personal wellbeing questions</a></td><td class="g-low"><span aria-label="grade Low, status untested">Low</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-vlow"><span aria-label="grade Very low, status untested">Very low</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-short"><td><a href="who-5.html">WHO-5 Well-Being Index</a></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span> <span class="due" title="citation added since the grade was last confirmed; review due">&#9679;</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td></tr>
+<tr class="n-long"><td><a href="wemwbs.html">Warwick-Edinburgh Mental Wellbeing Scale (WEMWBS) and Short Warwick-Edinburgh Mental Wellbeing Scale (SWEMWBS)</a></td><td class="g-high"><span aria-label="grade High, status contested">High *</span></td><td class="g-high"><span aria-label="grade High, status contested">High *</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td></tr>
+<tr class="n-long"><td><a href="hse-msit.html">HSE Management Standards Indicator Tool</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-low"><span aria-label="grade Low, status contested">Low *</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-long"><td><a href="perma.html">Workplace PERMA-Profiler (and PERMA-Profiler)</a></td><td class="g-low"><span aria-label="grade Low, status contested">Low *</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-short"><td><a href="uwes-9.html">Utrecht Work Engagement Scale, 9-item (UWES-9)</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td></tr>
+<tr class="n-short"><td><a href="phq-9.html">Patient Health Questionnaire-9 (PHQ-9)</a></td><td class="g-high"><span aria-label="grade High, status contested">High *</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-mod"><span aria-label="grade Moderate, status thin">Moderate ~</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-mod"><span aria-label="grade Moderate, status thin">Moderate ~</span></td></tr>
+<tr class="n-short"><td><a href="gad-7.html">GAD-7 (Generalised Anxiety Disorder-7)</a></td><td class="g-high"><span aria-label="grade High, status contested">High *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status thin">Moderate ~</span></td></tr>
+<tr class="n-short"><td><a href="k10.html">Kessler Psychological Distress Scale (K10)</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-long"><td><a href="ghq-12.html">General Health Questionnaire-12 (GHQ-12)</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span> <span class="due" title="citation added since the grade was last confirmed; review due">&#9679;</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td></tr>
+<tr class="n-set"><td><a href="copsoq-iii.html">COPSOQ III (Copenhagen Psychosocial Questionnaire, third version, core and dimension scales)</a></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-long"><td><a href="mbi.html">Maslach Burnout Inventory (MBI, workplace forms)</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td></tr>
+<tr class="n-long"><td><a href="cbi.html">Copenhagen Burnout Inventory (CBI)</a></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-low"><span aria-label="grade Low, status contested">Low *</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td></tr>
+<tr class="n-long"><td><a href="olbi.html">Oldenburg Burnout Inventory (OLBI)</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span> <span class="due" title="citation added since the grade was last confirmed; review due">&#9679;</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-low"><span aria-label="grade Low, status contested">Low *</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-short"><td><a href="wai.html">Work Ability Index (WAI)</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-single"><td><a href="was.html">Work Ability Score (WAS), single-item</a></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-low"><span aria-label="grade Low, status contested">Low *</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td></tr>
+<tr class="n-short"><td><a href="wpai.html">Work Productivity and Activity Impairment questionnaire (WPAI)</a></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td></tr>
+<tr class="n-short"><td><a href="ipaq-sf.html">International Physical Activity Questionnaire, Short Form (IPAQ-SF)</a></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-vlow"><span aria-label="grade Very low, status untested">Very low</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td></tr>
+<tr class="n-short"><td><a href="isi.html">Insomnia Severity Index (ISI)</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td></tr>
+<tr class="n-short"><td><a href="miss.html">Minimal Insomnia Symptom Scale (MISS)</a></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-short"><td><a href="tis-6.html">Turnover Intention Scale-6 (TIS-6, Roodt)</a></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-mod"><span aria-label="grade Moderate, status thin">Moderate ~</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-set"><td><a href="csps-wellbeing.html">Civil Service People Survey: wellbeing and engagement items</a></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-set"><td><a href="eurofound-ewcs.html">Eurofound EWCS/EQLS wellbeing and working-conditions item sets</a></td><td class="g-mod"><span aria-label="grade Moderate, status contested">Moderate *</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-low"><span aria-label="grade Low, status contested">Low *</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td></tr>
+<tr class="n-set"><td><a href="fcs-maps.html">Financial Capability / Financial Wellbeing Survey items (MaPS)</a></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-single"><td><a href="single-job-satisfaction.html">Single-item overall job satisfaction (Wanous tradition)</a></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-high"><span aria-label="grade High, status well-established">High</span></td><td class="g-absent"><span role="img" aria-label="Absent: the property does not apply to this construct">Absent</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-single"><td><a href="single-stress.html">Single-item perceived stress measure (Elo tradition, SISQ)</a></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-mod"><span aria-label="grade Moderate, status well-established">Moderate</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td></tr>
+<tr class="n-single"><td><a href="single-fatigue.html">Single-item fatigue measure (Van Hooff)</a></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-low"><span aria-label="grade Low, status thin">Low ~</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-absent"><span role="img" aria-label="Absent: searched for, none found in the sweep to date, a finding about the literature">Absent</span></td><td class="g-na"><span role="img" aria-label="Not applicable: a category difference, not a gap">n/a</span></td><td class="g-vlow"><span aria-label="grade Very low, status thin">Very low ~</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p class="legend">Every cell links to full findings, provenance and citations on the instrument's record page (click the
+instrument name). Grades are for a working-adult audience: evidence earned in clinical, student, adolescent or otherwise
+non-working samples is flagged indirect and already downgraded, so totals of studies are not what these cells report.
+Country and language are never a reason for a downgrade; they are recorded on the record and graded under measurement
+invariance. The single-item measures, and what each has been shown to screen for, are on their
+<a href="single-items.html">own page</a>. Method in full: <a href="how-to-read.html">how to read this registry</a>.</p>
+
+<h2>The field, in stages</h2>
+<p>The registry's scope is the whole field: every instrument with published measurement-property evidence in working-age
+populations, in any country, whose construct sits in the workplace health and wellbeing code list. It is built one record at a
+time, properly or not at all, and the stages are public.</p>
+<p><b>Stage one, the instruments in common UK use.</b> The first 27 records: the instruments the OWHS question bank
+draws items from, so that every published item has an evidence record behind it, and the instruments UK employers and vendors
+most often field. Chosen for use, not for evidence, which is why the founding finding reads as it does.</p>
+<p><b>Stage two, the occupational-epidemiology tradition and the single items.</b> The instruments built to measure job conditions
+and validated against recorded outcomes in long cohorts: the Job Content Questionnaire and the Effort-Reward Imbalance
+questionnaire first, then the short demand-control forms and the organisational-justice scales. Alongside them, the
+well-evidenced single-item measures that have been validated against a multi-item instrument for the same construct.</p>
+<p><b>After that, by proposal and by sweep.</b> Anyone may propose an instrument. A proposal names the construct, cites two studies
+reporting a measurement property in working-age samples, and identifies the licence position. Verified proposals join the
+watchlist, where every property reads not assessed until a rater grades it. Proposals we decline are listed with the reason.
+The steward's own proposals go through the same public route. The rule in full:
+<a href="admission.html">how an instrument enters this registry</a>.</p>
+
+<h2>Related resources</h2>
+<p>The <a href="../question-bank/index.html">Workplace Wellbeing Question Bank</a> catalogues single survey items from the
+public commons with per-item provenance and licensing; where an instrument here also appears there, the two records
+cross-link. Corrections to any published record are logged publicly on the
+<a href="corrections.html">corrections and verifications page</a>.</p>
+
+</div></article>
+<footer class="owhs"><div class="wrap">
+  <p>OWHS Instrument Registry, dataset version 0.7.0 (schema 0.7), generated 2026-09-02;
+  grades last confirmed 2026-09-02 under <a href="rubric.html">rubric v1.4</a>. A resource maintained under the
+  Open Workplace Health Standard, distinct from the normative specification. Grades are editorial assessments of published
+  evidence for a working-adult audience in any country; they are not part of the standard and change through the registry's public
+  corrections process, not by RFC. Grades are single-rater and frozen from first publication until independent raters join
+  (see <a href="how-to-read.html#raters">who graded this</a>).</p>
+  <p>Registry text CC BY 4.0 &middot; dataset structure Apache 2.0 &middot; no instrument item text is reproduced anywhere in this
+  registry. See <a href="how-to-read.html">how to read this registry</a>. Stewarded by
+  <a target="_blank" rel="noopener" href="https://www.alltoogether.com">Alltoogether</a> · early open specification.</p>
+</div></footer>
+</body></html>

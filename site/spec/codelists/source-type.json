@@ -1,0 +1,19 @@
+{
+  "codelist": "source-type",
+  "version": "0.1.0",
+  "anchor": "OWHS record provenance",
+  "values": [
+    {
+      "code": "hris"
+    },
+    {
+      "code": "manual"
+    },
+    {
+      "code": "broker"
+    },
+    {
+      "code": "oh-provider"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "codelist": "construct-domain",
+  "version": "0.1.0",
+  "anchor": "Shared construct/health-domain list; HSE MS six domains [19] anchored, extended",
+  "notes": "Single vocabulary used by BOTH measurement (WellbeingObservation.constructCode) and services (BenefitEntitlement.healthDomainTags). First six map 1:1 to HSE MS six domains verbatim; remainder are outcome constructs. Crosswalk entity carries HSE/ISO45003/whiu mappings.",
+  "values": [
+    {
+      "code": "demands",
+      "label": "Demands",
+      "hseDomain": "Demands"
+    },
+    {
+      "code": "control",
+      "label": "Control",
+      "hseDomain": "Control"
+    },
+    {
+      "code": "support",
+      "label": "Support",
+      "hseDomain": "Support",
+      "note": "HSE splits manager/peer support; OWHS keeps one code, crosswalk resolves"
+    },
+    {
+      "code": "relationships",
+      "label": "Relationships",
+      "hseDomain": "Relationships"
+    },
+    {
+      "code": "role",
+      "label": "Role",
+      "hseDomain": "Role"
+    },
+    {
+      "code": "change",
+      "label": "Change",
+      "hseDomain": "Change"
+    },
+    {
+      "code": "mental-health",
+      "label": "Mental health / psychological wellbeing",
+      "hseDomain": null,
+      "note": "outcome construct, not an HSE work-design domain"
+    },
+    {
+      "code": "physical-health",
+      "label": "Physical health",
+      "hseDomain": null
+    },
+    {
+      "code": "musculoskeletal",
+      "label": "Musculoskeletal",
+      "hseDomain": null
+    },
+    {
+      "code": "financial-wellbeing",
+      "label": "Financial wellbeing",
+      "hseDomain": null
+    },
+    {
+      "code": "sleep-fatigue",
+      "label": "Sleep and fatigue",
+      "hseDomain": null
+    }
+  ]
+}

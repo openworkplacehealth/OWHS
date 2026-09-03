@@ -1,0 +1,20 @@
+{
+  "codelist": "sampling-design",
+  "version": "0.1.0",
+  "anchor": "OWHS sampling design descriptor",
+  "notes": "A consumer must know whether missingness is planned or dropout; any design can declare itself here.",
+  "values": [
+    {
+      "code": "complete",
+      "label": "Complete census each occasion"
+    },
+    {
+      "code": "rotating-subset",
+      "label": "Planned rotating subset"
+    },
+    {
+      "code": "adaptive",
+      "label": "Adaptive / instrument-driven"
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.1/ReturnToWorkOutcome.json",
+  "title": "OWHS ReturnToWorkOutcome v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "outcomeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "absenceEpisodeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^owhs:pseudo:[0-9a-f]{16,64}$"
+    },
+    "outcomeType": {
+      "type": "string",
+      "enum": [
+        "full",
+        "phased",
+        "adjusted",
+        "did-not-return",
+        "ill-health-exit"
+      ],
+      "$comment": "codelist:rtw-outcome@0.1.0"
+    },
+    "adjustmentTypes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "phased-return",
+          "altered-hours",
+          "amended-duties",
+          "workplace-adaptations"
+        ]
+      },
+      "uniqueItems": true,
+      "$comment": "codelist:rtw-adjustment@0.1.0 \u2014 fit-note 'may be fit' categories"
+    },
+    "rtwDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "sustainedAt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checkpointWeeks",
+          "status"
+        ],
+        "properties": {
+          "checkpointWeeks": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 104,
+            "$comment": "Founder decision 7 Jul 2026: open integer, not enum. Recommended set {4,13,26} (codelist:rtw-checkpoint@0.1.0); producers SHOULD use the recommended set for comparability. whiu: definitions expected to supersede."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "sustained",
+              "relapsed",
+              "unknown"
+            ]
+          }
+        }
+      }
+    },
+    "whiuOutcomeCode": {
+      "type": "string",
+      "pattern": "^whiu:[a-z0-9-]+$",
+      "$comment": "reserved whiu: namespace"
+    }
+  },
+  "required": [
+    "outcomeId",
+    "absenceEpisodeId",
+    "pseudonymId",
+    "outcomeType"
+  ],
+  "allOf": [
+    {
+      "$comment": "adjustmentTypes only meaningful for adjusted/phased outcomes",
+      "if": {
+        "properties": {
+          "outcomeType": {
+            "const": "did-not-return"
+          }
+        },
+        "required": [
+          "outcomeType"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "adjustmentTypes"
+          ]
+        },
+        "$comment": "a did-not-return outcome cannot carry return adjustments"
+      }
+    },
+    {
+      "$comment": "P1 forbid direct identifiers",
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "name"
+            ]
+          },
+          {
+            "required": [
+              "nino"
+            ]
+          },
+          {
+            "required": [
+              "email"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

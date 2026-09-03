@@ -1,0 +1,13 @@
+{
+  "codelist": "work-pattern",
+  "version": "0.1.0",
+  "anchor": "ONS employment-type dimension",
+  "values": [
+    {
+      "code": "full-time"
+    },
+    {
+      "code": "part-time"
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://openworkplacehealth.org/methods.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/methods.html">
+<meta property="og:title" content="How the registry grades evidence · OWHS">
+<meta property="og:description" content="How the OWHS instrument registry grades psychometric evidence: the eight properties in plain language, what the grades mean, the honest current limits, and how the registry stays current.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>How the registry grades evidence · OWHS</title>
+<meta name="description" content="How the OWHS instrument registry grades psychometric evidence: the eight properties in plain language, what the grades mean, the honest current limits, and how the registry stays current.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:17px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2,h3{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(28px,4.5vw,40px);font-weight:700;letter-spacing:-0.02em;margin-bottom:10px}
+h2{font-size:22px;font-weight:700;margin:40px 0 12px}
+h3{font-size:17px;font-weight:600;margin:24px 0 6px}
+p{margin:14px 0;max-width:760px}
+ul,ol{margin:14px 0 14px 22px}
+li{margin:7px 0}
+header{border-bottom:1px solid var(--line);padding:18px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:880px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:34px}
+article{padding:56px 0 30px}
+.quote{background:var(--wash);border-left:4px solid var(--accent);padding:22px 26px;margin:26px 0}
+.quote p{font-size:17px;color:var(--ink);font-weight:500;margin:0 0 8px}
+.quote p:last-child{margin-bottom:0}
+.callout{background:var(--accent-soft);border-radius:8px;padding:20px 24px;margin:24px 0}
+.callout p{margin:8px 0}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:var(--wash);color:var(--ink);font-weight:600}
+.mono{font-family:var(--mono);font-size:13.5px}
+footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header><div class="nav">
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="standard.html">Inside the standard</a>
+    <a href="why.html">The case</a>
+    <a href="governance.html">Governance</a>
+    <a href="methods.html">How we grade</a>
+    <a href="question-bank/index.html">Question bank</a>
+    <a href="instrument-registry/index.html">Instrument registry</a>
+    <a href="search.html">Search</a>
+  </nav>
+</div></header>
+
+<article><div class="wrap">
+  <h1>How the instrument registry grades evidence</h1>
+  <p class="meta">methods · updated 2 September 2026 · registry v0.7.0 · rubric v1.4</p>
+
+  <p><strong>The <a href="instrument-registry/index.html">instrument registry</a> is the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing.</strong> For every instrument it records what it measures, how well, in which populations and languages, and on what licence terms, drawn from the literature and existing systematic reviews, every claim cited, every grade conservative. It is maintained, machine-readable and free to use, so that nobody choosing, building, licensing or reviewing a workplace measure has to reassemble the field's evidence themselves. This page explains how to read it, in plain language, and what the grades can and cannot tell you.</p>
+
+  <h2>The eight properties, in one sentence each</h2>
+  <table>
+    <tr><th>Property</th><th>The question it answers</th></tr>
+    <tr><td>Structural validity</td><td>Does the instrument have the internal shape its authors claim, for example one thing being measured rather than several tangled together?</td></tr>
+    <tr><td>Convergent validity</td><td>Does it agree with other measures it should agree with, and differ from ones it should not?</td></tr>
+    <tr><td>Criterion validity (reference standard)</td><td>Does it agree with a trusted benchmark, such as a structured clinical interview?</td></tr>
+    <tr><td>Criterion validity (organisational outcomes)</td><td>Does it predict things organisations care about, such as sickness absence or turnover?</td></tr>
+    <tr><td>Internal consistency</td><td>Do the items hang together as one scale?</td></tr>
+    <tr><td>Test-retest reliability</td><td>Does it give a stable answer when nothing has changed?</td></tr>
+    <tr><td>Measurement invariance</td><td>Does it mean the same thing across groups (sex, age, occupation, language) and over time?</td></tr>
+    <tr><td>Responsiveness</td><td>Does it detect genuine change, and how much change is meaningful?</td></tr>
+  </table>
+
+  <p class="small">Each record also carries a ninth graded property, populations, languages and norms, which summarises the breadth and quality of the population evidence rather than a psychometric property in the strict sense. It sits on the record page, not in the matrix, and its grade should be read as a rough summary with the findings.</p>
+
+  <h2>What the grades mean</h2>
+  <p><strong>High</strong>, <strong>Moderate</strong>, <strong>Low</strong> and <strong>Very low</strong> summarise the quality and consistency of the published evidence for that property, informed by the COSMIN approach to evaluating measurement studies. <strong>Absent</strong> means the registry searched for evidence on that property and found none in the sweep to date. It is a finding about the literature, not a grade of the instrument; from dataset v0.5.0 every Absent or Not-applicable cell also names its absence type (nothing found in any population, or a property that does not apply to the construct; evidence that exists only in other populations is graded and flagged indirect, never recorded as Absent), and from v0.3.0 every cell carries an evidence state that keeps "searched and found nothing" (<span class="mono">assessed_absent</span>) separate from "not yet searched" (<span class="mono">not_assessed</span>). The full scale, the downgrade rules and how a cell is derived are in the <a href="instrument-registry/rubric.html">grading rubric, version 1.3</a>. A tilde (~) marks a thin evidence base; an asterisk (*) marks evidence that is actively contested in the literature.</p>
+
+  <div class="callout">
+    <p><strong>Grades are not comparable across instruments.</strong> A wellbeing index and a burnout inventory measure different things; their grades summarise different literatures answering different questions. The registry deliberately publishes no ranking and no "best instrument". The registry tells you what the evidence says about each instrument on its own terms, and it does not choose for you.</p>
+  </div>
+
+  <h2>The honest current limits</h2>
+  <ul>
+    <li><strong>The grades are single-rater, and frozen.</strong> Every grade was assigned by one human rater, employed by the steward, applying the rules published as <a href="instrument-registry/rubric.html">rubric v1.4</a> (version 1.0 was written after the grades, codifying the practice as applied; version 1.1, before first publication, redefined indirectness by population type rather than country, and every cell was re-read against it, logged as correction C-0004; version 1.2, also before first publication, followed an independent check of that re-read: the flag became three-valued with its basis stated on every cell, a High grade now needs two cited studies with a sample size and a statistic, the six C-0004 grade moves were reversed and six further High grades dropped to Moderate, logged as correction C-0005 with the earlier values kept on each cell; version 1.3, again before first publication, followed a second independent check: the evidence-form rule recodes rather than caps, the High precondition asks for a statistic of the property graded and, on population-sensitive properties, at least one working-adult or general-population study, criterion validity against a reference standard became population-sensitive, one Moderate returned to High and five High grades dropped to Moderate, logged as correction C-0006; version 1.4, after a third independent check that found no grade demonstrably wrong, names the statistics of each property that the High precondition counts and tests them by machine, keeps the evidence a cell dropped from High with in its history, states the internal-consistency rule for item sets, and maps every rule to its check: one High grade dropped to Moderate on a credible published disagreement, logged as correction C-0007). Grades and statuses are frozen from first publication and stay frozen until two named psychometric raters who are not employees of the steward have joined. Until then, treat the citations as the registry's strongest content and the grades as its structured, disclosed, but not yet independently checked reading of them. If you could be one of those raters, the <a href="contribute.html">contribute page</a> says what is involved.</li>
+    <li><strong>AI assists; it never grades.</strong> AI systems help the rater retrieve, screen and extract literature and draft the prose syntheses, and they run the monthly sweeps. They flag candidate grade moves for a human to look at. They do not assign grades, statuses, evidence forms or indirectness flags, and nothing they produce reaches the dataset except through a pull request a human merges. What the automation may and may not do is set out on the <a href="automation.html">automation page</a>.</li>
+    <li><strong>Synthesis, not systematic review.</strong> A synthesis here means reading across the published studies and reviews and stating what they show, including where they disagree. The registry does not run its own meta-analyses and its searches are not conducted to systematic-review standard. Where a COSMIN review exists for an instrument, the registry cites and summarises it; where none exists, the registry says so and grades what is there. The search venues and strings the sweep runs are published below, so the coverage can be checked and improved by anyone.</li>
+    <li><strong>Coverage has blind spots.</strong> The literature sweep reads the major indexes and verifies what it cites, but it will miss non-indexed and non-English journals, instrument manuals and technical supplements, conference proceedings and theses. These are stated here so readers do not have to discover them.</li>
+    <li><strong>This is stage one of the field, and the founding finding partly reflects it.</strong> The registry's scope is the whole field: every instrument with published measurement-property evidence in working-age populations, in any country, whose construct sits in the workplace health and wellbeing code list. It is built one record at a time, properly or not at all, and the stages are public. Stage one is the 27 instruments in common UK use: the ones the OWHS question bank draws items from and the ones UK employers and vendors most often field, chosen for use, not for evidence. That favours wellbeing indices, engagement scales and clinical screeners over the occupational-epidemiology instruments that carry most of the published evidence against recorded work outcomes, so the finding that organisational criterion validity is absent for 15 of the 27 and thin for a further 7 is partly a finding about which instruments were looked at. Stage two is that tradition, the Job Content Questionnaire and the Effort-Reward Imbalance questionnaire first, alongside the well-evidenced single-item measures; after that, instruments enter by proposal and by sweep through the <a href="instrument-registry/admission.html">public admission route</a>.</li>
+    <li><strong>Two organisational cells are listed for re-examination.</strong> The organisational criterion validity cells for the Work Ability Score and the Turnover Intention Scale (TIS-6) rest on recorded outcomes (register-based disability pension and absence days; actual leavers against stayers), so they stand under the stated outcome definition. Both were flagged in external review as cells to re-examine when the freeze lifts, and they will be, in public, under the rater conditions in force then.</li>
+    <li><strong>Licence terms change without notice.</strong> Each record states a licence class for employer or vendor use (open, free without permission, free for non-commercial use, free with registration, fee-bearing, no formal licence, or unverified), the date it was verified, and links to archived copies of the steward's page, so the basis of every licence claim is independently checkable. The registry records the class and the source, never a price: prices change and the registry would be wrong within the year.</li>
+  </ul>
+
+  <h2>What the sweep searches</h2>
+  <p>The monthly sweep runs on PubMed and Europe PMC in parallel, de-duplicated by DOI and PMID. PubMed gives the cleanest field-tag control; Europe PMC widens coverage to non-MEDLINE journals, some preprints and grey literature, which is where the low-volume instruments live (the ONS personal wellbeing questions return single-figure hits a year in PubMed). The venues with the densest validation content are Psychological Assessment, Assessment, the European Journal of Psychological Assessment and Quality of Life Research; the occupational literature concentrates in Occupational Medicine, Work &amp; Stress, the Journal of Occupational Health Psychology and the International Archives of Occupational and Environmental Health; PsyArXiv and medRxiv are watched for pre-publication validation work. Four strings run every month, each tested over a fixed twelve-month window so the sweep starts from queries known to return a triageable volume rather than nothing or a flood. The instrument block grows as the watchlist grows.</p>
+  <table>
+    <tr><th>String</th><th>What it isolates</th><th>Tested volume</th></tr>
+    <tr><td><span class="mono">(instrument block) AND (validity OR reliability OR psychometric* OR "measurement invariance" OR responsiveness OR "factor structure" OR Rasch OR "internal consistency" OR "test-retest")</span>, title and abstract</td><td>Broad psychometric sweep, the primary monthly run</td><td>303 hits in twelve months, about 25 a month</td></tr>
+    <tr><td><span class="mono">(instrument block) AND ("measurement invariance" OR "measurement equivalence" OR "differential item functioning" OR "scalar invariance" OR "cross-cultural validation")</span></td><td>Cross-group and cross-language comparability</td><td>62 hits, about 5 a month</td></tr>
+    <tr><td><span class="mono">(instrument block) AND ("factor structure" OR "confirmatory factor analysis" OR Rasch OR "item response theory" OR bifactor OR dimensionality)</span></td><td>Internal structure, re-analyses of existing instruments</td><td>183 hits, about 15 a month</td></tr>
+    <tr><td><span class="mono">(broad sweep) AND (workplace OR employee* OR worker* OR occupational)</span></td><td>Validations in working samples, the ones that make a cell direct</td><td>32 hits, about 3 a month</td></tr>
+  </table>
+  <p class="small">The Europe PMC counterpart of the broad sweep (TITLE_ABS field, FIRST_PDATE range) returned 301 hits over the same window with a different tail. The strings in full, with the instrument block as tested, are in the research pass in the repository; the property filter is a keyword intersection, not a quality screen, so a human triages every batch and roughly a third to a half of tagged hits turn out to bear on a measurement property of the named instrument.</p>
+
+  <h2>How the registry stays current</h2>
+  <p>The full process, including what the automation may never do and what happens when it fails, is on <a href="automation.html">its own page</a>. In brief: a literature sweep runs monthly and files its findings through a public change process: the proposed updates are visible before they are applied, a human reviews and merges them, and the <a href="changelog.html">changelog</a> and monthly <a href="sweeps/2026-09.html">sweep reports</a> record what changed and why. Most months should see citations added and no grades move; a registry whose grades moved monthly would be measuring its own search noise, not the literature. Every record carries the date it was last reviewed.</p>
+</div></article>
+
+<footer><div class="wrap">
+  <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
+</div></footer>
+</body>
+</html>

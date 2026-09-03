@@ -1,0 +1,22 @@
+{
+  "codelist": "access-route",
+  "version": "0.1.0",
+  "anchor": "OWHS benefit access route",
+  "values": [
+    {
+      "code": "self-referral"
+    },
+    {
+      "code": "manager"
+    },
+    {
+      "code": "gp"
+    },
+    {
+      "code": "oh"
+    },
+    {
+      "code": "hr"
+    }
+  ]
+}

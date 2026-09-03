@@ -1,0 +1,168 @@
+{
+  "registry": "owhs-codelists",
+  "specVersion": "0.1.0",
+  "note": "Each code list is versioned independently of the spec (semver). Schemas pin a list by name@version.",
+  "lists": [
+    {
+      "name": "absence-reason",
+      "version": "0.1.0",
+      "file": "absence-reason.json",
+      "values": 6,
+      "anchor": "ONS Sickness absence in the UK labour market 2025 [1]"
+    },
+    {
+      "name": "access-route",
+      "version": "0.1.0",
+      "file": "access-route.json",
+      "values": 5,
+      "anchor": "OWHS benefit access route"
+    },
+    {
+      "name": "adjustment-category",
+      "version": "0.1.0",
+      "file": "adjustment-category.json",
+      "values": 9,
+      "anchor": "Equality Act 2010 s.20 duty; superset of fit-note categories"
+    },
+    {
+      "name": "adjustment-status",
+      "version": "0.1.0",
+      "file": "adjustment-status.json",
+      "values": 4,
+      "anchor": "OWHS v0.1; reasonable-adjustment lifecycle status"
+    },
+    {
+      "name": "age-band",
+      "version": "0.1.0",
+      "file": "age-band.json",
+      "values": 5,
+      "anchor": "ONS-aligned age groups"
+    },
+    {
+      "name": "benefit-product",
+      "version": "0.1.0",
+      "file": "benefit-product.json",
+      "values": 10,
+      "anchor": "UK employee-benefits market vocabulary"
+    },
+    {
+      "name": "collection-channel",
+      "version": "0.1.0",
+      "file": "collection-channel.json",
+      "values": 5,
+      "anchor": "OWHS survey collection channel"
+    },
+    {
+      "name": "completion-status",
+      "version": "0.1.0",
+      "file": "completion-status.json",
+      "values": 3,
+      "anchor": "OWHS instrument completion status"
+    },
+    {
+      "name": "construct-domain",
+      "version": "0.1.0",
+      "file": "construct-domain.json",
+      "values": 11,
+      "anchor": "Shared construct/health-domain list; HSE MS six domains [19] anchored, extended"
+    },
+    {
+      "name": "fitness-opinion",
+      "version": "0.1.0",
+      "file": "fitness-opinion.json",
+      "values": 4,
+      "anchor": "OH fitness-for-work opinion (management-facing categorical output)"
+    },
+    {
+      "name": "headcount-band",
+      "version": "0.1.0",
+      "file": "headcount-band.json",
+      "values": 7,
+      "anchor": "OWHS banded headcount (small-cell disclosure control)"
+    },
+    {
+      "name": "oh-assessment-type",
+      "version": "0.1.0",
+      "file": "oh-assessment-type.json",
+      "values": 5,
+      "anchor": "OWHS v0.1; OH assessment types"
+    },
+    {
+      "name": "oh-referral-reason",
+      "version": "0.1.0",
+      "file": "oh-referral-reason.json",
+      "values": 9,
+      "anchor": "OWHS v0.1; management-facing OH referral reasons (non-diagnostic)"
+    },
+    {
+      "name": "org-size-band",
+      "version": "0.1.0",
+      "file": "org-size-band.json",
+      "values": 4,
+      "anchor": "Companies Act 2006 size classification"
+    },
+    {
+      "name": "rtw-adjustment",
+      "version": "0.1.0",
+      "file": "rtw-adjustment.json",
+      "values": 4,
+      "anchor": "Statement of Fitness for Work (fit note) 'may be fit' categories"
+    },
+    {
+      "name": "rtw-checkpoint",
+      "version": "0.1.0",
+      "file": "rtw-checkpoint.json",
+      "values": 3,
+      "anchor": "OWHS v0.1 RECOMMENDED set (schema takes open integer 1-104 per founder decision 7 Jul 2026); whiu: reserved"
+    },
+    {
+      "name": "rtw-outcome",
+      "version": "0.1.0",
+      "file": "rtw-outcome.json",
+      "values": 5,
+      "anchor": "OWHS v0.1; return-to-work outcome types (no UK incumbent)"
+    },
+    {
+      "name": "safeguarding-category",
+      "version": "0.1.0",
+      "file": "safeguarding-category.json",
+      "values": 6,
+      "anchor": "OWHS v0.1 provisional; governance-owned; seeded from IWE safeguarding taxonomy (categories only)"
+    },
+    {
+      "name": "sampling-design",
+      "version": "0.1.0",
+      "file": "sampling-design.json",
+      "values": 3,
+      "anchor": "OWHS sampling design descriptor"
+    },
+    {
+      "name": "source-type",
+      "version": "0.1.0",
+      "file": "source-type.json",
+      "values": 4,
+      "anchor": "OWHS record provenance"
+    },
+    {
+      "name": "suppression-reason",
+      "version": "0.1.0",
+      "file": "suppression-reason.json",
+      "values": 3,
+      "anchor": "OWHS aggregate suppression reasons"
+    },
+    {
+      "name": "tenure-band",
+      "version": "0.1.0",
+      "file": "tenure-band.json",
+      "values": 5,
+      "anchor": "OWHS tenure bands"
+    },
+    {
+      "name": "work-pattern",
+      "version": "0.1.0",
+      "file": "work-pattern.json",
+      "values": 2,
+      "anchor": "ONS employment-type dimension"
+    }
+  ]
+}

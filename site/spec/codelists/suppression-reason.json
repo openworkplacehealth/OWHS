@@ -1,0 +1,19 @@
+{
+  "codelist": "suppression-reason",
+  "version": "0.1.0",
+  "anchor": "OWHS aggregate suppression reasons",
+  "values": [
+    {
+      "code": "below-floor",
+      "label": "n below aggregation floor"
+    },
+    {
+      "code": "safeguarding",
+      "label": "Safeguarding-category signal excluded"
+    },
+    {
+      "code": "low-completion",
+      "label": "Completion rate below threshold"
+    }
+  ]
+}

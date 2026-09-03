@@ -1,0 +1,22 @@
+{
+  "codelist": "age-band",
+  "version": "0.1.0",
+  "anchor": "ONS-aligned age groups",
+  "values": [
+    {
+      "code": "16-24"
+    },
+    {
+      "code": "25-34"
+    },
+    {
+      "code": "35-49"
+    },
+    {
+      "code": "50-64"
+    },
+    {
+      "code": "65+"
+    }
+  ]
+}

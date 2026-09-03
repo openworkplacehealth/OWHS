@@ -1,0 +1,100 @@
+name: Registry correction
+description: A wrong citation, sample size, licence date, licence class or grade in an instrument registry record. Corrections of factual error take priority over all other work.
+title: "[registry] "
+labels: ["registry", "correction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Quote the cell, the rubric section you think was misapplied, and the evidence. Rubric v1.0: https://openworkplacehealth.org/instrument-registry/rubric.html
+
+        Grades and statuses are frozen until two named non-employee raters have joined. A correction that would move a grade is recorded, flagged on the cell, and applied when the freeze lifts. Corrections of fact (a wrong DOI, sample size, licence date or class) are made now.
+  - type: input
+    id: record
+    attributes:
+      label: Instrument record
+      placeholder: e.g. who-5, wemwbs, ons-4-life-satisfaction
+    validations:
+      required: true
+  - type: dropdown
+    id: cell
+    attributes:
+      label: Property or field
+      options:
+        - Structural validity
+        - Convergent and discriminant validity
+        - Criterion validity (reference standard)
+        - Criterion validity (organisational outcomes)
+        - Internal consistency
+        - Test-retest reliability
+        - Measurement invariance
+        - Responsiveness and minimal important change
+        - Populations, languages and norms
+        - Licence class, licence date or archived page
+        - Identity (name, steward, version, item count)
+        - A citation (DOI, title, authors, year)
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is wrong
+      options:
+        - Factual error (DOI, sample size, date, licence, wording)
+        - Missing evidence the grade should account for
+        - Rubric misapplied to the evidence cited
+        - Evidence cited does not support the finding
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: The correction
+      description: What the record says, what it should say, and the evidence (DOI or steward page). For a grade challenge, name the rubric section.
+    validations:
+      required: true
+  - type: dropdown
+    id: relationship
+    attributes:
+      label: Your relationship to this instrument
+      description: Instrument authors and rights-holders have a right of reply, published beside the record, dated and unedited. Say so here and the correction is handled under that policy.
+      options:
+        - None
+        - I am an author or rights-holder of this instrument
+        - I distribute or am paid to use this instrument
+        - I have published research on this instrument
+        - Other, described below
+    validations:
+      required: true
+  - type: dropdown
+    id: interest
+    attributes:
+      label: Declaration of interest
+      description: Do you have a financial or professional interest in any instrument, product or organisation this contribution touches? An interest does not disqualify a contribution; an undeclared one does. The steward declares its own on every page of the site.
+      options:
+        - "No interest to declare"
+        - "Yes, and I describe it below"
+        - "Prefer to declare by email to hello@openworkplacehealth.org"
+    validations:
+      required: true
+  - type: textarea
+    id: interest_detail
+    attributes:
+      label: Interest, if any
+      description: One or two lines is enough. Employer, role, instrument authorship or rights, paid distribution, consultancy.
+    validations:
+      required: false
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Naming
+      description: Contributors are named in the public contribution log only with consent. Leave unticked to be logged as anonymous.
+      options:
+        - label: You may name me in the contribution log and changelog
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        Substantive contributions are reviewed in the next published maintenance cycle. Corrections of factual error take priority over all other work. There is no other response-time promise.

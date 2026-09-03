@@ -1,0 +1,69 @@
+name: Schema, codelist or definition suggestion
+description: A missing field, a missing code, a definition that does not match how the data is really recorded, or an entity that should exist.
+title: "[schema] "
+labels: ["schema", "needs-triage"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of change
+      options:
+        - A field is missing from an entity
+        - A code is missing from a codelist
+        - A definition does not match practice
+        - An entity is missing
+        - A field or code should be removed or renamed
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Entity, codelist or field
+      placeholder: e.g. AbsenceEpisode.reasonCode, codelists/absence-reason
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: The suggestion
+      description: The field, code or definition you propose, one sentence on why it is needed, and where it comes from (a statutory definition, a sector convention, your own system's data dictionary).
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy class, if it is a new field
+      description: Would the field ever be employer-visible? Could it identify a person or reveal clinical content? The schema enforces privacy classes, so a new field needs one.
+    validations:
+      required: false
+  - type: dropdown
+    id: interest
+    attributes:
+      label: Declaration of interest
+      description: Do you have a financial or professional interest in any instrument, product or organisation this contribution touches? An interest does not disqualify a contribution; an undeclared one does. The steward declares its own on every page of the site.
+      options:
+        - "No interest to declare"
+        - "Yes, and I describe it below"
+        - "Prefer to declare by email to hello@openworkplacehealth.org"
+    validations:
+      required: true
+  - type: textarea
+    id: interest_detail
+    attributes:
+      label: Interest, if any
+      description: One or two lines is enough. Employer, role, instrument authorship or rights, paid distribution, consultancy.
+    validations:
+      required: false
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Naming
+      description: Contributors are named in the public contribution log only with consent. Leave unticked to be logged as anonymous.
+      options:
+        - label: You may name me in the contribution log and changelog
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        Substantive contributions are reviewed in the next published maintenance cycle. Corrections of factual error take priority over all other work. There is no other response-time promise.

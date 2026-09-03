@@ -1,0 +1,24 @@
+{
+  "codelist": "rtw-adjustment",
+  "version": "0.1.0",
+  "anchor": "Statement of Fitness for Work (fit note) 'may be fit' categories",
+  "notes": "The four statutory fit-note 'may be fit for work' adjustment categories. Shared by ReturnToWorkOutcome.adjustmentTypes and OHEpisode.recommendationTypes.",
+  "values": [
+    {
+      "code": "phased-return",
+      "label": "A phased return to work"
+    },
+    {
+      "code": "altered-hours",
+      "label": "Altered hours"
+    },
+    {
+      "code": "amended-duties",
+      "label": "Amended duties"
+    },
+    {
+      "code": "workplace-adaptations",
+      "label": "Workplace adaptations"
+    }
+  ]
+}

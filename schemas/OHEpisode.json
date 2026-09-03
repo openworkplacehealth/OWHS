@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.1/OHEpisode.json",
+  "title": "OWHS OHEpisode v0.1",
+  "description": "Management-facing envelope of an OH interaction. Carries NO clinical content.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "ohEpisodeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^owhs:pseudo:[0-9a-f]{16,64}$"
+    },
+    "referralReason": {
+      "type": "string",
+      "enum": [
+        "long-term-absence",
+        "short-term-frequent",
+        "fitness-for-task",
+        "adjustments-advice",
+        "return-to-work",
+        "health-surveillance",
+        "pre-placement",
+        "dse",
+        "other"
+      ],
+      "$comment": "codelist:oh-referral-reason@0.1.0"
+    },
+    "referralDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "assessmentType": {
+      "type": "string",
+      "enum": [
+        "management-referral",
+        "health-surveillance",
+        "pre-placement",
+        "dse",
+        "ill-health-retirement"
+      ],
+      "$comment": "codelist:oh-assessment-type@0.1.0"
+    },
+    "assessmentDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "fitnessOpinion": {
+      "type": "string",
+      "enum": [
+        "fit",
+        "fit-with-adjustments",
+        "unfit",
+        "not-assessed"
+      ],
+      "$comment": "codelist:fitness-opinion@0.1.0 \u2014 the released categorical opinion only"
+    },
+    "recommendationTypes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "phased-return",
+          "altered-hours",
+          "amended-duties",
+          "workplace-adaptations"
+        ]
+      },
+      "uniqueItems": true,
+      "$comment": "codelist:rtw-adjustment@0.1.0 \u2014 types only"
+    },
+    "opinionReleasedToEmployer": {
+      "type": "boolean",
+      "$comment": "consent flag; MUST be true for fitnessOpinion to be present"
+    },
+    "linkedAbsenceEpisodeId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "ohEpisodeId",
+    "pseudonymId",
+    "referralReason",
+    "referralDate",
+    "opinionReleasedToEmployer"
+  ],
+  "allOf": [
+    {
+      "$comment": "BOUNDARY: no clinical content permitted",
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "diagnosis"
+            ]
+          },
+          {
+            "required": [
+              "clinicalCauseCode"
+            ]
+          },
+          {
+            "required": [
+              "symptoms"
+            ]
+          },
+          {
+            "required": [
+              "testResults"
+            ]
+          },
+          {
+            "required": [
+              "reportText"
+            ]
+          },
+          {
+            "required": [
+              "history"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "$comment": "CONSENT: fitnessOpinion requires opinionReleasedToEmployer=true",
+      "if": {
+        "required": [
+          "fitnessOpinion"
+        ]
+      },
+      "then": {
+        "properties": {
+          "opinionReleasedToEmployer": {
+            "const": true
+          }
+        },
+        "required": [
+          "opinionReleasedToEmployer"
+        ]
+      }
+    },
+    {
+      "$comment": "P1 forbid direct identifiers",
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "name"
+            ]
+          },
+          {
+            "required": [
+              "nino"
+            ]
+          },
+          {
+            "required": [
+              "email"
+            ]
+          },
+          {
+            "required": [
+              "dateOfBirth"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

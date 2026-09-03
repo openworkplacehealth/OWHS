@@ -1,0 +1,16 @@
+{
+  "codelist": "completion-status",
+  "version": "0.1.0",
+  "anchor": "OWHS instrument completion status",
+  "values": [
+    {
+      "code": "complete"
+    },
+    {
+      "code": "partial"
+    },
+    {
+      "code": "abandoned"
+    }
+  ]
+}

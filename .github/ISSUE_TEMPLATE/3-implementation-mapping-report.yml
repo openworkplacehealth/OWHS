@@ -1,0 +1,87 @@
+name: Implementation mapping report
+description: You tried to map one of your existing exports to one OWHS entity. Report where it broke. A mapping that failed is worth as much as one that succeeded.
+title: "[mapping] "
+labels: ["mapping", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        No data leaves your organisation. The report describes the mapping, never the records. Do not paste real rows.
+  - type: input
+    id: entity
+    attributes:
+      label: OWHS entity you mapped to
+      placeholder: e.g. AbsenceEpisode, ReturnToWorkOutcome, OHEpisode
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: What you mapped from
+      description: The kind of export, and the kind of system, in general terms. Name the vendor only if you are happy to.
+      placeholder: e.g. monthly absence report from an HRIS, OH referral summary
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Outcome
+      options:
+        - Mapped cleanly
+        - Mapped with workarounds
+        - Partly mapped, some fields had no home
+        - Could not map
+    validations:
+      required: true
+  - type: textarea
+    id: breaks
+    attributes:
+      label: Where it broke
+      description: Fields with no home, definitions that did not match yours, codes you needed that were missing, places where the privacy rules made the mapping impossible.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: How long it took, what you would change, whether you would try a second entity.
+    validations:
+      required: false
+  - type: checkboxes
+    id: count
+    attributes:
+      label: Counting this report
+      description: Independent implementation and mapping reports are among the evidence that moves OWHS towards multi-stakeholder governance (see GOVERNANCE.md). Ticking this does not commit you to anything.
+      options:
+        - label: You may count this report, with my organisation unnamed unless I say otherwise, towards that evidence
+          required: false
+  - type: dropdown
+    id: interest
+    attributes:
+      label: Declaration of interest
+      description: Do you have a financial or professional interest in any instrument, product or organisation this contribution touches? An interest does not disqualify a contribution; an undeclared one does. The steward declares its own on every page of the site.
+      options:
+        - "No interest to declare"
+        - "Yes, and I describe it below"
+        - "Prefer to declare by email to hello@openworkplacehealth.org"
+    validations:
+      required: true
+  - type: textarea
+    id: interest_detail
+    attributes:
+      label: Interest, if any
+      description: One or two lines is enough. Employer, role, instrument authorship or rights, paid distribution, consultancy.
+    validations:
+      required: false
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Naming
+      description: Contributors are named in the public contribution log only with consent. Leave unticked to be logged as anonymous.
+      options:
+        - label: You may name me in the contribution log and changelog
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        Substantive contributions are reviewed in the next published maintenance cycle. Corrections of factual error take priority over all other work. There is no other response-time promise.

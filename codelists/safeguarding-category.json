@@ -1,0 +1,33 @@
+{
+  "codelist": "safeguarding-category",
+  "version": "0.1.0",
+  "anchor": "OWHS v0.1 provisional; seeded from the IWE safeguarding taxonomy (categories only, no data)",
+  "notes": "PROVISIONAL AND GOVERNANCE-OWNED. Records tagged with any of these categories are excluded from employer-visible outputs at ANY group size (privacy profile P4). Owner: the steward (founder) until a co-steward governance body exists; ratifying this list is designated as one of the FIRST formal acts of that body. Drawing this line wrong either leaks sensitive signal or suppresses legitimate risk data, so it is a policy decision, never an implementer one.",
+  "values": [
+    {
+      "code": "bullying-harassment",
+      "label": "Bullying or harassment exposure or disclosure",
+      "note": "employer may be the source of harm; external-first support routing applies"
+    },
+    {
+      "code": "discrimination",
+      "label": "Discrimination disclosure (Equality Act protected characteristics)"
+    },
+    {
+      "code": "severe-distress",
+      "label": "Severe psychological distress without an explained work correlate"
+    },
+    {
+      "code": "crisis",
+      "label": "Crisis signal (self-harm or suicidality indicator)"
+    },
+    {
+      "code": "harm-to-others",
+      "label": "Safeguarding of others (children or vulnerable adults)"
+    },
+    {
+      "code": "abuse-disclosure",
+      "label": "Domestic abuse disclosure"
+    }
+  ]
+}

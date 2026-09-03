@@ -1,0 +1,23 @@
+{
+  "codelist": "org-size-band",
+  "version": "0.1.0",
+  "anchor": "Companies Act 2006 size classification",
+  "values": [
+    {
+      "code": "micro",
+      "label": "Micro (<10)"
+    },
+    {
+      "code": "small",
+      "label": "Small (10–49)"
+    },
+    {
+      "code": "medium",
+      "label": "Medium (50–249)"
+    },
+    {
+      "code": "large",
+      "label": "Large (250+)"
+    }
+  ]
+}

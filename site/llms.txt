@@ -1,0 +1,33 @@
+# Open Workplace Health Standard (OWHS)
+
+> Status: early open specification. OWHS was created by Zak Fenton and is currently stewarded by Alltoogether. Its specification, schemas and supporting materials are published under permissive licences and are open to inspect, use, challenge and improve. If OWHS earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.
+
+Conflict of interest: Alltoogether develops commercial products that may implement OWHS. The standard does not require use of any Alltoogether product, and the project publishes its contribution, decision and change processes openly.
+
+Licences: specification prose CC-BY 4.0; schemas, codelists, examples and tooling Apache 2.0.
+
+## Core pages
+- https://openworkplacehealth.org/ : what OWHS is, in plain language
+- https://openworkplacehealth.org/standard.html : the full entity list and conformance rules
+- https://openworkplacehealth.org/why.html : the case for the standard
+- https://openworkplacehealth.org/design.html : design decisions and deliberately open questions
+- https://openworkplacehealth.org/governance.html : stewardship, conflict of interest, the change process, the evidence-gated move to multi-stakeholder governance
+- https://openworkplacehealth.org/methods.html : how the instrument registry grades evidence, in plain language, and its honest current limits
+- https://openworkplacehealth.org/contribute.html : the three small asks (find the flaw, find the missing field, test-map one export), the call for independent registry raters, the interest declaration
+- https://openworkplacehealth.org/instrument-registry/ : the instrument evidence registry, the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing, scope the whole field by construct (27 instruments graded so far, stage one, across eight psychometric evidence properties in the matrix, with a ninth (populations, languages and norms) on each record, cited, versioned, licence class tracked with archived source pages; single-item measures linked in the data to the instruments they screen for). Dataset v0.7.0, schema 0.7, rubric 1.4.
+- https://openworkplacehealth.org/instrument-registry/single-items.html : single-item measures, each linked to the multi-item instrument it was validated against, with the cited study
+- https://openworkplacehealth.org/instrument-registry/rubric.html : grading rubric v1.4 (grade scale, evidence states, evidence forms, three-value indirectness flag defined by population type and never by country or language with its population-naming basis stated on every cell, the High precondition of two cited studies with a sample size and a named statistic of the property graded, listed per property, the population-sensitive list, absence types, how a cell is derived, the freeze, the inter-rater procedure)
+- https://openworkplacehealth.org/instrument-registry/corrections.html : corrections process, errata, right of reply
+- https://openworkplacehealth.org/question-bank/ : the public question bank with provenance and licence status per item
+- https://openworkplacehealth.org/changelog.html : every version of the registry and the specification, dated
+- https://openworkplacehealth.org/automation.html : what the monthly evidence sweep may and may not do
+
+## Registry status, stated plainly
+- All grades were assigned by one rater employed by the steward. Grades and statuses are frozen from 1 September 2026 until two named psychometric raters who are not steward employees have joined.
+- AI assists literature retrieval, screening, extraction and drafting; it never assigns a grade and never writes to the dataset except through a human-merged pull request.
+- The registry publishes no ranking and no "best instrument". Grades are not comparable across instruments.
+
+## Machine-readable data
+- Instrument evidence registry JSON (schema 0.7), CSV, PDF and the rubric in Markdown: https://openworkplacehealth.org/instrument-registry/downloads.html ; versioned with a changelog and previous versions retained.
+
+Contact: hello@openworkplacehealth.org

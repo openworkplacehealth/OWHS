@@ -1,0 +1,48 @@
+{
+  "codelist": "benefit-product",
+  "version": "0.1.0",
+  "anchor": "UK employee-benefits market vocabulary",
+  "notes": "The UK market's own product vocabulary, not an OWHS invention. Statutory SSP lives in BenefitEntitlement.statutory, not here.",
+  "values": [
+    {
+      "code": "PMI",
+      "label": "Private medical insurance"
+    },
+    {
+      "code": "GIP",
+      "label": "Group income protection"
+    },
+    {
+      "code": "GLA",
+      "label": "Group life assurance"
+    },
+    {
+      "code": "cash-plan",
+      "label": "Health cash plan"
+    },
+    {
+      "code": "EAP",
+      "label": "Employee assistance programme"
+    },
+    {
+      "code": "dental",
+      "label": "Dental insurance"
+    },
+    {
+      "code": "pension",
+      "label": "Workplace pension"
+    },
+    {
+      "code": "MSK-service",
+      "label": "MSK / physiotherapy service"
+    },
+    {
+      "code": "wellbeing-intervention",
+      "label": "Wellbeing intervention / programme"
+    },
+    {
+      "code": "other",
+      "label": "Other benefit product"
+    }
+  ]
+}

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://openworkplacehealth.org/instrument-registry/how-to-read.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/instrument-registry/how-to-read.html">
+<meta property="og:title" content="How to read this registry | OWHS Instrument Registry">
+<meta property="og:description" content="The registry's method: grade scale, status tokens, indirectness, evidence-form provenance, licence currency, corrections policy.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>How to read this registry | OWHS Instrument Registry</title>
+<meta name="description" content="The registry's method: grade scale, status tokens, indirectness, evidence-form provenance, licence currency, corrections policy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace;--amber:#8a6d1f;--amber-soft:#f4f0e6;--red:#8a2b2b;--red-soft:#f6ecec}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:16.5px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px 30px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2,h3{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(26px,4.5vw,38px);font-weight:700;letter-spacing:-0.02em;margin:8px 0 10px}
+h2{font-size:21px;font-weight:700;margin:36px 0 12px}
+h3{font-size:16px;font-weight:600;margin:20px 0 6px}
+p,li{margin:12px 0}ul,ol{padding-left:20px;max-width:760px}
+.lede{font-size:18.5px;color:var(--body);margin:8px 0 18px;max-width:760px}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+a{overflow-wrap:anywhere}
+p,li,td,.findings,.licok,.licbad,.callout{overflow-wrap:anywhere}
+.status-chip{display:inline-flex;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--accent);background:var(--accent-soft);padding:5px 12px;border-radius:4px;margin-bottom:16px}
+.callout{background:var(--wash);border-left:4px solid var(--accent);padding:14px 18px;margin:16px 0;max-width:780px}
+.caveat{background:var(--amber-soft);border-left:4px solid var(--amber);padding:14px 18px;margin:16px 0;max-width:780px}
+.caveat b{color:var(--amber)}
+.licbad{background:var(--amber-soft);border-left:4px solid var(--amber);padding:12px 16px;margin:12px 0;max-width:780px;font-size:14.5px}
+.licok{background:var(--accent-soft);border-left:4px solid var(--accent);padding:12px 16px;margin:12px 0;max-width:780px;font-size:14.5px}
+.grade{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:600;border-radius:4px;padding:2px 9px;vertical-align:middle}
+.g-high{background:#dff0e9;color:#0b5c46}.g-mod{background:#e6efdb;color:#4a6318}
+.g-low{background:#f4f0e6;color:#8a6d1f}.g-vlow{background:#f6ecec;color:#8a2b2b}
+.g-absent{background:#f0e6e6;color:#7a1f1f}.g-na{background:#eef0f2;color:#5c646c}
+.g-unassessed{background:#ffffff;color:#8a93a0;border:1px dashed #b8c0c8}
+td.g-unassessed{background:repeating-linear-gradient(45deg,#fafbfc,#fafbfc 4px,#f0f2f4 4px,#f0f2f4 8px);color:#8a93a0;font-style:italic}
+.due{color:var(--amber);font-size:9px;vertical-align:middle}
+.cellmeta{font-family:var(--mono);font-size:11px;color:var(--muted);margin:2px 0 6px}
+.cellmeta .rd{color:var(--amber);font-weight:600}
+.freeze{background:#fbf7ea;border:1px solid #e6d9a8;border-radius:8px;padding:12px 16px;margin:14px 0 18px;font-size:14px;max-width:820px}
+.freeze b{color:var(--amber)}
+.verdict{border:2px solid var(--ink);border-radius:10px;padding:18px 22px;margin:18px 0 26px;max-width:820px;background:var(--paper)}
+.verdict h2{margin:0 0 8px;font-size:17px;text-transform:uppercase;letter-spacing:.06em}
+.verdict p{margin:8px 0;font-size:16px;color:var(--ink)}
+.verdict .facts,.si .facts{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 6px}
+.verdict .chip,.si .chip{font-family:var(--mono);font-size:11.5px;background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:3px 8px}
+.verdict .chip.c-high,.si .chip.c-high{background:#dff0e9;color:#0b5c46}.verdict .chip.c-mod,.si .chip.c-mod{background:#e6efdb;color:#4a6318}
+.verdict .chip.c-low,.si .chip.c-low{background:#f4f0e6;color:#8a6d1f}.verdict .chip.c-vlow,.si .chip.c-vlow{background:#f6ecec;color:#8a2b2b}
+.verdict .chip.c-absent,.si .chip.c-absent{background:#f0e6e6;color:#7a1f1f}.verdict .chip.c-na,.si .chip.c-na{color:#8a93a0}
+.verdict .chip.c-lic{background:var(--accent-soft);color:var(--accent)}
+.si .facts{margin-top:4px}
+.verdict .caveat-line{font-size:13.5px;color:var(--muted);margin-top:10px}
+.licclass{display:inline-block;font-family:var(--mono);font-size:11.5px;border-radius:4px;padding:2px 8px;background:var(--paper);border:1px solid var(--line);margin-right:6px}
+.rubric h2{margin-top:30px}.rubric table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+.rubric th,.rubric td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.rubric th{background:var(--wash)}.rubric code{font-family:var(--mono);font-size:12.5px;background:var(--wash);padding:0 4px}
+.rubric .tblwrap{overflow-x:auto}
+.stat{display:inline-block;font-family:var(--mono);font-size:11px;border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+.st-well{background:var(--accent-soft);color:var(--accent)}
+.st-contested{background:#7a1f1f;color:#ffffff;font-weight:700}
+.st-thin{background:var(--amber-soft);color:var(--amber)}
+.st-untested{background:#eef0f2;color:var(--muted)}
+.ef{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:8px}
+.ind{display:inline-block;font-family:var(--mono);font-size:11px;border-radius:4px;padding:1px 7px;margin-left:6px}
+.ind-direct{background:var(--accent-soft);color:var(--accent)}
+.ind-indirect{background:var(--amber-soft);color:var(--amber)}
+.ind-general{background:#e9eef6;color:#2f5480}
+.purpose{max-width:760px;font-size:17px;border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:6px 0 18px}
+.rels{max-width:800px}.rels li{margin:8px 0}.relnote{color:var(--muted);font-size:14.5px}
+.filter{margin:6px 0 0}.filterlabel{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-right:6px}
+.filter>input{position:absolute;opacity:0;width:0;height:0}
+.filter>label{display:inline-block;font-size:13px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;margin:0 4px 6px 0;cursor:pointer;color:var(--body)}
+.filter>input:checked+label{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.filter>input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+#f-single:checked~.matrixwrap tbody tr:not(.n-single){display:none}
+#f-short:checked~.matrixwrap tbody tr:not(.n-short){display:none}
+#f-long:checked~.matrixwrap tbody tr:not(.n-long){display:none}
+#f-set:checked~.matrixwrap tbody tr:not(.n-set){display:none}
+.si{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:14px 0;max-width:820px}
+.si h3{margin-top:0}
+.ind-note{background:#eef0f2;color:var(--muted)}
+.indnote{font-size:12.5px;color:var(--muted)}
+.prop{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:14px 0}
+.prop h3{margin:2px 0 8px}
+.findings{font-size:14.5px;max-width:780px}
+.matrixwrap{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:8px}
+table.matrix{border-collapse:collapse;font-size:12.5px;min-width:980px;width:100%}
+table.matrix th{position:sticky;top:0;background:var(--wash);text-align:left;padding:8px 9px;border-bottom:2px solid var(--ink);font-size:11.5px;color:var(--ink)}
+table.matrix td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap;font-family:var(--mono);font-size:11.5px}
+table.matrix td:first-child{position:sticky;left:0;background:var(--paper);white-space:normal;min-width:170px;font-family:'Inter',sans-serif;font-size:13px}
+table.matrix th:first-child{position:sticky;left:0;z-index:2;background:var(--wash)}
+td.g-high{background:#dff0e9;color:#0b5c46}td.g-mod{background:#e6efdb;color:#4a6318}
+td.g-low{background:#f4f0e6;color:#8a6d1f}td.g-vlow{background:#f6ecec;color:#8a2b2b}
+td.g-absent{background:#f0e6e6;color:#7a1f1f;font-weight:600}
+td.g-na{background:#eef0f2;color:#8a93a0;font-style:italic}
+.legend{font-size:12.5px;color:var(--muted);max-width:820px;margin:10px 0}
+.trwrap{overflow-x:auto;margin:10px 0;max-width:780px}
+table.tr{border-collapse:collapse;width:100%;font-size:13px;min-width:520px}
+table.tr th{text-align:left;padding:7px 9px;border-bottom:2px solid var(--ink);font-size:11.5px;color:var(--ink)}
+table.tr td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.refs{font-size:13px;color:var(--muted);max-width:800px}
+.refs li{margin:6px 0}
+.idgrid{font-size:14px;max-width:780px}
+.idgrid b{color:var(--ink)}
+header.owhs{border-bottom:1px solid var(--line);padding:18px 0}
+.navbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:880px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:20px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a.here{color:var(--accent);font-weight:600}
+article{padding:40px 0 20px}
+footer.owhs{border-top:1px solid var(--line);padding:28px 0 52px;font-size:14px;color:var(--muted)}
+footer.owhs p{max-width:800px}
+.subnav{border-bottom:1px solid var(--line);background:var(--wash)}
+.subnav .wrap{padding:9px 24px;display:flex;gap:18px;flex-wrap:wrap;font-size:14px}
+.subnav a{color:var(--muted);text-decoration:none}
+.subnav a:hover,.subnav a.here{color:var(--accent);font-weight:600}
+.banklink{background:var(--accent-soft);border-radius:6px;padding:10px 14px;font-size:14px;max-width:780px;margin:12px 0}
+@media (max-width:640px){ body{font-size:15.5px} .wrap{padding:0 16px 24px} }
+</style>
+</head>
+<body>
+<header class="owhs"><div class="navbar">
+  <a class="mark" href="../index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../standard.html">Inside the standard</a>
+    <a href="../why.html">The case</a>
+    <a href="../governance.html">Governance</a>
+    <a href="../methods.html">How we grade</a>
+    <a href="../question-bank/index.html">Question bank</a>
+    <a href="index.html" class="here">Instrument registry</a>
+    <a href="../search.html">Search</a>
+  </nav>
+</div></header>
+<div class="subnav"><div class="wrap"><a href="index.html">Overview</a><a href="how-to-read.html" class="here">How to read this registry</a><a href="single-items.html">Single-item measures</a><a href="admission.html">How an instrument enters</a><a href="rubric.html">Grading rubric v1.4</a><a href="corrections.html">Corrections, errata and right of reply</a><a href="downloads.html">Downloads</a></div></div>
+<article><div class="wrap">
+
+<h1>How to read this registry</h1>
+<p class="lede">Every convention in the registry exists to stop a reader over-trusting a number. This page is the method.</p>
+<p class="purpose"><b>The instrument registry is the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing.</b> For every instrument it records what it measures, how well, in which populations and languages, and on what licence terms, drawn from the literature and existing systematic reviews, every claim cited, every grade conservative. It is maintained, machine-readable and free to use, so that nobody choosing, building, licensing or reviewing a workplace measure has to reassemble the field's evidence themselves.</p>
+<p><b>Synthesis, not systematic review.</b> A synthesis here means reading across the published studies and reviews and stating what they show, including where they disagree. The registry does not run its own meta-analyses and its searches are not conducted to systematic-review standard. Where a COSMIN review exists for an instrument, the registry cites and summarises it; where none exists, the registry says so and grades what is there. The search venues and strings the sweep runs are published, so the coverage can be checked and improved by anyone.</p>
+
+<h2>The grade scale</h2>
+<p>Each property carries one of <span class="grade g-high">High</span> <span class="grade g-mod">Moderate</span>
+<span class="grade g-low">Low</span> <span class="grade g-vlow">Very low</span>, or one of two non-grades:
+<span class="grade g-absent">Absent</span>, meaning no published evidence was located, which is reported as a finding about
+the literature; and <span class="grade g-na">Not applicable</span>, meaning the property is a category error for the
+instrument's type (a single item has no internal consistency to report). The two non-grades are deliberately distinct:
+absence is information, not-applicable is taxonomy, and a registry that lets them blur misleads exactly the reader it
+exists to protect. Every ungraded cell also names its absence type: <b>population-general</b> (searched, nothing found in any
+population) or <b>category-error</b> (the property does not apply to the construct, for example a criterion reference standard for a
+construct that has none, or measurement invariance of a single item). Evidence that exists only in other populations is never
+recorded as Absent: it is graded and flagged indirect. Ungraded cells carry no indirectness flag: there is no grade for the flag to qualify.</p>
+
+<h2>Evidence states: what the registry did, not what the literature says</h2>
+<p>Every cell also records the registry's own work on it. <b>assessed</b>: searched and graded. <b>assessed_absent</b>: searched,
+nothing found in the sweep to date, published as a finding with the search basis. <b>not_assessed</b>: not yet searched, which
+says nothing about the literature; new instruments enter the watchlist in this state until a rater grades them. <b>not_applicable</b>:
+category error. Each cell also carries the rubric version it was graded under, the date its literature was last searched, the
+date a human last confirmed the grade, and a review-due flag set whenever a sweep adds a citation after that confirmation.
+The full method is the <a href="rubric.html">grading rubric</a>.</p>
+
+<h2 id="raters">Who graded this, and the freeze</h2>
+<p>Grades and statuses are single-rater and are frozen from first publication until two named independent raters have joined. Corrections of fact still run; grade moves do not. The rubric 1.1 re-rate is logged as correction C-0004 and the rubric 1.2 reconciliation of the independent check, which reversed the C-0004 grade moves, as C-0005. C-0006 (2 September 2026) reconciles the second independent check of v0.5.0 under rubric 1.3: every change is a table in migrate_v0.6.py and is listed in the correction's note. C-0007 (2 September 2026) reconciles the third independent check of v0.6.0 under rubric 1.4: every change is a table in migrate_v0.7.py and is listed in the correction's note. Unfreeze condition: Two named psychometric raters who are not employees of the steward have joined the registry and the inter-rater procedure in the rubric is in force. The registry is looking for those raters:
+psychometricians or measurement researchers with no financial interest in the instruments they would grade (instrument authors
+are welcome as reviewers of their own records, never as raters of them). Write to hello@openworkplacehealth.org.</p>
+
+<h2>The four status tokens</h2>
+<p>The grade says how strong the evidence is; the status says what kind of literature produced it:
+<span class="stat st-well">well-established</span> a mature, replicated evidence base;
+<span class="stat st-contested">contested</span> credible published disagreement (this badge is displayed prominently on
+record pages, never buried);
+<span class="stat st-thin">thin</span> few studies, small samples, or narrow settings;
+<span class="stat st-untested">untested</span> the specific claim has not been directly examined.
+Moderate-and-contested and Moderate-and-thin are different situations that previously shared a word; here they never do.</p>
+
+<h2>Indirectness: who the grade is for</h2>
+<p>Grades are for a working-adult audience, not bibliometric totals. Every grade carries a three-value indirectness flag with its reason:
+<span class="ind ind-direct">direct</span> evidence earned on samples of working adults, in any country and any language;
+<span class="ind ind-general">general</span> evidence earned on adult general-population samples that include working adults
+without isolating them; <span class="ind ind-indirect">indirect</span> evidence earned in clinical, student, adolescent,
+older-adult or otherwise non-working samples. The flag and the grade are separate facts: a grade never moves because a flag moved.
+The flag bites only where the property is sensitive to who was sampled (convergent validity, both criterion validities, responsiveness,
+populations and languages): there a High grade needs direct or general evidence, and indirect evidence caps the grade at Moderate.
+Criterion validity against a reference standard is on that list because a cut-off validated in a clinic, where the condition is common,
+is not a cut-off validated in a workforce, where it is rare. For the properties that are about the instrument's own structure
+(internal consistency, structural validity, invariance, test-retest) the flag is recorded and shown but does not move the grade.
+Each flag names the samples it rests on, quoted from the cell's own findings, each naming a population (a sample size or a country
+on its own is not a reason), or says that it falls back to the population the instrument is fielded on because the cited studies describe
+no sample. Country and language are never a reason for a downgrade: where the evidence
+was earned is recorded on the cell as a fact, and whether an instrument behaves the same across languages is a graded property
+of its own, measurement invariance. A large clinical literature does not entitle an instrument to a High grade for workplace use;
+the flag is where that discipline lives. A High grade has a precondition: at least two cited studies with a sample size and a
+statistic of the property graded, listed on the cell as its High basis, and on a population-sensitive property at least one of them
+in a working-adult or general-population sample; a cell that cannot show them is Moderate at most. The numbers the grade rests on,
+with their intervals and sample sizes, are in the findings on each cell. A record-level deployment context caveat, where present, states once anything that cuts across every
+property (for example a clinical-origin instrument deployed in a workplace) and is shown at the top of the evidence section.</p>
+
+<h2>Relations between records</h2>
+<p>Where a published study links two records, the link is recorded as data and shown on both record pages: an item to its
+parent set, a single item or short form to the full instrument it was derived from, a single item to a multi-item instrument
+it has been shown to screen for (with reported sensitivity and specificity against the longer instrument's threshold), a
+single item to a multi-item instrument it corresponds with (a reported correlation only, which is convergence, not screening),
+and a composite survey to an instrument it fields verbatim. Every relation cites the study it rests on; a relation without one is not recorded. A relation
+is a fact about the literature, never a recommendation: the registry does not say which form an implementer should use, and
+it never states a threshold for action. The single-item measures are gathered on <a href="single-items.html">their own page</a>.</p>
+
+<h2>Evidence-form provenance</h2>
+<p>Every grade names what the evidence was earned on: <b>canonical</b> (the fielded instrument, as versioned),
+<b>derivative</b> (a named reworded or short form), <b>parent</b> (a longer parent form), or <b>mixed</b>. Borrowed evidence
+can no longer be silently read as evidence for the fielded instrument.</p>
+
+<h2>Criterion validity is two properties, never one</h2>
+<p>Validity against a diagnostic or health reference standard and validity against organisational outcomes (absence,
+turnover, performance) diverge so sharply across this registry that a merged grade actively misleads, in exactly the
+direction that harms a workplace reader. They are graded separately everywhere, by schema rule.</p>
+
+<h2 id="organisational-outcomes">Criterion validity against organisational outcomes</h2>
+<p>This property records whether an instrument's scores have been shown to relate to outcomes an organisation records:
+sickness absence, return to work, occupational health referral, enacted adjustments, benefit use, actual turnover, rated or
+objective performance, and safety incidents. Across this registry it is the property most often absent, and that absence is
+one of the registry's founding findings.</p>
+<p><b>What counts as an outcome here.</b> An organisational outcome is an event the organisation recorded, an outcome linked
+from a register, or a performance measure rated independently of the person completing the instrument. Self-reported
+constructs do not count in this property, however work-related they are: an association between an instrument and
+self-reported turnover intention, self-rated productivity loss or self-rated work capacity is convergent validity between two
+self-reports, and it is graded as convergent validity. Keeping the two apart is what stops this property from measuring
+itself.</p>
+<p><b>What the evidence records.</b> Each located finding names the outcome, its source, the study design, any follow-up
+interval, the effect and its direction, the sample and population, and the form of the instrument the evidence was earned on.
+In the current dataset version those findings are prose on the record page; from the next dataset version they are
+structured fields, so that a reader can filter the registry on which outcomes have located evidence for an instrument.</p>
+<p><b>What this property does not say.</b> It does not say the instrument will predict outcomes in your organisation: the
+evidence was earned in named populations and settings, which every finding states. It does not rank instruments, and the
+registry publishes no ordering of instruments on this or any other property. It says nothing about whether measuring
+something changes it: evidence about interventions is a different literature, and this registry does not cover it.</p>
+
+<h2>Test-retest is structured, not prose</h2>
+<p>Retest findings are recorded as structured entries (coefficient, coefficient type, interval, sample, population), so
+bundled ICCs and internal-consistency contamination cannot pass as stability evidence. This is the property the registry
+found weakest across the entire instrument set.</p>
+
+<h2>Licence currency</h2>
+<p>Licence status is verified against the steward's current distribution terms, with the verification date shown on every
+record. Founding papers and review literature are never acceptable licence sources; that rule was learned publicly
+(correction C-0001) and is now schema law. Where a steward's terms could not yet be verified, the record says so plainly
+and displays no settled status.</p>
+
+<h2>Licence classes</h2>
+<p>Each record carries a licence class for one audience, an employer or a vendor acting for one:
+<b>open</b>: An open licence that permits commercial and non-commercial use without permission or fee (Open Government Licence, CC BY, Apache and equivalents).; <b>free-no-permission</b>: The steward states the instrument is free to use and requires no permission, but publishes no formal open licence.; <b>free-non-commercial</b>: Free for research or non-commercial use; employer or vendor deployment requires the steward's permission and may be charged.; <b>free-with-registration</b>: Free for the registry's audience but only after registration or application with the steward.; <b>fee-bearing</b>: A paid licence is required for the registry's audience (employer or vendor workplace use), whatever the terms for other users.; <b>no-formal-licence</b>: No steward and no instrument-level licence exist (typically a generic single item published in a journal article).; <b>unverified</b>: The steward's current terms could not be read at the last verification; no class is asserted.. The registry records the class, the steward's
+source page and an archived copy of it, never a price.</p>
+
+<h2>The corrections policy, errata and right of reply</h2>
+<p>Disputed or wrong statements in published records are checked and fixed publicly: every correction carries the old
+value, the new value, and the source that settled it, on the <a href="corrections.html">corrections page</a>. A registry
+that corrected itself silently would be indistinguishable from one that was never wrong; the log is the difference.
+An instrument's steward, developer or copyright holder has a right of reply: a written response is published beside the
+record, dated and unedited, with the registry's reply.</p>
+
+<h2>What the automation does and does not do</h2>
+<p>AI systems assist the rater with retrieval, screening, extraction and drafting, and run the monthly sweeps. They do not
+assign grades, statuses, evidence forms or indirectness flags, and nothing they produce reaches the dataset except through
+a change a human reviews and merges. What the automation may do, and where it has failed, is on the
+<a href="../automation.html">automation page</a>.</p>
+
+<h2>What this registry is not</h2>
+<p>It is not part of the normative OWHS specification, it does not recommend instruments, it does not advise what to
+measure, and it never reproduces instrument item text. It grades evidence about instruments, never evidence about
+interventions. It describes the published evidence so that whoever chooses can choose with their eyes open. How an
+instrument comes to be here at all is a separate rule: <a href="admission.html">how an instrument enters this registry</a>.</p>
+
+</div></article>
+<footer class="owhs"><div class="wrap">
+  <p>OWHS Instrument Registry, dataset version 0.7.0 (schema 0.7), generated 2026-09-02;
+  grades last confirmed 2026-09-02 under <a href="rubric.html">rubric v1.4</a>. A resource maintained under the
+  Open Workplace Health Standard, distinct from the normative specification. Grades are editorial assessments of published
+  evidence for a working-adult audience in any country; they are not part of the standard and change through the registry's public
+  corrections process, not by RFC. Grades are single-rater and frozen from first publication until independent raters join
+  (see <a href="how-to-read.html#raters">who graded this</a>).</p>
+  <p>Registry text CC BY 4.0 &middot; dataset structure Apache 2.0 &middot; no instrument item text is reproduced anywhere in this
+  registry. See <a href="how-to-read.html">how to read this registry</a>. Stewarded by
+  <a target="_blank" rel="noopener" href="https://www.alltoogether.com">Alltoogether</a> · early open specification.</p>
+</div></footer>
+</body></html>

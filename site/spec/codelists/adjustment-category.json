@@ -1,0 +1,44 @@
+{
+  "codelist": "adjustment-category",
+  "version": "0.1.0",
+  "anchor": "Equality Act 2010 s.20 duty; superset of fit-note categories",
+  "notes": "Equality Act 2010 s.20 adjustments are broader than fit-note categories; the four fit-note codes are a strict subset by design so OH recommendations map cleanly.",
+  "values": [
+    {
+      "code": "phased-return",
+      "label": "Phased return"
+    },
+    {
+      "code": "altered-hours",
+      "label": "Altered hours / flexible working"
+    },
+    {
+      "code": "amended-duties",
+      "label": "Amended duties / role change"
+    },
+    {
+      "code": "workplace-adaptations",
+      "label": "Physical workplace adaptations"
+    },
+    {
+      "code": "equipment",
+      "label": "Special equipment / assistive technology"
+    },
+    {
+      "code": "remote-hybrid",
+      "label": "Remote or hybrid working"
+    },
+    {
+      "code": "absence-policy-flex",
+      "label": "Adjustment to absence triggers/policy"
+    },
+    {
+      "code": "additional-support",
+      "label": "Additional supervision, mentoring or support"
+    },
+    {
+      "code": "other",
+      "label": "Other reasonable adjustment"
+    }
+  ]
+}

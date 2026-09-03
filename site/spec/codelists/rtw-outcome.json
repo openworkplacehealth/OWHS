@@ -1,0 +1,29 @@
+{
+  "codelist": "rtw-outcome",
+  "version": "0.1.0",
+  "anchor": "OWHS v0.1; return-to-work outcome types (no UK incumbent)",
+  "notes": "No UK incumbent standard for RTW outcomes; provisional pending WHIU. whiu: crosswalk reserved.",
+  "values": [
+    {
+      "code": "full",
+      "label": "Returned to full previous duties"
+    },
+    {
+      "code": "phased",
+      "label": "Phased return"
+    },
+    {
+      "code": "adjusted",
+      "label": "Returned with adjustments"
+    },
+    {
+      "code": "did-not-return",
+      "label": "Did not return"
+    },
+    {
+      "code": "ill-health-exit",
+      "label": "Did not return — ill-health retirement / medical capability exit",
+      "note": "subtype of did-not-return; kept distinct so medical exits are visible"
+    }
+  ]
+}

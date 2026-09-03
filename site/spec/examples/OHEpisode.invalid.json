@@ -1,0 +1,10 @@
+{
+  "ohEpisodeId": "oh-BAD",
+  "pseudonymId": "owhs:pseudo:a1b2c3d4e5f60718",
+  "referralReason": "long-term-absence",
+  "referralDate": "2026-03-05",
+  "fitnessOpinion": "unfit",
+  "opinionReleasedToEmployer": false,
+  "diagnosis": "Major depressive disorder",
+  "clinicalCauseCode": "370143000"
+}

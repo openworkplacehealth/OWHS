@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Something you would rather not raise in public
+    url: mailto:hello@openworkplacehealth.org
+    about: Privacy concerns you want fixed before they are visible, rater volunteers, or anything private. Email reaches the steward directly.
+  - name: How to contribute, and what you are not being asked to do
+    url: https://openworkplacehealth.org/contribute.html
+    about: The three small asks, the call for independent registry raters, and the interest declaration.
