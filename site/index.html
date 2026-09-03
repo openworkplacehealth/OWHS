@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Open Workplace Health Standard · an open data standard for UK workplace health</title>
+<title>The Open Workplace Health Standard · an open data standard and a permanent open catalogue for workplace health</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://openworkplacehealth.org/">
 <!-- auto -->
@@ -11,11 +11,11 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Open Workplace Health Standard">
 <meta property="og:url" content="https://openworkplacehealth.org/">
-<meta property="og:title" content="The Open Workplace Health Standard · an open data standard for UK workplace health">
-<meta property="og:description" content="The Open Workplace Health Standard (OWHS): an open data standard for UK workplace health covering sickness absence, return to work, wellbeing measurement and benefit provision, private by design and free for anyone to implement.">
+<meta property="og:title" content="The Open Workplace Health Standard · an open data standard and a permanent open catalogue for workplace health">
+<meta property="og:description" content="The Open Workplace Health Standard (OWHS): an open data standard for UK workplace health covering sickness absence, return to work, wellbeing measurement and benefit provision, and a permanent open catalogue of the instruments and survey items behind them, with their evidence, provenance and rights. Private by design, free for anyone to use.">
 <meta name="twitter:card" content="summary">
 <!-- /auto -->
-<meta name="description" content="The Open Workplace Health Standard (OWHS): an open data standard for UK workplace health covering sickness absence, return to work, wellbeing measurement and benefit provision, private by design and free for anyone to implement.">
+<meta name="description" content="The Open Workplace Health Standard (OWHS): an open data standard for UK workplace health covering sickness absence, return to work, wellbeing measurement and benefit provision, and a permanent open catalogue of the instruments and survey items behind them, with their evidence, provenance and rights. Private by design, free for anyone to use.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -65,6 +65,28 @@ section{padding:56px 0;border-bottom:1px solid var(--line)}
 .card p{font-size:14px;color:var(--muted);margin:0}
 .card .tag{font-family:var(--mono);font-size:11.5px;color:var(--accent);display:block;margin-bottom:8px}
 
+/* two halves */
+.halves{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:26px}
+.half{border:1px solid var(--line);border-radius:10px;padding:26px 26px 22px;background:var(--paper)}
+.half .tag{font-family:var(--mono);font-size:12px;color:var(--accent);display:block;margin-bottom:10px;letter-spacing:.02em}
+.half h3{margin:0 0 10px;font-size:21px}
+.half p{font-size:15.5px;margin:0 0 16px}
+.figs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 18px}
+.fig b{display:block;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-0.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.fig span{font-size:13px;color:var(--muted);line-height:1.3;display:block;margin-top:3px}
+.depth{display:flex;gap:0;border-top:1px solid var(--line);padding-top:14px;flex-wrap:wrap}
+.depth a{flex:1 1 30%;text-decoration:none;font-size:14px;color:var(--ink);padding:4px 0}
+.depth a:hover{color:var(--accent)}
+.depth a em{display:block;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.depth a:hover em{color:var(--accent)}
+
+/* audience router */
+.router{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:24px}
+.door{border:1px solid var(--line);border-radius:8px;padding:18px 20px;background:var(--wash)}
+.door h4{font-size:15.5px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.door p{font-size:14px;color:var(--body);margin:0 0 10px}
+.door a{font-size:14px;font-weight:500}
+
 .principles li{margin:12px 0;max-width:720px;padding-left:6px}
 .principles{margin:18px 0 0 20px}
 .principles b{color:var(--ink)}
@@ -84,7 +106,7 @@ ul,ol{max-width:760px}
 <body>
 
 <header><div class="nav">
-  <a class="mark" href="#"><span class="dot"></span>OWHS</a>
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
   <nav class="nav-links">
     <a href="index.html">Home</a>
     <a href="why.html">The case</a>
@@ -100,13 +122,63 @@ ul,ol{max-width:760px}
 
 <div class="hero"><div class="wrap">
   <span class="status">OWHS v0.1 · early open specification · open to review</span>
-  <h1>An open data standard for workplace health.</h1>
-  <p class="lede">The <strong>Open Workplace Health Standard (OWHS)</strong>: sickness absence, return to work, wellbeing measurement and benefit provision and use, defined once, in plain language and machine-readable schemas, private by design, free for anyone to implement. Built first for the UK, and for the millions of businesses everywhere that will never have a data team.</p>
+  <h1>An open data standard and a permanent open catalogue for workplace health.</h1>
+  <p class="lede">Common definitions for sickness absence, return to work, wellbeing measurement and benefit provision, and a lasting record of the instruments and survey items behind them, with their evidence, provenance and rights. Private by design. Free for anyone to use.</p>
   <div class="cta-row">
-    <a class="btn primary" href="spec/index.html">Read the draft specification</a>
-    <a class="btn ghost" href="#involved">Get involved</a>
+    <a class="btn primary" href="how-it-works.html">Start here: how it works</a>
+    <a class="btn ghost" href="spec/index.html">Read the draft specification</a>
   </div>
 </div></div>
+
+<section id="two"><div class="wrap">
+  <h2>Two things, one project</h2>
+  <p>The standard says what a workplace-health record is. The catalogue says what the measures inside it are worth, and where they come from. Each is published at three depths, so a first-time reader and a statistician each have a door.</p>
+  <div class="halves">
+    <div class="half">
+      <span class="tag">the data model</span>
+      <h3>The standard</h3>
+      <p>Entities, schemas and code lists for absence, return to work, measurement and benefits, anchored to the definitions the UK already trusts and versioned so official ones slot in when they arrive.</p>
+      <div class="figs">
+        <div class="fig"><b>16</b><span>entities defined, one shared shape</span></div>
+        <div class="fig"><b>23</b><span>versioned code lists, anchored to ONS, HSE, the fit note</span></div>
+        <div class="fig"><b>n ≥ 5</b><span>smallest group an employer ever sees</span></div>
+      </div>
+      <div class="depth">
+        <a href="how-it-works.html"><em>Explain</em>How it works</a>
+        <a href="standard.html"><em>Use</em>Inside the standard</a>
+        <a href="spec/index.html"><em>Verify</em>Full specification</a>
+      </div>
+    </div>
+    <div class="half">
+      <span class="tag">the catalogue</span>
+      <h3>The registry and the question bank</h3>
+      <p>The published evidence on the instruments used to measure workplace health, graded property by property with provenance, and the public survey items behind them, catalogued with their source, licence and verified wording.</p>
+      <div class="figs">
+        <div class="fig"><b>27</b><span>instruments graded, every claim cited</span></div>
+        <div class="fig"><b>85</b><span>survey items with provenance and rights</span></div>
+        <div class="fig"><b>46</b><span>carry wording verified verbatim against the primary source</span></div>
+      </div>
+      <div class="depth">
+        <a href="instrument-registry/how-to-read.html"><em>Explain</em>How to read the registry</a>
+        <a href="instrument-registry/index.html"><em>Use</em>Registry and question bank</a>
+        <a href="methods.html"><em>Verify</em>How we grade</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="doors"><div class="wrap">
+  <h2>Find your way in</h2>
+  <p>Nobody needs all of this. Pick the door that matches why you came.</p>
+  <div class="router">
+    <div class="door"><h4>If you run HR, occupational health or wellbeing</h4><p>You want to measure well and report safely. Start with what the standard will and will not let an employer see, then which instruments the evidence supports.</p><a href="how-it-works.html">How it works</a> · <a href="instrument-registry/how-to-read.html">How to read the registry</a></div>
+    <div class="door"><h4>If you build HR, health or benefits software</h4><p>Read the schemas, try the examples, and tell us where they break against your data. Adopting one entity or one code list is a real test.</p><a href="standard.html">Inside the standard</a> · <a href="spec/index.html">Schemas and examples</a></div>
+    <div class="door"><h4>If you research or study this field</h4><p>Every grade cites its source; every survey item carries provenance and licence; every correction is logged. Cite it, challenge it, extend it.</p><a href="methods.html">How we grade</a> · <a href="question-bank/verification.html">Question bank verification</a></div>
+    <div class="door"><h4>If you work in government or policy</h4><p>An independent proposal for what employer-level records should look like, built to be overwritten by official definitions when they arrive, with a namespace reserved for them throughout.</p><a href="why.html">The case for a standard</a> · <a href="design.html">Design notes</a></div>
+    <div class="door"><h4>If you are an insurer, adviser or industry body</h4><p>The utilisation and return-to-work entities need the people who actually hold this data. A report of where the mapping failed is worth as much as one that succeeded.</p><a href="contribute.html">How to contribute</a></div>
+    <div class="door"><h4>If you are sceptical</h4><p>Good. Start with what this is not, then the interest declaration every contribution carries and who currently stewards it.</p><a href="#not">What this is not</a> · <a href="governance.html">Governance</a></div>
+  </div>
+</div></section>
 
 <section id="why"><div class="wrap">
   <h2>Why this exists</h2>
@@ -115,21 +187,19 @@ ul,ol{max-width:760px}
     <p>"Currently, sickness absence is tracked inconsistently, and return-to-work outcomes are rarely measured."</p>
     <cite>UK Government, Keep Britain Working programme, announcing the Workplace Health Intelligence Unit, July 2026</cite>
   </div>
-  <p>A national unit is now being stood up to collect standardised workplace-health data from employers and providers. OWHS is an open, independent proposal for what that data should look like at the level of an employer's records: aligned to the definitions the UK already trusts, implementable by the smallest employer, and versioned so that when official definitions arrive, they slot in rather than start over. The full argument, including the survey of every existing standard and why none covers this ground, is in <a href="why.html">the case for a standard</a>; how the specification itself was designed, and what was deliberately left open, is in <a href="design.html">the design notes</a>. It is also the shape an employer's duty of care takes when it has to be shown rather than stated: the entities are <a href="standard.html">inside the standard</a>.</p>
+  <p>A national unit is now being stood up to collect standardised workplace-health data from employers and providers. OWHS is an open, independent proposal for what that data should look like at the level of an employer's records: aligned to the definitions the UK already trusts, implementable by the smallest employer, and versioned so that when official definitions arrive, they slot in rather than start over.</p>
+  <p class="small">The full argument, including the survey of every existing standard and why none covers this ground, is in <a href="why.html">the case for a standard</a>. How the specification was designed, and what was deliberately left open, is in <a href="design.html">the design notes</a>.</p>
 </div></section>
 
-<section id="standard"><div class="wrap">
-  <h2>What the standard defines</h2>
-  <p>Version 0.1 defines the entities below as plain JSON Schemas with open code lists. Every field is anchored to a primary source: ONS definitions for absence rates and reasons, the HSE Management Standards for psychosocial domains, the statutory fit note for return-to-work adjustments, and SSP for statutory entitlement.</p>
-  <div class="grid">
-    <div class="card"><span class="tag">absence &amp; recovery</span><h4><span class="entity-code">AbsenceEpisode</span> and <span class="entity-code">ReturnToWorkOutcome</span></h4><p>A record-level absence episode with ONS-comparable semantics, and the return-to-work outcome almost nobody measures today, using the fit note's own adjustment categories.</p></div>
-    <div class="card"><span class="tag">measurement</span><h4><span class="entity-code">WellbeingObservation</span> and <span class="entity-code">InstrumentAdministration</span></h4><p>Survey and validated-instrument results from any vendor's product, with the measurement context that makes scores comparable. Instruments are referenced by citation, never reproduced.</p></div>
-    <div class="card"><span class="tag">support</span><h4><span class="entity-code">BenefitEntitlement</span> and <span class="entity-code">BenefitUtilisation</span></h4><p>What benefit provision exists for a workforce, statutory and commercial, and aggregate utilisation. Provision and use are modelled in the same vocabulary as measurement.</p></div>
-    <div class="card"><span class="tag">reporting</span><h4><span class="entity-code">AggregateReport</span> and <span class="entity-code">BenchmarkRelease</span></h4><p>The only way results leave an organisation: aggregated, suppression-aware, carrying their completion rates and composition, so a reader can see exactly what each number rests on.</p></div>
-    <div class="card"><span class="tag">alignment</span><h4><span class="entity-code">Crosswalk</span></h4><p>Versioned mappings from every construct to the HSE Management Standards, ISO 45003, and a reserved namespace for the Workplace Health Intelligence Unit's future definitions. The crosswalk itself is drafted in the OWHS Measurement Companion, available with the draft specification.</p></div>
-    <div class="card"><span class="tag">reserved</span><h4><span class="entity-code">DisabilityParticipation</span></h4><p>Reserved, deliberately minimal, until national definitions exist. Signalling alignment without inventing semantics government will define.</p></div>
-  </div>
-  <p class="small" style="margin-top:20px">The core is vendor-neutral. Product-specific machinery lives in named profiles that extend the core without breaking interoperability; the profile mechanism is part of the specification. For the full entity list, a real record, and the conformance rules on one page, see <a href="standard.html">inside the standard</a>.</p>
+<section id="record"><div class="wrap">
+  <h2>Held as a permanent public record</h2>
+  <p>Reference material in this field has a habit of disappearing. The What Works Centre for Wellbeing, which published the 2020 Workplace Wellbeing Question Bank, closed in 2023; that bank now survives only as an archive. OWHS is built so the same cannot happen here.</p>
+  <ol class="principles">
+    <li><b>Everything is versioned and downloadable.</b> Each release of the specification, the registry and the question bank is a dated dataset anyone can keep a copy of.</li>
+    <li><b>Corrections are made in the open.</b> The registry carries a public corrections log and a right of reply for instrument authors; the question bank carries a changelog. A grade or an item changes with a reason attached, never quietly.</li>
+    <li><b>Nothing is silently withdrawn.</b> An item that loses its licence, or an instrument that leaves the field, stays catalogued with its provenance and the reason recorded.</li>
+    <li><b>The licences outlive the steward.</b> Prose is CC-BY 4.0, structure and tools are Apache 2.0, and third-party wording stays with its source under its own terms. If stewardship changes hands, the record does not.</li>
+  </ol>
 </div></section>
 
 <section id="privacy"><div class="wrap">
@@ -144,11 +214,11 @@ ul,ol{max-width:760px}
   </ol>
 </div></section>
 
-<section><div class="wrap">
+<section id="not"><div class="wrap">
   <h2>What this is not</h2>
   <ul class="not-list">
     <li>Not a product. There is nothing to buy here. The specification, schemas, code lists and validator are open, under CC-BY 4.0 and Apache 2.0.</li>
-    <li>Not a survey or a score. The standard defines the shape of the data, not who collects it or how it is interpreted.</li>
+    <li>Not a survey or a score. The standard defines the shape of the data, not who collects it or how it is interpreted. The catalogue describes instruments; it never reproduces them.</li>
     <li>Not a rival to the national effort. Version 0.x exists to be useful now and to be overwritten gracefully: the specification reserves space for the Workplace Health Intelligence Unit's definitions and will adopt them when they exist.</li>
     <li>Not clinical. It carries no diagnosis semantics, and it treats clinical coding (SNOMED CT) as an optional extension for those licensed to use it.</li>
   </ul>
@@ -156,22 +226,16 @@ ul,ol{max-width:760px}
 
 <section id="involved"><div class="wrap">
   <h2>Get involved</h2>
-  <p>This is version 0.1, published for review. The full specification, schemas and change process (open issues, RFCs, a public decision log) live at <a href="https://github.com/openworkplacehealth/OWHS">github.com/openworkplacehealth/OWHS</a>; the full draft is readable and downloadable <a href="spec/index.html">here</a>; tell us where it breaks. The <a href="contribute.html">contribute page</a> sets out the three small asks, the call for independent registry raters, and the interest declaration every contribution carries. You do not need to endorse the standard or join anything.</p>
-  <h3>If you build HR, health or benefits software</h3>
-  <p>Read the schemas, try the examples, tell us where they break against your data. Adopting even one entity, or one code list, is a real test. A report of where the mapping failed is worth as much to us as one that succeeded.</p>
-  <h3>If you are an insurer, adviser or industry body</h3>
-  <p>The utilisation and return-to-work entities need the people who actually hold this data. The standard is open to inspect, use, challenge and improve; if it earns independent use and recurring contribution, governance moves to a multi-stakeholder structure so that no single commercial organisation controls its future.</p>
-  <h3>If you are in government or policy</h3>
-  <p>This proposal was built to be overwritten by official definitions when they arrive; a namespace is reserved for them throughout. The specification and its decision log are open, if they are useful to that work.</p>
+  <p>This is version 0.1, published for review. The full specification, schemas and change process (open issues, RFCs, a public decision log) live at <a href="https://github.com/openworkplacehealth/OWHS">github.com/openworkplacehealth/OWHS</a>. Tell us where it breaks. The <a href="contribute.html">contribute page</a> sets out the three small asks, the call for independent registry raters, and the interest declaration every contribution carries. You do not need to endorse the standard or join anything.</p>
   <div class="cta-row">
-    <a class="btn primary" href="spec/index.html">Read the draft specification</a>
-    <a class="btn ghost" href="contribute.html">How to contribute</a>
+    <a class="btn primary" href="contribute.html">How to contribute</a>
+    <a class="btn ghost" href="spec/index.html">Read the draft specification</a>
     <a class="btn ghost" href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a>
   </div>
 </div></section>
 
 <footer><div class="wrap">
-  <a class="mark" href="#"><span class="dot"></span>OWHS</a>
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
   <p><strong>Status: early open specification.</strong> OWHS was created by Zak Fenton and is currently stewarded by <a href="https://www.alltoogether.com">Alltoogether</a>. Its specification, schemas and supporting materials are published under permissive licences and are open to inspect, use, challenge and improve. If OWHS earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.</p>
   <p>Alltoogether develops commercial products that may implement OWHS. The standard does not require use of any Alltoogether product, and the project publishes its contribution, decision and change processes openly.</p>
   <div class="foot-links">
