@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://openworkplacehealth.org/</loc><lastmod>2026-09-02</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/how-it-works.html</loc><lastmod>2026-09-03</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/standard.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/why.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/design.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/governance.html</loc><lastmod>2026-09-02</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/standard.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/why.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/design.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/governance.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/methods.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/contribute.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/changelog.html</loc><lastmod>2026-09-03</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/automation.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/search.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/erd.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/spec/index.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/index.html</loc><lastmod>2026-09-02</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/automation.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/search.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/erd.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/spec/index.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/index.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/index.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/how-to-read.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/rubric.html</loc><lastmod>2026-09-03</lastmod></url>
@@ -50,24 +50,24 @@
   <url><loc>https://openworkplacehealth.org/instrument-registry/wemwbs.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/who-5.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/wpai.html</loc><lastmod>2026-09-03</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/domains.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/downloads.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-behaviours.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-change.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-control.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-culture.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-demands.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-environment.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-fairness.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-financial.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-health.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-outcomes.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-role.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-support.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/group-time.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/rights.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/question-bank/verification.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/sweeps/2026-09.html</loc><lastmod>2026-09-02</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/domains.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/downloads.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-behaviours.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-change.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-control.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-culture.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-demands.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-environment.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-fairness.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-financial.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-health.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-outcomes.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-role.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-support.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/group-time.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/rights.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/question-bank/verification.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/sweeps/2026-09.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/admission.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/single-items.html</loc><lastmod>2026-09-03</lastmod></url>
 </urlset>
