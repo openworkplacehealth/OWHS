@@ -1,54 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://openworkplacehealth.org/</loc><lastmod>2026-09-02</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/how-it-works.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/standard.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/why.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/design.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/governance.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/methods.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/contribute.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/changelog.html</loc><lastmod>2026-09-02</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/methods.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/contribute.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/changelog.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/automation.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/search.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/erd.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/spec/index.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/question-bank/index.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/index.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/how-to-read.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/rubric.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/corrections.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/downloads.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/cbi.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/copsoq-iii.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/csps-wellbeing.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/eurofound-ewcs.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/fcs-maps.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/gad-7.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/ghq-12.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/hse-msit.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/ipaq-sf.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/isi.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/k10.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/mbi.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/miss.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/olbi.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4-anxiety.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4-happiness.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4-life-satisfaction.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4-worthwhile.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/perma.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/phq-9.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/single-fatigue.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/single-job-satisfaction.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/single-stress.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/tis-6.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/uwes-9.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/wai.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/was.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/wemwbs.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/who-5.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/wpai.html</loc><lastmod>2026-09-02</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/index.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/how-to-read.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/rubric.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/corrections.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/downloads.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/cbi.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/copsoq-iii.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/csps-wellbeing.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/eurofound-ewcs.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/fcs-maps.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/gad-7.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/ghq-12.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/hse-msit.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/ipaq-sf.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/isi.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/k10.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/mbi.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/miss.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/olbi.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4-anxiety.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4-happiness.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4-life-satisfaction.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4-worthwhile.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/ons-4.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/perma.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/phq-9.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/single-fatigue.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/single-job-satisfaction.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/single-stress.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/tis-6.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/uwes-9.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/wai.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/was.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/wemwbs.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/who-5.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/wpai.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/question-bank/domains.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/question-bank/downloads.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/question-bank/group-behaviours.html</loc><lastmod>2026-09-02</lastmod></url>
@@ -67,6 +68,6 @@
   <url><loc>https://openworkplacehealth.org/question-bank/rights.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/question-bank/verification.html</loc><lastmod>2026-09-02</lastmod></url>
   <url><loc>https://openworkplacehealth.org/sweeps/2026-09.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/admission.html</loc><lastmod>2026-09-02</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/instrument-registry/single-items.html</loc><lastmod>2026-09-02</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/admission.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/instrument-registry/single-items.html</loc><lastmod>2026-09-03</lastmod></url>
 </urlset>
