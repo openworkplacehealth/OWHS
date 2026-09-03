@@ -1,34 +1,53 @@
 # Open Workplace Health Standard (OWHS)
 
-> Status: early open specification. OWHS was created by Zak Fenton and is currently stewarded by Alltoogether. Its specification, schemas and supporting materials are published under permissive licences and are open to inspect, use, challenge and improve. If OWHS earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.
+> An open data standard and a permanent open catalogue for workplace health. Status: early open specification (v0.1), open to review. OWHS was created by Zak Fenton and is currently stewarded by Alltoogether. Its specification, schemas and supporting materials are published under permissive licences and are open to inspect, use, challenge and improve. If OWHS earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.
 
 Conflict of interest: Alltoogether develops commercial products that may implement OWHS. The standard does not require use of any Alltoogether product, and the project publishes its contribution, decision and change processes openly.
 
-Licences: specification prose CC-BY 4.0; schemas, codelists, examples and tooling Apache 2.0.
+Licences: specification prose and guidance CC-BY 4.0; schemas, codelists, examples, dataset structure and tooling Apache 2.0. Third-party instrument and survey-item wording is never ours to license and stays with its source under the terms recorded per item.
 
-## Core pages
-- https://openworkplacehealth.org/ : what OWHS is, in plain language
-- https://openworkplacehealth.org/how-it-works.html : the standard on one page, what it is, how a record moves through it without identifying anyone, how the evidence is kept current
-- https://openworkplacehealth.org/standard.html : the full entity list and conformance rules
+Two things, one project. The standard says what a workplace-health record is: entities, schemas and code lists for sickness absence, return to work, wellbeing measurement and benefit provision, anchored to ONS, HSE, the statutory fit note and SSP. The catalogue says what the measures inside it are worth and where they come from: an instrument evidence registry and a survey question bank, both versioned, corrected in the open and kept as a permanent public record. Each is published at three depths: an explainer, a working page, and the full verifiable source.
+
+## The standard (data model)
+- https://openworkplacehealth.org/ : the home page, both halves of the project and a way in for each kind of reader
+- https://openworkplacehealth.org/how-it-works.html : explainer, the standard on one page: what it is, how a record moves through it without identifying anyone, how the evidence is kept current
+- https://openworkplacehealth.org/standard.html : the full entity list (16 entities), a real record, and the conformance rules on one page
+- https://openworkplacehealth.org/erd.html : the entity map
+- https://openworkplacehealth.org/spec/ : the full draft specification v0.1, readable and downloadable, with JSON Schemas, 23 versioned code lists, worked examples and a validation report
 - https://openworkplacehealth.org/why.html : the case for the standard
 - https://openworkplacehealth.org/design.html : design decisions and deliberately open questions
 - https://openworkplacehealth.org/governance.html : stewardship, conflict of interest, the change process, the evidence-gated move to multi-stakeholder governance
-- https://openworkplacehealth.org/methods.html : how the instrument registry grades evidence, in plain language, and its honest current limits
 - https://openworkplacehealth.org/contribute.html : the three small asks (find the flaw, find the missing field, test-map one export), the call for independent registry raters, the interest declaration
-- https://openworkplacehealth.org/instrument-registry/ : the instrument evidence registry, the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing, scope the whole field by construct (27 instruments graded so far, stage one, across eight psychometric evidence properties in the matrix, with a ninth (populations, languages and norms) on each record, cited, versioned, licence class tracked with archived source pages; single-item measures linked in the data to the instruments they screen for). Dataset v0.9.0, schema 0.7, rubric 1.6.
-- https://openworkplacehealth.org/instrument-registry/single-items.html : single-item measures, each linked to the multi-item instrument it was validated against, with the cited study
-- https://openworkplacehealth.org/instrument-registry/rubric.html : grading rubric v1.6 (grade scale, evidence states, evidence forms, three-value indirectness flag defined by population type and never by country or language with its population-naming basis stated on every cell, the High precondition of two cited studies with a sample size and a named statistic of the property graded, listed per property, the population-sensitive list, absence types, how a cell is derived, the freeze, the inter-rater procedure)
-- https://openworkplacehealth.org/instrument-registry/corrections.html : corrections process, errata, right of reply
-- https://openworkplacehealth.org/question-bank/ : the public question bank with provenance and licence status per item
 - https://openworkplacehealth.org/changelog.html : every version of the registry and the specification, dated
 - https://openworkplacehealth.org/automation.html : what the monthly evidence sweep may and may not do
+- https://openworkplacehealth.org/search.html : site search
+
+## The catalogue: instrument registry
+- https://openworkplacehealth.org/instrument-registry/ : the instrument evidence registry, the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing, scope the whole field by construct (27 instruments graded so far, 31 records, stage one, across eight psychometric evidence properties in the matrix, with a ninth (populations, languages and norms) on each record, cited, versioned, licence class tracked with archived source pages; single-item measures linked in the data to the instruments they screen for). Dataset v0.9.0, schema 0.7, rubric 1.6.
+- https://openworkplacehealth.org/instrument-registry/how-to-read.html : explainer, how to read a registry record and what a grade does and does not mean
+- https://openworkplacehealth.org/methods.html : how the registry grades evidence, in plain language, and its honest current limits
+- https://openworkplacehealth.org/instrument-registry/single-items.html : single-item measures, each linked to the multi-item instrument it was validated against, with the cited study
+- https://openworkplacehealth.org/instrument-registry/admission.html : how an instrument enters the registry
+- https://openworkplacehealth.org/instrument-registry/rubric.html : grading rubric v1.6 (grade scale, evidence states, evidence forms, three-value indirectness flag defined by population type and never by country or language with its population-naming basis stated on every cell, the High precondition of two cited studies with a sample size and a named statistic of the property graded, listed per property, the population-sensitive list, absence types, how a cell is derived, the freeze, the inter-rater procedure)
+- https://openworkplacehealth.org/instrument-registry/corrections.html : corrections process, errata, right of reply
+
+## The catalogue: question bank
+- https://openworkplacehealth.org/question-bank/ : the Workplace Wellbeing Question Bank v0.2.0, a provenance-tracked catalogue of public survey items for measuring wellbeing at work: 13 topic groups, 85 items, 46 carrying wording verified verbatim against the primary source and openly licensed for redistribution; the rest catalogued with full provenance and the reason wording is held. Nothing is paraphrased. Successor to the archived 2020 bank of the What Works Centre for Wellbeing, which informed coverage only, not arrangement.
+- https://openworkplacehealth.org/question-bank/domains.html : the items by topic group
+- https://openworkplacehealth.org/question-bank/verification.html : the per-item verification table, the wording of record, and the source documents matched against (URL and SHA-256)
+- https://openworkplacehealth.org/question-bank/rights.html : the rebuild-not-republish protocol, the per-source licence audit, and the content policy
 
 ## Registry status, stated plainly
-- All grades were assigned by one rater employed by the steward. Grades and statuses are frozen from 1 September 2026 until two named psychometric raters who are not steward employees have joined.
+- All grades were assigned by one rater employed by the steward. Grades and statuses are frozen from first publication until two named psychometric raters who are not steward employees have joined.
 - AI assists literature retrieval, screening, extraction and drafting; it never assigns a grade and never writes to the dataset except through a human-merged pull request.
 - The registry publishes no ranking and no "best instrument". Grades are not comparable across instruments.
+- The registry describes instruments; it never reproduces them. The question bank renders item wording only where it is verified verbatim and openly licensed.
 
 ## Machine-readable data
 - Instrument evidence registry JSON (schema 0.7), CSV, PDF and the rubric in Markdown: https://openworkplacehealth.org/instrument-registry/downloads.html ; versioned with a changelog and previous versions retained.
+- Question bank JSON (canonical), CSV and PDF: https://openworkplacehealth.org/question-bank/downloads.html
+- Specification bundle (Markdown, JSON Schemas, code lists, examples): https://openworkplacehealth.org/spec/
+- Sitemap: https://openworkplacehealth.org/sitemap.xml
 
+Public repository: https://github.com/openworkplacehealth/OWHS
 Contact: hello@openworkplacehealth.org
