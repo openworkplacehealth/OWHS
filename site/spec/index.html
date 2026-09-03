@@ -426,7 +426,8 @@ health-driven flexible-working change is a
 outcome value (<code>ill-health-exit</code>), two reserved entities
 (<code>RiskAssessment</code>, <code>WorkplaceIncident</code>), and two
 named profiles (<code>owhs-ohsurveillance</code>, <code>owhs-msk</code>)
-added to the IWE profile already anticipated by the scope draft.</p>
+alongside the steward’s own profile already anticipated by the scope
+draft.</p>
 <hr />
 <h2 id="entity-catalogue">2. Entity catalogue</h2>
 <p>Sixteen entities in five clusters, plus two reserved names and one
@@ -2460,18 +2461,18 @@ The core spec is the interoperability contract; a profile is a labelled
 overlay that a consumer can ignore and still read the core fields.</p>
 <p><strong>Naming and namespacing.</strong> A profile has a
 reverse-DNS-free short id, <code>owhs-&lt;slug&gt;</code>
-(e.g. <code>owhs-iwe</code>, <code>owhs-msk</code>,
+(e.g. <code>owhs-msk</code>,
 <code>owhs-ohsurveillance</code>). Profile-specific fields are carried
 under a single reserved object, <code>ext</code>, keyed by profile
 id:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span> <span class="dt">&quot;episodeId&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;reasonCode&quot;</span><span class="fu">:</span> <span class="st">&quot;musculoskeletal&quot;</span><span class="fu">,</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;ext&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;owhs-iwe&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;anchorItemSet&quot;</span><span class="fu">:</span> <span class="st">&quot;MSIT-35&quot;</span><span class="fu">,</span> <span class="dt">&quot;rotationCycle&quot;</span><span class="fu">:</span> <span class="dv">3</span> <span class="fu">}</span> <span class="fu">}</span> <span class="fu">}</span></span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;ext&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;owhs-msk&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;surveillanceWave&quot;</span><span class="fu">:</span> <span class="dv">3</span> <span class="fu">}</span> <span class="fu">}</span> <span class="fu">}</span></span></code></pre></div>
 <p>Core validators use <code>additionalProperties:false</code> on the
 top level but explicitly permit the <code>ext</code> object, whose
 sub-keys are only validated when the matching profile schema is loaded.
-A consumer that does not understand <code>owhs-iwe</code> drops
-<code>ext.owhs-iwe</code> and still has a conformant core record.</p>
+A consumer that does not understand <code>owhs-msk</code> drops
+<code>ext.owhs-msk</code> and still has a conformant core record.</p>
 <p><strong>What a profile MAY do:</strong> add fields under its
 <code>ext</code> key; narrow a core field (tighten a
 <code>maxLength</code>, restrict an enum to a subset, make a
@@ -2489,13 +2490,12 @@ privacy-profile MUST (aggregation floors, identifier ban, safeguarding
 exclusion); or place any field outside <code>ext</code> that is not
 defined in core. A profile that needs a new top-level field is a
 <strong>core change request</strong> (RFC), not a profile.</p>
-<p><strong>The IWE profile</strong> (Alltoogether’s, the worked example
-of extensibility) lives entirely in <code>ext.owhs-iwe</code>:
-anchor/rotator/cycle sampling machinery, the FIML/Bayesian scoring
-specifics, and the platform’s construct sub-taxonomy, none of which the
-core presumes. It doubles as the conformance test for the mechanism: if
-the IWE profile can be expressed without touching core, the boundary is
-drawn correctly.</p>
+<p><strong>The steward’s own profile</strong>, the worked example of
+extensibility, lives entirely under its <code>ext</code> key: its
+sampling design, scoring specifics and construct sub-taxonomy, none of
+which the core presumes. It doubles as the conformance test for the
+mechanism: if the steward’s product can be expressed without touching
+core, the boundary is drawn correctly.</p>
 <h2 id="identifiers-and-pseudonymisation">8. Identifiers and
 pseudonymisation</h2>
 <p><strong>Requirement.</strong> Records for one worker must link
@@ -2841,6 +2841,7 @@ See the honesty pass, §3.</em></p>
 </div>
 <footer><div class="wrap">
   <p>The Open Workplace Health Standard (OWHS) · early open specification · <a href="../index.html">openworkplacehealth.org</a></p>
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). The specification and registry are CC-BY 4.0.</p><!-- /mark -->
 </div></footer>
 </body>
 </html>

@@ -65,7 +65,7 @@ Occupational health is the domain the brief singles out, and rightly: OH data si
 - **DSE assessment, accident/RIDDOR record → reserved entities.** DSE is near-universal but is a *workstation risk-assessment* artefact; a RIDDOR-reportable injury already surfaces via the work-relatedness flag on `AbsenceEpisode`, and a full incident record duplicates the employer's separate statutory report to HSE. Reserve `RiskAssessment` and `WorkplaceIncident` as names, model neither in v0.1.
 - **Vaccinations/health checks, drug & alcohol testing, flexible-working requests, Bradford-factor triggers, first aid → out of scope.** Each is either a clinical event inviting diagnosis semantics, a near-forensic sector process, an HR-admin flow, derived management logic, or facilities compliance, none is an SME workplace-health *record* that a national benchmark needs, and several carry privacy risk with no offsetting benchmarking value. Where a health consequence exists it already surfaces elsewhere (a health-driven flexible-working change is a `ReasonableAdjustment`; a testing-related absence is just an `AbsenceEpisode`).
 
-**Net effect on the entity set:** two new core entities (`OHEpisode`, `ReasonableAdjustment`), one new RTW outcome value (`ill-health-exit`), two reserved entities (`RiskAssessment`, `WorkplaceIncident`), and two named profiles (`owhs-ohsurveillance`, `owhs-msk`) added to the IWE profile already anticipated by the scope draft.
+**Net effect on the entity set:** two new core entities (`OHEpisode`, `ReasonableAdjustment`), one new RTW outcome value (`ill-health-exit`), two reserved entities (`RiskAssessment`, `WorkplaceIncident`), and two named profiles (`owhs-ohsurveillance`, `owhs-msk`) alongside the steward's own profile already anticipated by the scope draft.
 
 
 ---
@@ -448,20 +448,20 @@ The valid instances model the same worker (one pseudonym) through a coherent jou
 
 OWHS follows the FHIR profiling pattern: a **vendor profile constrains and extends the core, but may never contradict it**. The core spec is the interoperability contract; a profile is a labelled overlay that a consumer can ignore and still read the core fields.
 
-**Naming and namespacing.** A profile has a reverse-DNS-free short id, `owhs-<slug>` (e.g. `owhs-iwe`, `owhs-msk`, `owhs-ohsurveillance`). Profile-specific fields are carried under a single reserved object, `ext`, keyed by profile id:
+**Naming and namespacing.** A profile has a reverse-DNS-free short id, `owhs-<slug>` (e.g. `owhs-msk`, `owhs-ohsurveillance`). Profile-specific fields are carried under a single reserved object, `ext`, keyed by profile id:
 
 ```json
 { "episodeId": "...", "reasonCode": "musculoskeletal",
-  "ext": { "owhs-iwe": { "anchorItemSet": "MSIT-35", "rotationCycle": 3 } } }
+  "ext": { "owhs-msk": { "surveillanceWave": 3 } } }
 ```
 
-Core validators use `additionalProperties:false` on the top level but explicitly permit the `ext` object, whose sub-keys are only validated when the matching profile schema is loaded. A consumer that does not understand `owhs-iwe` drops `ext.owhs-iwe` and still has a conformant core record.
+Core validators use `additionalProperties:false` on the top level but explicitly permit the `ext` object, whose sub-keys are only validated when the matching profile schema is loaded. A consumer that does not understand `owhs-msk` drops `ext.owhs-msk` and still has a conformant core record.
 
 **What a profile MAY do:** add fields under its `ext` key; narrow a core field (tighten a `maxLength`, restrict an enum to a subset, make a core-optional field required *within the profile*); add profile-scoped code lists; bind a core code-list field to a profile-specific value set that is a **subset** of the core list.
 
 **What a profile MUST NOT do:** widen a core constraint (add enum values to a core list, relax a `required`, remove `additionalProperties:false`); change a field's type or meaning; change a field's privacy classification to something more permissive (a profile can make an `open` field `individual-never`, never the reverse); override any privacy-profile MUST (aggregation floors, identifier ban, safeguarding exclusion); or place any field outside `ext` that is not defined in core. A profile that needs a new top-level field is a **core change request** (RFC), not a profile.
 
-**The IWE profile** (Alltoogether's, the worked example of extensibility) lives entirely in `ext.owhs-iwe`: anchor/rotator/cycle sampling machinery, the FIML/Bayesian scoring specifics, and the platform's construct sub-taxonomy, none of which the core presumes. It doubles as the conformance test for the mechanism: if the IWE profile can be expressed without touching core, the boundary is drawn correctly.
+**The steward's own profile**, the worked example of extensibility, lives entirely under its `ext` key: its sampling design, scoring specifics and construct sub-taxonomy, none of which the core presumes. It doubles as the conformance test for the mechanism: if the steward's product can be expressed without touching core, the boundary is drawn correctly.
 
 ## 8. Identifiers and pseudonymisation
 
