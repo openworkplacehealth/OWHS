@@ -29,7 +29,7 @@ No direct identifiers anywhere, ever (enforced in schema). No employer-visible v
 ## Status
 
 > **Status: early open specification.**
-> OWHS was created by Zak Fenton and is currently stewarded by Alltoogether. Its specification, schemas and supporting materials are published under permissive licences and are open to inspect, use, challenge and improve. If OWHS earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.
+> OWHS was created by [Zak Fenton](https://www.linkedin.com/in/zak-fenton-a433624b/) and is currently stewarded by Alltoogether. Its specification, schemas and supporting materials are published under permissive licences and are open to inspect, use, challenge and improve. If OWHS earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.
 
 Alltoogether develops commercial products that may implement OWHS. The standard does not require use of any Alltoogether product, and the project publishes its contribution, decision and change processes openly.
 
