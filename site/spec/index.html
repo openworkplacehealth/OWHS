@@ -40,6 +40,9 @@ header{border-bottom:1px solid var(--line);padding:18px 0}
 .nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:0 auto;padding:0 24px}
 .mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
 .mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
 .layout{max-width:1160px;margin:0 auto;padding:36px 24px;display:block}
 aside.toc{display:none}
 main{min-width:0;max-width:820px}
@@ -62,7 +65,16 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <body>
 <header><div class="nav">
   <a class="mark" href="../index.html"><span class="dot"></span>OWHS</a>
-  <nav style="display:flex;gap:22px;font-size:15px;flex-wrap:wrap"><a href="../index.html" style="text-decoration:none;color:var(--body)">Home</a><a href="../standard.html" style="text-decoration:none;color:var(--body)">Inside the standard</a><a href="../governance.html" style="text-decoration:none;color:var(--body)">Governance</a><a href="../methods.html" style="text-decoration:none;color:var(--body)">How we grade</a></nav>
+  <nav class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../standard.html">Inside the standard</a>
+    <a href="../why.html">The case</a>
+    <a href="../governance.html">Governance</a>
+    <a href="../methods.html">How we grade</a>
+    <a href="../question-bank/index.html">Question bank</a>
+    <a href="../instrument-registry/index.html">Instrument registry</a>
+    <a href="../search.html">Search</a>
+  </nav>
 </div></header>
 <div class="layout">
 <aside class="toc"><div class="toc-title">Sections</div>
