@@ -18,7 +18,7 @@ OWHS is an independent, open proposal for what standardised workplace-health dat
 | `examples/` | A valid and a deliberately invalid instance per schema, with the validation report showing exactly which conformance errors the invalid ones raise. |
 | `codelists/` | 23 independently versioned code lists (ONS absence reasons, fit-note adjustment categories, HSE-anchored construct domains, the provisional safeguarding-category list, and more) plus the registry. |
 | `tools/` | The reference validator (Level 1, structural). `python tools/validate.py <schema> <instance>` |
-| `site/` | The project site: plain-language pages, the instrument evidence registry (dataset v0.8.0, schema 0.7, grading rubric v1.5), the question bank, search. |
+| `site/` | The project site: plain-language pages, the instrument evidence registry (dataset v0.9.0, schema 0.7, grading rubric v1.6), the question bank, search. |
 | `GOVERNANCE.md` | Stewardship, the progressive-governance model, licences, the change process. |
 | `DECISIONS.md` | The public decision log, running since before release. |
 
