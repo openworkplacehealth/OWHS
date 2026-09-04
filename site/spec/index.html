@@ -724,9 +724,7 @@ names.</em></p>
 scope draft’s P1 to P5 stand; this draft adds the fourth visibility class
 made necessary by occupational health and adjustments (§1.2).</p>
 <ul>
-<li><strong>P1, no direct identifiers</strong> anywhere in an OWHS
-payload; pseudonymous IDs and banded demographics only. Enforced <em>in
-schema</em> (§2d).</li>
+<li><strong>P1, no direct identifiers</strong> in an OWHS payload; pseudonymous IDs and banded demographics only. What is enforced <em>in schema</em> (§2d): a direct identifier cannot be carried in a field of its own, because every entity and every nested object declares its permitted properties and rejects the rest. What is not enforced: an identifier written into the value of a permitted string field, such as a source-system provider name, is structurally valid. No schema keyword detects it. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.</li>
 <li><strong>P2, aggregation floors:</strong> n≥5 for any
 employer-visible value; <strong>n≥10</strong> for severe-distress
 measures. A conformant producer <strong>refuses to emit</strong>, not
@@ -1642,6 +1640,7 @@ method enum)</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Erratum, 4 September 2026.</strong> As first published, this table marked <code>value</code> unconditionally required while §9 required a producer below an aggregation floor to set <code>suppressed:true</code> and not emit the value. The two could not both be satisfied, so no conformant suppressed report could exist. <code>value</code> is required when <code>suppressed</code> is false and must be absent when it is true, as the table now states. This corrects a contradiction in the specification; it does not change what a producer below a floor was always required to do.</p>
 <h3 id="benefitentitlement">BenefitEntitlement</h3>
 <table style="width:100%;">
 <colgroup>
@@ -1972,10 +1971,10 @@ ahead of national guidance.</p>
 <tr>
 <td><code>value</code></td>
 <td>number</td>
-<td>✓</td>
+<td>✓ unsuppressed</td>
 <td></td>
 <td>open (post-floor)</td>
-<td>the aggregate value</td>
+<td>the aggregate value; <strong>required when <code>suppressed:false</code>, and MUST be absent when <code>suppressed:true</code></strong></td>
 </tr>
 <tr>
 <td><code>interval</code></td>
@@ -1983,7 +1982,7 @@ ahead of national guidance.</p>
 <td>○</td>
 <td></td>
 <td>open</td>
-<td>uncertainty</td>
+<td>uncertainty; MUST be absent when <code>suppressed:true</code>, since an interval discloses the suppressed value to within its width</td>
 </tr>
 <tr>
 <td><code>suppressed</code></td>
@@ -2373,12 +2372,7 @@ boundary rules expressed <em>in schema</em></h3>
 <p>The privacy profile is not left to prose, the schemas enforce the
 parts a validator can see:</p>
 <ul>
-<li><strong>Direct-identifier ban (P1):</strong>
-<code>additionalProperties:false</code> plus an explicit
-<code>not/anyOf</code> rejecting <code>name</code>, <code>nino</code>,
-<code>email</code>, <code>dateOfBirth</code>, <code>address</code>. Both
-layers fire, so a producer cannot smuggle an identifier through either a
-typo or a known field name.</li>
+<li><strong>Direct-identifier ban (P1):</strong> <code>additionalProperties:false</code> on each entity and on every nested object rejects <code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code>, <code>address</code> and every other property not declared in the schema, whether it arrives as a known identifier name or as a typo. An earlier <code>not/anyOf</code> member asserting the same five names has been removed: it duplicated an error that <code>additionalProperties</code> already raised, changed no verdict, and its comment claimed to forbid identifiers &quot;anywhere&quot;, which was untrue of values. A key-based rule cannot reach an identifier pasted into a permitted string field; that is stated as a producer obligation in §3 P1.</li>
 <li><strong>Pseudonym shape:</strong> <code>pseudonymId</code> must
 match <code>^owhs:pseudo:[0-9a-f]{16,64}$</code>, so a raw employee
 reference (<code>EMP-Jane-Smith</code>) is a schema error, not a
@@ -2569,17 +2563,21 @@ cryptographic elegance and say so.</p>
 meets; a consumer states the minimum it requires. Each level runs every
 check of the levels below it.</p>
 <h3 id="level-1-schema-valid">Level 1, Schema-valid</h3>
-<p>Structural conformance to the Draft 2020-12 schemas. - Every entity
-instance validates against its schema
-(<code>additionalProperties:false</code>, required fields, types,
-formats, patterns). - The direct-identifier ban (P1) passes,
-<code>name</code>/<code>nino</code>/<code>email</code>/<code>dateOfBirth</code>/<code>address</code>
-absent, <code>pseudonymId</code> matches the pseudonym pattern. -
-Cross-field structural rules the schema encodes fire: OH
-clinical-content boundary, OH consent gate, RTW
-<code>did-not-return</code>-vs-adjustments rule. - <em>Not yet
-checked:</em> whether coded values are current, whether aggregates clear
-the floors.</p>
+<p>Structural conformance to the Draft 2020-12 schemas.</p>
+<ul>
+<li>Every entity instance validates against its schema (<code>additionalProperties:false</code>, required fields, types, patterns), <strong>with every <code>format</code> asserted</strong>. In Draft 2020-12 <code>format</code> is an annotation unless a validator is told to assert it, so a validator that does not assert it accepts any string where a date is declared. A conformance claim at this level requires the assertion.</li>
+<li>The direct-identifier ban (P1) passes: <code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code> and <code>address</code> are rejected by <code>additionalProperties:false</code> on the entity and on every nested object, and <code>pseudonymId</code> matches the pseudonym pattern.</li>
+<li>Cross-field structural rules the schema encodes fire: OH clinical-content boundary, OH consent gate, RTW <code>did-not-return</code>-vs-adjustments rule.</li>
+<li>The named cross-field rules below fire. JSON Schema compares an instance against a schema and never one field of an instance against another, so an ordering rule between two dates cannot be expressed in it. These rules are implemented in the reference validator and each has an instance in <code>examples/</code>.</li>
+</ul>
+<table>
+<thead><tr><th>Rule</th><th>Entity</th><th>Statement</th></tr></thead>
+<tbody>
+<tr><td>C1</td><td><code>AbsenceEpisode</code></td><td>Where <code>endDate</code> is present it must not precede <code>startDate</code>.</td></tr>
+<tr><td>C2</td><td><code>OHEpisode</code></td><td>Where <code>assessmentDate</code> is present it must not precede <code>referralDate</code>.</td></tr>
+</tbody>
+</table>
+<p><em>Not yet checked:</em> whether coded values are current, whether aggregates clear the floors.</p>
 <h3 id="level-2-code-lists">Level 2, +Code lists</h3>
 <p>Level 1, plus every coded field resolves to a
 <strong>current</strong> code-list version. - Each
@@ -2587,10 +2585,7 @@ the floors.</p>
 <code>name@version</code> in the registry. - <code>whiu:</code> and
 SNOMED values are well-formed (namespace/pattern) but not resolved
 against external registries (SNOMED is optional and licence-gated;
-<code>whiu:</code> is reserved and not yet published). - Date sanity
-runs here: <code>endDate ≥ startDate</code>,
-<code>assessmentDate ≥ referralDate</code>,
-<code>rtwDate ≥ absence startDate</code>.</p>
+<code>whiu:</code> is reserved and not yet published). - Cross-<strong>record</strong> date sanity runs here, where a second record is needed to judge the first: <code>rtwDate ≥ the linked absence startDate</code>. The within-record date rules are C1 and C2 at Level 1, because they need nothing beyond the instance.</p>
 <h3 id="level-3-privacy-profile">Level 3, +Privacy profile</h3>
 <p>Level 2, plus the normative privacy MUSTs, the level that makes a
 payload <em>safe to emit</em>. - <strong>Aggregation floor:</strong> any
@@ -2613,10 +2608,14 @@ hide:</strong> a Level-3 producer that cannot satisfy a floor MUST
 refuse to emit the offending value (suppression is emitting <em>metadata
 about a withholding</em>, which is permitted and required; emitting the
 raw sub-floor value is non-conformant).</p>
-<p>The reference validator implements Level 1 today (proven in §2d);
-Levels 2 and 3 are specified as the checks a full validator adds, and are
-cross-record/payload-level rather than per-instance, which is why they
-are conformance levels, not schema keywords.</p>
+<p>The reference validator implements Level 1 today (proven in §2d), including the format assertion and the named cross-field rules. Levels 2 and 3 are specified as the checks a full validator adds, and are cross-record or payload-level rather than per-instance, which is why they are conformance levels and not schema keywords. <strong>No tool in this repository verifies Level 2 or Level 3.</strong></p>
+<p>Three parts of Level 3 are not verifiable from payloads at all, and are audit obligations. They are stated here rather than left to be inferred, because a reader could otherwise take a Level 3 declaration to mean more than it can mean.</p>
+<ul>
+<li><strong>A recipient cannot verify <code>n</code>.</strong> Every floor check compares a value against a respondent count the producer supplied. A recipient can check that a report is internally consistent with the <code>n</code> it declares; it cannot check that <code>n</code> is true.</li>
+<li><strong>Withholding by omission is undetectable unless suppression is emitted.</strong> If a producer simply leaves out the cells that fell below a floor, a recipient sees a shorter list and nothing else. &quot;Refuse, don't hide&quot; therefore has an observable meaning only if a Level 3 producer emits a suppressed <code>AggregateReport</code> for every cell it would otherwise have reported.</li>
+<li><strong>Visibility classes (P3) are properties of a pipeline, not of a payload.</strong> No payload records where a value was sent, so <code>individual-never</code> is verified by review of the producer's implementation and not by any validator.</li>
+</ul>
+<p></p>
 <hr />
 <h2 id="the-honesty-pass-disputable-decisions-and-open-questions">10.
 The honesty pass: disputable decisions and open questions</h2>

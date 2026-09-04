@@ -2,7 +2,7 @@
 
 **Status:** design draft for discussion · UK English · normative artefact is plain JSON Schema (Draft 2020-12) · FHIR profiles are a stated v1.x direction. This document is the schema design responding to the OWHS v0.1 scope draft; it takes the scope draft's six design principles as fixed constraints and does not restate them. Spec text is offered CC-BY 4.0; schemas, examples and validator Apache-2.0.
 
-**What is machine-checked in this draft.** The three worked JSON Schemas meta-validate as Draft 2020-12; each valid example instance passes with zero errors and each invalid instance raises exactly the intended conformance errors. Results: [`validation_report.json`](validator/validation_report.json). Everything else (field tables, code lists, profile/identity/conformance prose) is design specification, not executed code.
+**What is machine-checked in this draft.** The three worked JSON Schemas meta-validate as Draft 2020-12; each valid example instance passes with zero errors and each invalid instance raises exactly the intended conformance errors. Results: [`validation_report.json`](examples/validation_report.json). Everything else (field tables, code lists, profile/identity/conformance prose) is design specification, not executed code.
 
 **Primary-source anchors** (every definitional choice cites one): sickness-absence semantics, 7.5-hour day and reason taxonomy → **ONS, *Sickness absence in the UK labour market: 2025*** [1][10][26]; psychosocial domains → **HSE Management Standards** six domains [19] + MSIT [17]; RTW adjustment vocabulary → **Statement of Fitness for Work (fit note)** "may be fit" categories; statutory benefit entitlement → **Statutory Sick Pay (SSP)**; reasonable adjustments → **Equality Act 2010 s.20**; optional clinical coding → **SNOMED CT** (affiliate-licence caveat, never conformance-required); reserved national definitions → **Workplace Health Intelligence Unit (WHIU)** `whiu:` namespace [31][34]. No licensed instrument item text is reproduced anywhere in this standard.
 
@@ -140,7 +140,7 @@ The Mermaid source is [`erd.mmd`](erd.mmd) (renders natively in GitHub/Markdown)
 
 Restated here because §2b field tables reference it on every row. The scope draft's P1 to P5 stand; this draft adds the fourth visibility class made necessary by occupational health and adjustments (§1.2).
 
-- **P1, no direct identifiers** anywhere in an OWHS payload; pseudonymous IDs and banded demographics only. Enforced *in schema* (§2d).
+- **P1, no direct identifiers** in an OWHS payload; pseudonymous IDs and banded demographics only. What is enforced in schema (§2d): a direct identifier cannot be carried in a field of its own, because every entity and every nested object declares its permitted properties and rejects the rest. What is not enforced: an identifier written into the value of a permitted string field, such as a source-system provider name, is structurally valid. No schema keyword detects it. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.
 - **P2, aggregation floors:** n≥5 for any employer-visible value; **n≥10** for severe-distress measures. A conformant producer **refuses to emit**, not merely hides.
 - **P3, visibility is a field-level property** with four classes: `open` / `aggregate-only` / `individual-employer` / `individual-never`. All instrument results are `individual-never` by definition.
 - **P4, safeguarding-category signals** (bullying, harassment, discrimination, crisis) are excluded from employer-visible outputs entirely, **at any n**.
@@ -340,11 +340,14 @@ Restated here because §2b field tables reference it on every row. The scope dra
 | `headcount` | integer | ✓ | | open | denominator |
 | `completionRate` | number | ✓ | | open | **P5** completeness travels with the aggregate |
 | `metricCode` | string | ✓ | codelist:construct-domain@0.1 / metric | open | what is reported |
-| `value` | number | ✓ | | open (post-floor) | the aggregate value |
-| `interval` | object{low,high} | ○ | | open | uncertainty |
+| `value` | number | ✓ unsuppressed | | open (post-floor) | the aggregate value; **required when `suppressed:false`, and MUST be absent when `suppressed:true`** |
+| `interval` | object{low,high} | ○ | | open | uncertainty; MUST be absent when `suppressed:true`, since an interval discloses the suppressed value to within its width |
 | `suppressed` | boolean | ✓ | | open | **P5** whether withheld |
 | `suppressionReason` | string | ○ | codelist:suppression-reason@0.1 | open | below-floor / safeguarding / low-completion |
 | `contextId` | string (ref) | ✓ | | open | → MeasurementContext |
+
+**Erratum, 4 September 2026.** As first published, this table marked `value` unconditionally required while §9 required a producer below an aggregation floor to set `suppressed:true` and not emit the value. The two could not both be satisfied, so no conformant suppressed report could exist. `value` is required when `suppressed` is false and must be absent when it is true, as the table now states. This corrects a contradiction in the specification; it does not change what a producer below a floor was always required to do.
+
 
 ### BenchmarkRelease
 
@@ -413,7 +416,7 @@ Every list is a standalone JSON file with its own `version` (semver), independen
 
 ## 6. JSON Schemas and validation
 
-Three core entities are given as full JSON Schema (Draft 2020-12), each with a valid and a deliberately invalid instance. All three schemas meta-validate (`Draft202012Validator.check_schema`), every valid instance passes with **0** errors, and every invalid instance raises exactly the intended conformance errors. The machine-checked results are in [`validation_report.json`](validator/validation_report.json); the validator run is reproducible with `jsonschema`.
+Three core entities are given as full JSON Schema (Draft 2020-12), each with a valid and a deliberately invalid instance. All three schemas meta-validate (`Draft202012Validator.check_schema`), every valid instance passes with **0** errors, and every invalid instance raises exactly the intended conformance errors. The machine-checked results are in [`validation_report.json`](examples/validation_report.json); the validator run is reproducible with `jsonschema`.
 
 Schemas: [`AbsenceEpisode.json`](schemas/AbsenceEpisode.json) · [`ReturnToWorkOutcome.json`](schemas/ReturnToWorkOutcome.json) · [`OHEpisode.json`](schemas/OHEpisode.json).
 
@@ -423,7 +426,7 @@ Schemas: [`AbsenceEpisode.json`](schemas/AbsenceEpisode.json) · [`ReturnToWorkO
 
 The privacy profile is not left to prose, the schemas enforce the parts a validator can see:
 
-- **Direct-identifier ban (P1):** `additionalProperties:false` plus an explicit `not/anyOf` rejecting `name`, `nino`, `email`, `dateOfBirth`, `address`. Both layers fire, so a producer cannot smuggle an identifier through either a typo or a known field name.
+- **Direct-identifier ban (P1):** `additionalProperties:false` on each entity and on every nested object rejects `name`, `nino`, `email`, `dateOfBirth`, `address` and every other property not declared in the schema, whether it arrives as a known identifier name or as a typo. An earlier `not/anyOf` member asserting the same five names has been removed: it duplicated an error that `additionalProperties` already raised, changed no verdict, and its comment claimed to forbid identifiers "anywhere", which was untrue of values. A key-based rule cannot reach an identifier pasted into a permitted string field; that is stated as a producer obligation in §3 P1.
 - **Pseudonym shape:** `pseudonymId` must match `^owhs:pseudo:[0-9a-f]{16,64}$`, so a raw employee reference (`EMP-Jane-Smith`) is a schema error, not a warning.
 - **OH clinical-content boundary:** `OHEpisode` rejects `diagnosis`, `clinicalCauseCode`, `symptoms`, `testResults`, `reportText`, `history` via both `additionalProperties:false` and an explicit `not/anyOf`.
 - **OH consent gate:** an `if/then` requires `opinionReleasedToEmployer === true` whenever `fitnessOpinion` is present.
@@ -491,16 +494,23 @@ Three cumulative levels. A producer declares the highest level it meets; a consu
 
 ### Level 1, Schema-valid
 Structural conformance to the Draft 2020-12 schemas.
-- Every entity instance validates against its schema (`additionalProperties:false`, required fields, types, formats, patterns).
-- The direct-identifier ban (P1) passes, `name`/`nino`/`email`/`dateOfBirth`/`address` absent, `pseudonymId` matches the pseudonym pattern.
+- Every entity instance validates against its schema (`additionalProperties:false`, required fields, types, patterns), **with every `format` asserted**. In Draft 2020-12 `format` is an annotation unless a validator is told to assert it, so a validator that does not assert it accepts any string where a date is declared. A conformance claim at this level requires the assertion.
+- The direct-identifier ban (P1) passes: `name`, `nino`, `email`, `dateOfBirth` and `address` are rejected by `additionalProperties:false` on the entity and on every nested object, and `pseudonymId` matches the pseudonym pattern.
 - Cross-field structural rules the schema encodes fire: OH clinical-content boundary, OH consent gate, RTW `did-not-return`-vs-adjustments rule.
+- The named cross-field rules below fire. JSON Schema compares an instance against a schema and never one field of an instance against another, so an ordering rule between two dates cannot be expressed in it. These rules are implemented in the reference validator and each has an instance in `examples/`.
+
+| Rule | Entity | Statement |
+| --- | --- | --- |
+| C1 | `AbsenceEpisode` | Where `endDate` is present it must not precede `startDate`. |
+| C2 | `OHEpisode` | Where `assessmentDate` is present it must not precede `referralDate`. |
+
 - *Not yet checked:* whether coded values are current, whether aggregates clear the floors.
 
 ### Level 2, +Code lists
 Level 1, plus every coded field resolves to a **current** code-list version.
 - Each `codelist:<name>` field value exists in the pinned `name@version` in the registry.
 - `whiu:` and SNOMED values are well-formed (namespace/pattern) but not resolved against external registries (SNOMED is optional and licence-gated; `whiu:` is reserved and not yet published).
-- Date sanity runs here: `endDate ≥ startDate`, `assessmentDate ≥ referralDate`, `rtwDate ≥ absence startDate`.
+- Cross-**record** date sanity runs here, where a second record is needed to judge the first: `rtwDate ≥ the linked absence `startDate``. The within-record date rules are C1 and C2 at Level 1, because they need nothing beyond the instance.
 
 ### Level 3, +Privacy profile
 Level 2, plus the normative privacy MUSTs, the level that makes a payload *safe to emit*.
@@ -510,7 +520,13 @@ Level 2, plus the normative privacy MUSTs, the level that makes a payload *safe 
 - **Completeness travels (P5):** every `AggregateReport` carries `completionRate`, `suppressed`, and (where applicable) `suppressionReason`.
 - **Refuse, don't hide:** a Level-3 producer that cannot satisfy a floor MUST refuse to emit the offending value (suppression is emitting *metadata about a withholding*, which is permitted and required; emitting the raw sub-floor value is non-conformant).
 
-The reference validator implements Level 1 today (proven in §2d); Levels 2 and 3 are specified as the checks a full validator adds, and are cross-record/payload-level rather than per-instance, which is why they are conformance levels, not schema keywords.
+The reference validator implements Level 1 today (proven in §2d), including the format assertion and the named cross-field rules. Levels 2 and 3 are specified as the checks a full validator adds, and are cross-record or payload-level rather than per-instance, which is why they are conformance levels and not schema keywords. **No tool in this repository verifies Level 2 or Level 3.**
+
+Three parts of Level 3 are not verifiable from payloads at all, and are audit obligations. They are stated here rather than left to be inferred, because a reader could otherwise take a Level 3 declaration to mean more than it can mean.
+
+- **A recipient cannot verify `n`.** Every floor check compares a value against a respondent count the producer supplied. A recipient can check that a report is internally consistent with the `n` it declares; it cannot check that `n` is true.
+- **Withholding by omission is undetectable unless suppression is emitted.** If a producer simply leaves out the cells that fell below a floor, a recipient sees a shorter list and nothing else. "Refuse, don't hide" therefore has an observable meaning only if a Level 3 producer emits a suppressed `AggregateReport` for every cell it would otherwise have reported.
+- **Visibility classes (P3) are properties of a pipeline, not of a payload.** No payload records where a value was sent, so `individual-never` is verified by review of the producer's implementation and not by any validator.
 
 
 ---
