@@ -40,7 +40,7 @@
         ]
       },
       "uniqueItems": true,
-      "$comment": "codelist:rtw-adjustment@0.1.0 \u2014 fit-note 'may be fit' categories"
+      "$comment": "codelist:rtw-adjustment@0.1.0 — fit-note 'may be fit' categories"
     },
     "rtwDate": {
       "type": "string",
@@ -108,26 +108,7 @@
       }
     },
     {
-      "$comment": "P1 forbid direct identifiers",
-      "not": {
-        "anyOf": [
-          {
-            "required": [
-              "name"
-            ]
-          },
-          {
-            "required": [
-              "nino"
-            ]
-          },
-          {
-            "required": [
-              "email"
-            ]
-          }
-        ]
-      }
+      "$comment": "P1 (no direct identifiers) is enforced structurally by \"additionalProperties\": false on this object and on every nested object, which rejects any property not declared here, including name, nino, email, dateOfBirth and address. A key-based rule cannot reach an identifier written into the value of a permitted string field; that part of P1 is a producer obligation, stated in the privacy profile. The previous allOf member duplicated additionalProperties and claimed to forbid identifiers \"anywhere\", which was not true of values."
     }
   ]
 }
