@@ -25,7 +25,7 @@
         "gastrointestinal",
         "other"
       ],
-      "$comment": "codelist:absence-reason@0.1.0 \u2014 ONS reason taxonomy"
+      "$comment": "codelist:absence-reason@0.1.0 — ONS reason taxonomy"
     },
     "startDate": {
       "type": "string",
@@ -89,52 +89,10 @@
   ],
   "allOf": [
     {
-      "$comment": "P1: forbid direct identifiers anywhere",
-      "not": {
-        "anyOf": [
-          {
-            "required": [
-              "name"
-            ]
-          },
-          {
-            "required": [
-              "nino"
-            ]
-          },
-          {
-            "required": [
-              "email"
-            ]
-          },
-          {
-            "required": [
-              "dateOfBirth"
-            ]
-          },
-          {
-            "required": [
-              "address"
-            ]
-          }
-        ]
-      }
+      "$comment": "P1 (no direct identifiers) is enforced structurally by \"additionalProperties\": false on this object and on every nested object, which rejects any property not declared here, including name, nino, email, dateOfBirth and address. A key-based rule cannot reach an identifier written into the value of a permitted string field; that part of P1 is a producer obligation, stated in the privacy profile. The previous allOf member duplicated additionalProperties and claimed to forbid identifiers \"anywhere\", which was not true of values."
     },
     {
-      "$comment": "endDate must not precede startDate \u2014 enforced structurally where possible",
-      "if": {
-        "required": [
-          "endDate"
-        ]
-      },
-      "then": {
-        "properties": {
-          "endDate": {
-            "type": "string",
-            "format": "date"
-          }
-        }
-      }
+      "$comment": "Chronology (endDate not before startDate) is not expressible in JSON Schema, which compares an instance against a schema and never one field against another. It is the named Level 1 cross-field rule C1, listed in the specification and implemented in tools/validate.py. The previous allOf member re-asserted the type and format of endDate and enforced no ordering."
     }
   ]
 }
