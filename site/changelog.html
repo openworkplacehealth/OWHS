@@ -94,7 +94,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <div class="tabs" role="tablist" aria-label="Changelog sections">
   <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">11</span></button>
   <button type="button" class="tab" role="tab" id="tab-specification" aria-controls="panel-specification" aria-selected="false">Specification <span class="count">4</span></button>
-  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">4</span></button>
+  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">7</span></button>
 </div>
 
 <section class="panel" id="panel-registry" role="tabpanel" aria-labelledby="tab-registry" tabindex="0">
@@ -130,7 +130,10 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2 class="panel-title">Site</h2>
   <table>
     <tr><th>Date</th><th>What changed</th></tr>
-    <tr><td>4 Sep 2026</td><td>Privacy wording corrected across the site: pseudonymised records are stated to remain personal data under UK GDPR, the identity requirement is scoped to an OWHS payload, and the record is described as open, versioned and forkable rather than permanent. This changelog added to the navigation.</td></tr>
+    <tr><td>4 Sep 2026</td><td>This changelog split into three sections, one each for the instrument evidence registry, the specification and the site, and added to the navigation on every page. Each section is linkable directly, at <span class="mono">#registry</span>, <span class="mono">#specification</span> and <span class="mono">#site</span>, so a single history can be cited. Without JavaScript all three render in full.</td></tr>
+    <tr><td>4 Sep 2026</td><td>Two pages corrected to match the specification after the validator changes. <a href="how-it-works.html">How it works</a> no longer says that no direct identifier appears anywhere, and separates what the schemas enforce, which is that an identifier cannot occupy a field of its own, from what a producer is obliged to do, which is not to paste one into a permitted text field. <a href="standard.html">Inside the standard</a> demonstrated validator output containing an error the validator no longer raises; it now shows the output a run produces.</td></tr>
+    <tr><td>4 Sep 2026</td><td>The copies of the schemas and examples served from <span class="mono">/spec/</span> brought back into step with the repository, so a reader downloading from the site gets the same files as the repository. The publish step now refreshes them rather than leaving two copies to be kept in step by hand.</td></tr>
+    <tr><td>4 Sep 2026</td><td>Privacy wording corrected across the site: pseudonymised records are stated to remain personal data under UK GDPR, the identity requirement is scoped to an OWHS payload, and the record is described as open, versioned and forkable rather than permanent.</td></tr>
     <tr><td>3 Sep 2026</td><td><a href="privacy.html">Privacy</a> and <a href="legal.html">legal</a> pages published, linked from every page footer. The privacy page states what the site collects, who is responsible, on what basis and for how long; the legal page states who operates the site, the trade mark, the licences and what the registry is and is not.</td></tr>
     <tr><td>3 Sep 2026</td><td>Visit counting added: page views and page exits, counted without cookies and without identifying anyone; the method is stated on the <a href="governance.html">governance page</a>.</td></tr>
     <tr><td>3 Sep 2026</td><td>Site opened to search engines.</td></tr>
