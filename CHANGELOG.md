@@ -108,6 +108,16 @@ and names three parts of Level 3 that no payload can carry:
 That paragraph is worse reading than the one it replaces. It is the only version this repository
 can defend.
 
+### Opened: both RFCs for comment
+
+RFC 0001 (construct-domain code list v0.2) and RFC 0002 (subject-identifying constructs) both read
+"Draft; opens for comment with the public release". The release has happened, so they are open, with
+a comment window of 7 September to 17 October 2026 and a numbered issue each as the comment thread.
+The window spans the point at which most people will first see the standard, and a month beyond it.
+
+A window is the period before a decision is recorded. Comments arriving after it closes are still
+read.
+
 ### Error counts that moved
 
 `AbsenceEpisode.invalid` fell from five errors to four, because a duplicate identifier assertion

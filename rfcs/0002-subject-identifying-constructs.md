@@ -2,7 +2,9 @@
 
 | | |
 |---|---|
-| Status | Draft; opens for comment with the public release |
+| Status | Open for comment |
+| Comment window | 7 September to 17 October 2026 |
+| Comment thread | [issue #25](https://github.com/openworkplacehealth/OWHS/issues/25) |
 | Affects | Privacy profile (P2, P3); `codelists/construct-domain.json` (a new field); spec section 3.3 open question 9 |
 | Breaking | No, if adopted as proposed. It adds a field and a rule; it withdraws nothing |
 | Drafted | 2 September 2026, after external review of the registry's scope |
