@@ -465,7 +465,7 @@ Core validators use `additionalProperties:false` on the top level but explicitly
 
 ## 8. Identifiers and pseudonymisation
 
-**Requirement.** Records for one worker must link *within* an employer, never *across* employers, and never back to identity, and an SME with no data team must be able to implement it.
+**Requirement.** Records for one worker must link *within* an employer, never *across* employers, and never back to identity from an OWHS payload alone, and an SME with no data team must be able to implement it.
 
 **Issue.** For each worker, the pseudonym is a keyed hash:
 

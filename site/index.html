@@ -193,7 +193,7 @@ ul,ol{max-width:760px}
 </div></section>
 
 <section id="record"><div class="wrap">
-  <h2>Held as a permanent public record</h2>
+  <h2>Held as an open, versioned, forkable public record</h2>
   <p>Reference material in this field has a habit of disappearing. The What Works Centre for Wellbeing, which published the 2020 Workplace Wellbeing Question Bank, closed in 2023; that bank now survives only as an archive. OWHS is built so the same cannot happen here.</p>
   <ol class="principles">
     <li><b>Everything is versioned and downloadable.</b> Each release of the specification, the registry and the question bank is a dated dataset anyone can keep a copy of.</li>
@@ -207,7 +207,7 @@ ul,ol{max-width:760px}
   <h2>Privacy is conformance, not a promise</h2>
   <p>Workplace-health data can identify and harm people. So the privacy rules are part of the standard itself: a technically valid payload that violates them is non-conformant, and a conformant producer refuses to emit it.</p>
   <ol class="principles">
-    <li><b>No direct identifiers, ever.</b> Pseudonymous worker references and banded demographics only, in every payload.</li>
+    <li><b>No direct identifiers, ever.</b> Pseudonymous worker references and banded demographics only, in every payload. Pseudonymised records are still personal data under UK GDPR: the standard reduces disclosure and re-identification risk, it does not make data anonymous.</li>
     <li><b>Small groups are never reported.</b> Minimum aggregation of five for anything an employer sees, rising to ten for severe-distress measures, consistent with statistical disclosure control practice in official statistics.</li>
     <li><b>Individual results belong to the individual.</b> Instrument results are never employer-visible at person level, by definition rather than by configuration.</li>
     <li><b>Safeguarding signals are excluded entirely.</b> Bullying, harassment, discrimination and crisis signals never appear in employer-visible outputs, at any group size.</li>

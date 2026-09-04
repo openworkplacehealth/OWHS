@@ -6,7 +6,7 @@ Conflict of interest: Alltoogether develops commercial products that may impleme
 
 Licences: specification prose and guidance CC-BY 4.0; schemas, codelists, examples, dataset structure and tooling Apache 2.0. Third-party instrument and survey-item wording is never ours to license and stays with its source under the terms recorded per item.
 
-Two things, one project. The standard says what a workplace-health record is: entities, schemas and code lists for sickness absence, return to work, wellbeing measurement and benefit provision, anchored to ONS, HSE, the statutory fit note and SSP. The catalogue says what the measures inside it are worth and where they come from: an instrument evidence registry and a survey question bank, both versioned, corrected in the open and kept as a permanent public record. Each is published at three depths: an explainer, a working page, and the full verifiable source.
+Two things, one project. The standard says what a workplace-health record is: entities, schemas and code lists for sickness absence, return to work, wellbeing measurement and benefit provision, anchored to ONS, HSE, the statutory fit note and SSP. The catalogue says what the measures inside it are worth and where they come from: an instrument evidence registry and a survey question bank, both versioned, corrected in the open and kept as an open, forkable public record. Each is published at three depths: an explainer, a working page, and the full verifiable source.
 
 ## The standard (data model)
 - https://openworkplacehealth.org/ : the home page, both halves of the project and a way in for each kind of reader
