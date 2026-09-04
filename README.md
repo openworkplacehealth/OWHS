@@ -1,6 +1,6 @@
 # OWHS: the Open Workplace Health Standard
 
-**v0.1 · early open specification · not yet publicly released**
+**v0.1 · early open specification · published for public review**
 
 An open data standard for workplace health: sickness absence, return to work, occupational health, wellbeing measurement and benefit provision, defined once, in plain language and machine-readable schemas, private by design, free for anyone to implement. Built first for the UK, and for the millions of businesses everywhere that will never have a data team.
 
@@ -43,7 +43,7 @@ Specification text and documentation: **CC-BY 4.0**. Schemas, code lists, exampl
 
 The instrument registry is the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing. For every instrument it records what it measures, how well, in which populations and languages, and on what licence terms, drawn from the literature and existing systematic reviews, every claim cited, every grade conservative. It is maintained, machine-readable and free to use, so that nobody choosing, building, licensing or reviewing a workplace measure has to reassemble the field's evidence themselves.
 
-It grades 27 instruments, stage one of the field, across eight psychometric evidence properties in the matrix, with a ninth (populations, languages and norms) on each record, licence class verified against archived steward pages, and single-item measures linked in the data to the multi-item instruments they have been validated against. All grades were assigned by one rater employed by the steward, under the rules published as rubric v1.3 (`site/instrument-registry/RUBRIC-v1.3.md`; indirectness is defined by population type, never by country; a High grade needs two cited studies with a sample size and a statistic of the property graded). Grades and statuses are frozen from first publication until two named psychometric raters who are not steward employees have joined. AI assists retrieval, screening, extraction and drafting; it never assigns a grade, and nothing it produces reaches the dataset except through a pull request a human merges.
+It grades 27 instruments, stage one of the field, across eight psychometric evidence properties in the matrix, with a ninth (populations, languages and norms) on each record, licence class verified against archived steward pages, and single-item measures linked in the data to the multi-item instruments they have been validated against. All grades were assigned by one rater employed by the steward, under the rules published as rubric v1.6 (`site/instrument-registry/RUBRIC-v1.6.md`; indirectness is defined by population type, never by country; a High grade needs two cited studies with a sample size and a statistic of the property graded). Grades and statuses are frozen from first publication until two named psychometric raters who are not steward employees have joined. AI assists retrieval, screening, extraction and drafting; it never assigns a grade, and nothing it produces reaches the dataset except through a pull request a human merges.
 
 ## Get involved
 
