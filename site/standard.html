@@ -90,6 +90,7 @@ ul,ol{max-width:760px}
     <a href="instrument-registry/index.html">Instrument registry</a>
     <a href="methods.html">How we grade</a>
     <a href="governance.html">Governance</a>
+    <a href="changelog.html">Changelog</a>
     <a href="search.html">Search</a>
   </nav>
 </div></header>
@@ -276,9 +277,10 @@ ul,ol{max-width:760px}
 
   <p>And this is what the reference validator says if you try to sneak a name into the same record:</p>
 
-<pre><span class="c">[additionalProperties] Additional properties are not allowed ('name' was unexpected)</span>
-<span class="c">[not] P1: forbid direct identifiers anywhere</span>
-<span class="c">[pattern] pseudonymId: 'EMP-Jane-Smith' does not match '^owhs:pseudo:[0-9a-f]{16,64}$'</span></pre>
+<pre><span class="c">[additionalProperties] &lt;root&gt;: Additional properties are not allowed ('name' was unexpected)</span>
+<span class="c">[required] &lt;root&gt;: 'sourceProvenance' is a required property</span>
+<span class="c">[pattern] pseudonymId: 'EMP-Jane-Smith' does not match '^owhs:pseudo:[0-9a-f]{16,64}$'</span>
+<span class="c">[enum] reasonCode: 'back-pain' is not one of ['minor-illness', 'musculoskeletal', 'mental-health', 'respiratory', 'gastrointestinal', 'other']</span></pre>
 
   <p>That is the design in one demonstration: privacy violations are not policy breaches to be audited after the fact. They are invalid data.</p>
 
