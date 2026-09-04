@@ -21,15 +21,15 @@ with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
         z.write(src, arc)
 print(f"bundle written: {OUT.relative_to(ROOT)} ({len(FILES)} files)")
 
-# Publish-time mirror: the site serves its own copies of the schemas and examples, so a reader
+# Publish-time mirror: the site serves its own copies of the schemas, examples and code lists, so a reader
 # downloading from the site gets the same bytes as the repository. Keeping them in step by hand
 # is how the validation-report link came to be right in one copy and wrong in the other.
 import shutil
-for d in ("schemas", "examples"):
+for d in ("schemas", "examples", "codelists"):
     dest = ROOT / "site" / "spec" / d
     if dest.is_dir():
         for p in dest.glob("*.json"):
             p.unlink()
         for p in sorted((ROOT / d).glob("*.json")):
             shutil.copy2(p, dest / p.name)
-print("site/spec mirror refreshed from schemas/ and examples/")
+print("site/spec mirror refreshed from schemas/, examples/ and codelists/")

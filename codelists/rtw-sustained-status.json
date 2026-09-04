@@ -1,0 +1,21 @@
+{
+  "codelist": "rtw-sustained-status",
+  "version": "0.1.0",
+  "anchor": "OWHS v0.1; sustained-return status at a checkpoint (no UK incumbent)",
+  "notes": "Promoted from an inline enum in ReturnToWorkOutcome at v0.1; the values are unchanged, so no instance that was valid before is invalid now. Closed vocabulary: the schema pins it by name@version and a producer may not extend it. `unknown` is retained deliberately, because a checkpoint that was not followed up is a different fact from a relapse and collapsing the two would overstate sustained returns. whiu: crosswalk reserved.",
+  "values": [
+    {
+      "code": "sustained",
+      "label": "Still in work at the checkpoint"
+    },
+    {
+      "code": "relapsed",
+      "label": "Absent again at the checkpoint for the same or a related reason"
+    },
+    {
+      "code": "unknown",
+      "label": "Checkpoint not followed up, or status not recorded",
+      "note": "not a relapse; distinguishes missing follow-up from a known outcome"
+    }
+  ]
+}

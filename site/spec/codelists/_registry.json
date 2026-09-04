@@ -123,6 +123,13 @@
       "anchor": "OWHS v0.1; return-to-work outcome types (no UK incumbent)"
     },
     {
+      "name": "rtw-sustained-status",
+      "version": "0.1.0",
+      "file": "rtw-sustained-status.json",
+      "values": 3,
+      "anchor": "OWHS v0.1; sustained-return status at a checkpoint (no UK incumbent)"
+    },
+    {
       "name": "safeguarding-category",
       "version": "0.1.0",
       "file": "safeguarding-category.json",

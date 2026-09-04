@@ -1,0 +1,8 @@
+# Runtime dependencies of the reference validator and the build tools.
+# Pinned to major versions only: the tools use stable public APIs.
+#
+# jsonschema provides the Draft 2020-12 validator. Its `[format]` extra installs the
+# packages that make `format` assertable: without them jsonschema registers no checker
+# for a format and accepts any value for it, which is why tools/validate.py refuses to
+# run rather than report a pass it cannot stand behind.
+jsonschema[format]>=4.18

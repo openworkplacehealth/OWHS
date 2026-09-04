@@ -69,7 +69,8 @@
             "manual",
             "broker",
             "oh-provider"
-          ]
+          ],
+          "$comment": "codelist:source-type@0.1.0 — OWHS record provenance"
         },
         "sourceProvider": {
           "type": "string"
