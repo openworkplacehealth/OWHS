@@ -2503,8 +2503,8 @@ core, the boundary is drawn correctly.</p>
 pseudonymisation</h2>
 <p><strong>Requirement.</strong> Records for one worker must link
 <em>within</em> an employer, never <em>across</em> employers, and never
-back to identity, and an SME with no data team must be able to implement
-it.</p>
+back to identity from an OWHS payload alone, and an SME with no data team
+must be able to implement it.</p>
 <p><strong>Issue.</strong> For each worker, the pseudonym is a keyed
 hash:</p>
 <pre><code>pseudonymId = &quot;owhs:pseudo:&quot; + HMAC-SHA256( key = orgSalt , msg = stableWorkerKey )[:32 hex]</code></pre>
