@@ -1,87 +1,83 @@
 {
   "specVersion": "0.1.0",
-  "validator": "jsonschema Draft202012Validator",
+  "validator": "tools/validate.py, jsonschema Draft202012Validator with FORMAT_CHECKER and the Level 1 cross-field rules",
+  "generatedBy": "tools/build_validation_report.py",
   "results": {
     "AbsenceEpisode": {
-      "valid_instance_passes": true,
-      "valid_instance_error_count": 0,
-      "invalid_instance_error_count": 5,
-      "invalid_instance_errors": [
-        {
-          "path": [],
-          "validator": "additionalProperties",
-          "message": "Additional properties are not allowed ('name' was unexpected)",
-          "comment": ""
-        },
-        {
-          "path": [],
-          "validator": "required",
-          "message": "'sourceProvenance' is a required property",
-          "comment": ""
-        },
-        {
-          "path": [],
-          "validator": "not",
-          "message": "{'episodeId': 'abs-BAD', 'pseudonymId': 'EMP-Jane-Smith', 'name': 'Jane Smith', 'reasonCode': 'back-pain', 'startDate': '2026-03-02'} should not be valid under {'anyOf': [{'required': ['name']}, {'req",
-          "comment": "P1: forbid direct identifiers anywhere"
-        },
-        {
-          "path": [
-            "pseudonymId"
-          ],
-          "validator": "pattern",
-          "message": "'EMP-Jane-Smith' does not match '^owhs:pseudo:[0-9a-f]{16,64}$'",
-          "comment": ""
-        },
-        {
-          "path": [
-            "reasonCode"
-          ],
-          "validator": "enum",
-          "message": "'back-pain' is not one of ['minor-illness', 'musculoskeletal', 'mental-health', 'respiratory', 'gastrointestinal', 'other']",
-          "comment": "codelist:absence-reason@0.1.0 \u2014 ONS reason taxonomy"
-        }
-      ]
-    },
-    "ReturnToWorkOutcome": {
-      "valid_instance_passes": true,
-      "valid_instance_error_count": 0,
-      "invalid_instance_error_count": 1,
-      "invalid_instance_errors": [
-        {
-          "path": [],
-          "validator": "not",
-          "message": "{'outcomeId': 'rtw-BAD', 'absenceEpisodeId': 'abs-2026-000123', 'pseudonymId': 'owhs:pseudo:a1b2c3d4e5f60718', 'outcomeType': 'did-not-return', 'adjustmentTypes': ['phased-return']} should not be vali",
-          "comment": "a did-not-return outcome cannot carry return adjustments"
-        }
-      ]
+      "chronology-boundary.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "chronology.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C1] <root>: endDate '2020-01-01' precedes startDate '2026-03-02'"
+        ]
+      },
+      "dates.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 2,
+        "errors": [
+          "[format] endDate: '2026-13-45' is not a 'date'",
+          "[format] startDate: 'banana' is not a 'date'"
+        ]
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 4,
+        "errors": [
+          "[additionalProperties] <root>: Additional properties are not allowed ('name' was unexpected)",
+          "[required] <root>: 'sourceProvenance' is a required property",
+          "[pattern] pseudonymId: 'EMP-Jane-Smith' does not match '^owhs:pseudo:[0-9a-f]{16,64}$'",
+          "[enum] reasonCode: 'back-pain' is not one of ['minor-illness', 'musculoskeletal', 'mental-health', 'respiratory', 'gastrointestinal', 'other']"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
     },
     "OHEpisode": {
-      "valid_instance_passes": true,
-      "valid_instance_error_count": 0,
-      "invalid_instance_error_count": 3,
-      "invalid_instance_errors": [
-        {
-          "path": [],
-          "validator": "additionalProperties",
-          "message": "Additional properties are not allowed ('clinicalCauseCode', 'diagnosis' were unexpected)",
-          "comment": ""
-        },
-        {
-          "path": [],
-          "validator": "not",
-          "message": "{'ohEpisodeId': 'oh-BAD', 'pseudonymId': 'owhs:pseudo:a1b2c3d4e5f60718', 'referralReason': 'long-term-absence', 'referralDate': '2026-03-05', 'fitnessOpinion': 'unfit', 'opinionReleasedToEmployer': Fa",
-          "comment": "BOUNDARY: no clinical content permitted"
-        },
-        {
-          "path": [
-            "opinionReleasedToEmployer"
-          ],
-          "validator": "const",
-          "message": "True was expected",
-          "comment": ""
-        }
-      ]
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 3,
+        "errors": [
+          "[additionalProperties] <root>: Additional properties are not allowed ('clinicalCauseCode', 'diagnosis' were unexpected)",
+          "[not] <root>: {'ohEpisodeId': 'oh-BAD', 'pseudonymId': 'owhs:pseudo:a1b2c3d4e5f60718', 'referralReason': 'long-term-absence', 'referralDate': '2026-03-05', 'fitnessOpinion': 'unfit', 'opinionReleasedToEmployer': False, 'diagnosis': 'Major depressive disorder', 'clinicalCauseCode': '370143000'} should not be valid under {'anyOf': [{'required': ['diagnosis']}, {'required': ['clinicalCauseCode']}, {'required': ['symptoms']}, {'required': ['testResults']}, {'required': ['reportText']}, {'required': ['history']}]}",
+          "[const] opinionReleasedToEmployer: True was expected"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "ReturnToWorkOutcome": {
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[not] <root>: {'outcomeId': 'rtw-BAD', 'absenceEpisodeId': 'abs-2026-000123', 'pseudonymId': 'owhs:pseudo:a1b2c3d4e5f60718', 'outcomeType': 'did-not-return', 'adjustmentTypes': ['phased-return']} should not be valid under {'required': ['adjustmentTypes']}"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
     }
   }
 }

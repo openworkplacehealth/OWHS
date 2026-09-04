@@ -68,6 +68,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
     <a href="instrument-registry/index.html">Instrument registry</a>
     <a href="methods.html">How we grade</a>
     <a href="governance.html">Governance</a>
+    <a href="changelog.html">Changelog</a>
     <a href="search.html">Search</a>
   </nav>
 </div></header>
@@ -95,6 +96,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2>Specification</h2>
   <table>
     <tr><th>Version</th><th>Date</th><th>What changed</th></tr>
+    <tr><td class="mono">v0.1</td><td>4 Sep 2026</td><td>Corrections after an external technical review, each one reproduced before it was fixed. The reference validator did not assert <span class="mono">format</span>, so any string passed where a date was declared; it now asserts every format and refuses to run rather than report a pass it cannot stand behind. An <span class="mono">allOf</span> member said end dates must not precede start dates and enforced no ordering; date ordering within a record is now the named rules C1 and C2 at Level 1, implemented in the validator, because JSON Schema cannot compare two fields of an instance. A direct-identifier member duplicated <span class="mono">additionalProperties: false</span> and claimed to forbid identifiers "anywhere", which was untrue of values; the privacy profile now separates what is enforced from what is a producer obligation. <span class="mono">value</span> on <span class="mono">AggregateReport</span> was unconditionally required while section 9 required a producer below a floor to suppress and not emit it, so no conformant suppressed report could exist; corrected with an erratum. Level 3 now states that no tool in the repository verifies it, and why parts of it cannot be verified from a payload at all. Full detail in <a href="https://github.com/openworkplacehealth/OWHS/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</td></tr>
     <tr><td class="mono">v0.1</td><td>3 Sep 2026</td><td>Text revision, nothing normative: section 7 examples use the profiles the specification itself defines (<span class="mono">owhs-msk</span>, <span class="mono">owhs-ohsurveillance</span>) and the steward's own profile is described by its role rather than by name; the safeguarding-category anchor says the same. The rendered page, the markdown and the bundle are regenerated from the source.</td></tr>
     <tr><td class="mono">v0.1</td><td>Jul 2026</td><td>First public draft: entity catalogue, JSON schemas with conformance examples, 23 versioned codelists, privacy profile, reference validator, four open RFCs.</td></tr>
   </table>
@@ -102,6 +104,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2>Site</h2>
   <table>
     <tr><th>Date</th><th>What changed</th></tr>
+    <tr><td>4 Sep 2026</td><td>Privacy wording corrected across the site: pseudonymised records are stated to remain personal data under UK GDPR, the identity requirement is scoped to an OWHS payload, and the record is described as open, versioned and forkable rather than permanent. This changelog added to the navigation.</td></tr>
     <tr><td>3 Sep 2026</td><td><a href="privacy.html">Privacy</a> and <a href="legal.html">legal</a> pages published, linked from every page footer. The privacy page states what the site collects, who is responsible, on what basis and for how long; the legal page states who operates the site, the trade mark, the licences and what the registry is and is not.</td></tr>
     <tr><td>3 Sep 2026</td><td>Visit counting added: page views and page exits, counted without cookies and without identifying anyone; the method is stated on the <a href="governance.html">governance page</a>.</td></tr>
     <tr><td>3 Sep 2026</td><td>Site opened to search engines.</td></tr>
