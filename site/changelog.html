@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html class="no-js" lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,6 +52,19 @@ th{background:var(--wash);color:var(--ink);font-weight:600}
 .mono{font-family:var(--mono);font-size:13.5px}
 footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color:var(--muted)}
 .small{font-size:14px;color:var(--muted)}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:26px 0 0;border-bottom:1px solid var(--line)}
+.tab{font:inherit;font-size:15px;font-weight:600;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;padding:9px 14px;margin-bottom:-1px;cursor:pointer;border-radius:4px 4px 0 0}
+.tab:hover{color:var(--ink);background:var(--wash)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);background:var(--accent-soft)}
+.tab .count{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--muted);margin-left:5px}
+.tab[aria-selected="true"] .count{color:var(--accent)}
+.panel{padding-top:6px}
+.panel:focus{outline:none}
+.panel-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.no-js .tabs{display:none}
+.no-js .panel-title{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto;white-space:normal}
 </style>
 <!-- analytics --><script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_UBxs6DIFwK73c1QzudH8AWR6HHZtNAkqhpbz3lCcPfg',{api_host:'https://eu.i.posthog.com',ui_host:'https://eu.posthog.com',defaults:'2026-05-30',cookieless_mode:'always',person_profiles:'never',autocapture:false,capture_pageview:true,capture_pageleave:true,disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});</script><!-- /analytics -->
 </head>
@@ -73,11 +86,19 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   </nav>
 </div></header>
 
+<script>document.documentElement.className=document.documentElement.className.replace(/\bno-js\b/,"");</script>
 <article><div class="wrap">
   <h1>Changelog</h1>
   <p class="meta">every version of the registry and the specification, and every change to the site, dated · newest first · <a href="automation.html">how the monthly automation runs</a></p>
 
-  <h2>Instrument evidence registry</h2>
+  <div class="tabs" role="tablist" aria-label="Changelog sections">
+  <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">11</span></button>
+  <button type="button" class="tab" role="tab" id="tab-specification" aria-controls="panel-specification" aria-selected="false">Specification <span class="count">3</span></button>
+  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">4</span></button>
+</div>
+
+<section class="panel" id="panel-registry" role="tabpanel" aria-labelledby="tab-registry" tabindex="0">
+  <h2 class="panel-title">Instrument evidence registry</h2>
   <table>
     <tr><th>Version</th><th>Date</th><th>What changed</th></tr>
     <tr><td class="mono">v0.9.0</td><td>3 Sep 2026</td><td>Reconciliation of the fifth independent check, of v0.8.0 and scoped to the changes 1.5 made, before first publication; the check's verdict was fit to publish with one grade to move first, and its three findings and two notes were all taken. <a href="instrument-registry/rubric.html">Rubric v1.6</a>: the norm rule is read as written, so a High grade on populations, languages and norms rests on a study that states a norm, cut-off, prevalence or reference value and not on a word that matches the test; section 10 says that precondition evidence sits only on a High cell or a High <span class="mono">previous</span> block. One grade moved, COPSOQ III populations, languages and norms High to Moderate (the entry that met the rule names a shared-variance figure in the Czech screening version; the study that carries norms in substance states no value in its abstract, and the cell returns to High when those values are read from the full text, first on the check list). European Working Conditions Survey internal consistency changes status from well-established to thin, grade unchanged at Low. The K10 criterion-validity judgement is corrected in one clause (the two developer studies are two designs, not one programme), grade unchanged. The WHO-5 populations cell notes that its one norm-bearing entry is a cut-off validated in diabetes patients and holds on its working-adult entries. One statistic gains a population clause with its value unchanged. All 420 DOIs resolved on the conformance date. Schema 0.7 unchanged. Every changed cell keeps its 1.5 values in <span class="mono">previous</span>. Logged as correction C-0009.</td></tr>
@@ -92,16 +113,20 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
     <tr><td class="mono">v0.2</td><td>12 Jul 2026</td><td>Second research pass: evidence records deepened across all instruments, schema v0.2, licence positions re-verified against steward pages.</td></tr>
     <tr><td class="mono">v0.1</td><td>12 Jul 2026</td><td>Initial registry: 27 instruments graded across 8 evidence properties from a full research pass, with citations, licence status and a public corrections process.</td></tr>
   </table>
+</section>
 
-  <h2>Specification</h2>
+<section class="panel" id="panel-specification" role="tabpanel" aria-labelledby="tab-specification" tabindex="0">
+  <h2 class="panel-title">Specification</h2>
   <table>
     <tr><th>Version</th><th>Date</th><th>What changed</th></tr>
     <tr><td class="mono">v0.1</td><td>4 Sep 2026</td><td>Corrections after an external technical review, each one reproduced before it was fixed. The reference validator did not assert <span class="mono">format</span>, so any string passed where a date was declared; it now asserts every format and refuses to run rather than report a pass it cannot stand behind. An <span class="mono">allOf</span> member said end dates must not precede start dates and enforced no ordering; date ordering within a record is now the named rules C1 and C2 at Level 1, implemented in the validator, because JSON Schema cannot compare two fields of an instance. A direct-identifier member duplicated <span class="mono">additionalProperties: false</span> and claimed to forbid identifiers "anywhere", which was untrue of values; the privacy profile now separates what is enforced from what is a producer obligation. <span class="mono">value</span> on <span class="mono">AggregateReport</span> was unconditionally required while section 9 required a producer below a floor to suppress and not emit it, so no conformant suppressed report could exist; corrected with an erratum. Level 3 now states that no tool in the repository verifies it, and why parts of it cannot be verified from a payload at all. Full detail in <a href="https://github.com/openworkplacehealth/OWHS/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</td></tr>
     <tr><td class="mono">v0.1</td><td>3 Sep 2026</td><td>Text revision, nothing normative: section 7 examples use the profiles the specification itself defines (<span class="mono">owhs-msk</span>, <span class="mono">owhs-ohsurveillance</span>) and the steward's own profile is described by its role rather than by name; the safeguarding-category anchor says the same. The rendered page, the markdown and the bundle are regenerated from the source.</td></tr>
     <tr><td class="mono">v0.1</td><td>Jul 2026</td><td>First public draft: entity catalogue, JSON schemas with conformance examples, 23 versioned codelists, privacy profile, reference validator, four open RFCs.</td></tr>
   </table>
+</section>
 
-  <h2>Site</h2>
+<section class="panel" id="panel-site" role="tabpanel" aria-labelledby="tab-site" tabindex="0">
+  <h2 class="panel-title">Site</h2>
   <table>
     <tr><th>Date</th><th>What changed</th></tr>
     <tr><td>4 Sep 2026</td><td>Privacy wording corrected across the site: pseudonymised records are stated to remain personal data under UK GDPR, the identity requirement is scoped to an OWHS payload, and the record is described as open, versioned and forkable rather than permanent. This changelog added to the navigation.</td></tr>
@@ -109,6 +134,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
     <tr><td>3 Sep 2026</td><td>Visit counting added: page views and page exits, counted without cookies and without identifying anyone; the method is stated on the <a href="governance.html">governance page</a>.</td></tr>
     <tr><td>3 Sep 2026</td><td>Site opened to search engines.</td></tr>
   </table>
+</section>
 
   <p class="small">Machine-readable versions of the registry, including this history, are available from the <a href="instrument-registry/downloads.html">downloads page</a>.</p>
 </div></article>
@@ -117,5 +143,35 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
 <!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). The specification and registry are CC-BY 4.0.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
 </div></footer>
+
+<script>
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
+  if (!tabs.length) return;
+  function show(name, focus) {
+    tabs.forEach(function (t) { t.setAttribute('aria-selected', String(t.id === 'tab-' + name)); });
+    panels.forEach(function (p) { p.hidden = p.id !== 'panel-' + name; });
+    if (focus) { document.getElementById('tab-' + name).focus(); }
+  }
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () {
+      var name = tab.id.slice(4);
+      show(name);
+      history.replaceState(null, '', '#' + name);
+    });
+    tab.addEventListener('keydown', function (e) {
+      var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      var next = tabs[(i + step + tabs.length) % tabs.length];
+      show(next.id.slice(4), true);
+      history.replaceState(null, '', '#' + next.id.slice(4));
+    });
+  });
+  var start = location.hash.replace('#', '');
+  show(document.getElementById('tab-' + start) ? start : tabs[0].id.slice(4));
+})();
+</script>
 </body>
 </html>
