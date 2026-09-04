@@ -2,7 +2,7 @@
 
 **Status:** design draft for discussion · UK English · normative artefact is plain JSON Schema (Draft 2020-12) · FHIR profiles are a stated v1.x direction. This document is the schema design responding to the OWHS v0.1 scope draft; it takes the scope draft's six design principles as fixed constraints and does not restate them. Spec text is offered CC-BY 4.0; schemas, examples and validator Apache-2.0.
 
-**What is machine-checked in this draft.** The three worked JSON Schemas meta-validate as Draft 2020-12; each valid example instance passes with zero errors and each invalid instance raises exactly the intended conformance errors. Results: [`validation_report.json`](examples/validation_report.json). Everything else (field tables, code lists, profile/identity/conformance prose) is design specification, not executed code.
+**What is machine-checked in this draft.** The three worked JSON Schemas meta-validate as Draft 2020-12; each valid example instance passes with zero errors and each invalid instance raises exactly the errors the error map names. Results: [`validation_report.json`](../examples/validation_report.json). Everything else (field tables, code lists, profile/identity/conformance prose) is design specification, not executed code.
 
 **Primary-source anchors** (every definitional choice cites one): sickness-absence semantics, 7.5-hour day and reason taxonomy → **ONS, *Sickness absence in the UK labour market: 2025*** [1][10][26]; psychosocial domains → **HSE Management Standards** six domains [19] + MSIT [17]; RTW adjustment vocabulary → **Statement of Fitness for Work (fit note)** "may be fit" categories; statutory benefit entitlement → **Statutory Sick Pay (SSP)**; reasonable adjustments → **Equality Act 2010 s.20**; optional clinical coding → **SNOMED CT** (affiliate-licence caveat, never conformance-required); reserved national definitions → **Workplace Health Intelligence Unit (WHIU)** `whiu:` namespace [31][34]. No licensed instrument item text is reproduced anywhere in this standard.
 
@@ -396,11 +396,21 @@ Every list is a standalone JSON file with its own `version` (semver), independen
 | `rtw-adjustment` | 0.1.0 | 4 | Statement of Fitness for Work (fit note) 'may be fit' categories |
 | `rtw-checkpoint` | 0.1.0 | 3 | OWHS v0.1 provisional sustained-RTW checkpoints |
 | `rtw-outcome` | 0.1.0 | 5 | OWHS v0.1; return-to-work outcome types (no official UK taxonomy; insurer/OH case systems use proprietary ones) |
+| `rtw-sustained-status` | 0.1.0 | 3 | OWHS v0.1; sustained-return status at a checkpoint (no UK incumbent) |
 | `sampling-design` | 0.1.0 | 3 | OWHS sampling design descriptor |
 | `source-type` | 0.1.0 | 4 | OWHS record provenance |
 | `suppression-reason` | 0.1.0 | 3 | OWHS aggregate suppression reasons |
 | `tenure-band` | 0.1.0 | 5 | OWHS tenure bands |
 | `work-pattern` | 0.1.0 | 2 | ONS employment-type dimension |
+
+**The closed-vocabulary rule.** A field whose permitted values are fixed is bound to a registered code list, and nowhere else. Concretely:
+
+- **Every closed vocabulary is a registered list.** If a field's values are a fixed set, that set lives in `codelists/` with its own `version` and a `_registry.json` entry. A schema may not carry a fixed set of values that exists nowhere else: an enum without a list is a vocabulary with no owner, no version and no route for anyone to propose a change to it.
+- **A schema pins by `name@version` in a `$comment` and repeats the values inline.** The inline `enum` is the executable copy; the comment is what says which list and which version it was copied from. Both are required, because the validator resolves neither: nothing in the tooling reads `codelists/` at Level 1, so the comment is the only record of what the enum is supposed to be a copy of. Keeping the two in step is a Level 2 obligation and is not yet checked by any tool in this repository.
+- **A closed vocabulary is closed.** A producer may not add values. A profile may restrict a bound field to a subset (section 7) and may not extend it. Adding a value is a minor version bump on the list, followed by a schema update pinning the new version.
+- **An advisory list is marked as advisory in the schema.** Where a list records what producers SHOULD use rather than what they MUST, the schema takes the wider type and the `$comment` says so, naming the list as a recommended set. `sustainedAt[].checkpointWeeks` is the worked example: an open integer from 1 to 104, with `rtw-checkpoint@0.1.0` cited as the recommended set per decision D4. An advisory list is not a closed vocabulary and the rule above does not apply to it.
+
+`rtw-sustained-status@0.1.0` was created under this rule at v0.1: the three values were previously inline in `ReturnToWorkOutcome` with no list behind them. The values are unchanged, so no instance that validated before validates differently now.
 
 **Design notes on the anchored lists.**
 - **`absence-reason`** adopts the six ONS reason categories verbatim (minor illness, musculoskeletal, mental health, respiratory, gastrointestinal, other), so an org rate is ONS-comparable [1]. It carries *no* diagnosis granularity, clinical cause is the separate optional SNOMED field.
@@ -416,7 +426,7 @@ Every list is a standalone JSON file with its own `version` (semver), independen
 
 ## 6. JSON Schemas and validation
 
-Three core entities are given as full JSON Schema (Draft 2020-12), each with a valid and a deliberately invalid instance. All three schemas meta-validate (`Draft202012Validator.check_schema`), every valid instance passes with **0** errors, and every invalid instance raises exactly the intended conformance errors. The machine-checked results are in [`validation_report.json`](examples/validation_report.json); the validator run is reproducible with `jsonschema`.
+Three core entities are given as full JSON Schema (Draft 2020-12), each with a valid and a deliberately invalid instance. All three schemas meta-validate (`Draft202012Validator.check_schema`), every valid instance passes with **0** errors, and every invalid instance raises exactly the errors the error map names. The machine-checked results are in [`validation_report.json`](../examples/validation_report.json); the validator run is reproducible with `jsonschema`.
 
 Schemas: [`AbsenceEpisode.json`](schemas/AbsenceEpisode.json) · [`ReturnToWorkOutcome.json`](schemas/ReturnToWorkOutcome.json) · [`OHEpisode.json`](schemas/OHEpisode.json).
 
@@ -436,7 +446,10 @@ The privacy profile is not left to prose, the schemas enforce the parts a valida
 
 | Entity | Invalid instance contains | Errors raised (validator keyword) |
 |---|---|---|
-| `AbsenceEpisode` | direct name, raw pseudonym, `reasonCode:"back-pain"`, missing `sourceProvenance` | `additionalProperties` (name), `not` (identifier ban), `pattern` (pseudonymId), `enum` (reasonCode not in ONS list), `required` (sourceProvenance), **5 errors** |
+| `AbsenceEpisode` | direct name, raw pseudonym, `reasonCode:"back-pain"`, missing `sourceProvenance` | `additionalProperties` (name), `pattern` (pseudonymId), `enum` (reasonCode not in ONS list), `required` (sourceProvenance), **4 errors** |
+| `AbsenceEpisode` (`chronology.invalid`) | `endDate` before `startDate` | `C1` (named cross-field rule), **1 error** |
+| `AbsenceEpisode` (`chronology-boundary.valid`) | `endDate` equal to `startDate` | none; the boundary is inclusive, **0 errors** |
+| `AbsenceEpisode` (`dates.invalid`) | `startDate:"02/03/2026"`, `endDate:"2026-13-45"` | `format` (startDate), `format` (endDate), **2 errors** |
 | `ReturnToWorkOutcome` | `did-not-return` **with** `adjustmentTypes` | `not` (a did-not-return outcome may not carry return adjustments), **1 error** |
 | `OHEpisode` | `diagnosis` + `clinicalCauseCode` present; `fitnessOpinion:"unfit"` but `opinionReleasedToEmployer:false` | `additionalProperties` (clinical fields), `not` (clinical-content boundary), `const` (consent flag must be true), **3 errors** |
 

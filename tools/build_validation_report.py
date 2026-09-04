@@ -6,6 +6,13 @@ from a run rather than maintained by hand. Every instance in examples/ named
 <Entity>.<label>.json or <Entity>.<label>.<verdict>.json is validated against
 schemas/<Entity>.json using the same code path as tools/validate.py, including
 the format checker and the named cross-field rules.
+
+Usage: python tools/build_validation_report.py [--check]
+
+`--check` compares the generated report against the committed one and writes
+nothing, exiting non-zero if they differ. That is what a build gate needs: without
+it a gate that runs this script rewrites the file it was meant to be checking, and
+a stale report always passes.
 """
 import json, pathlib, subprocess, sys, collections
 
@@ -46,10 +53,18 @@ def main():
         ("generatedBy", "tools/build_validation_report.py"),
         ("results", results),
     ])
-    OUT.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    serialised = json.dumps(report, indent=2) + "\n"
+    if "--check" in sys.argv[1:]:
+        current = OUT.read_text(encoding="utf-8") if OUT.exists() else ""
+        if current != serialised:
+            raise SystemExit(f"{OUT.relative_to(ROOT)} is out of date; "
+                             "run tools/build_validation_report.py")
+        print(f"up to date: {OUT.relative_to(ROOT)}")
+    else:
+        OUT.write_text(serialised, encoding="utf-8")
+        print(f"written: {OUT.relative_to(ROOT)}")
     unexpected = [f"{e}.{l}" for e, cases in results.items() for l, c in cases.items()
                   if (c["expected"] == "pass") != (c["exit_code"] == 0)]
-    print(f"written: {OUT.relative_to(ROOT)}")
     if unexpected:
         raise SystemExit("verdict does not match the instance name: " + ", ".join(unexpected))
     print("every instance matched its expected verdict")

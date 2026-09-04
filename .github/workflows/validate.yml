@@ -1,0 +1,27 @@
+name: validate
+
+# Runs the Level 1 conformance evidence on every push and pull request. The gate is
+# --check, which regenerates the report in memory and fails if it differs from the
+# committed one, so a stale examples/validation_report.json cannot merge. It also fails
+# if any fixture stops matching the verdict its filename claims.
+#
+# Level 2 and Level 3 are specified and not implemented; nothing here tests them. In
+# particular nothing checks that an inline enum still matches the code list its $comment
+# pins, which the closed-vocabulary rule in specification section 5 states plainly.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  level-1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - name: validation report is current and every fixture matches its name
+        run: python tools/build_validation_report.py --check

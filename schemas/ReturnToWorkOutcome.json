@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openworkplacehealth.org/schemas/v0.1/ReturnToWorkOutcome.json",
   "title": "OWHS ReturnToWorkOutcome v0.1",
+  "description": "What happened after an absence, including did-not-return and ill-health-exit. No direct identifiers.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -68,7 +69,8 @@
               "sustained",
               "relapsed",
               "unknown"
-            ]
+            ],
+            "$comment": "codelist:rtw-sustained-status@0.1.0 — closed vocabulary; `unknown` means the checkpoint was not followed up, which is not a relapse"
           }
         }
       }

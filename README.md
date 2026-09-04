@@ -16,7 +16,7 @@ OWHS is an independent, open proposal for what standardised workplace-health dat
 | `spec/` | The v0.1 specification draft: entity catalogue, per-field tables with privacy classes, profile mechanism, pseudonymisation design, conformance levels, and an honesty pass listing every disputable decision. Plus the ERD and the domain-coverage decision table. |
 | `schemas/` | Worked JSON Schemas (Draft 2020-12) for `AbsenceEpisode`, `ReturnToWorkOutcome` and `OHEpisode`. Privacy rules are enforced *in schema*: payloads carrying direct identifiers or clinical content are structurally invalid. |
 | `examples/` | A valid and a deliberately invalid instance per schema, with the validation report showing exactly which conformance errors the invalid ones raise. |
-| `codelists/` | 23 independently versioned code lists (ONS absence reasons, fit-note adjustment categories, HSE-anchored construct domains, the provisional safeguarding-category list, and more) plus the registry. |
+| `codelists/` | 24 independently versioned code lists (ONS absence reasons, fit-note adjustment categories, HSE-anchored construct domains, the provisional safeguarding-category list, and more) plus the registry. |
 | `tools/` | The reference validator (Level 1, structural). `python tools/validate.py <schema> <instance>` |
 | `site/` | The project site: plain-language pages, the instrument evidence registry (dataset v0.9.0, schema 0.7, grading rubric v1.6), the question bank, search. |
 | `GOVERNANCE.md` | Stewardship, the progressive-governance model, licences, the change process. |
