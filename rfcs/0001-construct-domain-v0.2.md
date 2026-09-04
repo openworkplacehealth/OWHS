@@ -2,7 +2,9 @@
 
 | | |
 |---|---|
-| Status | Draft; opens for comment with the public release |
+| Status | Open for comment |
+| Comment window | 7 September to 17 October 2026 |
+| Comment thread | [issue #24](https://github.com/openworkplacehealth/OWHS/issues/24) |
 | Affects | `codelists/construct-domain.json` (0.1.0 to 0.2.0), the crosswalk, the question-bank topic-group mapping |
 | Breaking | No. Additions and two new optional fields; no code is renamed or withdrawn |
 | Drafted | 2 September 2026, after external review of the registry's scope |
