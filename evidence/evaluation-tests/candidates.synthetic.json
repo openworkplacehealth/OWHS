@@ -46,5 +46,12 @@
    ]
   }
  ],
- "new_instrument_candidates": []
+ "new_instrument_candidates": [],
+ "read_boundary": {
+  "enforced": true,
+  "allowed_paths": [],
+  "files_opened": [],
+  "files_refused": [],
+  "note": "the discovery run opened no file; gold lists, manifests and splits are read only by the evaluator, in a separate process"
+ }
 }

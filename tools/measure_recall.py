@@ -261,7 +261,12 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
     cs, cf, lt = instant(candidates["started_at"]), instant(candidates["finished_at"]), instant(lock["locked_at"])
     if cs and cf and cf < cs: p.append("candidates finished before they started")
     if candidates["evaluation_id"] is not None and candidates["evaluation_id"] != lock["evaluation_id"]: p.append(f"candidates carry evaluation id {candidates['evaluation_id']!r}, the lock {lock['evaluation_id']!r}")
+    rb = candidates.get("read_boundary")
+    if rb is not None:
+        if rb["files_refused"]: p.append(f"the discovery run attempted to read {rb['files_refused']}; the harvester must not read any file")
+        if rb["files_opened"]: p.append(f"the discovery run opened {rb['files_opened']}; the harvester reads no file (gold, manifests and splits belong to the evaluator's process)")
     if lock["claim"] == "unseen_holdout":
+        if rb is None or not rb["enforced"]: p.append("an unseen-holdout claim needs the candidates file to carry the harvester's enforced read boundary (read_boundary.enforced true, no file opened)")
         if candidates["evaluation_id"] is None: p.append("an unseen-holdout claim needs the candidates to carry the predeclared evaluation id (harvest.py --evaluation-id)")
         if cs and lt and cs <= lt: p.append(f"an unseen-holdout claim needs discovery to start after the lock ({candidates['started_at']} is not after {lock['locked_at']})")
         if execution is None: p.append("an unseen-holdout claim needs an independently captured execution record (--execution-record); without it the run can only be a retrospective replay")
@@ -442,7 +447,8 @@ def _lock(manifest, split, queries, claim="unseen_holdout", exposed=()):
 def _cands(queries, found_dois, evaluation_id="eval-fixture-001"):
     return {"schema_version": "1.1", "harvester": "tools/harvest.py 0.2", "run_id": "fx-run-0001", "registry_commit": FX_COMMIT, "query_version": "fixture", "query_sha256": sha_obj(queries),
             "requested_window": {"from": "2026-08-01", "to": "2026-09-05", "type": "publication date, inclusive"}, "started_at": FX_STARTED, "finished_at": FX_FINISHED, "status": "complete",
-            "evaluation_id": evaluation_id, "candidates": [{"id": d, "doi": d, "pmid": None, "openalex": None, "title": f"Title doi:{d}", "routes": ["names:europepmc:isi"]} for d in found_dois], "new_instrument_candidates": []}
+            "evaluation_id": evaluation_id, "candidates": [{"id": d, "doi": d, "pmid": None, "openalex": None, "title": f"Title doi:{d}", "routes": ["names:europepmc:isi"]} for d in found_dois], "new_instrument_candidates": [],
+            "read_boundary": {"enforced": True, "allowed_paths": [], "files_opened": [], "files_refused": [], "note": "the discovery run opened no file; gold lists, manifests and splits are read only by the evaluator, in a separate process"}}
 
 
 def _exec():
@@ -589,6 +595,10 @@ def self_test():
     m, s, c, cand, lock, q = _setup(); cand["evaluation_id"] = None; t("an unseen-holdout claim needs the candidates to carry the predeclared evaluation id", "predeclared evaluation id" in (refused(m, s, c, cand, lock, q) or ""))
     m, s, c, cand, lock, q = _setup(); cand["evaluation_id"] = "eval-other"; t("candidates carrying another evaluation id are refused", "carry evaluation id" in (refused(m, s, c, cand, lock, q) or ""))
     m, s, c, cand, lock, q = _setup(); t("an unseen-holdout claim without an execution record is refused", "independently captured execution record" in (refused(m, s, c, cand, lock, q, ex=None) or ""))
+    m, s, c, cand, lock, q = _setup(); del cand["read_boundary"]; t("an unseen-holdout claim without the harvester's enforced read boundary is refused", "enforced read boundary" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); cand["read_boundary"]["files_opened"] = ["/private/eval/manifest.json"]; t("a discovery run that opened any file (a manifest here) is refused", "opened" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); cand["read_boundary"]["files_refused"] = ["/private/eval/split.json"]; t("a discovery run that attempted a refused read is refused", "attempted to read" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); lock["claim"] = "retrospective_replay"; del cand["read_boundary"]; r = run(m, s, c, cand, lock, q, ex=None); t("a retrospective replay of an older artefact without a read-boundary block still evaluates (labelled)", r["claim"] == "retrospective_replay")
     m, s, c, cand, lock, q = _setup(); lock["locked_at"] = "2026-09-05T06:30:00Z"; ex = _exec(); msg = refused(m, s, c, cand, lock, q, ex=ex) or ""
     t("discovery that started at or before the lock time cannot support an unseen-holdout claim (candidates and execution record both checked)", "is not after" in msg and "at or before the lock time" in msg, msg[:300])
     lock["claim"] = "retrospective_replay"; cand["evaluation_id"] = None; r = run(m, s, c, cand, lock, q, ex=ex)

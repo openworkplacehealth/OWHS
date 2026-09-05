@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://openworkplacehealth.org/evidence/evaluation-candidates.schema.json",
  "title": "OWHS harvester artefact as read by the evaluator",
- "description": "The candidates file tools/harvest.py writes. The fields the evaluator reads are required and typed here; the envelope's channel, warning and count detail is governed by the harvester's own self-test and left open. Candidate items carry the harvester's route tags route:source:instrument; new-instrument candidates are a separate list without route tags.",
+ "description": "The candidates file tools/harvest.py writes. The fields the evaluator reads are required and typed here; the envelope's channel, warning and count detail is governed by the harvester's own self-test and left open. Candidate items carry the harvester's route tags route:source:instrument; new-instrument candidates are a separate list without route tags. The read_boundary block, written by the harvester, records that the discovery run opened no file; the evaluator requires it for an unseen-holdout claim.",
  "type": "object",
  "required": [
   "schema_version",
@@ -148,6 +148,43 @@
        "null"
       ]
      }
+    }
+   }
+  },
+  "read_boundary": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "enforced",
+    "allowed_paths",
+    "files_opened",
+    "files_refused",
+    "note"
+   ],
+   "properties": {
+    "enforced": {
+     "type": "boolean"
+    },
+    "allowed_paths": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "files_opened": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "files_refused": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "note": {
+     "type": "string"
     }
    }
   }

@@ -46,6 +46,40 @@ RETRY_BUDGET = 120          # seconds: the longest server-requested wait honoure
 SCHEMA_VERSION = "1.1"          # 1.1 adds cycle, expected_channels, channels_not_complete, watermark_proposal
 
 
+# ---------- read boundary ----------
+
+class ReadBoundary:
+    """The discovery run reads no file. While active, builtins.open, io.open, os.open, Path.read_text and Path.read_bytes raise for
+    any path outside the allowed set (empty for a harvest: the configuration is passed in, the indexes are queried over the network),
+    and every attempted path is recorded. The artefact carries the record, so an evaluator can see that gold, manifests and splits
+    were never opened by the process that produced the candidates. A guard for this script and its tests, not a sandbox."""
+    def __init__(self, allowed=()):
+        self.allowed = {Path(a).resolve() for a in allowed}; self.opened = []; self.refused = []
+    def _check(self, target):
+        try: p = Path(target).resolve()
+        except Exception: p = Path(str(target))
+        self.opened.append(str(p))
+        if p not in self.allowed:
+            self.refused.append(str(p)); raise RuntimeError(f"file read during the discovery run refused: {target}")
+    def __enter__(self):
+        import builtins, io
+        g = self
+        self._orig = (builtins.open, io.open, os.open, Path.read_text, Path.read_bytes)
+        def g_open(file, mode="r", *a, **k): g._check(file); return g._orig[0](file, mode, *a, **k)
+        def g_io(file, mode="r", *a, **k): g._check(file); return g._orig[1](file, mode, *a, **k)
+        def g_os(path, flags, *a, **k): g._check(path); return g._orig[2](path, flags, *a, **k)
+        def g_rt(self_, *a, **k): g._check(self_); return g._orig[3](self_, *a, **k)
+        def g_rb(self_, *a, **k): g._check(self_); return g._orig[4](self_, *a, **k)
+        builtins.open, io.open, os.open, Path.read_text, Path.read_bytes = g_open, g_io, g_os, g_rt, g_rb
+        return self
+    def __exit__(self, *a):
+        import builtins, io
+        builtins.open, io.open, os.open, Path.read_text, Path.read_bytes = self._orig
+    def record(self):
+        return {"enforced": True, "allowed_paths": sorted(str(a) for a in self.allowed), "files_opened": sorted(set(self.opened)), "files_refused": sorted(set(self.refused)),
+                "note": "the discovery run opened no file; gold lists, manifests and splits are read only by the evaluator, in a separate process"}
+
+
 # ---------- http ----------
 
 def get(url, tries=5):
@@ -374,6 +408,27 @@ def self_test():
     assert st([]) == "failed", "an empty channel set is a configuration failure, not a complete run"
     assert norm_doi("10.1027//1015-5759.19.1.12") == "10.1027//1015-5759.19.1.12", "the OLBI double slash survives"
     assert retry_after_seconds("120") == 120 and retry_after_seconds(None) is None and retry_after_seconds("garbage") is None
+    # read boundary: a discovery run with the network layer stubbed opens no file; a read of a gold-like path inside the run is refused
+    global get
+    real_get = get
+    def stub_get(url, tries=5): return {"hitCount": 0, "resultList": {"result": []}, "nextCursorMark": None, "results": [], "meta": {"count": 0}}, None
+    get = stub_get
+    try:
+        with ReadBoundary() as g:
+            _items, _new, _chs, _low, _warn = harvest(cfg, cfg["records"], "2026-01-01", "2026-01-31", verify=False, now="t")
+        assert g.record()["files_opened"] == [] and g.record()["files_refused"] == [], f"the stubbed discovery run opened files: {g.record()}"
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            gold = Path(tmp) / "manifest.json"; Path(tmp).joinpath("manifest.json").write_text("{}")
+            refused = False
+            try:
+                with ReadBoundary() as g2:
+                    json.loads(gold.read_text())
+            except RuntimeError: refused = True
+            assert refused and g2.record()["files_refused"] == [str(gold.resolve())], "a read of a gold-like path inside the boundary must be refused and recorded"
+            assert gold.read_text() == "{}", "the guard is lifted after the block"
+    finally:
+        get = real_get
     from cycle import expected_channels, channels_not_complete
     q = json.loads(QUERIES.read_text(encoding="utf-8"))
     assert "providers" in q and "openalex" in q["providers"] and isinstance(q["providers"]["openalex"].get("search_routes"), bool), "the provider profile is pinned in the query file"
@@ -405,7 +460,7 @@ def self_test():
     unav = [c for c in exp if c["unavailable"]][0]
     assert channels_not_complete(exp, [{**c, "outcome": ("unavailable" if c["channel_id"] == unav["channel_id"] else "complete")} for c in exp]) == [], "a declared-unavailable channel reported as unavailable is not counted missing"
     assert channels_not_complete(exp, [{**c, "outcome": ("complete" if c["channel_id"] != unav["channel_id"] else "complete")} for c in exp]) == [], "an unavailable channel that did run and complete is also fine"
-    print(f"self-test passed: canonicalisation, matching, status logic, query file shape, {len(exp)} expected channels at query granularity with one catch-up basis, {len(exp_q)} with the quarterly rerun")
+    print(f"self-test passed: canonicalisation, matching, status logic, read boundary (stubbed run opens no file; a gold read is refused), query file shape, {len(exp)} expected channels at query granularity with one catch-up basis, {len(exp_q)} with the quarterly rerun")
 
 
 def main():
@@ -437,11 +492,13 @@ def main():
         try: cf = datetime.date.fromisoformat(a.catch_from)
         except ValueError: sys.exit("configuration error: --catch-from must be YYYY-MM-DD")
         if cf > d1: sys.exit("configuration error: --catch-from after --to")
-    items, new_list, channels, low, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started, catch_from=a.catch_from, full_history=a.full_history)
+    with ReadBoundary() as guard:          # the run itself opens no file: configuration is already in memory, the indexes are over the network
+        items, new_list, channels, low, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started, catch_from=a.catch_from, full_history=a.full_history)
     prov = cfg.get("providers") or {}
     sources = ["europepmc", "openalex (" + ("cites, names, abbreviation" if prov.get("openalex", {}).get("search_routes") else "cites only, per the provider profile") + ("; authenticated" if OPENALEX_KEY else "; keyless") + ")"] + (["crossref"] if not a.no_verify else [])
     if a.evaluation_id and not re.fullmatch(r"[A-Za-z0-9_.:-]{4,80}", a.evaluation_id): sys.exit("configuration error: --evaluation-id is 4 to 80 characters of letters, digits, _ . : -")
     out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, low, warnings, sources, a.evaluation_id)
+    out["read_boundary"] = guard.record()
     out["full_inventory"] = not a.instrument       # a manual one-instrument run is not a monthly cycle
     if a.instrument and a.cycle_kind == "planned": sys.exit("configuration error: a planned cycle covers the full inventory; use no --cycle-kind or manual for a one-instrument run")
     out["cycle"] = {"id": a.cycle_id or f"manual-{a.date_from}-{a.date_to}", "kind": a.cycle_kind or "manual",
