@@ -6,10 +6,10 @@ The generators always emit noindex; this tool is what makes a build match the pu
 rebuild after the lift cannot quietly put noindex back. Also places the one managed footer line (trade mark
 and licence, and the no-cookies line) as the last element of every page footer, and the one managed visit-counting
 script before </head>, so every generator shares them. Idempotent. Run before any deploy."""
-import re, sys, pathlib
+import os, re, sys, pathlib
 BASE = "https://openworkplacehealth.org/"
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SITE = ROOT / "site"
+SITE = pathlib.Path(os.environ.get("OWHS_SITE_DIR", ROOT / "site"))   # overridable so registry/build_registry_site.py --check can stamp a copy
 POLICY = (ROOT / "robots-policy.txt").read_text(encoding="utf-8").strip().lower() if (ROOT / "robots-policy.txt").exists() else "noindex"
 if POLICY not in ("noindex", "index"):
     sys.exit(f"robots-policy.txt must say noindex or index, not {POLICY!r}")
