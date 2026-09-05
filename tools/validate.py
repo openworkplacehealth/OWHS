@@ -154,7 +154,77 @@ def completion_rate(inst):
     return None
 
 
+def _int(v): return isinstance(v, int) and not isinstance(v, bool)
+
+
+def ordering_dates(earlier, later, label):
+    """C10 to C14: `later` not before `earlier`, compared as calendar dates. Evaluated only when both values are real ISO dates; a
+    malformed date is the format check's finding, not a chronology finding."""
+    from datetime import date
+    def parse(v):
+        try: return date.fromisoformat(v) if isinstance(v, str) else None
+        except ValueError: return None
+    def rule(inst):
+        if not isinstance(inst, dict) or later not in inst or earlier not in inst: return None
+        a, b = parse(inst[earlier]), parse(inst[later])
+        if a is None or b is None: return None
+        if b < a: return f"{later} {inst[later]!r} precedes {earlier} {inst[earlier]!r}"
+        return None
+    rule.__doc__ = label
+    return rule
+
+
+def utilisation_counts(inst):
+    """C15: n <= usageCount + claimCount (an absent claimCount contributes no events); n = 0 only when both recorded event counts are 0.
+    Compares declarations; it does not deduplicate people, and repeated events may exceed n."""
+    if not isinstance(inst, dict): return None
+    n, u, c = inst.get("n"), inst.get("usageCount"), inst.get("claimCount", 0)
+    if not all(_int(v) and v >= 0 for v in (n, u, c)): return None          # a negative count is the schema's finding, not a rule's
+    if n > u + c: return f"n {n} exceeds the recorded events usageCount {u} + claimCount {c}"
+    if n == 0 and u + c > 0: return f"n is 0 while {u + c} event(s) are recorded"
+    return None
+
+
+def composition_counts(inst):
+    """C16: composition.orgCount <= sampleSizes.people; observations, when supplied, >= people. Contributing units only."""
+    c = _obj(_obj(inst).get("composition")); ss = _obj(c.get("sampleSizes"))
+    o, n, obs = c.get("orgCount"), ss.get("people"), ss.get("observations")
+    if any(_int(v) and v < 0 for v in (o, n, obs)): return None
+    if _int(o) and _int(n) and o > n: return f"composition.orgCount {o} exceeds sampleSizes.people {n}"
+    if _int(n) and _int(obs) and obs < n: return f"sampleSizes.observations {obs} is below people {n}"
+    return None
+
+
+def percentiles_ordered(inst):
+    """C17: probabilities strictly increase in array order and values never decrease; ties in value and a single quantile are fine.
+    No quantile algorithm or sampling distribution is verified."""
+    vals = _obj(_obj(inst).get("percentiles")).get("values")
+    if not isinstance(vals, list) or not all(isinstance(v, dict) for v in vals): return None
+    for i, (a, b) in enumerate(zip(vals, vals[1:])):
+        pa, pb, va, vb = a.get("probability"), b.get("probability"), a.get("value"), b.get("value")
+        if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in (pa, pb, va, vb)): return None
+        if pb <= pa: return f"percentiles.values[{i + 1}].probability {pb} does not exceed values[{i}].probability {pa}"
+        if vb < va: return f"percentiles.values[{i + 1}].value {vb} is below values[{i}].value {va}"
+    return None
+
+
+def not_self_parent(inst):
+    """C18: parentUnitId, if supplied, differs from unitId. The direct self-loop only; longer cycles need a supplied graph checker."""
+    if not isinstance(inst, dict) or "parentUnitId" not in inst: return None
+    if isinstance(inst.get("unitId"), str) and inst.get("parentUnitId") == inst["unitId"]: return f"parentUnitId equals unitId {inst['unitId']!r}"
+    return None
+
+
 CROSS_FIELD_RULES = {
+    "ReasonableAdjustment": [("C10", ordering_dates("startDate", "endDate", "endDate not before startDate, when both are present"))],
+    "BenefitUtilisation": [("C11", ordering_dates("periodStart", "periodEnd", "periodEnd not before periodStart")),
+                           ("C15", rule_fn("n within recorded events; n = 0 only with no events", utilisation_counts))],
+    "DisabilityParticipation": [("C12", ordering_dates("periodStart", "periodEnd", "periodEnd not before periodStart"))],
+    "BenchmarkRelease": [("C13", ordering_dates("validFrom", "validTo", "validTo not before validFrom")),
+                         ("C14", ordering_dates("dataPeriodStart", "dataPeriodEnd", "dataPeriodEnd not before dataPeriodStart")),
+                         ("C16", rule_fn("orgCount <= people <= observations", composition_counts)),
+                         ("C17", rule_fn("percentile probabilities strictly increasing, values non-decreasing", percentiles_ordered))],
+    "OrgUnit": [("C18", rule_fn("parentUnitId is not unitId", not_self_parent))],
     "AbsenceEpisode": [("C1", ordering("startDate", "endDate", "endDate not before startDate"))],
     "OHEpisode": [("C2", ordering("referralDate", "assessmentDate", "assessmentDate not before referralDate"))],
     "AggregateReport": [("C3", ordering("periodStart", "periodEnd", "periodEnd not before periodStart")),

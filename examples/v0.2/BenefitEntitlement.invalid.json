@@ -1,0 +1,12 @@
+{
+  "entitlementId": "entitlement-demo",
+  "orgId": "org-demo",
+  "layer": "commercial",
+  "productCategory": "EAP",
+  "statutory": {
+    "scheme": "synthetic",
+    "eligibility": "Synthetic",
+    "sourceRef": "synthetic-source",
+    "asOfDate": "2026-09-01"
+  }
+}

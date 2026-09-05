@@ -253,6 +253,246 @@
         "errors": []
       }
     },
+    "BenchmarkRelease": {
+      "c16-3-30-90.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "c16-5-5-4.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C16] <root>: sampleSizes.observations 4 is below people 5"
+        ]
+      },
+      "c16-5-5-5.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "c16-6-5-5.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C16] <root>: composition.orgCount 6 exceeds sampleSizes.people 5"
+        ]
+      },
+      "duplicate-probability.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C17] <root>: percentiles.values[1].probability 0.5 does not exceed values[0].probability 0.5"
+        ]
+      },
+      "equal-c13.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "equal-c14.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[required] <root>: 'excludedOrgId' is a required property"
+        ]
+      },
+      "inverted-values.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C17] <root>: percentiles.values[1].value 2 is below values[0].value 3"
+        ]
+      },
+      "reversed-c13.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C13] <root>: validTo '2026-08-31' precedes validFrom '2026-09-01'"
+        ]
+      },
+      "reversed-c14.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C14] <root>: dataPeriodEnd '2026-08-31' precedes dataPeriodStart '2026-09-01'"
+        ]
+      },
+      "single-quantile.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "tied-values.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "BenefitEntitlement": {
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[not] <root>: {'entitlementId': 'entitlement-demo', 'orgId': 'org-demo', 'layer': 'commercial', 'productCategory': 'EAP', 'statutory': {'scheme': 'synthetic', 'eligibility': 'Synthetic', 'sourceRef': 'synthetic-source', 'asOfDate': '2026-09-01'}} should not be valid under {'anyOf': [{'required': ['statutory']}]}"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "BenefitUtilisation": {
+      "c15-0-0-0.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "c15-0-1-0.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C15] <root>: n is 0 while 1 event(s) are recorded"
+        ]
+      },
+      "c15-1-0-0.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C15] <root>: n 1 exceeds the recorded events usageCount 0 + claimCount 0"
+        ]
+      },
+      "c15-1-0-1.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "c15-2-1-1.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "c15-2-100-50.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "c15-3-1-1.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C15] <root>: n 3 exceeds the recorded events usageCount 1 + claimCount 1"
+        ]
+      },
+      "equal-c11.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[minimum] usageCount: -1 is less than the minimum of 0"
+        ]
+      },
+      "reversed-c11.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C11] <root>: periodEnd '2026-08-31' precedes periodStart '2026-09-01'"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "Crosswalk": {
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[enum] hseDomain: 'mental-health' is not one of ['demands', 'control', 'support', 'relationships', 'role', 'change']"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "DisabilityParticipation": {
+      "equal-c12.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[enum] disabledHeadcountBand: 'unknown' is not one of ['1-4', '5-9', '10-19', '20-49', '50-99', '100-249', '250+']"
+        ]
+      },
+      "reversed-c12.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C12] <root>: periodEnd '2026-08-31' precedes periodStart '2026-09-01'"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
     "InstrumentAdministration": {
       "abandoned-with-score.invalid": {
         "expected": "fail",
@@ -342,6 +582,83 @@
         "errors": []
       }
     },
+    "OrgUnit": {
+      "external-parent-not-resolved-here.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[enum] headcountBand: '0' is not one of ['1-4', '5-9', '10-19', '20-49', '50-99', '100-249', '250+']"
+        ]
+      },
+      "self-parent.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C18] <root>: parentUnitId equals unitId 'unit-demo'"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "Organisation": {
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 2,
+        "errors": [
+          "[pattern] country: 'United Kingdom' does not match '^[A-Z]{2}$'",
+          "[maxLength] country: 'United Kingdom' is too long"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "ReasonableAdjustment": {
+      "equal-c10.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[enum] status: 'completed' is not one of ['proposed', 'in-place', 'declined', 'ended']"
+        ]
+      },
+      "reversed-c10.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C10] <root>: endDate '2026-08-31' precedes startDate '2026-09-01'"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
     "ReturnToWorkOutcome": {
       "invalid": {
         "expected": "fail",
@@ -378,7 +695,23 @@
         "error_count": 0,
         "errors": []
       }
+    },
+    "WorkerPseudonym": {
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[pattern] pseudonymId: 'EMP-Jane-Smith' does not match '^owhs:pseudo:[0-9a-f]{16,64}$'"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
     }
   },
-  "note_v0_2": "Schema version 0.2: the three v0.1 entities with the extension mechanism and four measurement entities. Cross-field rules C3 to C9 apply to AggregateReport and MeasurementContext. Bundle-level joins are checked by tools/check_measurement.py, not here."
+  "note_v0_2": "Schema version 0.2 has sixteen entity types. The report records per-instance structure, formats and named within-record rules C1-C18. The separately run measurement-bundle checker supplies only its documented context joins. External references, terminology currentness, release decisions and scientific interpretation are not established by this report."
 }

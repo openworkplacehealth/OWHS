@@ -62,8 +62,9 @@ def main():
     ])
     if (ROOT / "schemas" / "v0.2").is_dir():
         report["results_v0_2"] = collect(ROOT / "schemas" / "v0.2", ROOT / "examples" / "v0.2")
-        report["note_v0_2"] = ("Schema version 0.2: the three v0.1 entities with the extension mechanism and four measurement entities. "
-                               "Cross-field rules C3 to C9 apply to AggregateReport and MeasurementContext. Bundle-level joins are checked by tools/check_measurement.py, not here.")
+        report["note_v0_2"] = ("Schema version 0.2 has sixteen entity types. The report records per-instance structure, formats and named within-record rules C1-C18. "
+                               "The separately run measurement-bundle checker supplies only its documented context joins. External references, terminology currentness, "
+                               "release decisions and scientific interpretation are not established by this report.")
     serialised = json.dumps(report, indent=2) + "\n"
     if "--check" in sys.argv[1:]:
         current = OUT.read_text(encoding="utf-8") if OUT.exists() else ""
