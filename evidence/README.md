@@ -8,7 +8,7 @@ folder changes a grade, a status or a licence class. These tools find and watch.
 | `tools/harvest.py` | monthly, `.github/workflows/harvest.yml`, first of the month | `candidates/YYYY-MM.json` as a run artefact; one issue labelled `evidence-sweep` | touch the dataset |
 | `tools/watch_licences.py` | weekly, `.github/workflows/licence-watch.yml`, Mondays | `licence-changes.json` as a run artefact; an issue when a page's visible text changed | change a licence class or status |
 | `tools/watch_retractions.py` | monthly, `.github/workflows/retraction-watch.yml`, the second | `retraction-signals.json` as a run artefact; an issue when a cited work carries an update notice or retraction flag | remove evidence or move a grade |
-| tripwire | monthly, `.github/workflows/tripwire.yml`, the third | an issue if no `evidence-sweep` issue exists for the month | anything else |
+| tripwire | monthly, `.github/workflows/tripwire.yml`, the third | an issue if this month has no successful full-inventory harvest run with a bot-authored `evidence-sweep` issue saying "complete run" | anything else |
 
 ## The harvester
 
@@ -21,20 +21,29 @@ its route: exact long names in title or abstract; an abbreviation with its conte
 citing each seed. A separate untargeted channel collects validation papers in working populations that name no
 tracked instrument; those go to the admission process, never into the registry.
 
-A hit becomes a candidate when a psychometric property term appears in its title or abstract. A hit without one
-is counted per instrument and route as a use and not stored: it uses the instrument, it is not evidence about
-it. That filter is applied to every route; the counts are published in each run so the trade-off is visible.
-Candidates are de-duplicated by DOI, PMID and OpenAlex identifier; a merge on identical normalised titles is
-recorded on the candidate, and two DOIs sharing a title are left separate with a warning. Every surviving DOI is
-verified against Crossref and any update notice against it is recorded. Abstracts are read for matching and not
-stored.
+Every hit from the names and citation routes is retained as a candidate. One whose title or abstract carries a
+psychometric property term is `screening_priority: normal`; one without is `low`, because the abstract may be
+missing or the evidence described in other words. The abbreviation route requires a property term, as its rule
+states. Nothing is dropped except a title carrying one of the instrument's configured exclusion terms, and that
+drop is counted per channel. Candidates are de-duplicated by DOI, PMID and OpenAlex identifier; two records with
+the same normalised title are merged only when one lacks a DOI, no identifier conflicts and the years agree, the
+merge is recorded and the DOI becomes the canonical id; anything weaker is kept as two records linked as possible
+duplicates. Every candidate DOI is verified against Crossref and any update notice against it is recorded.
+Abstracts are read for matching and not stored. The untargeted channel keeps every hit and tags those that also
+mention a tracked instrument (whole-phrase match; an abbreviation only beside its context terms) rather than
+dropping them, since a paper can introduce one instrument while comparing it with another.
 
 Each run writes one envelope: schema version, run id, the registry commit, the query file version and hash, the
-requested window, start and finish times, a status (`complete` when every declared channel completed all its
-pages; `partial` or `failed` otherwise), one record per channel with its exact query, page count, reported and
-collected hits and outcome, the candidates, the new-instrument candidates, the use counts and any warnings. The
-candidate list is sorted, so two runs over one window diff cleanly. No language model is involved at any point.
-`--self-test` checks the pure functions and the query file's shape offline.
+requested window, whether the run covered the full inventory, start and finish times, a status (`complete` when
+every planned channel completed all its pages; `partial` or `failed` otherwise; an empty channel set is a
+configuration failure), one record per channel with its exact query, page count, reported and collected hits and
+outcome, the candidates, the new-instrument candidates, the low-priority counts and any warnings. A run whose
+status is not `complete` exits non-zero after writing its artefact, so the workflow shows the cycle as
+incomplete. A server-requested wait of up to two minutes is honoured inside the run; a longer one defers the
+channel with the reason recorded. The candidate list is sorted, so two runs over one window diff cleanly.
+Saved source responses and pinned code and configuration support reproducible replay; live index results can
+change between requests. No language model is involved at any point. `--self-test` checks the pure functions
+and the query file's shape offline; replay fixtures against saved responses are designed and not yet built.
 
 ```
 python tools/harvest.py --from 2026-08-01 --to 2026-08-31 --out evidence/candidates/2026-08.json
@@ -66,24 +75,30 @@ is not part of this folder.
 ## The licence watcher
 
 `tools/watch_licences.py` fetches every licence page named in a record's identity block, reduces HTML to
-visible text (a PDF is hashed as bytes), and compares the hash with `licence-hashes.json`. A change is a reason
-to read the page against the registry record and the archived copy the record links; it says nothing about
-what changed. Baselines are updated by committing `licence-hashes.json` through a pull request, never by the
-workflow. Pages that refuse automated requests are listed as unreachable in every run rather than silently
-skipped.
+visible text (a PDF is hashed as bytes), and compares the hash with `licence-hashes.json`. Each run reports its
+status (`complete`, `partial`, `failed`) with attempted, fetched and failed counts; an unreachable page is
+unchecked, not unchanged, and a partial or failed run opens an issue even when nothing changed. A failed run
+leaves the previous baseline untouched. A change is a reason to read the page against the registry record and
+the archived copy the record links; it says nothing about what changed. Baselines are updated by committing
+`licence-hashes.json` through a pull request, never by the workflow.
 
 ## The tripwire
 
 An early version of the monthly sweep failed silently for a month. The tripwire exists so that cannot recur
-unnoticed: on the third of each month it looks for an issue labelled `evidence-sweep` created that month and
-opens a `maintenance` issue if there is none. A missing sweep is an incomplete maintenance cycle, not a month
-with no new evidence.
+unnoticed: on the third of each month it looks for a successful `evidence-harvest` run this month and an
+`evidence-sweep` issue authored by the workflow whose title names the month and says "complete run", and opens one
+`maintenance` issue for the month if either is missing. A partial run, a manual one-instrument run or a
+hand-labelled issue does not satisfy it. It runs two days after the harvest; that is its response time. All
+index-consuming workflows share one concurrency group, so two never run at once against the open indexes.
 
 ## The retraction watcher
 
-`tools/watch_retractions.py` checks every distinct DOI in the current dataset's citation arrays: Crossref
-update notices pointing at the work (the `updates` filter, the direction a retraction notice points), the
-work's own `update-to` (it is itself a notice), and OpenAlex's retraction flag. Correction, expression of
-concern, retraction, withdrawal and reinstatement are different events and are reported by type. A signal
-opens one issue naming every record and cell that cites the work. Absence of a signal is not proof that a
-work stands; unreachable records are listed as unchecked.
+`tools/watch_retractions.py` checks every distinct DOI in the current dataset's citation arrays against three
+sources, each recorded separately so one source's failure never hides another's answer: Crossref update
+notices pointing at the work (the `updates` filter, paged, marked truncated if the page budget is reached), the
+work's own `update-to` with its type and target (it is itself a notice), and OpenAlex's retraction flag.
+Correction, expression of concern, retraction, withdrawal and reinstatement are different events and are kept
+by type. Cells are mapped to citations by the dataset's typed references (precondition evidence and retest
+entries), never by prose. A signal opens one issue naming every record and cell that cites the work; so does a
+partial or failed run. Absence of a signal is not proof that a work stands; a DOI outside Crossref's coverage is
+reported as such, not as clean.

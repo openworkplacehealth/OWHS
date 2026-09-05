@@ -1,10 +1,11 @@
 name: evidence-harvest
 
 # Deterministic monthly harvest of candidate psychometric literature for every instrument in the registry
-# (tools/harvest.py). It queries OpenAlex, Europe PMC and Crossref directly, writes a candidates file as a run
-# artefact, and opens one issue labelled evidence-sweep that summarises the run. It changes no dataset, no
-# grade and no page: a candidate is a work to be read, not a finding. Screening and any proposal to add a
-# citation happen afterwards, in a pull request a person merges.
+# (tools/harvest.py). It queries the open indexes directly, writes the candidates file as a run artefact, and
+# opens or updates one issue labelled evidence-sweep for the cycle. It changes no dataset, no grade and no page:
+# a candidate is a work to be read, not a finding. Screening and any proposal to add a citation happen afterwards,
+# in a pull request a person merges. A run whose channels did not all complete ends with a failure outcome; its
+# artefact and issue are still produced, and the issue says partial.
 
 on:
   schedule:
@@ -22,6 +23,10 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: index-consuming-jobs        # shared with the watchers: one job at a time against the open indexes
+  cancel-in-progress: false
+
 jobs:
   harvest:
     runs-on: ubuntu-latest
@@ -32,33 +37,61 @@ jobs:
           python-version: '3.11'
       - name: window
         id: w
+        env:
+          IN_FROM: ${{ github.event.inputs.from }}
+          IN_TO: ${{ github.event.inputs.to }}
         run: |
-          FROM="${{ github.event.inputs.from }}"; TO="${{ github.event.inputs.to }}"
-          [ -z "$FROM" ] && FROM=$(date -u -d "$(date -u +%Y-%m-01) -1 month" +%Y-%m-%d)
-          [ -z "$TO" ] && TO=$(date -u +%Y-%m-%d)
-          echo "from=$FROM" >> "$GITHUB_OUTPUT"; echo "to=$TO" >> "$GITHUB_OUTPUT"
-          echo "month=$(date -u -d "$FROM" +%Y-%m)" >> "$GITHUB_OUTPUT"
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import datetime, os, sys
+          today = datetime.date.today()
+          first_this = today.replace(day=1)
+          default_from = (first_this - datetime.timedelta(days=1)).replace(day=1)
+          def parse(v, default):
+              v = (v or "").strip()
+              if not v: return default
+              try: return datetime.date.fromisoformat(v)
+              except ValueError: sys.exit(f"configuration error: {v!r} is not YYYY-MM-DD")
+          f, t = parse(os.environ["IN_FROM"], default_from), parse(os.environ["IN_TO"], today)
+          if t < f: sys.exit("configuration error: window end precedes start")
+          print(f"from={f.isoformat()}"); print(f"to={t.isoformat()}"); print(f"month={f.strftime('%Y-%m')}")
+          PY
       - name: harvest
+        id: h
+        continue-on-error: true
         env:
           OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}     # optional; absent, OpenAlex is used for citation lookups only
-        run: python tools/harvest.py --from "${{ steps.w.outputs.from }}" --to "${{ steps.w.outputs.to }}" --out "evidence/candidates/${{ steps.w.outputs.month }}.json"
+          FROM: ${{ steps.w.outputs.from }}
+          TO: ${{ steps.w.outputs.to }}
+          MONTH: ${{ steps.w.outputs.month }}
+        run: python tools/harvest.py --from "$FROM" --to "$TO" --out "evidence/candidates/$MONTH.json"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: candidates-${{ steps.w.outputs.month }}
           path: evidence/candidates/${{ steps.w.outputs.month }}.json
-      - name: summary issue
+          if-no-files-found: warn
+      - name: cycle issue
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          MONTH: ${{ steps.w.outputs.month }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          python - <<'PY' > /tmp/body.md
+          set -e
+          FILE="evidence/candidates/$MONTH.json"
+          if [ ! -f "$FILE" ]; then
+            TITLE="Evidence harvest $MONTH: failed run, no candidates file"
+            BODY="The harvest produced no candidates file. Run: $RUN_URL. Treat this month as an incomplete maintenance cycle."
+            STATUS=failed
+          else
+            python - <<'PY' > /tmp/body.md
           import json, os, collections
           d = json.load(open(f"evidence/candidates/{os.environ['MONTH']}.json"))
           c = collections.Counter(i for x in d['candidates'] for i in x['instruments'])
           nc = [ch for ch in d['channels'] if ch['outcome'] != 'complete']
-          uses = sum(sum(v.values()) for v in d['uses_not_stored'].values())
-          print(f"Run `{d['run_id']}`, status **{d['status']}**, window {d['requested_window']['from']} to {d['requested_window']['to']}, query file {d['query_version']} (`{d['query_sha256'][:12]}`). "
-                f"{len(d['candidates'])} candidates, {len(d['new_instrument_candidates'])} new-instrument candidates, {len(d['channels'])} channels of which {len(nc)} did not complete, "
-                f"{uses} works naming or citing an instrument without a psychometric term (uses, not stored).\n")
+          low = sum(1 for x in d['candidates'] if x.get('screening_priority') == 'low')
+          print(f"Run `{d['run_id']}`, status **{d['status']}**, full inventory: {d.get('full_inventory')}, window {d['requested_window']['from']} to {d['requested_window']['to']}, query file {d['query_version']} (`{d['query_sha256'][:12]}`), workflow run {os.environ['RUN_URL']}. "
+                f"{len(d['candidates'])} candidates ({low} low priority: no property term found in title or abstract), {len(d['new_instrument_candidates'])} new-instrument candidates, {len(d['channels'])} channels of which {len(nc)} did not complete.\n")
           print("| Instrument | Candidates |\n|---|---|")
           for k, v in sorted(c.items(), key=lambda kv: -kv[1]): print(f"| {k} | {v} |")
           flagged = [x for x in d['candidates'] if (x.get('crossref') or {}).get('update_to')]
@@ -66,12 +99,26 @@ jobs:
               print("\nCrossref records an update (correction or retraction) against:")
               for x in flagged: print(f"- {x['doi']}: {x['title'][:90]}")
           if nc:
-              print("\nChannels that did not complete (the run is partial; treat their instruments as not fully searched):")
+              print("\nChannels that did not complete (treat their instruments as not fully searched this cycle):")
               for ch in nc: print(f"- {ch['instrument_id']} {ch['route']} {ch['source']}: {ch['outcome']}, {ch['error']}")
           if d['warnings']:
-              print(f"\n{len(d['warnings'])} warnings in the artefact (same title, different DOI).")
-          print(f"\nThe full candidates file is the run artefact `candidates-{os.environ['MONTH']}`. A candidate is a work that names an instrument and a psychometric property term in its title or abstract. Nothing here is a grade, a judgement or a registry change; screening and any proposed citation follow in a pull request a person merges.")
+              print(f"\n{len(d['warnings'])} warnings in the artefact.")
+          print(f"\nThe full candidates file is the run artefact `candidates-{os.environ['MONTH']}`. A candidate is a work retrieved by an instrument's names, abbreviation or citation route. Nothing here is a grade, a judgement or a registry change; screening and any proposed citation follow in a pull request a person merges.")
           PY
-          gh issue create --title "Evidence harvest ${{ steps.w.outputs.month }}: $(python -c "import json,os;print(json.load(open('evidence/candidates/'+os.environ['MONTH']+'.json'))['status'])") run, candidates for screening" --label evidence-sweep --body-file /tmp/body.md
-        env:
-          MONTH: ${{ steps.w.outputs.month }}
+            STATUS=$(python -c "import json,os;print(json.load(open('evidence/candidates/'+os.environ['MONTH']+'.json'))['status'])")
+            TITLE="Evidence harvest $MONTH: $STATUS run, candidates for screening"
+            BODY="$(cat /tmp/body.md)"
+          fi
+          EXISTING=$(gh issue list --label evidence-sweep --state all --search "\"Evidence harvest $MONTH\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --title "$TITLE" --body "$BODY"
+            echo "updated issue #$EXISTING"
+          else
+            gh issue create --title "$TITLE" --label evidence-sweep --body "$BODY"
+          fi
+      - name: cycle outcome
+        if: always()
+        run: |
+          if [ "${{ steps.h.outcome }}" != "success" ]; then
+            echo "harvest did not complete every channel; the cycle is incomplete"; exit 1
+          fi

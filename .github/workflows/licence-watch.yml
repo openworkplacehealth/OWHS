@@ -14,6 +14,10 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: index-consuming-jobs
+  cancel-in-progress: false
+
 jobs:
   watch:
     runs-on: ubuntu-latest
@@ -27,10 +31,11 @@ jobs:
         continue-on-error: true
         run: python tools/watch_licences.py --dry-run
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: licence-changes
           path: evidence/licence-changes.json
-      - name: issue on change
+      - name: issue on change or incomplete run
         if: steps.w.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -38,11 +43,13 @@ jobs:
           python - <<'PY' > /tmp/body.md
           import json
           d = json.load(open('evidence/licence-changes.json'))
-          print("The visible text of these licence pages differs from the recorded baseline. Read each page against the registry record and the archived copy; if the terms changed, propose a correction through the usual process. This issue records a change of text, not a change of licence.\n")
-          for c in d['changed']:
-              print(f"- **{c['instrument']}**: {c['url']}" + (f" (archived copy: {c['archived_copy']})" if c.get('archived_copy') else ""))
+          print(f"Run status **{d['status']}**: {d['attempted']} licence pages attempted, {d['succeeded']} fetched, {len(d['changed'])} changed, {len(d['unreachable'])} unreachable. An unreachable page is unchecked, not unchanged.\n")
+          if d['changed']:
+              print("The visible text of these pages differs from the recorded baseline. Read each against the registry record and the archived copy; if the terms changed, propose a correction through the usual process. This records a change of text, not a change of licence.")
+              for c in d['changed']:
+                  print(f"- **{c['instrument']}**: {c['url']}" + (f" (archived copy: {c['archived_copy']})" if c.get('archived_copy') else ""))
           if d['unreachable']:
-              print("\nUnreachable this run:")
+              print("\nUnreachable this run (unchecked):")
               for u in d['unreachable']: print(f"- {u['instrument']}: {u['url']} ({u['error']})")
           PY
-          gh issue create --title "Licence pages changed: $(date -u +%Y-%m-%d)" --label licence --body-file /tmp/body.md
+          gh issue create --title "Licence watch $(date -u +%Y-%m-%d): $(python -c "import json;print(json.load(open('evidence/licence-changes.json'))['status'])") run, $(python -c "import json;print(len(json.load(open('evidence/licence-changes.json'))['changed']))") changed" --label licence --body-file /tmp/body.md

@@ -6,3 +6,6 @@
 # for a format and accepts any value for it, which is why tools/validate.py refuses to
 # run rather than report a pass it cannot stand behind.
 jsonschema[format]>=4.18
+
+# Strict parsing of the workflow files in CI (duplicate keys are an error).
+pyyaml>=6

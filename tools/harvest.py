@@ -2,8 +2,9 @@
 """Deterministic evidence harvester for the instrument registry.
 
 Queries the open scholarly indexes directly and writes one candidates file. No language model is involved:
-the same inputs on the same day produce the same candidate set, every candidate records the route it came
-by, and every channel records whether it completed.
+saved source responses and pinned code and configuration support reproducible replay, every candidate records
+the route it came by, and every channel records whether it completed. Live index results can change between
+requests; a run's envelope records what was retrieved, not what the index will say tomorrow.
 
     python tools/harvest.py --from 2026-08-01 --to 2026-09-05 --out evidence/candidates/2026-09.json
     python tools/harvest.py --instrument isi --from 2026-01-01 --to 2026-09-05 --no-verify
@@ -18,11 +19,11 @@ Configuration: evidence/queries/instruments-v1.json. Three retrieval routes per 
 plus one untargeted channel for validation papers in working populations that name no tracked instrument,
 whose hits go to a separate admission-candidate list.
 
-A hit becomes a candidate when a psychometric property term appears in its title or abstract. A hit without
-one is counted per instrument and route as a use, not evidence about the instrument, and is not stored. That
-filter is applied to every route here; the design asked for the names and cites routes to be unfiltered, and
-the counts show why they are not: over two months the unfiltered routes returned more than ten uses for
-every candidate. Screening capacity is the constraint; the counts are published so the trade-off is visible.
+Every hit from the names and cites routes is retained as a candidate. A hit whose title or abstract carries a
+psychometric property term gets screening_priority "normal"; one without gets "low" and an empty property list,
+because the abstract may be missing or the evidence may be described in other words. Nothing is dropped by
+this tool except a title carrying one of the instrument's configured exclusion terms, and that drop is counted.
+The abbreviation route requires a property term server-side and locally, as the design states.
 
 Sources: Europe PMC REST for the names and abbreviation routes; OpenAlex for the cites route, and for the names and
 abbreviation routes as well when OPENALEX_API_KEY is set. Keyless OpenAlex use has a daily credit budget (1,000
@@ -41,6 +42,7 @@ UA = f"OWHS-harvester/0.2 (https://openworkplacehealth.org; mailto:{MAILTO})"
 PAUSE = 0.5
 OPENALEX_KEY = os.environ.get("OPENALEX_API_KEY")          # optional; restores OpenAlex on every route
 PAGE_BUDGET = 25            # pages per channel; reaching it marks the channel partial rather than looping
+RETRY_BUDGET = 120          # seconds: the longest server-requested wait honoured inside a run; longer defers the channel
 SCHEMA_VERSION = "1.0"
 
 
@@ -57,14 +59,27 @@ def get(url, tries=5):
             return data, None
         except urllib.error.HTTPError as e:
             if e.code == 429 or e.code >= 500:
-                ra = e.headers.get("Retry-After")
-                if ra and ra.isdigit() and int(ra) > 300:
-                    return None, f"http {e.code}, retry-after {ra}s (daily budget exhausted)"   # fail the channel now; the run reports partial
-                time.sleep(min(60, float(ra)) if ra and ra.isdigit() else 3 * (attempt + 1)); continue
+                wait = retry_after_seconds(e.headers.get("Retry-After"))
+                if wait is not None and wait > RETRY_BUDGET:
+                    return None, f"http {e.code}, retry-after {wait}s exceeds the run's wait budget; channel deferred"
+                time.sleep(wait if wait is not None else 3 * (attempt + 1)); continue
             return None, f"http {e.code}"
         except Exception:
             time.sleep(3 * (attempt + 1))
     return None, "exhausted retries"
+
+
+def retry_after_seconds(value):
+    """Retry-After as seconds, from either the delta-seconds or the HTTP-date form. None when absent or unparseable."""
+    if not value: return None
+    v = value.strip()
+    if v.isdigit(): return int(v)
+    try:
+        import email.utils
+        dt = email.utils.parsedate_to_datetime(v)
+        return max(0, int((dt - datetime.datetime.now(datetime.timezone.utc)).total_seconds()))
+    except Exception:
+        return None
 
 
 def norm_doi(doi):
@@ -183,20 +198,36 @@ def harvest(cfg, records, date_from, date_to, verify=True, now=None):
     now = now or datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     props = cfg["property_terms"]
     by_id = {r["instrument_id"]: r for r in records}
-    known = [n.lower() for r in cfg["records"] for n in r["names"] + (r.get("abbreviations") or [])]
-    candidates, uses, channels, warnings = {}, {}, [], []
+    def tracked_mentions(text):
+        """Instrument ids whose long name appears as a phrase, or whose abbreviation appears as a whole token beside a context term."""
+        t = " " + re.sub(r"\s+", " ", text.lower()) + " "
+        out = []
+        for r in cfg["records"]:
+            if any(re.search(r"(?<![a-z0-9])" + re.escape(n.lower()) + r"(?![a-z0-9])", t) for n in r["names"]):
+                out.append(r["instrument_id"]); continue
+            ctx = [c.lower() for c in (r.get("abbreviation_context") or [])]
+            if any(re.search(r"(?<![a-z0-9])" + re.escape(a.lower()) + r"(?![a-z0-9])", t) for a in (r.get("abbreviations") or [])) \
+                    and any(c in t for c in ctx):
+                out.append(r["instrument_id"])
+        return out
+    candidates, low, channels, warnings = {}, {}, [], []
 
     def absorb(rec_id, route, w, ch):
         terms = matched_terms(w["title"] + " " + w["abstract"], props)
         title_l = w["title"].lower()
         if rec_id and any(x.lower() in title_l for x in (by_id[rec_id].get("exclusions") or [])):
             ch["excluded"] = ch.get("excluded", 0) + 1; return
+        if not terms and route == "abbreviation":
+            # the abbreviation route's rule is abbreviation AND context AND property term; a server hit without a term is out of rule
+            ch["out_of_rule"] = ch.get("out_of_rule", 0) + 1; return
         if not terms:
-            uses.setdefault(rec_id, {}).setdefault(route, 0); uses[rec_id][route] += 1; return
+            low.setdefault(rec_id, {}).setdefault(route, 0); low[rec_id][route] += 1
         key = w["doi"] or (f"pmid:{w['pmid']}" if w["pmid"] else None) or (f"openalex:{w['openalex']}" if w["openalex"] else None) or f"title:{norm_title(w['title'])}"
         c = candidates.setdefault(key, {"id": key, "doi": w["doi"], "pmid": w["pmid"], "openalex": w["openalex"], "title": w["title"],
                                         "publication_date": w["date"], "venue": w["venue"], "type": w["type"], "language": w["language"],
-                                        "instruments": [], "routes": [], "property_terms": [], "first_seen_at": now, "screening_state": "not_screened"})
+                                        "instruments": [], "routes": [], "property_terms": [], "screening_priority": "low",
+                                        "first_seen_at": now, "screening_state": "not_screened"})
+        if terms: c["screening_priority"] = "normal"
         if rec_id not in c["instruments"]: c["instruments"].append(rec_id)
         tag = f"{route}:{ch['source']}:{rec_id}"
         if tag not in c["routes"]: c["routes"].append(tag)
@@ -218,23 +249,34 @@ def harvest(cfg, records, date_from, date_to, verify=True, now=None):
         channels.append({"instrument_id": None, "route": route, "source": source, "query": query, "pages": pages, "reported_hits": reported,
                          "collected_hits": len(hits), "outcome": "complete" if not err else ("partial" if hits else "failed"), "error": err})
         for w in hits:
-            if any(n in w["title"].lower() for n in known): continue
+            overlap = tracked_mentions(w["title"] + " " + w["abstract"])
             key = w["doi"] or (f"pmid:{w['pmid']}" if w["pmid"] else None) or f"title:{norm_title(w['title'])}"
             new_items.setdefault(key, {"id": key, "doi": w["doi"], "pmid": w["pmid"], "title": w["title"], "publication_date": w["date"],
-                                       "venue": w["venue"], "language": w["language"], "screening_state": "not_screened"})
-    # merge on normalised title where one side lacked a DOI; recorded on the candidate, never silent
+                                       "venue": w["venue"], "language": w["language"], "possible_tracked_instrument_overlap": overlap,
+                                       "screening_state": "not_screened"})
+    # Same normalised title, one side without a DOI, same publication year where both are known, and consistent
+    # identifiers: merge, record it, and make the DOI the canonical id. Anything weaker is left as two records
+    # linked by possible_duplicate_of. Two DOIs sharing a title are never merged.
     by_title = {}
     for key, c in list(candidates.items()):
         nt = norm_title(c["title"])
-        if nt and nt in by_title and by_title[nt] != key:
+        if not nt: continue
+        if nt in by_title and by_title[nt] != key:
             other = candidates[by_title[nt]]
-            if c["doi"] and other["doi"] and c["doi"] != other["doi"]:
-                warnings.append({"type": "same title, different doi", "a": other["doi"], "b": c["doi"]}); continue
+            ya, yb = (other.get("publication_date") or "")[:4], (c.get("publication_date") or "")[:4]
+            ids_conflict = any(other[k] and c[k] and other[k] != c[k] for k in ("doi", "pmid", "openalex"))
+            if ids_conflict or (ya and yb and ya != yb) or (other["doi"] and c["doi"]):
+                c["possible_duplicate_of"] = other["id"]; other.setdefault("possible_duplicates", []).append(key)
+                warnings.append({"type": "same title, not merged", "a": other["id"], "b": key, "reason": "conflicting identifiers or year" if (ids_conflict or (ya and yb and ya != yb)) else "two DOIs"})
+                continue
             for k in ("instruments", "routes", "property_terms"): other[k] = sorted(set(other[k]) | set(c[k]))
             for k in ("doi", "pmid", "openalex", "language"):
                 if not other[k] and c[k]: other[k] = c[k]
+            if c.get("screening_priority") == "normal": other["screening_priority"] = "normal"
             other.setdefault("merged_from", []).append(key); del candidates[key]
-        elif nt:
+            if other["doi"] and other["id"] != other["doi"]:
+                candidates[other["doi"]] = candidates.pop(other["id"]); other["merged_from"].append(other["id"]); other["id"] = other["doi"]; by_title[nt] = other["doi"]
+        else:
             by_title[nt] = key
     if verify:
         for c in candidates.values():
@@ -242,12 +284,15 @@ def harvest(cfg, records, date_from, date_to, verify=True, now=None):
     items = sorted(candidates.values(), key=lambda c: (c["doi"] or "~", c["title"]))
     for c in items: c["instruments"].sort(); c["routes"].sort()
     new_list = sorted(new_items.values(), key=lambda c: (c["doi"] or "~", c["title"]))
-    return items, new_list, channels, uses, warnings
+    return items, new_list, channels, low, warnings
 
 
-def envelope(cfg, records, date_from, date_to, started, items, new_list, channels, uses, warnings, sources):
+def envelope(cfg, records, date_from, date_to, started, items, new_list, channels, low, warnings, sources):
     failed = [c for c in channels if c["outcome"] != "complete"]
-    status = "complete" if not failed else ("failed" if all(c["outcome"] == "failed" for c in channels) else "partial")
+    if not channels:
+        status = "failed"; warnings = warnings + [{"type": "configuration", "detail": "no retrieval channels were planned"}]
+    else:
+        status = "complete" if not failed else ("failed" if all(c["outcome"] == "failed" for c in channels) else "partial")
     try: commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=ROOT).stdout.strip() or None
     except Exception: commit = None
     return {"schema_version": SCHEMA_VERSION, "harvester": "tools/harvest.py 0.2",
@@ -258,8 +303,8 @@ def envelope(cfg, records, date_from, date_to, started, items, new_list, channel
             "started_at": started, "finished_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
             "status": status, "sources": sources, "instruments": sorted(r["instrument_id"] for r in records),
             "channels": channels, "candidates": items, "new_instrument_candidates": new_list,
-            "uses_not_stored": uses, "warnings": warnings,
-            "note": "A candidate names an instrument and a psychometric property term. Nothing here is a grade, a judgement or a registry change. status complete means every declared retrieval channel completed all pages; it says nothing about screening."}
+            "low_priority_counts": low, "warnings": warnings,
+            "note": "A candidate is a work retrieved by an instrument's names, abbreviation or citation route. screening_priority normal means a psychometric property term appears in its title or abstract; low means none was found, which may mean a missing abstract. Nothing here is a grade, a judgement or a registry change. status complete means every planned retrieval channel completed all its pages; it says nothing about screening."}
 
 
 # ---------- self test ----------
@@ -276,6 +321,9 @@ def self_test():
     assert st([{"source": "s", "outcome": "complete"}]) == "complete"
     assert st([{"source": "s", "outcome": "complete"}, {"source": "s", "outcome": "failed"}]) == "partial"
     assert st([{"source": "s", "outcome": "failed"}]) == "failed"
+    assert st([]) == "failed", "an empty channel set is a configuration failure, not a complete run"
+    assert norm_doi("10.1027//1015-5759.19.1.12") == "10.1027//1015-5759.19.1.12", "the OLBI double slash survives"
+    assert retry_after_seconds("120") == 120 and retry_after_seconds(None) is None and retry_after_seconds("garbage") is None
     q = json.loads(QUERIES.read_text(encoding="utf-8"))
     ids = [r["instrument_id"] for r in q["records"]]
     assert len(ids) == len(set(ids)) == 27, "27 unique parent records expected"
@@ -293,18 +341,31 @@ def main():
     a = ap.parse_args()
     if a.self_test: return self_test()
     if not (a.date_from and a.date_to): sys.exit("--from and --to are required (YYYY-MM-DD)")
+    try:
+        d0, d1 = datetime.date.fromisoformat(a.date_from), datetime.date.fromisoformat(a.date_to)
+    except ValueError:
+        sys.exit("configuration error: dates must be YYYY-MM-DD")
+    if d1 < d0: sys.exit("configuration error: --to precedes --from")
     cfg = json.loads(QUERIES.read_text(encoding="utf-8"))
+    known_ids = {r["instrument_id"] for r in cfg["records"]}
+    unknown = set(a.instrument or []) - known_ids
+    if unknown: sys.exit(f"configuration error: unknown instrument ids {sorted(unknown)}")
     records = [r for r in cfg["records"] if not a.instrument or r["instrument_id"] in a.instrument]
+    if not records: sys.exit("configuration error: no records selected")
     started = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
-    items, new_list, channels, uses, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started)
+    items, new_list, channels, low, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started)
     sources = ["europepmc", "openalex (cites" + (", names, abbreviation)" if OPENALEX_KEY else " only: no API key)")] + (["crossref"] if not a.no_verify else [])
-    out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, uses, warnings, sources)
+    out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, low, warnings, sources)
+    out["full_inventory"] = not a.instrument       # a manual one-instrument run is not a monthly cycle
     text = json.dumps(out, indent=2, ensure_ascii=False) + "\n"
     if a.out: Path(a.out).parent.mkdir(parents=True, exist_ok=True); Path(a.out).write_text(text, encoding="utf-8")
     else: sys.stdout.write(text)
     n_fail = sum(1 for c in channels if c["outcome"] != "complete")
-    print(f"status {out['status']}: {len(items)} candidates, {len(new_list)} new-instrument candidates, {len(channels)} channels ({n_fail} not complete), "
-          f"{sum(sum(v.values()) for v in uses.values())} uses not stored -> {a.out or 'stdout'}", file=sys.stderr)
+    n_low = sum(1 for c in items if c.get("screening_priority") == "low")
+    print(f"status {out['status']}: {len(items)} candidates ({n_low} low priority), {len(new_list)} new-instrument candidates, "
+          f"{len(channels)} channels ({n_fail} not complete) -> {a.out or 'stdout'}", file=sys.stderr)
+    if out["status"] != "complete":
+        sys.exit(2)          # the artefact is written; the process says the cycle is incomplete
 
 
 if __name__ == "__main__":

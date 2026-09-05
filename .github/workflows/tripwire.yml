@@ -1,9 +1,11 @@
 name: sweep-tripwire
 
-# The guard against silence. On the third of each month, checks two things: that the evidence-harvest workflow
-# ran this month and concluded successfully, and that it opened its issue labelled evidence-sweep (authored by
-# the Actions bot, so a hand-labelled issue does not satisfy the check). If either is missing, opens one issue
-# saying so. A missing sweep is an incomplete maintenance cycle, not a month with no new evidence.
+# The guard against silence. On the third of each month, checks that the evidence-harvest workflow produced a
+# complete, full-inventory cycle for this month: a successful run of that workflow this month, and an issue
+# labelled evidence-sweep, authored by the Actions bot, whose title names this month and says "complete run".
+# A hand-labelled issue, a one-instrument manual run or a partial run does not satisfy it. If the check fails,
+# one issue is opened for the month (never a second). A missing sweep is an incomplete maintenance cycle, not
+# a month with no new evidence. This runs two days after the harvest; that is the response time, not 24 hours.
 
 on:
   schedule:
@@ -18,20 +20,20 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: look for this month's sweep
+      - name: look for this month's complete cycle
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
-          SINCE=$(date -u +%Y-%m-01T00:00:00Z)
+          MONTH=$(date -u +%Y-%m); SINCE="${MONTH}-01T00:00:00Z"
           RUNS=$(gh run list --repo "$REPO" --workflow evidence-harvest --created ">=$SINCE" --json conclusion --jq '[.[] | select(.conclusion=="success")] | length')
-          N=$(gh issue list --repo "$REPO" --label evidence-sweep --author app/github-actions --state all --search "created:>=$SINCE" --json number --jq 'length')
-          echo "successful evidence-harvest runs this month: $RUNS; bot-authored evidence-sweep issues: $N"
+          N=$(gh issue list --repo "$REPO" --label evidence-sweep --author app/github-actions --state all --search "\"Evidence harvest $MONTH: complete run\" in:title" --json number --jq 'length')
+          echo "successful evidence-harvest runs this month: $RUNS; bot-authored complete-run issues for $MONTH: $N"
           if [ "$RUNS" = "0" ] || [ "$N" = "0" ]; then
-            EXISTING=$(gh issue list --repo "$REPO" --label maintenance --state open --search "\"No evidence sweep recorded for $(date -u +%Y-%m)\"" --json number --jq 'length')
+            EXISTING=$(gh issue list --repo "$REPO" --label maintenance --state open --search "\"No complete evidence sweep for $MONTH\" in:title" --json number --jq 'length')
             if [ "$EXISTING" = "0" ]; then
-              gh issue create --repo "$REPO" --title "No evidence sweep recorded for $(date -u +%Y-%m)" --label maintenance \
-                --body "The tripwire found $RUNS successful evidence-harvest runs and $N harvest issues created by the workflow since $SINCE. The monthly harvest did not run to completion or did not report. Treat this month as an incomplete maintenance cycle until a run and its issue exist."
+              gh issue create --repo "$REPO" --title "No complete evidence sweep for $MONTH" --label maintenance \
+                --body "The tripwire found $RUNS successful evidence-harvest runs and $N complete-run issues authored by the workflow for $MONTH. The monthly harvest did not run to completion for the full inventory, or did not report. Treat this month as an incomplete maintenance cycle until a complete run and its issue exist. A partial run, a manual one-instrument run or a hand-labelled issue does not count."
             fi
             exit 1
           fi
