@@ -85,18 +85,14 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <li><a href="#contents">Contents</a></li>
 <li><a href="#scope-and-domain-coverage">1. Scope and domain coverage</a></li>
 <li><a href="#entity-catalogue">2. Entity catalogue</a></li>
-<li><a href="#the-privacy-profile-normative">3. The privacy profile
-(normative)</a></li>
-<li><a href="#field-tables-entity-by-entity">4. Field tables, entity by
-entity</a></li>
+<li><a href="#the-privacy-profile-normative">3. The privacy profile (normative)</a></li>
+<li><a href="#field-tables-entity-by-entity">4. Field tables, entity by entity</a></li>
 <li><a href="#code-lists">5. Code lists</a></li>
 <li><a href="#json-schemas-and-validation">6. JSON Schemas and validation</a></li>
 <li><a href="#the-profile-mechanism">7. The profile mechanism</a></li>
-<li><a href="#identifiers-and-pseudonymisation">8. Identifiers and
-pseudonymisation</a></li>
+<li><a href="#identifiers-and-pseudonymisation">8. Identifiers and pseudonymisation</a></li>
 <li><a href="#conformance-levels">9. Conformance levels</a></li>
-<li><a href="#the-honesty-pass-disputable-decisions-and-open-questions">10.
-The honesty pass: disputable decisions and open questions</a></li>
+<li><a href="#the-honesty-pass-disputable-decisions-and-open-questions">10. The honesty pass: disputable decisions and open questions</a></li>
 <li><a href="#sources-primary">Sources (primary)</a></li>
 </ul></nav>
 </aside>
@@ -108,88 +104,24 @@ The honesty pass: disputable decisions and open questions</a></li>
   <p><a href="OWHS-v0.1-draft.md">Specification as markdown</a> (67 KB) · <a href="owhs-v0.1-bundle.zip">Complete bundle</a> (60 KB zip: specification with its entity diagram, JSON schemas with valid and invalid conformance examples, 24 versioned codelists, the reference validator, governance and decision log)</p>
   <p style="font-size:14px;color:var(--muted)">Tell us where it breaks against your data: <a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a>. A report of a failed mapping is worth as much to us as a successful one.</p>
 </div>
-<h2 class="doc-title" id="open-workplace-health-standard-owhs-v0.1-draft-schema">Open
-Workplace Health Standard (OWHS), v0.1 draft schema</h2>
-<p><strong>Status:</strong> design draft for discussion · UK English ·
-normative artefact is plain JSON Schema (Draft 2020-12) · FHIR profiles
-are a stated v1.x direction. This document is the schema design
-responding to the OWHS v0.1 scope draft; it takes the scope draft’s six
-design principles as fixed constraints and does not restate them. Spec
-text is offered CC-BY 4.0; schemas, examples and validator
-Apache-2.0.</p>
-<p><strong>What is machine-checked in this draft.</strong> The three
-worked JSON Schemas meta-validate as Draft 2020-12; each valid example
-instance passes with zero errors and each invalid instance raises
-exactly the intended conformance errors. Results: <a
-href="examples/validation_report.json"><code>validation_report.json</code></a>.
-Everything else (field tables, code lists, profile/identity/conformance
-prose) is design specification, not executed code.</p>
-<p><strong>Primary-source anchors</strong> (every definitional choice
-cites one): sickness-absence semantics, 7.5-hour day and reason taxonomy
-→ <strong>ONS, <em>Sickness absence in the UK labour market:
-2025</em></strong> [1][10][26]; psychosocial domains → <strong>HSE
-Management Standards</strong> six domains [19] + MSIT [17]; RTW
-adjustment vocabulary → <strong>Statement of Fitness for Work (fit
-note)</strong> “may be fit” categories; statutory benefit entitlement →
-<strong>Statutory Sick Pay (SSP)</strong>; reasonable adjustments →
-<strong>Equality Act 2010 s.20</strong>; optional clinical coding →
-<strong>SNOMED CT</strong> (affiliate-licence caveat, never
-conformance-required); reserved national definitions → <strong>Workplace
-Health Intelligence Unit (WHIU)</strong> <code>whiu:</code> namespace
-[31][34]. No licensed instrument item text is reproduced anywhere in
-this standard.</p>
-<p><strong>A standing choice, stated once:</strong> where elegance and
-SME-implementability conflict, this draft chooses SME-implementability
-and says so at the point of choice (most visibly in the pseudonymisation
-design, §2f, and the strict-closure schema, §3.1.6).</p>
-<p><strong>An open invitation, stated once:</strong> the two domains
-where OWHS invents most, return-to-work outcomes and disability
-participation, are offered as good-faith strawmen, not settled designs.
-The people best placed to break them are insurer
-vocational-rehabilitation and analytics teams, occupational-health
-providers, disability-data specialists, and in time the WHIU itself.
-Comment on these two constructs is explicitly invited and will be
-weighted accordingly; both carry reserved <code>whiu:</code> escape
-hatches, so adopting a better definition is a code-list revision, not a
-schema break.</p>
-<hr />
+<h2 class="doc-title" id="open-workplace-health-standard-owhs-v0.1-draft-schema">Open Workplace Health Standard (OWHS), v0.1 draft schema</h2>
+<p><strong>Status:</strong> design draft for discussion · UK English · normative artefact is plain JSON Schema (Draft 2020-12) · FHIR profiles are a stated v1.x direction. This document is the schema design responding to the OWHS v0.1 scope draft; it takes the scope draft's six design principles as fixed constraints and does not restate them. Spec text is offered CC-BY 4.0; schemas, examples and validator Apache-2.0.</p>
+<p><strong>What is machine-checked in this draft.</strong> The three worked JSON Schemas meta-validate as Draft 2020-12; each valid example instance passes with zero errors and each invalid instance raises exactly the errors the error map names. Results: <a href="examples/validation_report.json"><code>validation_report.json</code></a>. Everything else (field tables, code lists, profile/identity/conformance prose) is design specification, not executed code.</p>
+<p><strong>Primary-source anchors</strong> (every definitional choice cites one): sickness-absence semantics, 7.5-hour day and reason taxonomy → <strong>ONS, <em>Sickness absence in the UK labour market: 2025</em></strong> [1][10][26]; psychosocial domains → <strong>HSE Management Standards</strong> six domains [19] + MSIT [17]; RTW adjustment vocabulary → <strong>Statement of Fitness for Work (fit note)</strong> "may be fit" categories; statutory benefit entitlement → <strong>Statutory Sick Pay (SSP)</strong>; reasonable adjustments → <strong>Equality Act 2010 s.20</strong>; optional clinical coding → <strong>SNOMED CT</strong> (affiliate-licence caveat, never conformance-required); reserved national definitions → <strong>Workplace Health Intelligence Unit (WHIU)</strong> <code>whiu:</code> namespace [31][34]. No licensed instrument item text is reproduced anywhere in this standard.</p>
+<p><strong>A standing choice, stated once:</strong> where elegance and SME-implementability conflict, this draft chooses SME-implementability and says so at the point of choice (most visibly in the pseudonymisation design, §2f, and the strict-closure schema, §3.1.6).</p>
+<p><strong>An open invitation, stated once:</strong> the two domains where OWHS invents most, return-to-work outcomes and disability participation, are offered as good-faith strawmen, not settled designs. The people best placed to break them are insurer vocational-rehabilitation and analytics teams, occupational-health providers, disability-data specialists, and in time the WHIU itself. Comment on these two constructs is explicitly invited and will be weighted accordingly; both carry reserved <code>whiu:</code> escape hatches, so adopting a better definition is a code-list revision, not a schema break.</p>
+<hr>
 <h2 id="contents">Contents</h2>
-<ol type="1">
-<li><a href="#scope-and-domain-coverage">Scope and domain coverage</a>:
-what an SME holds, and where each domain goes</li>
-<li>The schema: <a href="#entity-catalogue">entity catalogue + ERD</a> ·
-<a href="#the-privacy-profile-normative">privacy profile</a> · <a
-href="#field-tables-entity-by-entity">field tables</a> · <a
-href="#code-lists">code lists</a> · <a
-href="#json-schemas-and-validation">schemas + validation</a> · <a
-href="#the-profile-mechanism">profile mechanism</a> · <a
-href="#identifiers-and-pseudonymisation">identifiers and
-pseudonymisation</a> · <a href="#conformance-levels">conformance
-levels</a></li>
-<li><a
-href="#the-honesty-pass-disputable-decisions-and-open-questions">The
-honesty pass</a>: the decisions reasonable people would dispute, and the
-open questions</li>
+<ol>
+<li><a href="#scope-and-domain-coverage">Scope and domain coverage</a>: what an SME holds, and where each domain goes</li>
+<li>The schema: <a href="#entity-catalogue">entity catalogue + ERD</a> · <a href="#the-privacy-profile-normative">privacy profile</a> · <a href="#field-tables-entity-by-entity">field tables</a> · <a href="#code-lists">code lists</a> · <a href="#json-schemas-and-validation">schemas + validation</a> · <a href="#the-profile-mechanism">profile mechanism</a> · <a href="#identifiers-and-pseudonymisation">identifiers and pseudonymisation</a> · <a href="#conformance-levels">conformance levels</a></li>
+<li><a href="#the-honesty-pass-disputable-decisions-and-open-questions">The honesty pass</a>: the decisions reasonable people would dispute, and the open questions</li>
 </ol>
-<hr />
+<hr>
 <h2 id="scope-and-domain-coverage">1. Scope and domain coverage</h2>
-<p>This sweep enumerates the workplace-health data a UK SME could hold
-or need, beyond the entities already in the scope draft, and routes each
-domain to one of four homes: <strong>core v0.1</strong> (vendor-neutral,
-every broker/HRIS/OH provider recognises it), a <strong>named
-profile</strong> (real but specialised or vendor-shaped), a
-<strong>reserved entity</strong> (too central to omit, too undefined to
-model now), or <strong>out of scope</strong> for v0.1. The full routing table is not included in this release;
-the reasoning and the two genuinely hard calls follow.</p>
+<p>This sweep enumerates the workplace-health data a UK SME could hold or need, beyond the entities already in the scope draft, and routes each domain to one of four homes: <strong>core v0.1</strong> (vendor-neutral, every broker/HRIS/OH provider recognises it), a <strong>named profile</strong> (real but specialised or vendor-shaped), a <strong>reserved entity</strong> (too central to omit, too undefined to model now), or <strong>out of scope</strong> for v0.1. The full routing table is not included in this release; the reasoning and the two genuinely hard calls follow.</p>
 <h3 id="routing-summary">1.1 Routing summary</h3>
 <table>
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
 <thead>
 <tr>
 <th>Domain</th>
@@ -226,8 +158,7 @@ the reasoning and the two genuinely hard calls follow.</p>
 <td>common</td>
 <td>med to high</td>
 <td><strong>core v0.1</strong></td>
-<td><code>BenefitEntitlement</code> /
-<code>BenefitUtilisation</code></td>
+<td><code>BenefitEntitlement</code> / <code>BenefitUtilisation</code></td>
 </tr>
 <tr>
 <td>Wellbeing interventions + outcomes</td>
@@ -322,130 +253,26 @@ the reasoning and the two genuinely hard calls follow.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="occupational-health-why-ohepisode-is-core-and-its-shape">1.2
-Occupational health: why <code>OHEpisode</code> is core, and its
-shape</h3>
-<p>Occupational health is the domain the brief singles out, and rightly:
-OH data sits closer to a clinical record than anything already in scope,
-which is exactly why its shape has to be argued rather than assumed.</p>
-<p><strong>Why core, not a profile.</strong> An SME does not run a
-standing OH department; it buys OH <em>ad hoc</em> for precisely the
-cases the rest of the standard is about, a long-term absence that needs
-a fitness opinion before return, a disability that needs adjustments
-recommending, a manager who needs to know whether an employee can safely
-do a task. The OH referral and its resulting <strong>fitness-for-work
-opinion</strong> are the operational hinge between
-<code>AbsenceEpisode</code>, <code>ReturnToWorkOutcome</code> and
-<code>ReasonableAdjustment</code>. A competitor OH provider, an HRIS
-with an OH-referral module, and an insurer’s rehabilitation service
-would all recognise “referral → assessment → fitness opinion →
-recommendations” as their concept. That passes the litmus test for
-core.</p>
-<p><strong>What core deliberately excludes.</strong> Everything that
-makes OH <em>clinical</em> stays out: no diagnosis, no history, no test
-results, no report narrative. <code>OHEpisode</code> models the
-<strong>management-facing envelope</strong> of an OH interaction, that a
-referral happened, why (from a controlled reason list), what assessment
-type occurred, and the categorical fitness opinion and recommendation
-<em>types</em>, not the clinical content the OH clinician holds under
-medical confidentiality. The distinction mirrors real UK practice: under
-the Access to Medical Reports Act 1988 and GMC guidance the OH
-physician’s report goes to the worker first and to the employer only
-with consent, and the employer legitimately receives the <em>opinion and
-recommendations</em>, not the clinical detail. The schema encodes only
-what the employer is already entitled to hold.</p>
-<p><strong>The privacy problem OH forces, and the resolution.</strong>
-The scope draft’s privacy profile is aggregate-first: employer-visible
-values must clear an n≥5 floor. But a fitness-for-work opinion is
-intrinsically <strong>individual and legitimately
-employer-visible</strong>, a manager must know <em>this named
-worker</em> may return on altered hours. An aggregate-only rule would
-make the entity useless, yet dropping the floor would breach the
-profile. The resolution is a <strong>fourth visibility class</strong>,
-<code>individual-employer</code>, defined narrowly: a value an employer
-may hold about an identifiable worker <strong>only</strong> where an
-independent legal basis already entitles them to it (statutory
-adjustment duty, an OH opinion the worker’s report has released, a
-return-to-work plan the worker is party to). It is not a licence to hold
-clinical data; it is an honest acknowledgement that adjustments and
-fitness opinions are individual by nature and were never aggregate.
-Every <code>individual-employer</code> field is enumerated in the
-privacy profile and is the <em>only</em> class exempt from the
-aggregation floor, and note that within an OWHS payload the
-“identifiable worker” is still a <code>WorkerPseudonym</code>, never a
-direct identifier. This is the single most disputable decision in the
-design and is carried into the honesty pass (the honesty pass (section
-10)) unsmoothed.</p>
+<h3 id="occupational-health-why-ohepisode-is-core-and-its-shape">1.2 Occupational health: why <code>OHEpisode</code> is core, and its shape</h3>
+<p>Occupational health is the domain the brief singles out, and rightly: OH data sits closer to a clinical record than anything already in scope, which is exactly why its shape has to be argued rather than assumed.</p>
+<p><strong>Why core, not a profile.</strong> An SME does not run a standing OH department; it buys OH <em>ad hoc</em> for precisely the cases the rest of the standard is about, a long-term absence that needs a fitness opinion before return, a disability that needs adjustments recommending, a manager who needs to know whether an employee can safely do a task. The OH referral and its resulting <strong>fitness-for-work opinion</strong> are the operational hinge between <code>AbsenceEpisode</code>, <code>ReturnToWorkOutcome</code> and <code>ReasonableAdjustment</code>. A competitor OH provider, an HRIS with an OH-referral module, and an insurer's rehabilitation service would all recognise "referral → assessment → fitness opinion → recommendations" as their concept. That passes the litmus test for core.</p>
+<p><strong>What core deliberately excludes.</strong> Everything that makes OH <em>clinical</em> stays out: no diagnosis, no history, no test results, no report narrative. <code>OHEpisode</code> models the <strong>management-facing envelope</strong> of an OH interaction, that a referral happened, why (from a controlled reason list), what assessment type occurred, and the categorical fitness opinion and recommendation <em>types</em>, not the clinical content the OH clinician holds under medical confidentiality. The distinction mirrors real UK practice: under the Access to Medical Reports Act 1988 and GMC guidance the OH physician's report goes to the worker first and to the employer only with consent, and the employer legitimately receives the <em>opinion and recommendations</em>, not the clinical detail. The schema encodes only what the employer is already entitled to hold.</p>
+<p><strong>The privacy problem OH forces, and the resolution.</strong> The scope draft's privacy profile is aggregate-first: employer-visible values must clear an n≥5 floor. But a fitness-for-work opinion is intrinsically <strong>individual and legitimately employer-visible</strong>, a manager must know <em>this named worker</em> may return on altered hours. An aggregate-only rule would make the entity useless, yet dropping the floor would breach the profile. The resolution is a <strong>fourth visibility class</strong>, <code>individual-employer</code>, defined narrowly: a value an employer may hold about an identifiable worker <strong>only</strong> where an independent legal basis already entitles them to it (statutory adjustment duty, an OH opinion the worker's report has released, a return-to-work plan the worker is party to). It is not a licence to hold clinical data; it is an honest acknowledgement that adjustments and fitness opinions are individual by nature and were never aggregate. Every <code>individual-employer</code> field is enumerated in the privacy profile and is the <em>only</em> class exempt from the aggregation floor, and note that within an OWHS payload the "identifiable worker" is still a <code>WorkerPseudonym</code>, never a direct identifier. This is the single most disputable decision in the design and is carried into the honesty pass (the honesty pass (section 10)) unsmoothed.</p>
 <h3 id="the-other-calls-briefly">1.3 The other calls, briefly</h3>
 <ul>
-<li><strong>Reasonable adjustments → core.</strong> The Equality Act
-2010 duty to make reasonable adjustments binds employers of any size;
-adjustments are the connective tissue between disability participation
-and RTW. Modelling them as a first-class
-<code>ReasonableAdjustment</code> entity (rather than a flag on RTW)
-lets a standing adjustment (e.g. a permanent equipment change) exist
-independently of any absence. Individual-employer visibility, same basis
-as OH.</li>
-<li><strong>EAP, counselling, wellbeing interventions → existing benefit
-entities.</strong> These are <em>services</em>; provision is a
-<code>BenefitEntitlement</code> with an EAP/intervention product
-category and a health-domain tag, and uptake is
-<code>BenefitUtilisation</code> aggregate counts. No new entity, and
-individual counselling attendance stays firmly
-<code>individual-never</code>.</li>
-<li><strong>Ill-health retirement / medical capability exit → an RTW
-value, not an entity.</strong> Adding <code>ill-health-exit</code> as a
-<code>did-not-return</code> subtype stops medical exits from
-disappearing into an undifferentiated “did not return”, which matters
-for the disability-participation picture.</li>
-<li><strong>Statutory health surveillance, occupational immunisation,
-MSK pathway → named profiles.</strong> Real, but either sector-mandated
-for exposures most office SMEs never have (surveillance, immunisation)
-or vendor-shaped in its detail (MSK triage tiers). Profiles keep the
-core uncluttered; a 12-person marketing agency implements none of
-them.</li>
-<li><strong>DSE assessment, accident/RIDDOR record → reserved
-entities.</strong> DSE is near-universal but is a <em>workstation
-risk-assessment</em> artefact; a RIDDOR-reportable injury already
-surfaces via the work-relatedness flag on <code>AbsenceEpisode</code>,
-and a full incident record duplicates the employer’s separate statutory
-report to HSE. Reserve <code>RiskAssessment</code> and
-<code>WorkplaceIncident</code> as names, model neither in v0.1.</li>
-<li><strong>Vaccinations/health checks, drug &amp; alcohol testing,
-flexible-working requests, Bradford-factor triggers, first aid → out of
-scope.</strong> Each is either a clinical event inviting diagnosis
-semantics, a near-forensic sector process, an HR-admin flow, derived
-management logic, or facilities compliance, none is an SME
-workplace-health <em>record</em> that a national benchmark needs, and
-several carry privacy risk with no offsetting benchmarking value. Where
-a health consequence exists it already surfaces elsewhere (a
-health-driven flexible-working change is a
-<code>ReasonableAdjustment</code>; a testing-related absence is just an
-<code>AbsenceEpisode</code>).</li>
+<li><strong>Reasonable adjustments → core.</strong> The Equality Act 2010 duty to make reasonable adjustments binds employers of any size; adjustments are the connective tissue between disability participation and RTW. Modelling them as a first-class <code>ReasonableAdjustment</code> entity (rather than a flag on RTW) lets a standing adjustment (e.g. a permanent equipment change) exist independently of any absence. Individual-employer visibility, same basis as OH.</li>
+<li><strong>EAP, counselling, wellbeing interventions → existing benefit entities.</strong> These are <em>services</em>; provision is a <code>BenefitEntitlement</code> with an EAP/intervention product category and a health-domain tag, and uptake is <code>BenefitUtilisation</code> aggregate counts. No new entity, and individual counselling attendance stays firmly <code>individual-never</code>.</li>
+<li><strong>Ill-health retirement / medical capability exit → an RTW value, not an entity.</strong> Adding <code>ill-health-exit</code> as a <code>did-not-return</code> subtype stops medical exits from disappearing into an undifferentiated "did not return", which matters for the disability-participation picture.</li>
+<li><strong>Statutory health surveillance, occupational immunisation, MSK pathway → named profiles.</strong> Real, but either sector-mandated for exposures most office SMEs never have (surveillance, immunisation) or vendor-shaped in its detail (MSK triage tiers). Profiles keep the core uncluttered; a 12-person marketing agency implements none of them.</li>
+<li><strong>DSE assessment, accident/RIDDOR record → reserved entities.</strong> DSE is near-universal but is a <em>workstation risk-assessment</em> artefact; a RIDDOR-reportable injury already surfaces via the work-relatedness flag on <code>AbsenceEpisode</code>, and a full incident record duplicates the employer's separate statutory report to HSE. Reserve <code>RiskAssessment</code> and <code>WorkplaceIncident</code> as names, model neither in v0.1.</li>
+<li><strong>Vaccinations/health checks, drug &amp; alcohol testing, flexible-working requests, Bradford-factor triggers, first aid → out of scope.</strong> Each is either a clinical event inviting diagnosis semantics, a near-forensic sector process, an HR-admin flow, derived management logic, or facilities compliance, none is an SME workplace-health <em>record</em> that a national benchmark needs, and several carry privacy risk with no offsetting benchmarking value. Where a health consequence exists it already surfaces elsewhere (a health-driven flexible-working change is a <code>ReasonableAdjustment</code>; a testing-related absence is just an <code>AbsenceEpisode</code>).</li>
 </ul>
-<p><strong>Net effect on the entity set:</strong> two new core entities
-(<code>OHEpisode</code>, <code>ReasonableAdjustment</code>), one new RTW
-outcome value (<code>ill-health-exit</code>), two reserved entities
-(<code>RiskAssessment</code>, <code>WorkplaceIncident</code>), and two
-named profiles (<code>owhs-ohsurveillance</code>, <code>owhs-msk</code>)
-alongside the steward’s own profile already anticipated by the scope
-draft.</p>
-<hr />
+<p><strong>Net effect on the entity set:</strong> two new core entities (<code>OHEpisode</code>, <code>ReasonableAdjustment</code>), one new RTW outcome value (<code>ill-health-exit</code>), two reserved entities (<code>RiskAssessment</code>, <code>WorkplaceIncident</code>), and two named profiles (<code>owhs-ohsurveillance</code>, <code>owhs-msk</code>) alongside the steward's own profile already anticipated by the scope draft.</p>
+<hr>
 <h2 id="entity-catalogue">2. Entity catalogue</h2>
-<p>Sixteen entities in five clusters, plus two reserved names and one
-code-list-backed shared entity. New in v0.1 relative to the scope draft:
-<code>OHEpisode</code>, <code>ReasonableAdjustment</code> (both core),
-<code>ConstructDomain</code> promoted to an explicit shared entity, and
-the reserved <code>RiskAssessment</code> /
-<code>WorkplaceIncident</code>. Cardinalities read “parent : child”.</p>
+<p>Sixteen entities in five clusters, plus two reserved names and one code-list-backed shared entity. New in v0.1 relative to the scope draft: <code>OHEpisode</code>, <code>ReasonableAdjustment</code> (both core), <code>ConstructDomain</code> promoted to an explicit shared entity, and the reserved <code>RiskAssessment</code> / <code>WorkplaceIncident</code>. Cardinalities read "parent : child".</p>
 <h3 id="identity-cluster">Identity cluster</h3>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Entity</th>
@@ -459,9 +286,7 @@ the reserved <code>RiskAssessment</code> /
 <td><code>Organisation</code></td>
 <td>The employer; the outer boundary of every pseudonym scope.</td>
 <td>root</td>
-<td>1:N <code>OrgUnit</code>, 1:N <code>WorkerPseudonym</code>, 1:N
-<code>BenefitEntitlement</code>, 1:N
-<code>DisabilityParticipation</code></td>
+<td>1:N <code>OrgUnit</code>, 1:N <code>WorkerPseudonym</code>, 1:N <code>BenefitEntitlement</code>, 1:N <code>DisabilityParticipation</code></td>
 </tr>
 <tr>
 <td><code>OrgUnit</code></td>
@@ -471,8 +296,7 @@ the reserved <code>RiskAssessment</code> /
 </tr>
 <tr>
 <td><code>WorkerPseudonym</code></td>
-<td>Opaque, per-employer person reference carrying banded demographics
-only, never a direct identifier.</td>
+<td>Opaque, per-employer person reference carrying banded demographics only, never a direct identifier.</td>
 <td>Organisation 1:N</td>
 <td>subject of all individual-level records</td>
 </tr>
@@ -480,12 +304,6 @@ only, never a direct identifier.</td>
 </table>
 <h3 id="measurement-cluster">Measurement cluster</h3>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Entity</th>
@@ -499,35 +317,24 @@ only, never a direct identifier.</td>
 <td><code>WellbeingObservation</code></td>
 <td>One answer to one survey item on one occasion, any vendor.</td>
 <td>WorkerPseudonym 1:N</td>
-<td>→ <code>ConstructDomain</code>, →
-<code>MeasurementContext</code></td>
+<td>→ <code>ConstructDomain</code>, → <code>MeasurementContext</code></td>
 </tr>
 <tr>
 <td><code>InstrumentAdministration</code></td>
-<td>One completed validated instrument (scores + band, never item
-text).</td>
+<td>One completed validated instrument (scores + band, never item text).</td>
 <td>WorkerPseudonym 1:N</td>
-<td>→ <code>ConstructDomain</code>, →
-<code>MeasurementContext</code></td>
+<td>→ <code>ConstructDomain</code>, → <code>MeasurementContext</code></td>
 </tr>
 <tr>
 <td><code>MeasurementContext</code></td>
-<td>What makes scores comparable: producing system, scoring descriptor,
-window, limitations.</td>
+<td>What makes scores comparable: producing system, scoring descriptor, window, limitations.</td>
 <td>referenced N:1</td>
 <td>referenced by observations, administrations, reports</td>
 </tr>
 </tbody>
 </table>
-<h3 id="absence-rtw-occupational-health-cluster">Absence, RTW &amp;
-occupational-health cluster</h3>
+<h3 id="absence-rtw-occupational-health-cluster">Absence, RTW &amp; occupational-health cluster</h3>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Entity</th>
@@ -545,38 +352,26 @@ occupational-health cluster</h3>
 </tr>
 <tr>
 <td><code>ReturnToWorkOutcome</code></td>
-<td>What happened after an absence (incl. <code>did-not-return</code> /
-<code>ill-health-exit</code>).</td>
+<td>What happened after an absence (incl. <code>did-not-return</code> / <code>ill-health-exit</code>).</td>
 <td>AbsenceEpisode 1:0..1</td>
-<td>informed by <code>OHEpisode</code>, enacted via
-<code>ReasonableAdjustment</code></td>
+<td>informed by <code>OHEpisode</code>, enacted via <code>ReasonableAdjustment</code></td>
 </tr>
 <tr>
 <td><code>OHEpisode</code></td>
-<td>Management-facing envelope of an OH referral → assessment → fitness
-opinion (no clinical content).</td>
+<td>Management-facing envelope of an OH referral → assessment → fitness opinion (no clinical content).</td>
 <td>WorkerPseudonym 1:N</td>
-<td>recommends <code>ReasonableAdjustment</code>, informs
-<code>ReturnToWorkOutcome</code></td>
+<td>recommends <code>ReasonableAdjustment</code>, informs <code>ReturnToWorkOutcome</code></td>
 </tr>
 <tr>
 <td><code>ReasonableAdjustment</code></td>
-<td>A workplace adjustment (Equality Act 2010 s.20 duty), standing or
-absence-linked.</td>
+<td>A workplace adjustment (Equality Act 2010 s.20 duty), standing or absence-linked.</td>
 <td>WorkerPseudonym 1:N</td>
-<td>recommended by <code>OHEpisode</code>, enacted in
-<code>ReturnToWorkOutcome</code></td>
+<td>recommended by <code>OHEpisode</code>, enacted in <code>ReturnToWorkOutcome</code></td>
 </tr>
 </tbody>
 </table>
 <h3 id="benefits-cluster">Benefits cluster</h3>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Entity</th>
@@ -588,15 +383,13 @@ absence-linked.</td>
 <tbody>
 <tr>
 <td><code>BenefitEntitlement</code></td>
-<td>What support the workforce has: statutory (SSP) + commercial
-(product category).</td>
+<td>What support the workforce has: statutory (SSP) + commercial (product category).</td>
 <td>Organisation 1:N</td>
 <td>N:M <code>ConstructDomain</code> (health-domain tags)</td>
 </tr>
 <tr>
 <td><code>BenefitUtilisation</code></td>
-<td>Aggregate usage/claims counts per service per period, never
-individual claims.</td>
+<td>Aggregate usage/claims counts per service per period, never individual claims.</td>
 <td>BenefitEntitlement 1:N</td>
 <td>aggregated into <code>AggregateReport</code></td>
 </tr>
@@ -604,12 +397,6 @@ individual claims.</td>
 </table>
 <h3 id="disability-participation">Disability participation</h3>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Entity</th>
@@ -621,8 +408,7 @@ individual claims.</td>
 <tbody>
 <tr>
 <td><code>DisabilityParticipation</code></td>
-<td>Reserved WHIU third metric; aggregate-only, org level, banded
-counts, n≥10 floor, minimal until the WHIU defines its measure.</td>
+<td>Reserved WHIU third metric; aggregate-only, org level, banded counts, n≥10 floor, minimal until the WHIU defines its measure.</td>
 <td>Organisation 1:N</td>
 <td></td>
 </tr>
@@ -630,12 +416,6 @@ counts, n≥10 floor, minimal until the WHIU defines its measure.</td>
 </table>
 <h3 id="reporting-cluster">Reporting cluster</h3>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Entity</th>
@@ -647,22 +427,19 @@ counts, n≥10 floor, minimal until the WHIU defines its measure.</td>
 <tbody>
 <tr>
 <td><code>AggregateReport</code></td>
-<td>The <strong>only</strong> way individual-level results leave an org:
-level, n, completion, value+interval, suppression metadata.</td>
+<td>The <strong>only</strong> way individual-level results leave an org: level, n, completion, value+interval, suppression metadata.</td>
 <td>OrgUnit N:1</td>
 <td>← all aggregable entities; → <code>MeasurementContext</code></td>
 </tr>
 <tr>
 <td><code>BenchmarkRelease</code></td>
-<td>A published comparison set with composition disclosure and
-leave-one-out flag.</td>
+<td>A published comparison set with composition disclosure and leave-one-out flag.</td>
 <td>N:M <code>AggregateReport</code></td>
 <td></td>
 </tr>
 <tr>
 <td><code>Crosswalk</code></td>
-<td>Construct → HSE MS domain → ISO 45003 clause → <code>whiu:</code>
-reserved mapping; versioned independently.</td>
+<td>Construct → HSE MS domain → ISO 45003 clause → <code>whiu:</code> reserved mapping; versioned independently.</td>
 <td>maps <code>ConstructDomain</code></td>
 <td></td>
 </tr>
@@ -670,11 +447,6 @@ reserved mapping; versioned independently.</td>
 </table>
 <h3 id="shared-reserved">Shared &amp; reserved</h3>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Entity</th>
@@ -685,9 +457,7 @@ reserved mapping; versioned independently.</td>
 <tbody>
 <tr>
 <td><code>ConstructDomain</code></td>
-<td>The single health-domain vocabulary used by <strong>both</strong>
-measurement (what a survey measures) and services (what a benefit
-targets).</td>
+<td>The single health-domain vocabulary used by <strong>both</strong> measurement (what a survey measures) and services (what a benefit targets).</td>
 <td>Code-list-backed shared entity</td>
 </tr>
 <tr>
@@ -703,87 +473,26 @@ targets).</td>
 </tbody>
 </table>
 <h3 id="entity-relationship-diagram">Entity-relationship diagram</h3>
-<p>The Mermaid source is <a
-href="diagrams/owhs_erd_v0.1.mmd"><code>owhs_erd_v0.1.mmd</code></a>
-(renders natively in GitHub/Markdown); a static render is below. Solid
-lines are structural references; dotted lines are the aggregation flow
-into <code>AggregateReport</code>; dashed outlines are reserved names.</p>
-<figure>
-<img src="../owhs-erd-v0.1.svg"
-alt="OWHS v0.1 entity-relationship diagram" />
-<figcaption aria-hidden="true">OWHS v0.1 entity-relationship
-diagram</figcaption>
-</figure>
-<p><em>Figure, the OWHS v0.1 entity map. White boxes are
-organisation-level entities; tinted boxes are individual-level records
-held against the pseudonym; filled boxes are the outputs that leave;
-grey boxes are shared definitions; dashed outlines are reserved
-names.</em></p>
-<h2 id="the-privacy-profile-normative">3. The privacy profile
-(normative)</h2>
-<p>Restated here because §2b field tables reference it on every row. The
-scope draft’s P1 to P5 stand; this draft adds the fourth visibility class
-made necessary by occupational health and adjustments (§1.2).</p>
+<p>The Mermaid source is <a href="diagrams/owhs_erd_v0.1.mmd"><code>owhs_erd_v0.1.mmd</code></a> (renders natively in GitHub/Markdown); a static render is below. Solid lines are structural references; dotted lines are the aggregation flow into <code>AggregateReport</code>; dashed outlines are reserved names.</p>
+<p><img alt="OWHS v0.1 entity-relationship diagram" src="../owhs-erd-v0.1.svg"></p>
+<p><em>Figure, the OWHS v0.1 entity map. White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; grey boxes are shared definitions; dashed outlines are reserved names.</em></p>
+<h2 id="the-privacy-profile-normative">3. The privacy profile (normative)</h2>
+<p>Restated here because §2b field tables reference it on every row. The scope draft's P1 to P5 stand; this draft adds the fourth visibility class made necessary by occupational health and adjustments (§1.2).</p>
 <ul>
-<li><strong>P1, no direct identifiers</strong> in an OWHS payload; pseudonymous IDs and banded demographics only. What is enforced <em>in schema</em> (§2d): a direct identifier cannot be carried in a field of its own, because every entity and every nested object declares its permitted properties and rejects the rest. What is not enforced: an identifier written into the value of a permitted string field, such as a source-system provider name, is structurally valid. No schema keyword detects it. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.</li>
-<li><strong>P2, aggregation floors:</strong> n≥5 for any
-employer-visible value; <strong>n≥10</strong> for severe-distress
-measures. A conformant producer <strong>refuses to emit</strong>, not
-merely hides.</li>
-<li><strong>P3, visibility is a field-level property</strong> with four
-classes: <code>open</code> / <code>aggregate-only</code> /
-<code>individual-employer</code> / <code>individual-never</code>. All
-instrument results are <code>individual-never</code> by definition.</li>
-<li><strong>P4, safeguarding-category signals</strong> (bullying,
-harassment, discrimination, crisis) are excluded from employer-visible
-outputs entirely, <strong>at any n</strong>.</li>
-<li><strong>P5, completeness travels:</strong> every aggregate carries
-its completion rate and suppression metadata.</li>
+<li><strong>P1, no direct identifiers</strong> in an OWHS payload; pseudonymous IDs and banded demographics only. What is enforced in schema (§2d): a direct identifier cannot be carried in a field of its own, because every entity and every nested object declares its permitted properties and rejects the rest. What is not enforced: an identifier written into the value of a permitted string field, such as a source-system provider name, is structurally valid. No schema keyword detects it. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.</li>
+<li><strong>P2, aggregation floors:</strong> n≥5 for any employer-visible value; <strong>n≥10</strong> for severe-distress measures. A conformant producer <strong>refuses to emit</strong>, not merely hides.</li>
+<li><strong>P3, visibility is a field-level property</strong> with four classes: <code>open</code> / <code>aggregate-only</code> / <code>individual-employer</code> / <code>individual-never</code>. All instrument results are <code>individual-never</code> by definition.</li>
+<li><strong>P4, safeguarding-category signals</strong> (bullying, harassment, discrimination, crisis) are excluded from employer-visible outputs entirely, <strong>at any n</strong>.</li>
+<li><strong>P5, completeness travels:</strong> every aggregate carries its completion rate and suppression metadata.</li>
 </ul>
-<p><strong>The fourth class, <code>individual-employer</code>,</strong>
-applies only to fields an employer may lawfully hold about an identified
-<em>pseudonym</em> under an independent legal basis (Equality Act
-adjustment duty; a released OH opinion; an RTW plan the worker is party
-to). It is the <strong>only</strong> class exempt from the aggregation
-floor, is exhaustively enumerated in §2b, and never carries clinical
-content. The n≥5/n≥10 floors adopt commonly used conventions from UK
-official-statistics disclosure control (small cells suppressed, higher
-floors for sensitive measures); exact implementations vary across ONS
-and HSE outputs, sometimes with additional perturbation or dominance
-rules, so OWHS fixes these thresholds by convention rather than claiming
-to mirror any single official implementation.</p>
-<hr />
-<hr />
-<h2 id="field-tables-entity-by-entity">4. Field tables, entity by
-entity</h2>
-<p><strong>Privacy classification (four classes).</strong>
-<code>open</code> = may appear in any output;
-<code>aggregate-only</code> = employer-visible only through an
-<code>AggregateReport</code> clearing the n-floor;
-<code>individual-never</code> = never leaves the producer at individual
-grain in any output, even to the employer (all instrument results, all
-safeguarding-category signals); <code>individual-employer</code> = may
-be held/shown about an identified <em>pseudonym</em> to the employer
-<strong>only</strong> where an independent legal basis entitles them
-(Equality Act adjustment duty, a released OH opinion, an RTW plan the
-worker is party to). <code>individual-employer</code> is the only class
-exempt from the aggregation floor and every field carrying it is
-enumerated here and in the privacy profile (§3). Fields marked
-<code>open</code> are structural/metadata, not personal.</p>
-<p><strong>Types</strong> are JSON Schema types with a semantic note.
-<code>codelist:&lt;name&gt;@&lt;ver&gt;</code> marks a value drawn from
-a versioned code list (§2c). “Anchor” is the primary source fixing the
-field’s <em>meaning</em>.</p>
+<p><strong>The fourth class, <code>individual-employer</code>,</strong> applies only to fields an employer may lawfully hold about an identified <em>pseudonym</em> under an independent legal basis (Equality Act adjustment duty; a released OH opinion; an RTW plan the worker is party to). It is the <strong>only</strong> class exempt from the aggregation floor, is exhaustively enumerated in §2b, and never carries clinical content. The n≥5/n≥10 floors adopt commonly used conventions from UK official-statistics disclosure control (small cells suppressed, higher floors for sensitive measures); exact implementations vary across ONS and HSE outputs, sometimes with additional perturbation or dominance rules, so OWHS fixes these thresholds by convention rather than claiming to mirror any single official implementation.</p>
+<hr>
+<hr>
+<h2 id="field-tables-entity-by-entity">4. Field tables, entity by entity</h2>
+<p><strong>Privacy classification (four classes).</strong> <code>open</code> = may appear in any output; <code>aggregate-only</code> = employer-visible only through an <code>AggregateReport</code> clearing the n-floor; <code>individual-never</code> = never leaves the producer at individual grain in any output, even to the employer (all instrument results, all safeguarding-category signals); <code>individual-employer</code> = may be held/shown about an identified <em>pseudonym</em> to the employer <strong>only</strong> where an independent legal basis entitles them (Equality Act adjustment duty, a released OH opinion, an RTW plan the worker is party to). <code>individual-employer</code> is the only class exempt from the aggregation floor and every field carrying it is enumerated here and in the privacy profile (§3). Fields marked <code>open</code> are structural/metadata, not personal.</p>
+<p><strong>Types</strong> are JSON Schema types with a semantic note. <code>codelist:&lt;name&gt;@&lt;ver&gt;</code> marks a value drawn from a versioned code list (§2c). "Anchor" is the primary source fixing the field's <em>meaning</em>.</p>
 <h3 id="organisation">Organisation</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -838,15 +547,7 @@ field’s <em>meaning</em>.</p>
 </tbody>
 </table>
 <h3 id="orgunit">OrgUnit</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -893,15 +594,7 @@ field’s <em>meaning</em>.</p>
 </tbody>
 </table>
 <h3 id="workerpseudonym">WorkerPseudonym</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -964,24 +657,15 @@ field’s <em>meaning</em>.</p>
 <tr>
 <td><strong>Forbidden</strong></td>
 <td></td>
+<td>,</td>
 <td></td>
-<td></td>
-<td></td>
-<td>name, NI number, email, DOB, address, schema MUST reject (§3
-privacy)</td>
+<td>,</td>
+<td>name, NI number, email, DOB, address, schema MUST reject (§3 privacy)</td>
 </tr>
 </tbody>
 </table>
 <h3 id="absenceepisode">AbsenceEpisode</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1071,8 +755,7 @@ privacy)</td>
 <td>○</td>
 <td>SNOMED CT (optional ext.)</td>
 <td>individual-never</td>
-<td><strong>OPTIONAL</strong>; affiliate-licence caveat, never
-conformance-required</td>
+<td><strong>OPTIONAL</strong>; affiliate-licence caveat, never conformance-required</td>
 </tr>
 <tr>
 <td><code>sourceProvenance</code></td>
@@ -1084,19 +767,9 @@ conformance-required</td>
 </tr>
 </tbody>
 </table>
-<p><em>Rate semantics:</em> an org sickness-absence rate derived from
-these episodes uses the ONS definition, “the percentage of working hours
-lost because of sickness or injury” [1], so it is ONS-comparable.</p>
+<p><em>Rate semantics:</em> an org sickness-absence rate derived from these episodes uses the ONS definition, "the percentage of working hours lost because of sickness or injury" [1], so it is ONS-comparable.</p>
 <h3 id="returntoworkoutcome">ReturnToWorkOutcome</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1146,7 +819,7 @@ lost because of sickness or injury” [1], so it is ONS-comparable.</p>
 <td>○</td>
 <td>codelist:rtw-adjustment@0.1</td>
 <td>individual-employer</td>
-<td><strong>fit-note “may be fit” categories</strong></td>
+<td><strong>fit-note "may be fit" categories</strong></td>
 </tr>
 <tr>
 <td><code>rtwDate</code></td>
@@ -1158,12 +831,11 @@ lost because of sickness or injury” [1], so it is ONS-comparable.</p>
 </tr>
 <tr>
 <td><code>sustainedAt</code></td>
-<td>array&lt;object{checkpointWeeks,status}&gt;</td>
+<td>array<object{checkpointWeeks,status}></td>
 <td>○</td>
 <td>codelist:rtw-checkpoint@0.1</td>
 <td>aggregate-only</td>
-<td>any 1 to 104 weeks; {4,13,26} recommended, <strong>provisional pending
-<code>whiu:</code></strong></td>
+<td>any 1 to 104 weeks; {4,13,26} recommended, <strong>provisional pending <code>whiu:</code></strong></td>
 </tr>
 <tr>
 <td><code>whiuOutcomeCode</code></td>
@@ -1175,16 +847,8 @@ lost because of sickness or injury” [1], so it is ONS-comparable.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="ohepisode-new-core">OHEpisode (new, core)</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<h3 id="ohepisode-new-core">OHEpisode  (new, core)</h3>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1250,8 +914,7 @@ lost because of sickness or injury” [1], so it is ONS-comparable.</p>
 <td>○</td>
 <td>codelist:fitness-opinion@0.1</td>
 <td>individual-employer</td>
-<td><strong>fit / unfit / fit-with-adjustments</strong> (the released
-opinion, per AMRA 1988 / GMC)</td>
+<td><strong>fit / unfit / fit-with-adjustments</strong> (the released opinion, per AMRA 1988 / GMC)</td>
 </tr>
 <tr>
 <td><code>recommendationTypes</code></td>
@@ -1267,17 +930,15 @@ opinion, per AMRA 1988 / GMC)</td>
 <td>✓</td>
 <td></td>
 <td>open</td>
-<td>consent flag; MUST be true for <code>fitnessOpinion</code> to be
-present</td>
+<td>consent flag; MUST be true for <code>fitnessOpinion</code> to be present</td>
 </tr>
 <tr>
 <td><code>clinicalCauseCode</code></td>
 <td>(never)</td>
 <td>✗</td>
 <td></td>
-<td></td>
-<td><strong>schema MUST reject</strong>, no diagnosis/history/report
-text in OWHS</td>
+<td>,</td>
+<td><strong>schema MUST reject</strong>, no diagnosis/history/report text in OWHS</td>
 </tr>
 <tr>
 <td><code>linkedAbsenceEpisodeId</code></td>
@@ -1289,22 +950,9 @@ text in OWHS</td>
 </tr>
 </tbody>
 </table>
-<p><em>Boundary rule (normative):</em> <code>OHEpisode</code> carries no
-clinical content. <code>fitnessOpinion</code> MUST be absent unless
-<code>opinionReleasedToEmployer</code> is <code>true</code>. Any
-diagnosis, symptom, test-result or free-text report field is a
-conformance error.</p>
-<h3 id="reasonableadjustment-new-core">ReasonableAdjustment (new,
-core)</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<p><em>Boundary rule (normative):</em> <code>OHEpisode</code> carries no clinical content. <code>fitnessOpinion</code> MUST be absent unless <code>opinionReleasedToEmployer</code> is <code>true</code>. Any diagnosis, symptom, test-result or free-text report field is a conformance error.</p>
+<h3 id="reasonableadjustment-new-core">ReasonableAdjustment  (new, core)</h3>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1338,8 +986,7 @@ core)</h3>
 <td>✓</td>
 <td>codelist:adjustment-category@0.1</td>
 <td>individual-employer</td>
-<td><strong>Equality Act 2010 s.20</strong> duty; superset of fit-note
-categories</td>
+<td><strong>Equality Act 2010 s.20</strong> duty; superset of fit-note categories</td>
 </tr>
 <tr>
 <td><code>status</code></td>
@@ -1379,21 +1026,12 @@ categories</td>
 <td>○</td>
 <td></td>
 <td>individual-never</td>
-<td>whether tied to a disability, sensitive; aggregate via
-DisabilityParticipation only</td>
+<td>whether tied to a disability, sensitive; aggregate via DisabilityParticipation only</td>
 </tr>
 </tbody>
 </table>
 <h3 id="wellbeingobservation">WellbeingObservation</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1427,8 +1065,7 @@ DisabilityParticipation only</td>
 <td>✓</td>
 <td></td>
 <td>individual-never</td>
-<td>item identifier only, <strong>never item text</strong>
-(licensing)</td>
+<td>item identifier only, <strong>never item text</strong> (licensing)</td>
 </tr>
 <tr>
 <td><code>constructCode</code></td>
@@ -1484,21 +1121,12 @@ DisabilityParticipation only</td>
 <td>○</td>
 <td></td>
 <td>individual-never</td>
-<td>if true, <strong>excluded from all employer output at any n</strong>
-(§3 P4)</td>
+<td>if true, <strong>excluded from all employer output at any n</strong> (§3 P4)</td>
 </tr>
 </tbody>
 </table>
 <h3 id="instrumentadministration">InstrumentAdministration</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1562,9 +1190,9 @@ DisabilityParticipation only</td>
 <td><code>band</code></td>
 <td>string</td>
 <td>○</td>
-<td>(per instrument’s published cut-points)</td>
+<td>(per instrument's published cut-points)</td>
 <td>aggregate-only</td>
-<td>producer’s published banding</td>
+<td>producer's published banding</td>
 </tr>
 <tr>
 <td><code>completionStatus</code></td>
@@ -1580,21 +1208,12 @@ DisabilityParticipation only</td>
 <td>○</td>
 <td></td>
 <td>individual-never</td>
-<td>severe-distress → <strong>n≥10</strong> aggregation floor (§3
-P2)</td>
+<td>severe-distress → <strong>n≥10</strong> aggregation floor (§3 P2)</td>
 </tr>
 </tbody>
 </table>
 <h3 id="measurementcontext">MeasurementContext</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1628,8 +1247,7 @@ P2)</td>
 <td>✓</td>
 <td></td>
 <td>open</td>
-<td>aggregation method / estimation family / window (open descriptor, no
-method enum)</td>
+<td>aggregation method / estimation family / window (open descriptor, no method enum)</td>
 </tr>
 <tr>
 <td><code>knownLimitations</code></td>
@@ -1641,17 +1259,8 @@ method enum)</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Erratum, 4 September 2026.</strong> As first published, this table marked <code>value</code> unconditionally required while §9 required a producer below an aggregation floor to set <code>suppressed:true</code> and not emit the value. The two could not both be satisfied, so no conformant suppressed report could exist. <code>value</code> is required when <code>suppressed</code> is false and must be absent when it is true, as the table now states. This corrects a contradiction in the specification; it does not change what a producer below a floor was always required to do.</p>
 <h3 id="benefitentitlement">BenefitEntitlement</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1746,15 +1355,7 @@ method enum)</td>
 </tbody>
 </table>
 <h3 id="benefitutilisation">BenefitUtilisation</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1816,28 +1417,9 @@ method enum)</td>
 </tr>
 </tbody>
 </table>
-<h3
-id="disabilityparticipation-reserved-minimal">DisabilityParticipation
-(reserved-minimal)</h3>
-<p><strong>Status: placeholder, expected to be replaced by the WHIU’s
-own construct.</strong> The current shape is deliberately unsuitable for
-anything beyond coarse org-level benchmarking: it cannot express cohort
-comparisons (for example disabled vs non-disabled RTW rates or absence
-patterns) or trajectories, and disability-as-a-band is a knowing
-simplification of a complex dimension (legal status,
-self-identification, fluctuating conditions). That poverty is the point:
-any richer structure invented now would be overwritten by the WHIU’s
-definition and would meanwhile normalise employer-held disability data
-ahead of national guidance.</p>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<h3 id="disabilityparticipation-reserved-minimal">DisabilityParticipation  (reserved-minimal)</h3>
+<p><strong>Status: placeholder, expected to be replaced by the WHIU's own construct.</strong> The current shape is deliberately unsuitable for anything beyond coarse org-level benchmarking: it cannot express cohort comparisons (for example disabled vs non-disabled RTW rates or absence patterns) or trajectories, and disability-as-a-band is a knowing simplification of a complex dimension (legal status, self-identification, fluctuating conditions). That poverty is the point: any richer structure invented now would be overwritten by the WHIU's definition and would meanwhile normalise employer-held disability data ahead of national guidance.</p>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -1879,8 +1461,7 @@ ahead of national guidance.</p>
 <td>○</td>
 <td>codelist:headcount-band@0.1</td>
 <td>aggregate-only</td>
-<td><strong>n≥10</strong> floor; banded, minimal until
-<code>whiu:</code> defines the measure</td>
+<td><strong>n≥10</strong> floor; banded, minimal until <code>whiu:</code> defines the measure</td>
 </tr>
 <tr>
 <td><code>whiuMeasureCode</code></td>
@@ -1893,15 +1474,7 @@ ahead of national guidance.</p>
 </tbody>
 </table>
 <h3 id="aggregatereport">AggregateReport</h3>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -2011,15 +1584,9 @@ ahead of national guidance.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Erratum, 4 September 2026.</strong> As first published, this table marked <code>value</code> unconditionally required while §9 required a producer below an aggregation floor to set <code>suppressed:true</code> and not emit the value. The two could not both be satisfied, so no conformant suppressed report could exist. <code>value</code> is required when <code>suppressed</code> is false and must be absent when it is true, as the table now states. This corrects a contradiction in the specification; it does not change what a producer below a floor was always required to do.</p>
 <h3 id="benchmarkrelease">BenchmarkRelease</h3>
 <table>
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
 <thead>
 <tr>
 <th>Field</th>
@@ -2076,13 +1643,6 @@ ahead of national guidance.</p>
 </table>
 <h3 id="crosswalk">Crosswalk</h3>
 <table>
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
 <thead>
 <tr>
 <th>Field</th>
@@ -2130,22 +1690,10 @@ ahead of national guidance.</p>
 </tr>
 </tbody>
 </table>
-<hr />
+<hr>
 <h2 id="code-lists">5. Code lists</h2>
-<p>Every list is a standalone JSON file with its own
-<code>version</code> (semver), independent of the spec version,
-registered in <a
-href="codelists/_registry.json"><code>_registry.json</code></a>. Schemas
-pin a list as <code>name@version</code>, so a code list can add values
-(minor bump) without a spec release. Files: every list is in the
-<a href="owhs-v0.1-bundle.zip">download bundle</a> under <code>codelists/</code>.</p>
+<p>Every list is a standalone JSON file with its own <code>version</code> (semver), independent of the spec version, registered in <a href="codelists/_registry.json"><code>_registry.json</code></a>. Schemas pin a list as <code>name@version</code>, so a code list can add values (minor bump) without a spec release. Files: every list is in the download bundle (<code>owhs-v0.1-bundle.zip</code>) under <code>codelists/</code>.</p>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>List</th>
@@ -2207,15 +1755,13 @@ pin a list as <code>name@version</code>, so a code list can add values
 <td><code>construct-domain</code></td>
 <td>0.1.0</td>
 <td>11</td>
-<td>Shared construct/health-domain list; HSE MS six domains [19]
-anchored, extended</td>
+<td>Shared construct/health-domain list; HSE MS six domains [19] anchored, extended</td>
 </tr>
 <tr>
 <td><code>fitness-opinion</code></td>
 <td>0.1.0</td>
 <td>4</td>
-<td>OH fitness-for-work opinion (management-facing categorical
-output)</td>
+<td>OH fitness-for-work opinion (management-facing categorical output)</td>
 </tr>
 <tr>
 <td><code>headcount-band</code></td>
@@ -2233,8 +1779,7 @@ output)</td>
 <td><code>oh-referral-reason</code></td>
 <td>0.1.0</td>
 <td>9</td>
-<td>OWHS v0.1; management-facing OH referral reasons
-(non-diagnostic)</td>
+<td>OWHS v0.1; management-facing OH referral reasons (non-diagnostic)</td>
 </tr>
 <tr>
 <td><code>org-size-band</code></td>
@@ -2246,8 +1791,7 @@ output)</td>
 <td><code>rtw-adjustment</code></td>
 <td>0.1.0</td>
 <td>4</td>
-<td>Statement of Fitness for Work (fit note) ‘may be fit’
-categories</td>
+<td>Statement of Fitness for Work (fit note) 'may be fit' categories</td>
 </tr>
 <tr>
 <td><code>rtw-checkpoint</code></td>
@@ -2259,8 +1803,13 @@ categories</td>
 <td><code>rtw-outcome</code></td>
 <td>0.1.0</td>
 <td>5</td>
-<td>OWHS v0.1; return-to-work outcome types (no official UK taxonomy;
-insurer/OH case systems use proprietary ones)</td>
+<td>OWHS v0.1; return-to-work outcome types (no official UK taxonomy; insurer/OH case systems use proprietary ones)</td>
+</tr>
+<tr>
+<td><code>rtw-sustained-status</code></td>
+<td>0.1.0</td>
+<td>3</td>
+<td>OWHS v0.1; sustained-return status at a checkpoint (no UK incumbent)</td>
 </tr>
 <tr>
 <td><code>sampling-design</code></td>
@@ -2294,112 +1843,37 @@ insurer/OH case systems use proprietary ones)</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Design notes on the anchored lists.</strong> -
-<strong><code>absence-reason</code></strong> adopts the six ONS reason
-categories verbatim (minor illness, musculoskeletal, mental health,
-respiratory, gastrointestinal, other), so an org rate is ONS-comparable
-[1]. It carries <em>no</em> diagnosis granularity, clinical cause is the
-separate optional SNOMED field. -
-<strong><code>rtw-adjustment</code></strong> is the four statutory
-fit-note “may be fit for work” categories (phased return, altered hours,
-amended duties, workplace adaptations) and nothing else; it is shared by
-<code>ReturnToWorkOutcome.adjustmentTypes</code> and
-<code>OHEpisode.recommendationTypes</code>. One modelling choice, stated
-explicitly: OWHS records the <strong>realised adjustments over an
-episode</strong>, not the chronological sequence of fit notes. An
-absence involving several fit notes with changing advice records the set
-of adjustments actually enacted; the note-by-note paper trail stays in
-the employer’s absence system. -
-<strong><code>adjustment-category</code></strong> (anchored to Equality
-Act 2010 s.20) is a deliberate <strong>superset</strong> of
-<code>rtw-adjustment</code>, the four fit-note codes are a strict
-subset, so an OH recommendation expressed in fit-note terms maps into
-the broader adjustment record without translation. To be precise about
-the legal claim: the list covers statutory s.20 reasonable adjustments
-<strong>plus closely related workplace arrangements</strong> (for
-example absence-policy flexibility and additional support), and does not
-assert that every code is a s.20 adjustment in law; it is a management
-record anchored to the duty, not a legal determination. -
-<strong><code>benefit-product</code></strong> is the UK market’s own
-vocabulary (PMI/GIP/GLA/cash plan/EAP/dental/pension/…), not an OWHS
-invention; statutory SSP is modelled structurally in
-<code>BenefitEntitlement.statutory</code>, never as a product code. -
-<strong><code>construct-domain</code></strong> is the single shared
-vocabulary used by <em>both</em> measurement and services. Its first six
-codes map 1:1 to the <strong>HSE Management Standards six
-domains</strong> [19] (the <code>Crosswalk</code> entity carries the
-HSE/ISO-45003/<code>whiu:</code> mappings); the remaining codes are
-outcome constructs (mental health, MSK, financial wellbeing,
-sleep/fatigue) that are not HSE work-design domains.</p>
-<p><strong>New lists the added domains needed:</strong>
-<code>oh-referral-reason</code>, <code>oh-assessment-type</code>,
-<code>fitness-opinion</code>, <code>adjustment-category</code>,
-<code>adjustment-status</code>, plus supporting bands
-(<code>org-size-band</code>, <code>headcount-band</code>,
-<code>age-band</code>, <code>tenure-band</code>,
-<code>work-pattern</code>) and operational enums
-(<code>source-type</code>, <code>completion-status</code>,
-<code>collection-channel</code>, <code>sampling-design</code>,
-<code>access-route</code>, <code>suppression-reason</code>,
-<code>rtw-outcome</code>, <code>rtw-checkpoint</code>). The OH lists are
-strictly management-facing: <code>fitness-opinion</code> is the
-categorical released opinion (fit / fit-with-adjustments / unfit /
-not-assessed), never a clinical basis.</p>
-<hr />
-<h2 id="json-schemas-and-validation">6. JSON Schemas and validation</h2>
-<p>Three core entities are given as full JSON Schema (Draft 2020-12),
-each with a valid and a deliberately invalid instance. All three schemas
-meta-validate (<code>Draft202012Validator.check_schema</code>), every
-valid instance passes with <strong>0</strong> errors, and every invalid
-instance raises exactly the intended conformance errors. The
-machine-checked results are in <a
-href="examples/validation_report.json"><code>validation_report.json</code></a>;
-the validator run is reproducible with <code>jsonschema</code>.</p>
-<p>Schemas: <a
-href="schemas/AbsenceEpisode.json"><code>AbsenceEpisode.json</code></a>
-· <a
-href="schemas/ReturnToWorkOutcome.json"><code>ReturnToWorkOutcome.json</code></a>
-· <a href="schemas/OHEpisode.json"><code>OHEpisode.json</code></a>.</p>
-<p><strong>FHIR-forward design choices.</strong> Every entity is a flat
-resource with a stable <code>$id</code>, string ids,
-<code>date</code>/<code>date-time</code> formats, and coded fields as
-string enums, each maps to a FHIR resource later
-(<code>AbsenceEpisode</code>→<code>Encounter</code>/<code>Observation</code>,
-<code>ReturnToWorkOutcome</code>→<code>Observation</code>/<code>Task</code>,
-<code>OHEpisode</code>→<code>Observation</code> with a work-context
-profile). No design choice here blocks a v1.x FHIR mapping.</p>
-<h3 id="privacy-and-boundary-rules-expressed-in-schema">Privacy and
-boundary rules expressed <em>in schema</em></h3>
-<p>The privacy profile is not left to prose, the schemas enforce the
-parts a validator can see:</p>
+<p><strong>The closed-vocabulary rule.</strong> A field whose permitted values are fixed is bound to a registered code list, and nowhere else. Concretely:</p>
 <ul>
-<li><strong>Direct-identifier ban (P1):</strong> <code>additionalProperties:false</code> on each entity and on every nested object rejects <code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code>, <code>address</code> and every other property not declared in the schema, whether it arrives as a known identifier name or as a typo. An earlier <code>not/anyOf</code> member asserting the same five names has been removed: it duplicated an error that <code>additionalProperties</code> already raised, changed no verdict, and its comment claimed to forbid identifiers &quot;anywhere&quot;, which was untrue of values. A key-based rule cannot reach an identifier pasted into a permitted string field; that is stated as a producer obligation in §3 P1.</li>
-<li><strong>Pseudonym shape:</strong> <code>pseudonymId</code> must
-match <code>^owhs:pseudo:[0-9a-f]{16,64}$</code>, so a raw employee
-reference (<code>EMP-Jane-Smith</code>) is a schema error, not a
-warning.</li>
-<li><strong>OH clinical-content boundary:</strong>
-<code>OHEpisode</code> rejects <code>diagnosis</code>,
-<code>clinicalCauseCode</code>, <code>symptoms</code>,
-<code>testResults</code>, <code>reportText</code>, <code>history</code>
-via both <code>additionalProperties:false</code> and an explicit
-<code>not/anyOf</code>.</li>
-<li><strong>OH consent gate:</strong> an <code>if/then</code> requires
-<code>opinionReleasedToEmployer === true</code> whenever
-<code>fitnessOpinion</code> is present.</li>
-<li><strong>RTW semantic integrity:</strong> an <code>if/then</code>
-forbids <code>adjustmentTypes</code> on a <code>did-not-return</code>
-outcome (you cannot record return adjustments for someone who did not
-return).</li>
+<li><strong>Every closed vocabulary is a registered list.</strong> If a field's values are a fixed set, that set lives in <code>codelists/</code> with its own <code>version</code> and a <code>_registry.json</code> entry. A schema may not carry a fixed set of values that exists nowhere else: an enum without a list is a vocabulary with no owner, no version and no route for anyone to propose a change to it.</li>
+<li><strong>A schema pins by <code>name@version</code> in a <code>$comment</code> and repeats the values inline.</strong> The inline <code>enum</code> is the executable copy; the comment is what says which list and which version it was copied from. Both are required, because the validator resolves neither: nothing in the tooling reads <code>codelists/</code> at Level 1, so the comment is the only record of what the enum is supposed to be a copy of. Keeping the two in step is a Level 2 obligation and is not yet checked by any tool in this repository.</li>
+<li><strong>A closed vocabulary is closed.</strong> A producer may not add values. A profile may restrict a bound field to a subset (section 7) and may not extend it. Adding a value is a minor version bump on the list, followed by a schema update pinning the new version.</li>
+<li><strong>An advisory list is marked as advisory in the schema.</strong> Where a list records what producers SHOULD use rather than what they MUST, the schema takes the wider type and the <code>$comment</code> says so, naming the list as a recommended set. <code>sustainedAt[].checkpointWeeks</code> is the worked example: an open integer from 1 to 104, with <code>rtw-checkpoint@0.1.0</code> cited as the recommended set per decision D4. An advisory list is not a closed vocabulary and the rule above does not apply to it.</li>
 </ul>
-<h3 id="error-map-proven-by-the-validator">Error map (proven by the
-validator)</h3>
+<p><code>rtw-sustained-status@0.1.0</code> was created under this rule at v0.1: the three values were previously inline in <code>ReturnToWorkOutcome</code> with no list behind them. The values are unchanged, so no instance that validated before validates differently now.</p>
+<p><strong>Design notes on the anchored lists.</strong>
+- <strong><code>absence-reason</code></strong> adopts the six ONS reason categories verbatim (minor illness, musculoskeletal, mental health, respiratory, gastrointestinal, other), so an org rate is ONS-comparable [1]. It carries <em>no</em> diagnosis granularity, clinical cause is the separate optional SNOMED field.
+- <strong><code>rtw-adjustment</code></strong> is the four statutory fit-note "may be fit for work" categories (phased return, altered hours, amended duties, workplace adaptations) and nothing else; it is shared by <code>ReturnToWorkOutcome.adjustmentTypes</code> and <code>OHEpisode.recommendationTypes</code>. One modelling choice, stated explicitly: OWHS records the <strong>realised adjustments over an episode</strong>, not the chronological sequence of fit notes. An absence involving several fit notes with changing advice records the set of adjustments actually enacted; the note-by-note paper trail stays in the employer's absence system.
+- <strong><code>adjustment-category</code></strong> (anchored to Equality Act 2010 s.20) is a deliberate <strong>superset</strong> of <code>rtw-adjustment</code>, the four fit-note codes are a strict subset, so an OH recommendation expressed in fit-note terms maps into the broader adjustment record without translation. To be precise about the legal claim: the list covers statutory s.20 reasonable adjustments <strong>plus closely related workplace arrangements</strong> (for example absence-policy flexibility and additional support), and does not assert that every code is a s.20 adjustment in law; it is a management record anchored to the duty, not a legal determination.
+- <strong><code>benefit-product</code></strong> is the UK market's own vocabulary (PMI/GIP/GLA/cash plan/EAP/dental/pension/…), not an OWHS invention; statutory SSP is modelled structurally in <code>BenefitEntitlement.statutory</code>, never as a product code.
+- <strong><code>construct-domain</code></strong> is the single shared vocabulary used by <em>both</em> measurement and services. Its first six codes map 1:1 to the <strong>HSE Management Standards six domains</strong> [19] (the <code>Crosswalk</code> entity carries the HSE/ISO-45003/<code>whiu:</code> mappings); the remaining codes are outcome constructs (mental health, MSK, financial wellbeing, sleep/fatigue) that are not HSE work-design domains.</p>
+<p><strong>New lists the added domains needed:</strong> <code>oh-referral-reason</code>, <code>oh-assessment-type</code>, <code>fitness-opinion</code>, <code>adjustment-category</code>, <code>adjustment-status</code>, plus supporting bands (<code>org-size-band</code>, <code>headcount-band</code>, <code>age-band</code>, <code>tenure-band</code>, <code>work-pattern</code>) and operational enums (<code>source-type</code>, <code>completion-status</code>, <code>collection-channel</code>, <code>sampling-design</code>, <code>access-route</code>, <code>suppression-reason</code>, <code>rtw-outcome</code>, <code>rtw-checkpoint</code>). The OH lists are strictly management-facing: <code>fitness-opinion</code> is the categorical released opinion (fit / fit-with-adjustments / unfit / not-assessed), never a clinical basis.</p>
+<hr>
+<h2 id="json-schemas-and-validation">6. JSON Schemas and validation</h2>
+<p>Three core entities are given as full JSON Schema (Draft 2020-12), each with a valid and a deliberately invalid instance. All three schemas meta-validate (<code>Draft202012Validator.check_schema</code>), every valid instance passes with <strong>0</strong> errors, and every invalid instance raises exactly the errors the error map names. The machine-checked results are in <a href="examples/validation_report.json"><code>validation_report.json</code></a>; the validator run is reproducible with <code>jsonschema</code>.</p>
+<p>Schemas: <a href="schemas/AbsenceEpisode.json"><code>AbsenceEpisode.json</code></a> · <a href="schemas/ReturnToWorkOutcome.json"><code>ReturnToWorkOutcome.json</code></a> · <a href="schemas/OHEpisode.json"><code>OHEpisode.json</code></a>.</p>
+<p><strong>FHIR-forward design choices.</strong> Every entity is a flat resource with a stable <code>$id</code>, string ids, <code>date</code>/<code>date-time</code> formats, and coded fields as string enums, each maps to a FHIR resource later (<code>AbsenceEpisode</code>→<code>Encounter</code>/<code>Observation</code>, <code>ReturnToWorkOutcome</code>→<code>Observation</code>/<code>Task</code>, <code>OHEpisode</code>→<code>Observation</code> with a work-context profile). No design choice here blocks a v1.x FHIR mapping.</p>
+<h3 id="privacy-and-boundary-rules-expressed-in-schema">Privacy and boundary rules expressed <em>in schema</em></h3>
+<p>The privacy profile is not left to prose, the schemas enforce the parts a validator can see:</p>
+<ul>
+<li><strong>Direct-identifier ban (P1):</strong> <code>additionalProperties:false</code> on each entity and on every nested object rejects <code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code>, <code>address</code> and every other property not declared in the schema, whether it arrives as a known identifier name or as a typo. An earlier <code>not/anyOf</code> member asserting the same five names has been removed: it duplicated an error that <code>additionalProperties</code> already raised, changed no verdict, and its comment claimed to forbid identifiers "anywhere", which was untrue of values. A key-based rule cannot reach an identifier pasted into a permitted string field; that is stated as a producer obligation in §3 P1.</li>
+<li><strong>Pseudonym shape:</strong> <code>pseudonymId</code> must match <code>^owhs:pseudo:[0-9a-f]{16,64}$</code>, so a raw employee reference (<code>EMP-Jane-Smith</code>) is a schema error, not a warning.</li>
+<li><strong>OH clinical-content boundary:</strong> <code>OHEpisode</code> rejects <code>diagnosis</code>, <code>clinicalCauseCode</code>, <code>symptoms</code>, <code>testResults</code>, <code>reportText</code>, <code>history</code> via both <code>additionalProperties:false</code> and an explicit <code>not/anyOf</code>.</li>
+<li><strong>OH consent gate:</strong> an <code>if/then</code> requires <code>opinionReleasedToEmployer === true</code> whenever <code>fitnessOpinion</code> is present.</li>
+<li><strong>RTW semantic integrity:</strong> an <code>if/then</code> forbids <code>adjustmentTypes</code> on a <code>did-not-return</code> outcome (you cannot record return adjustments for someone who did not return).</li>
+</ul>
+<h3 id="error-map-proven-by-the-validator">Error map (proven by the validator)</h3>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Entity</th>
@@ -2410,436 +1884,181 @@ validator)</h3>
 <tbody>
 <tr>
 <td><code>AbsenceEpisode</code></td>
-<td>direct name, raw pseudonym, <code>reasonCode:"back-pain"</code>,
-missing <code>sourceProvenance</code></td>
-<td><code>additionalProperties</code> (name), <code>not</code>
-(identifier ban), <code>pattern</code> (pseudonymId), <code>enum</code>
-(reasonCode not in ONS list), <code>required</code> (sourceProvenance),
-<strong>5 errors</strong></td>
+<td>direct name, raw pseudonym, <code>reasonCode:"back-pain"</code>, missing <code>sourceProvenance</code></td>
+<td><code>additionalProperties</code> (name), <code>pattern</code> (pseudonymId), <code>enum</code> (reasonCode not in ONS list), <code>required</code> (sourceProvenance), <strong>4 errors</strong></td>
+</tr>
+<tr>
+<td><code>AbsenceEpisode</code> (<code>chronology.invalid</code>)</td>
+<td><code>endDate</code> before <code>startDate</code></td>
+<td><code>C1</code> (named cross-field rule), <strong>1 error</strong></td>
+</tr>
+<tr>
+<td><code>AbsenceEpisode</code> (<code>chronology-boundary.valid</code>)</td>
+<td><code>endDate</code> equal to <code>startDate</code></td>
+<td>none; the boundary is inclusive, <strong>0 errors</strong></td>
+</tr>
+<tr>
+<td><code>AbsenceEpisode</code> (<code>dates.invalid</code>)</td>
+<td><code>startDate:"02/03/2026"</code>, <code>endDate:"2026-13-45"</code></td>
+<td><code>format</code> (startDate), <code>format</code> (endDate), <strong>2 errors</strong></td>
 </tr>
 <tr>
 <td><code>ReturnToWorkOutcome</code></td>
-<td><code>did-not-return</code> <strong>with</strong>
-<code>adjustmentTypes</code></td>
-<td><code>not</code> (a did-not-return outcome may not carry return
-adjustments), <strong>1 error</strong></td>
+<td><code>did-not-return</code> <strong>with</strong> <code>adjustmentTypes</code></td>
+<td><code>not</code> (a did-not-return outcome may not carry return adjustments), <strong>1 error</strong></td>
 </tr>
 <tr>
 <td><code>OHEpisode</code></td>
-<td><code>diagnosis</code> + <code>clinicalCauseCode</code> present;
-<code>fitnessOpinion:"unfit"</code> but
-<code>opinionReleasedToEmployer:false</code></td>
-<td><code>additionalProperties</code> (clinical fields),
-<code>not</code> (clinical-content boundary), <code>const</code>
-(consent flag must be true), <strong>3 errors</strong></td>
+<td><code>diagnosis</code> + <code>clinicalCauseCode</code> present; <code>fitnessOpinion:"unfit"</code> but <code>opinionReleasedToEmployer:false</code></td>
+<td><code>additionalProperties</code> (clinical fields), <code>not</code> (clinical-content boundary), <code>const</code> (consent flag must be true), <strong>3 errors</strong></td>
 </tr>
 </tbody>
 </table>
-<p>The valid instances model the same worker (one pseudonym) through a
-coherent journey: a 10-working-day (75-hour, ONS 7.5h/day)
-musculoskeletal absence → an OH management referral returning
-<code>fit-with-adjustments</code> with released opinion → a phased RTW
-with altered hours, sustained at 4 and 13 weeks. That the three valid
-instances cross-reference cleanly (<code>absenceEpisodeId</code>,
-<code>linkedAbsenceEpisodeId</code>) demonstrates the relationships in
-the ERD hold at instance level.</p>
-<p><strong>Note on cross-field rules a single schema cannot
-enforce.</strong> Two rules are <em>conformance-checked by the validator
-tool, not by JSON Schema alone</em>: (1)
-<code>endDate ≥ startDate</code>, and (2) the aggregation floors (n≥5 /
-n≥10), these are payload-level and cross-record checks that belong to
-the privacy-profile conformance level (§2g), not to per-instance
-structural validation. The schema carries the <code>$comment</code>
-markers; the reference validator enforces them.</p>
-<hr />
+<p>The valid instances model the same worker (one pseudonym) through a coherent journey: a 10-working-day (75-hour, ONS 7.5h/day) musculoskeletal absence → an OH management referral returning <code>fit-with-adjustments</code> with released opinion → a phased RTW with altered hours, sustained at 4 and 13 weeks. That the three valid instances cross-reference cleanly (<code>absenceEpisodeId</code>, <code>linkedAbsenceEpisodeId</code>) demonstrates the relationships in the ERD hold at instance level.</p>
+<p><strong>Note on cross-field rules a single schema cannot enforce.</strong> Two rules are <em>conformance-checked by the validator tool, not by JSON Schema alone</em>: (1) <code>endDate ≥ startDate</code>, and (2) the aggregation floors (n≥5 / n≥10), these are payload-level and cross-record checks that belong to the privacy-profile conformance level (§2g), not to per-instance structural validation. The schema carries the <code>$comment</code> markers; the reference validator enforces them.</p>
+<hr>
 <h2 id="the-profile-mechanism">7. The profile mechanism</h2>
-<p>OWHS follows the FHIR profiling pattern: a <strong>vendor profile
-constrains and extends the core, but may never contradict it</strong>.
-The core spec is the interoperability contract; a profile is a labelled
-overlay that a consumer can ignore and still read the core fields.</p>
-<p><strong>Naming and namespacing.</strong> A profile has a
-reverse-DNS-free short id, <code>owhs-&lt;slug&gt;</code>
-(e.g. <code>owhs-msk</code>,
-<code>owhs-ohsurveillance</code>). Profile-specific fields are carried
-under a single reserved object, <code>ext</code>, keyed by profile
-id:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span> <span class="dt">&quot;episodeId&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;reasonCode&quot;</span><span class="fu">:</span> <span class="st">&quot;musculoskeletal&quot;</span><span class="fu">,</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;ext&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;owhs-msk&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;surveillanceWave&quot;</span><span class="fu">:</span> <span class="dv">3</span> <span class="fu">}</span> <span class="fu">}</span> <span class="fu">}</span></span></code></pre></div>
-<p>Core validators use <code>additionalProperties:false</code> on the
-top level but explicitly permit the <code>ext</code> object, whose
-sub-keys are only validated when the matching profile schema is loaded.
-A consumer that does not understand <code>owhs-msk</code> drops
-<code>ext.owhs-msk</code> and still has a conformant core record.</p>
-<p><strong>What a profile MAY do:</strong> add fields under its
-<code>ext</code> key; narrow a core field (tighten a
-<code>maxLength</code>, restrict an enum to a subset, make a
-core-optional field required <em>within the profile</em>); add
-profile-scoped code lists; bind a core code-list field to a
-profile-specific value set that is a <strong>subset</strong> of the core
-list.</p>
-<p><strong>What a profile MUST NOT do:</strong> widen a core constraint
-(add enum values to a core list, relax a <code>required</code>, remove
-<code>additionalProperties:false</code>); change a field’s type or
-meaning; change a field’s privacy classification to something more
-permissive (a profile can make an <code>open</code> field
-<code>individual-never</code>, never the reverse); override any
-privacy-profile MUST (aggregation floors, identifier ban, safeguarding
-exclusion); or place any field outside <code>ext</code> that is not
-defined in core. A profile that needs a new top-level field is a
-<strong>core change request</strong> (RFC), not a profile.</p>
-<p><strong>The steward’s own profile</strong>, the worked example of
-extensibility, lives entirely under its <code>ext</code> key: its
-sampling design, scoring specifics and construct sub-taxonomy, none of
-which the core presumes. It doubles as the conformance test for the
-mechanism: if the steward’s product can be expressed without touching
-core, the boundary is drawn correctly.</p>
-<h2 id="identifiers-and-pseudonymisation">8. Identifiers and
-pseudonymisation</h2>
-<p><strong>Requirement.</strong> Records for one worker must link
-<em>within</em> an employer, never <em>across</em> employers, and never
-back to identity from an OWHS payload alone, and an SME with no data team
-must be able to implement it.</p>
-<p><strong>Issue.</strong> For each worker, the pseudonym is a keyed
-hash:</p>
-<pre><code>pseudonymId = &quot;owhs:pseudo:&quot; + HMAC-SHA256( key = orgSalt , msg = stableWorkerKey )[:32 hex]</code></pre>
+<p>OWHS follows the FHIR profiling pattern: a <strong>vendor profile constrains and extends the core, but may never contradict it</strong>. The core spec is the interoperability contract; a profile is a labelled overlay that a consumer can ignore and still read the core fields.</p>
+<p><strong>Naming and namespacing.</strong> A profile has a reverse-DNS-free short id, <code>owhs-&lt;slug&gt;</code> (e.g. <code>owhs-msk</code>, <code>owhs-ohsurveillance</code>). Profile-specific fields are carried under a single reserved object, <code>ext</code>, keyed by profile id:</p>
+<pre><code class="language-json">{ &quot;episodeId&quot;: &quot;...&quot;, &quot;reasonCode&quot;: &quot;musculoskeletal&quot;,
+  &quot;ext&quot;: { &quot;owhs-msk&quot;: { &quot;surveillanceWave&quot;: 3 } } }
+</code></pre>
+<p>Core validators use <code>additionalProperties:false</code> on the top level but explicitly permit the <code>ext</code> object, whose sub-keys are only validated when the matching profile schema is loaded. A consumer that does not understand <code>owhs-msk</code> drops <code>ext.owhs-msk</code> and still has a conformant core record.</p>
+<p><strong>What a profile MAY do:</strong> add fields under its <code>ext</code> key; narrow a core field (tighten a <code>maxLength</code>, restrict an enum to a subset, make a core-optional field required <em>within the profile</em>); add profile-scoped code lists; bind a core code-list field to a profile-specific value set that is a <strong>subset</strong> of the core list.</p>
+<p><strong>What a profile MUST NOT do:</strong> widen a core constraint (add enum values to a core list, relax a <code>required</code>, remove <code>additionalProperties:false</code>); change a field's type or meaning; change a field's privacy classification to something more permissive (a profile can make an <code>open</code> field <code>individual-never</code>, never the reverse); override any privacy-profile MUST (aggregation floors, identifier ban, safeguarding exclusion); or place any field outside <code>ext</code> that is not defined in core. A profile that needs a new top-level field is a <strong>core change request</strong> (RFC), not a profile.</p>
+<p><strong>The steward's own profile</strong>, the worked example of extensibility, lives entirely under its <code>ext</code> key: its sampling design, scoring specifics and construct sub-taxonomy, none of which the core presumes. It doubles as the conformance test for the mechanism: if the steward's product can be expressed without touching core, the boundary is drawn correctly.</p>
+<h2 id="identifiers-and-pseudonymisation">8. Identifiers and pseudonymisation</h2>
+<p><strong>Requirement.</strong> Records for one worker must link <em>within</em> an employer, never <em>across</em> employers, and never back to identity from an OWHS payload alone, and an SME with no data team must be able to implement it.</p>
+<p><strong>Issue.</strong> For each worker, the pseudonym is a keyed hash:</p>
+<pre><code>pseudonymId = &quot;owhs:pseudo:&quot; + HMAC-SHA256( key = orgSalt , msg = stableWorkerKey )[:32 hex]
+</code></pre>
 <ul>
-<li><code>stableWorkerKey</code> is any stable internal reference the
-employer already holds (payroll id, HRIS row id). It never leaves the
-producer.</li>
-<li><code>orgSalt</code> is a 256-bit secret generated <strong>per
-organisation</strong> and held only by the producer (the SME’s
-HRIS/broker, or a one-line script for a manual SME). It is never
-transmitted in any OWHS payload.</li>
-<li>The output is truncated to 32 hex chars, matching the
-<code>^owhs:pseudo:[0-9a-f]{16,64}$</code> schema pattern.</li>
+<li><code>stableWorkerKey</code> is any stable internal reference the employer already holds (payroll id, HRIS row id). It never leaves the producer.</li>
+<li><code>orgSalt</code> is a 256-bit secret generated <strong>per organisation</strong> and held only by the producer (the SME's HRIS/broker, or a one-line script for a manual SME). It is never transmitted in any OWHS payload.</li>
+<li>The output is truncated to 32 hex chars, matching the <code>^owhs:pseudo:[0-9a-f]{16,64}$</code> schema pattern.</li>
 </ul>
-<p><strong>Scoping, why cross-employer linkage is structurally
-impossible.</strong> Because the salt is per-org and secret, the same
-person at two employers produces two unrelated pseudonyms; there is no
-shared key any party could use to join them. The employer boundary is
-enforced by <em>not possessing</em> the means to cross it, not by
-policy. This is deliberately at odds with what the WHIU might eventually
-want (a person-level national view), see the honesty pass.</p>
-<p><strong>Rotation.</strong> Salts rotate on a governance-set cadence
-(default: annually, and on any suspected key compromise). Rotation
-breaks longitudinal linkage by design, so a producer that needs
-within-org trend continuity across a rotation publishes a
-<strong>one-way rotation map</strong> <em>inside the producer</em>
-(old→new pseudonym) and never in an OWHS payload; the map is itself
-keyed and destroyed at end of retention. For most SMEs the pragmatic
-default is <strong>no rotation within a reporting year</strong> and
-re-issue at year boundaries, accepting that cross-year individual
-linkage is intentionally lost, trend lives at the aggregate level, which
-does not need stable individual ids. This is a deliberate constraint,
-not an oversight: OWHS restricts person-level longitudinal linkage to
-reduce re-identification risk, and accepts that multi-year individual
-analyses (repeat absence, chronic-condition trajectories) are out of
-scope for OWHS payloads. Insurers or large employers who legitimately
-need individual trajectories should maintain their own internal,
-non-OWHS identifiers inside their governed environments; OWHS is the
-exchange format, not the case-management store.</p>
-<p><strong>No reverse path, and the stated consequence of salt
-compromise.</strong> HMAC is one-way; without <code>orgSalt</code> and
-<code>stableWorkerKey</code> the pseudonym cannot be reversed, and
-neither input appears in any payload. Stated plainly: if
-<code>orgSalt</code> is compromised, an attacker who <em>also</em> holds
-the HRIS worker keys can re-compute every pseudonym in that organisation
-and join them to OWHS payloads. The identifier ban limits what such a
-join reveals, and the blast radius is one organisation, but salt custody
-(§3.3) is therefore a real control, not a formality. A recipient
-(benchmark operator, the WHIU) receives pseudonyms and bands only, and
-can link within an org-scoped dataset but cannot re-identify or
-cross-link.</p>
-<p><strong>SME implementability (the explicit trade-off).</strong> A
-cryptographically ideal design would use per-worker salts in an HSM.
-That is not implementable by a 12-person company, so OWHS chooses
-<strong>one secret salt per org + a standard HMAC</strong>, weaker than
-per-worker salting but implementable as a single environment variable
-and a library call, and sufficient given that direct identifiers are
-banned and demographics are banded. We choose SME-implementability over
-cryptographic elegance and say so.</p>
+<p><strong>Scoping, why cross-employer linkage is structurally impossible.</strong> Because the salt is per-org and secret, the same person at two employers produces two unrelated pseudonyms; there is no shared key any party could use to join them. The employer boundary is enforced by <em>not possessing</em> the means to cross it, not by policy. This is deliberately at odds with what the WHIU might eventually want (a person-level national view), see the honesty pass.</p>
+<p><strong>Rotation.</strong> Salts rotate on a governance-set cadence (default: annually, and on any suspected key compromise). Rotation breaks longitudinal linkage by design, so a producer that needs within-org trend continuity across a rotation publishes a <strong>one-way rotation map</strong> <em>inside the producer</em> (old→new pseudonym) and never in an OWHS payload; the map is itself keyed and destroyed at end of retention. For most SMEs the pragmatic default is <strong>no rotation within a reporting year</strong> and re-issue at year boundaries, accepting that cross-year individual linkage is intentionally lost, trend lives at the aggregate level, which does not need stable individual ids. This is a deliberate constraint, not an oversight: OWHS restricts person-level longitudinal linkage to reduce re-identification risk, and accepts that multi-year individual analyses (repeat absence, chronic-condition trajectories) are out of scope for OWHS payloads. Insurers or large employers who legitimately need individual trajectories should maintain their own internal, non-OWHS identifiers inside their governed environments; OWHS is the exchange format, not the case-management store.</p>
+<p><strong>No reverse path, and the stated consequence of salt compromise.</strong> HMAC is one-way; without <code>orgSalt</code> and <code>stableWorkerKey</code> the pseudonym cannot be reversed, and neither input appears in any payload. Stated plainly: if <code>orgSalt</code> is compromised, an attacker who <em>also</em> holds the HRIS worker keys can re-compute every pseudonym in that organisation and join them to OWHS payloads. The identifier ban limits what such a join reveals, and the blast radius is one organisation, but salt custody (§3.3) is therefore a real control, not a formality. A recipient (benchmark operator, the WHIU) receives pseudonyms and bands only, and can link within an org-scoped dataset but cannot re-identify or cross-link.</p>
+<p><strong>SME implementability (the explicit trade-off).</strong> A cryptographically ideal design would use per-worker salts in an HSM. That is not implementable by a 12-person company, so OWHS chooses <strong>one secret salt per org + a standard HMAC</strong>, weaker than per-worker salting but implementable as a single environment variable and a library call, and sufficient given that direct identifiers are banned and demographics are banded. We choose SME-implementability over cryptographic elegance and say so.</p>
 <h2 id="conformance-levels">9. Conformance levels</h2>
-<p>Three cumulative levels. A producer declares the highest level it
-meets; a consumer states the minimum it requires. Each level runs every
-check of the levels below it.</p>
+<p>Three cumulative levels. A producer declares the highest level it meets; a consumer states the minimum it requires. Each level runs every check of the levels below it.</p>
 <h3 id="level-1-schema-valid">Level 1, Schema-valid</h3>
-<p>Structural conformance to the Draft 2020-12 schemas.</p>
-<ul>
-<li>Every entity instance validates against its schema (<code>additionalProperties:false</code>, required fields, types, patterns), <strong>with every <code>format</code> asserted</strong>. In Draft 2020-12 <code>format</code> is an annotation unless a validator is told to assert it, so a validator that does not assert it accepts any string where a date is declared. A conformance claim at this level requires the assertion.</li>
-<li>The direct-identifier ban (P1) passes: <code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code> and <code>address</code> are rejected by <code>additionalProperties:false</code> on the entity and on every nested object, and <code>pseudonymId</code> matches the pseudonym pattern.</li>
-<li>Cross-field structural rules the schema encodes fire: OH clinical-content boundary, OH consent gate, RTW <code>did-not-return</code>-vs-adjustments rule.</li>
-<li>The named cross-field rules below fire. JSON Schema compares an instance against a schema and never one field of an instance against another, so an ordering rule between two dates cannot be expressed in it. These rules are implemented in the reference validator and each has an instance in <code>examples/</code>.</li>
-</ul>
+<p>Structural conformance to the Draft 2020-12 schemas.
+- Every entity instance validates against its schema (<code>additionalProperties:false</code>, required fields, types, patterns), <strong>with every <code>format</code> asserted</strong>. In Draft 2020-12 <code>format</code> is an annotation unless a validator is told to assert it, so a validator that does not assert it accepts any string where a date is declared. A conformance claim at this level requires the assertion.
+- The direct-identifier ban (P1) passes: <code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code> and <code>address</code> are rejected by <code>additionalProperties:false</code> on the entity and on every nested object, and <code>pseudonymId</code> matches the pseudonym pattern.
+- Cross-field structural rules the schema encodes fire: OH clinical-content boundary, OH consent gate, RTW <code>did-not-return</code>-vs-adjustments rule.
+- The named cross-field rules below fire. JSON Schema compares an instance against a schema and never one field of an instance against another, so an ordering rule between two dates cannot be expressed in it. These rules are implemented in the reference validator and each has an instance in <code>examples/</code>.</p>
 <table>
-<thead><tr><th>Rule</th><th>Entity</th><th>Statement</th></tr></thead>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Entity</th>
+<th>Statement</th>
+</tr>
+</thead>
 <tbody>
-<tr><td>C1</td><td><code>AbsenceEpisode</code></td><td>Where <code>endDate</code> is present it must not precede <code>startDate</code>.</td></tr>
-<tr><td>C2</td><td><code>OHEpisode</code></td><td>Where <code>assessmentDate</code> is present it must not precede <code>referralDate</code>.</td></tr>
+<tr>
+<td>C1</td>
+<td><code>AbsenceEpisode</code></td>
+<td>Where <code>endDate</code> is present it must not precede <code>startDate</code>.</td>
+</tr>
+<tr>
+<td>C2</td>
+<td><code>OHEpisode</code></td>
+<td>Where <code>assessmentDate</code> is present it must not precede <code>referralDate</code>.</td>
+</tr>
 </tbody>
 </table>
-<p><em>Not yet checked:</em> whether coded values are current, whether aggregates clear the floors.</p>
+<ul>
+<li><em>Not yet checked:</em> whether coded values are current, whether aggregates clear the floors.</li>
+</ul>
 <h3 id="level-2-code-lists">Level 2, +Code lists</h3>
-<p>Level 1, plus every coded field resolves to a
-<strong>current</strong> code-list version. - Each
-<code>codelist:&lt;name&gt;</code> field value exists in the pinned
-<code>name@version</code> in the registry. - <code>whiu:</code> and
-SNOMED values are well-formed (namespace/pattern) but not resolved
-against external registries (SNOMED is optional and licence-gated;
-<code>whiu:</code> is reserved and not yet published). - Cross-<strong>record</strong> date sanity runs here, where a second record is needed to judge the first: <code>rtwDate ≥ the linked absence startDate</code>. The within-record date rules are C1 and C2 at Level 1, because they need nothing beyond the instance.</p>
+<p>Level 1, plus every coded field resolves to a <strong>current</strong> code-list version.
+- Each <code>codelist:&lt;name&gt;</code> field value exists in the pinned <code>name@version</code> in the registry.
+- <code>whiu:</code> and SNOMED values are well-formed (namespace/pattern) but not resolved against external registries (SNOMED is optional and licence-gated; <code>whiu:</code> is reserved and not yet published).
+- Cross-<strong>record</strong> date sanity runs here, where a second record is needed to judge the first: <code>rtwDate ≥ the linked absence</code>startDate``. The within-record date rules are C1 and C2 at Level 1, because they need nothing beyond the instance.</p>
 <h3 id="level-3-privacy-profile">Level 3, +Privacy profile</h3>
-<p>Level 2, plus the normative privacy MUSTs, the level that makes a
-payload <em>safe to emit</em>. - <strong>Aggregation floor:</strong> any
-employer-visible value is delivered only through an
-<code>AggregateReport</code> with <code>n ≥ 5</code>;
-<code>aboveThresholdFlag</code>/severe-distress measures require
-<code>n ≥ 10</code>. Below floor ⇒ the producer MUST set
-<code>suppressed:true</code> with a <code>suppressionReason</code>, not
-emit the value. - <strong>Safeguarding exclusion (P4):</strong> any
-record with <code>safeguardingCategory:true</code> (or a
-safeguarding-tagged construct) is absent from every employer-visible
-output at any n. - <strong>Visibility classes (P3):</strong> no
-<code>individual-never</code> field value appears at individual grain in
-any output; <code>individual-employer</code> fields appear only where
-the declared legal basis is present. - <strong>Completeness travels
-(P5):</strong> every <code>AggregateReport</code> carries
-<code>completionRate</code>, <code>suppressed</code>, and (where
-applicable) <code>suppressionReason</code>. - <strong>Refuse, don’t
-hide:</strong> a Level-3 producer that cannot satisfy a floor MUST
-refuse to emit the offending value (suppression is emitting <em>metadata
-about a withholding</em>, which is permitted and required; emitting the
-raw sub-floor value is non-conformant).</p>
+<p>Level 2, plus the normative privacy MUSTs, the level that makes a payload <em>safe to emit</em>.
+- <strong>Aggregation floor:</strong> any employer-visible value is delivered only through an <code>AggregateReport</code> with <code>n ≥ 5</code>; <code>aboveThresholdFlag</code>/severe-distress measures require <code>n ≥ 10</code>. Below floor ⇒ the producer MUST set <code>suppressed:true</code> with a <code>suppressionReason</code>, not emit the value.
+- <strong>Safeguarding exclusion (P4):</strong> any record with <code>safeguardingCategory:true</code> (or a safeguarding-tagged construct) is absent from every employer-visible output at any n.
+- <strong>Visibility classes (P3):</strong> no <code>individual-never</code> field value appears at individual grain in any output; <code>individual-employer</code> fields appear only where the declared legal basis is present.
+- <strong>Completeness travels (P5):</strong> every <code>AggregateReport</code> carries <code>completionRate</code>, <code>suppressed</code>, and (where applicable) <code>suppressionReason</code>.
+- <strong>Refuse, don't hide:</strong> a Level-3 producer that cannot satisfy a floor MUST refuse to emit the offending value (suppression is emitting <em>metadata about a withholding</em>, which is permitted and required; emitting the raw sub-floor value is non-conformant).</p>
 <p>The reference validator implements Level 1 today (proven in §2d), including the format assertion and the named cross-field rules. Levels 2 and 3 are specified as the checks a full validator adds, and are cross-record or payload-level rather than per-instance, which is why they are conformance levels and not schema keywords. <strong>No tool in this repository verifies Level 2 or Level 3.</strong></p>
 <p>Three parts of Level 3 are not verifiable from payloads at all, and are audit obligations. They are stated here rather than left to be inferred, because a reader could otherwise take a Level 3 declaration to mean more than it can mean.</p>
 <ul>
 <li><strong>A recipient cannot verify <code>n</code>.</strong> Every floor check compares a value against a respondent count the producer supplied. A recipient can check that a report is internally consistent with the <code>n</code> it declares; it cannot check that <code>n</code> is true.</li>
-<li><strong>Withholding by omission is undetectable unless suppression is emitted.</strong> If a producer simply leaves out the cells that fell below a floor, a recipient sees a shorter list and nothing else. &quot;Refuse, don't hide&quot; therefore has an observable meaning only if a Level 3 producer emits a suppressed <code>AggregateReport</code> for every cell it would otherwise have reported.</li>
+<li><strong>Withholding by omission is undetectable unless suppression is emitted.</strong> If a producer simply leaves out the cells that fell below a floor, a recipient sees a shorter list and nothing else. "Refuse, don't hide" therefore has an observable meaning only if a Level 3 producer emits a suppressed <code>AggregateReport</code> for every cell it would otherwise have reported.</li>
 <li><strong>Visibility classes (P3) are properties of a pipeline, not of a payload.</strong> No payload records where a value was sent, so <code>individual-never</code> is verified by review of the producer's implementation and not by any validator.</li>
 </ul>
-<p></p>
-<hr />
-<h2 id="the-honesty-pass-disputable-decisions-and-open-questions">10.
-The honesty pass: disputable decisions and open questions</h2>
-<p>Three registers, none smoothed over: decisions reasonable standards
-authors would dispute, assumptions the WHIU’s future definitions could
-overturn, and open questions that need a governance rather than a
-technical decision.</p>
-<h3 id="design-decisions-reasonable-standards-authors-would-dispute">3.1
-Design decisions reasonable standards authors would dispute</h3>
-<ol type="1">
-<li><p><strong>The fourth visibility class,
-<code>individual-employer</code>.</strong> This is the single most
-contestable decision in the design. A privacy hardliner will argue that
-any individual-grain, employer-visible health-adjacent field is exactly
-what a workplace-health standard should refuse to normalise, and that
-creating a named class for it legitimises data an employer should never
-centralise. The counter-argument, that fitness opinions and reasonable
-adjustments are individual and lawful by their nature, and pretending
-otherwise makes the entities useless, is defensible but not the only
-reasonable position. A different author would keep the profile purely
-aggregate and push OH/adjustments entirely into a separately-governed,
-out-of-band record. We chose usefulness to the SME manager and accept
-the exposure.</p></li>
-<li><p><strong>Occupational health in <em>core</em> rather than a
-profile.</strong> OH data is the closest thing in the standard to a
-clinical record. Putting <code>OHEpisode</code> in core (not a named OH
-profile) is a bet that the referral→opinion envelope is universal enough
-to be vendor-neutral. Reviewers from a clinical-governance background
-may argue OH belongs behind a profile boundary precisely because its
-mis-implementation risk is highest; SEQOHS-accredited providers may
-object that a management-facing envelope oversimplifies OH
-practice.</p></li>
-<li><p><strong>The RTW sustained-checkpoints.</strong> The schema
-accepts any <code>checkpointWeeks</code> integer from 1 to 104, with
-<strong>{4, 13, 26} as RECOMMENDED defaults</strong> (a founder decision
-recorded in the decision log; an earlier draft hard-coded the enum). The
-recommended values remain OWHS conventions with <strong>no official UK
-basis</strong>, reasonable clinical convention, not an anchored
-definition, and will be replaced if the WHIU specifies sustained-RTW
-windows. The open range means adopting a WHIU window is a code-list
-note, not a schema break.</p></li>
-<li><p><strong>One salt per organisation, not per worker.</strong> A
-cryptographer would flag single-org-salt HMAC as weaker than per-worker
-salting and vulnerable to a dictionary attack on
-<code>stableWorkerKey</code> space <em>if</em> the salt leaked. We
-traded that for SME-implementability (one env var, one library call), a
-real and disputable trade.</p></li>
-<li><p><strong>Adopting the ONS six-category reason taxonomy as the core
-enum.</strong> ONS designed it for a <em>population survey</em>, not an
-employer episode record; its “minor illness” / “other” buckets are
-coarse for management use, and “other” explicitly mixes COVID-19,
-accidents and diabetes [1]. Anchoring to it buys comparability at the
-cost of analytic resolution, and some authors would prefer a richer
-employer taxonomy that <em>rolls up</em> to ONS.</p></li>
-<li><p><strong><code>additionalProperties:false</code>
-everywhere.</strong> Strict closure guarantees the identifier ban but
-makes the schema brittle to legitimate extension; producers must route
-everything non-core through <code>ext</code>, which some integrators
-will find heavy-handed versus an open-world model with a
-denylist.</p></li>
-<li><p><strong>Modelling <code>ill-health-exit</code> as an RTW
-<em>value</em> rather than its own entity.</strong> Compresses a
-significant, sensitive event (medical capability dismissal / ill-health
-retirement) into an enum on an outcome record. Defensible for SME
-simplicity; disputable because it under-models an event with distinct
-legal and pension dimensions.</p></li>
-<li><p><strong>Disability as a boolean (<code>disabilityRelated</code>,
-<code>individual-never</code>) plus a reserved aggregate
-entity.</strong> Disability is not binary (Equality Act status,
-self-identification, fluctuating conditions), and reducing it to a flag,
-even an individual-never one, is a modelling choice disability-data
-specialists would challenge.</p></li>
+<hr>
+<h2 id="the-honesty-pass-disputable-decisions-and-open-questions">10. The honesty pass: disputable decisions and open questions</h2>
+<p>Three registers, none smoothed over: decisions reasonable standards authors would dispute, assumptions the WHIU's future definitions could overturn, and open questions that need a governance rather than a technical decision.</p>
+<h3 id="design-decisions-reasonable-standards-authors-would-dispute">3.1 Design decisions reasonable standards authors would dispute</h3>
+<ol>
+<li>
+<p><strong>The fourth visibility class, <code>individual-employer</code>.</strong> This is the single most contestable decision in the design. A privacy hardliner will argue that any individual-grain, employer-visible health-adjacent field is exactly what a workplace-health standard should refuse to normalise, and that creating a named class for it legitimises data an employer should never centralise. The counter-argument, that fitness opinions and reasonable adjustments are individual and lawful by their nature, and pretending otherwise makes the entities useless, is defensible but not the only reasonable position. A different author would keep the profile purely aggregate and push OH/adjustments entirely into a separately-governed, out-of-band record. We chose usefulness to the SME manager and accept the exposure.</p>
+</li>
+<li>
+<p><strong>Occupational health in <em>core</em> rather than a profile.</strong> OH data is the closest thing in the standard to a clinical record. Putting <code>OHEpisode</code> in core (not a named OH profile) is a bet that the referral→opinion envelope is universal enough to be vendor-neutral. Reviewers from a clinical-governance background may argue OH belongs behind a profile boundary precisely because its mis-implementation risk is highest; SEQOHS-accredited providers may object that a management-facing envelope oversimplifies OH practice.</p>
+</li>
+<li>
+<p><strong>The RTW sustained-checkpoints.</strong> The schema accepts any <code>checkpointWeeks</code> integer from 1 to 104, with <strong>{4, 13, 26} as RECOMMENDED defaults</strong> (a founder decision recorded in the decision log; an earlier draft hard-coded the enum). The recommended values remain OWHS conventions with <strong>no official UK basis</strong>, reasonable clinical convention, not an anchored definition, and will be replaced if the WHIU specifies sustained-RTW windows. The open range means adopting a WHIU window is a code-list note, not a schema break.</p>
+</li>
+<li>
+<p><strong>One salt per organisation, not per worker.</strong> A cryptographer would flag single-org-salt HMAC as weaker than per-worker salting and vulnerable to a dictionary attack on <code>stableWorkerKey</code> space <em>if</em> the salt leaked. We traded that for SME-implementability (one env var, one library call), a real and disputable trade.</p>
+</li>
+<li>
+<p><strong>Adopting the ONS six-category reason taxonomy as the core enum.</strong> ONS designed it for a <em>population survey</em>, not an employer episode record; its "minor illness" / "other" buckets are coarse for management use, and "other" explicitly mixes COVID-19, accidents and diabetes [1]. Anchoring to it buys comparability at the cost of analytic resolution, and some authors would prefer a richer employer taxonomy that <em>rolls up</em> to ONS.</p>
+</li>
+<li>
+<p><strong><code>additionalProperties:false</code> everywhere.</strong> Strict closure guarantees the identifier ban but makes the schema brittle to legitimate extension; producers must route everything non-core through <code>ext</code>, which some integrators will find heavy-handed versus an open-world model with a denylist.</p>
+</li>
+<li>
+<p><strong>Modelling <code>ill-health-exit</code> as an RTW <em>value</em> rather than its own entity.</strong> Compresses a significant, sensitive event (medical capability dismissal / ill-health retirement) into an enum on an outcome record. Defensible for SME simplicity; disputable because it under-models an event with distinct legal and pension dimensions.</p>
+</li>
+<li>
+<p><strong>Disability as a boolean (<code>disabilityRelated</code>, <code>individual-never</code>) plus a reserved aggregate entity.</strong> Disability is not binary (Equality Act status, self-identification, fluctuating conditions), and reducing it to a flag, even an individual-never one, is a modelling choice disability-data specialists would challenge.</p>
+</li>
 </ol>
-<h3 id="assumptions-the-whiu-could-contradict">3.2 Assumptions the WHIU
-could contradict</h3>
-<p>The WHIU has published <em>what</em> it will measure (absence, RTW,
-disability participation) but no data model, field dictionary, code
-lists, licence, or SME-burden position. Every alignment below is
-therefore a <strong>guess with a reserved escape hatch</strong>
-(<code>whiu:</code> namespace), and each could be overwritten:</p>
-<ol type="1">
-<li><strong>Absence rate basis.</strong> We assume ONS “percentage of
-working hours lost” with the 7.5-hour day [1][26]. If the WHIU defines
-an employer-record rate differently (e.g. calendar-day, FTE-weighted, or
-including partial days differently),
-<code>workingDaysLost</code>/<code>workingHoursLost</code> semantics
-diverge from the national measure they were meant to match.</li>
-<li><strong>RTW outcome taxonomy.</strong> Our five-value
-<code>rtw-outcome</code> list and the fit-note-derived adjustment
-vocabulary are a plausible shape for an entity with <strong>no official
-UK standard taxonomy</strong> [31]. Insurer vocational-rehabilitation
-and OH case systems do track RTW status at case level (returned,
-sustained, relapse, medical exit), but in proprietary, non-harmonised
-taxonomies; OWHS proposes a candidate open one. The absence of an
-official incumbent cuts both ways: the WHIU is free to define something
-structurally different (e.g. duration-to-sustained-return as a
-continuous measure rather than categorical outcomes).</li>
-<li><strong>Sustained-RTW windows.</strong> 4/13/26 weeks may not be the
-WHIU’s checkpoints at all.</li>
-<li><strong>Disability participation measure.</strong> We reserved a
-minimal aggregate entity with an n≥10 floor precisely because we cannot
-guess the measure. If the WHIU wants person-level disability-employment
-trajectories, our aggregate-only, per-org-scoped design is structurally
-<em>unable</em> to supply them.</li>
-<li><strong>Cross-employer / person-level linkage.</strong> Our
-pseudonymisation makes cross-employer linkage impossible by
-construction. A national intelligence unit may well want a
-privacy-preserving person-level join (e.g. for people moving between
-jobs). If so, OWHS’s identifier model would need a governed
-national-linkage layer it deliberately does not have today, this is the
-assumption most likely to collide with WHIU intent.</li>
-<li><strong>Terminology and transport.</strong> We assume
-SNOMED-optional and FHIR-later. The WHIU could mandate a terminology or
-transport that forces these from optional to required, changing the SME
-licence/burden calculus (SNOMED affiliate-licence friction).</li>
-<li><strong>The “Healthy Working Lifecycle” certified standard.</strong>
-If the certified standard prescribes its own data expectations, OWHS’s
-positioning as “the open data layer underneath” is design intent, not
-established policy: OWHS aims to sit under or alongside any certified
-standard, and the final layering depends on WHIU and government
-decisions nobody has taken yet.</li>
+<h3 id="assumptions-the-whiu-could-contradict">3.2 Assumptions the WHIU could contradict</h3>
+<p>The WHIU has published <em>what</em> it will measure (absence, RTW, disability participation) but no data model, field dictionary, code lists, licence, or SME-burden position. Every alignment below is therefore a <strong>guess with a reserved escape hatch</strong> (<code>whiu:</code> namespace), and each could be overwritten:</p>
+<ol>
+<li><strong>Absence rate basis.</strong> We assume ONS "percentage of working hours lost" with the 7.5-hour day [1][26]. If the WHIU defines an employer-record rate differently (e.g. calendar-day, FTE-weighted, or including partial days differently), <code>workingDaysLost</code>/<code>workingHoursLost</code> semantics diverge from the national measure they were meant to match.</li>
+<li><strong>RTW outcome taxonomy.</strong> Our five-value <code>rtw-outcome</code> list and the fit-note-derived adjustment vocabulary are a plausible shape for an entity with <strong>no official UK standard taxonomy</strong> [31]. Insurer vocational-rehabilitation and OH case systems do track RTW status at case level (returned, sustained, relapse, medical exit), but in proprietary, non-harmonised taxonomies; OWHS proposes a candidate open one. The absence of an official incumbent cuts both ways: the WHIU is free to define something structurally different (e.g. duration-to-sustained-return as a continuous measure rather than categorical outcomes).</li>
+<li><strong>Sustained-RTW windows.</strong> 4/13/26 weeks may not be the WHIU's checkpoints at all.</li>
+<li><strong>Disability participation measure.</strong> We reserved a minimal aggregate entity with an n≥10 floor precisely because we cannot guess the measure. If the WHIU wants person-level disability-employment trajectories, our aggregate-only, per-org-scoped design is structurally <em>unable</em> to supply them.</li>
+<li><strong>Cross-employer / person-level linkage.</strong> Our pseudonymisation makes cross-employer linkage impossible by construction. A national intelligence unit may well want a privacy-preserving person-level join (e.g. for people moving between jobs). If so, OWHS's identifier model would need a governed national-linkage layer it deliberately does not have today, this is the assumption most likely to collide with WHIU intent.</li>
+<li><strong>Terminology and transport.</strong> We assume SNOMED-optional and FHIR-later. The WHIU could mandate a terminology or transport that forces these from optional to required, changing the SME licence/burden calculus (SNOMED affiliate-licence friction).</li>
+<li><strong>The "Healthy Working Lifecycle" certified standard.</strong> If the certified standard prescribes its own data expectations, OWHS's positioning as "the open data layer underneath" is design intent, not established policy: OWHS aims to sit under or alongside any certified standard, and the final layering depends on WHIU and government decisions nobody has taken yet.</li>
 </ol>
-<h3 id="open-questions-needing-a-governance-not-technical-decision">3.3
-Open questions needing a governance, not technical, decision</h3>
-<ol type="1">
-<li><strong>The legal basis for <code>individual-employer</code>
-fields.</strong> Who defines the closed list of lawful bases, and who
-audits that a producer actually holds one before emitting an OH opinion
-or adjustment? This is a data-protection governance question (DPIA,
-controller/processor roles), not a schema question.</li>
-<li><strong>The safeguarding-category boundary.</strong> Which
-constructs/items are “safeguarding” (bullying, harassment,
-discrimination, crisis) and therefore excluded at any n is a policy line
-with real consequences; drawing it wrong either leaks sensitive signal
-or suppresses legitimate risk data. Governance must own the list, not
-implementers.</li>
-<li><strong>The consent model for OH opinion release.</strong>
-<code>opinionReleasedToEmployer</code> encodes a boolean, but the
-<em>process</em> (AMRA 1988 rights, GMC guidance, what “released” means,
-withdrawal) is a governance and legal matter the schema can only gate
-on.</li>
-<li><strong>Who issues and rotates org salts, and where they are
-held.</strong> For a broker-hosted SME the broker holds the salt; for a
-manual SME, who? Rotation cadence, compromise response, and custody are
-governance decisions the standard can recommend but not enforce.</li>
-<li><strong>Aggregation-floor values (n≥5 / n≥10).</strong> These adopt
-commonly used disclosure-control conventions rather than any single
-official rule, and the exact thresholds, and whether they should vary by
-measure sensitivity or align to a WHIU/ONS convention, are a governance
-choice, not a fact.</li>
-<li><strong>Licence and stewardship.</strong> Spec CC-BY,
-schemas/validator Apache-2.0, UK-governed with sought co-stewards (CIPD,
-HSE-adjacent OH bodies, insurers, an HRIS vendor, academia). Whether
-those bodies actually co-steward, and how OWHS relates to the WHIU and a
-certified standard (subordinate layer, input, competitor), is unresolved
-and political, not technical.</li>
-<li><strong>SNOMED CT affiliate licensing for any non-NHS
-producer.</strong> Even as an optional field, an SME product writing
-SNOMED codes outside covered NHS use needs its own affiliate licence.
-Keeping it optional avoids mandating a licensed terminology, but
-governance must decide whether OWHS provides a curated occupational
-refset (and shoulders its maintenance) or leaves clinical coding
-entirely to producers.</li>
-<li><strong>International extension.</strong> The code lists and anchors
-are UK-first. Whether/when to generalise (ONS→other national statistics,
-SSP→other statutory schemes) is a scope-governance decision that affects
-the core’s shape.</li>
-<li><strong>Subject-identifying constructs.</strong> Some constructs are
-about a person other than the respondent. A team aggregate on leadership
-quality is personal data about one identified manager, however many
-respondents contributed to it. The aggregation floors in P2 protect
-respondents; they do not protect subjects. Whether such constructs enter
-the vocabulary at all, and under what visibility class and what rule for
-the subject, is a governance decision the schema cannot make. Until it
-is made, no construct-domain code that identifies a subject is
-admitted.</li>
+<h3 id="open-questions-needing-a-governance-not-technical-decision">3.3 Open questions needing a governance, not technical, decision</h3>
+<ol>
+<li><strong>The legal basis for <code>individual-employer</code> fields.</strong> Who defines the closed list of lawful bases, and who audits that a producer actually holds one before emitting an OH opinion or adjustment? This is a data-protection governance question (DPIA, controller/processor roles), not a schema question.</li>
+<li><strong>The safeguarding-category boundary.</strong> Which constructs/items are "safeguarding" (bullying, harassment, discrimination, crisis) and therefore excluded at any n is a policy line with real consequences; drawing it wrong either leaks sensitive signal or suppresses legitimate risk data. Governance must own the list, not implementers.</li>
+<li><strong>The consent model for OH opinion release.</strong> <code>opinionReleasedToEmployer</code> encodes a boolean, but the <em>process</em> (AMRA 1988 rights, GMC guidance, what "released" means, withdrawal) is a governance and legal matter the schema can only gate on.</li>
+<li><strong>Who issues and rotates org salts, and where they are held.</strong> For a broker-hosted SME the broker holds the salt; for a manual SME, who? Rotation cadence, compromise response, and custody are governance decisions the standard can recommend but not enforce.</li>
+<li><strong>Aggregation-floor values (n≥5 / n≥10).</strong> These adopt commonly used disclosure-control conventions rather than any single official rule, and the exact thresholds, and whether they should vary by measure sensitivity or align to a WHIU/ONS convention, are a governance choice, not a fact.</li>
+<li><strong>Licence and stewardship.</strong> Spec CC-BY, schemas/validator Apache-2.0, UK-governed with sought co-stewards (CIPD, HSE-adjacent OH bodies, insurers, an HRIS vendor, academia). Whether those bodies actually co-steward, and how OWHS relates to the WHIU and a certified standard (subordinate layer, input, competitor), is unresolved and political, not technical.</li>
+<li><strong>SNOMED CT affiliate licensing for any non-NHS producer.</strong> Even as an optional field, an SME product writing SNOMED codes outside covered NHS use needs its own affiliate licence. Keeping it optional avoids mandating a licensed terminology, but governance must decide whether OWHS provides a curated occupational refset (and shoulders its maintenance) or leaves clinical coding entirely to producers.</li>
+<li><strong>International extension.</strong> The code lists and anchors are UK-first. Whether/when to generalise (ONS→other national statistics, SSP→other statutory schemes) is a scope-governance decision that affects the core's shape.</li>
+<li><strong>Subject-identifying constructs.</strong> Some constructs are about a person other than the respondent. A team aggregate on leadership quality is personal data about one identified manager, however many respondents contributed to it. The aggregation floors in P2 protect respondents; they do not protect subjects. Whether such constructs enter the vocabulary at all, and under what visibility class and what rule for the subject, is a governance decision the schema cannot make. Until it is made, no construct-domain code that identifies a subject is admitted.</li>
 </ol>
-<p><strong>A note on what this honesty pass implies for
-versioning.</strong> Several items above (RTW taxonomy, checkpoints,
-disability measure, linkage model) are the reason v0.x is explicitly a
-<em>proposal</em>: they are placeholders held open with the
-<code>whiu:</code> namespace, and v1.0 should not be cut until the
-WHIU’s own definitions exist and at least the governance questions in
-3.3 (1)-(3) and (6) are answered.</p>
-<hr />
+<p><strong>A note on what this honesty pass implies for versioning.</strong> Several items above (RTW taxonomy, checkpoints, disability measure, linkage model) are the reason v0.x is explicitly a <em>proposal</em>: they are placeholders held open with the <code>whiu:</code> namespace, and v1.0 should not be cut until the WHIU's own definitions exist and at least the governance questions in 3.3 (1)-(3) and (6) are answered.</p>
+<hr>
 <h2 id="sources-primary">Sources (primary)</h2>
-<ol type="1">
-<li>ONS, <em>Sickness absence in the UK labour market: 2025</em>
-(released 1 May 2026), sickness-absence rate (“percentage of working
-hours lost because of sickness or injury”), days lost, reason taxonomy.
-https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/labourproductivity/articles/sicknessabsenceinthelabourmarket/2025</li>
-<li>GOV.UK, <em>Sickness absence in the UK labour market: 2025</em>
-(statistics release).</li>
-<li>HSE, <em>Step 3: Evaluate the risks</em>, Management Standards
-Indicator Tool (35-item).
-https://www.hse.gov.uk/stress/standards/step3/index.htm</li>
-<li>HSE, <em>What are the Management Standards?</em>, six domains
-verbatim. https://www.hse.gov.uk/stress/standards/overview.htm</li>
-<li>ONS working-day unit = 7 hours 30 minutes (hours-to-days
-conversion).</li>
-<li>GOV.UK (DWP/DHSC), <em>Keep Britain Working continues drive…</em> (3
-Jul 2026), WHIU to track sickness absence, RTW outcomes and disability
-participation; “sickness absence is tracked inconsistently, and
-return-to-work outcomes are rarely measured”.
-https://www.gov.uk/government/news/keep-britain-working-continues-drive-to-stop-people-falling-out-of-the-workforce</li>
-<li>GOV.UK, <em>Keep Britain Working: Final report</em> (Mayfield), WHIU
-+ “Healthy Working Lifecycle” certified standard.
-https://www.gov.uk/government/publications/keep-britain-working-review-final-report/keep-britain-working-final-report</li>
+<ol>
+<li>ONS, <em>Sickness absence in the UK labour market: 2025</em> (released 1 May 2026), sickness-absence rate ("percentage of working hours lost because of sickness or injury"), days lost, reason taxonomy. https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/labourproductivity/articles/sicknessabsenceinthelabourmarket/2025</li>
+<li>GOV.UK, <em>Sickness absence in the UK labour market: 2025</em> (statistics release).</li>
+<li>HSE, <em>Step 3: Evaluate the risks</em>, Management Standards Indicator Tool (35-item). https://www.hse.gov.uk/stress/standards/step3/index.htm</li>
+<li>HSE, <em>What are the Management Standards?</em>, six domains verbatim. https://www.hse.gov.uk/stress/standards/overview.htm</li>
+<li>ONS working-day unit = 7 hours 30 minutes (hours-to-days conversion).</li>
+<li>GOV.UK (DWP/DHSC), <em>Keep Britain Working continues drive…</em> (3 Jul 2026), WHIU to track sickness absence, RTW outcomes and disability participation; "sickness absence is tracked inconsistently, and return-to-work outcomes are rarely measured". https://www.gov.uk/government/news/keep-britain-working-continues-drive-to-stop-people-falling-out-of-the-workforce</li>
+<li>GOV.UK, <em>Keep Britain Working: Final report</em> (Mayfield), WHIU + "Healthy Working Lifecycle" certified standard. https://www.gov.uk/government/publications/keep-britain-working-review-final-report/keep-britain-working-final-report</li>
 </ol>
-<p>Additional definitional anchors (form/statute, not exchange
-standards): Statement of Fitness for Work (fit note) “may be fit”
-categories, https://www.gov.uk/government/collections/fit-note ;
-Statutory Sick Pay, https://www.gov.uk/statutory-sick-pay ; Equality Act
-2010 s.20 (reasonable adjustments); SNOMED CT UK Edition via NHS TRUD
-(affiliate-licence for non-NHS-covered use); HL7 FHIR (v1.x transport
-direction). Full landscape and citations:
-<code>UK-Workplace-Health-Data-Standards-Landscape-2026-07-07.md</code>.</p>
-<p><em>This is a v0.x proposal. Several definitions (RTW taxonomy,
-sustained-RTW windows, disability-participation measure, cross-employer
-linkage) are held open with the reserved <code>whiu:</code> namespace
-and should not be frozen at v1.0 until the WHIU’s own definitions exist.
-See the honesty pass, §3.</em></p>
-
+<p>Additional definitional anchors (form/statute, not exchange standards): Statement of Fitness for Work (fit note) "may be fit" categories, https://www.gov.uk/government/collections/fit-note ; Statutory Sick Pay, https://www.gov.uk/statutory-sick-pay ; Equality Act 2010 s.20 (reasonable adjustments); SNOMED CT UK Edition via NHS TRUD (affiliate-licence for non-NHS-covered use); HL7 FHIR (v1.x transport direction). Full landscape and citations: <code>UK-Workplace-Health-Data-Standards-Landscape-2026-07-07.md</code>.</p>
+<p><em>This is a v0.x proposal. Several definitions (RTW taxonomy, sustained-RTW windows, disability-participation measure, cross-employer linkage) are held open with the reserved <code>whiu:</code> namespace and should not be frozen at v1.0 until the WHIU's own definitions exist. See the honesty pass, §3.</em></p>
 </main>
 </div>
 <footer><div class="wrap">
