@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/ReturnToWorkOutcome.json",
+  "title": "OWHS ReturnToWorkOutcome v0.2",
+  "description": "What happened after an absence, including did-not-return and ill-health-exit. No direct identifiers.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "outcomeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "absenceEpisodeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^owhs:pseudo:[0-9a-f]{16,64}$"
+    },
+    "outcomeType": {
+      "type": "string",
+      "enum": [
+        "full",
+        "phased",
+        "adjusted",
+        "did-not-return",
+        "ill-health-exit"
+      ],
+      "$comment": "codelist:rtw-outcome@0.1.0"
+    },
+    "adjustmentTypes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "phased-return",
+          "altered-hours",
+          "amended-duties",
+          "workplace-adaptations"
+        ]
+      },
+      "uniqueItems": true,
+      "$comment": "codelist:rtw-adjustment@0.1.0 — fit-note 'may be fit' categories"
+    },
+    "rtwDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "sustainedAt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checkpointWeeks",
+          "status"
+        ],
+        "properties": {
+          "checkpointWeeks": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 104,
+            "$comment": "Founder decision 7 Jul 2026: open integer, not enum. Recommended set {4,13,26} (codelist:rtw-checkpoint@0.1.0); producers SHOULD use the recommended set for comparability. whiu: definitions expected to supersede."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "sustained",
+              "relapsed",
+              "unknown"
+            ],
+            "$comment": "codelist:rtw-sustained-status@0.1.0 — closed vocabulary; `unknown` means the checkpoint was not followed up, which is not a relapse"
+          }
+        }
+      }
+    },
+    "whiuOutcomeCode": {
+      "type": "string",
+      "pattern": "^whiu:[a-z0-9-]+$",
+      "$comment": "reserved whiu: namespace"
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "outcomeId",
+    "absenceEpisodeId",
+    "pseudonymId",
+    "outcomeType"
+  ],
+  "allOf": [
+    {
+      "$comment": "adjustmentTypes only meaningful for adjusted/phased outcomes",
+      "if": {
+        "properties": {
+          "outcomeType": {
+            "const": "did-not-return"
+          }
+        },
+        "required": [
+          "outcomeType"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "adjustmentTypes"
+          ]
+        },
+        "$comment": "a did-not-return outcome cannot carry return adjustments"
+      }
+    },
+    {
+      "$comment": "P1 (no direct identifiers) is enforced structurally by \"additionalProperties\": false on this object and on every nested object, which rejects any property not declared here, including name, nino, email, dateOfBirth and address. A key-based rule cannot reach an identifier written into the value of a permitted string field; that part of P1 is a producer obligation, stated in the privacy profile. The previous allOf member duplicated additionalProperties and claimed to forbid identifiers \"anywhere\", which was not true of values."
+    }
+  ],
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

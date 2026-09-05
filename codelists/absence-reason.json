@@ -1,34 +1,66 @@
 {
   "codelist": "absence-reason",
-  "version": "0.1.0",
-  "anchor": "ONS Sickness absence in the UK labour market 2025 [1]",
-  "notes": "Adopts the ONS reason taxonomy verbatim for org-rate comparability. No diagnosis granularity; SNOMED clinical-cause is a separate optional field.",
+  "version": "0.2.0",
+  "anchor": "ONS Sickness absence in the UK labour market, 2025 edition, Tables 4, 4a and 5, reason categories and non-disclosure response; published 1 May 2026.",
+  "notes": "OWHS codes map to the ten substantive ONS reason categories and the separate non-disclosure response shown in the 2025 workbook. The codes are OWHS identifiers; the labels retain the source category names without footnote markers. This replaces an incomplete six-category list. Category alignment alone does not establish comparability between employer episode records and the Labour Force Survey's weighted population estimates. Other means the residual source category; it does not mean unknown or prefers not to give details. Legacy v0.1.0 Other values cannot be expanded into these categories without additional source information.",
+  "mapping": "mappings/absence-reason-ons-2025-v1.json",
   "values": [
     {
       "code": "minor-illness",
       "label": "Minor illnesses",
-      "note": "ONS: most common category"
+      "source_cell": "A5"
     },
     {
       "code": "musculoskeletal",
-      "label": "Musculoskeletal problems"
-    },
-    {
-      "code": "mental-health",
-      "label": "Mental health conditions"
-    },
-    {
-      "code": "respiratory",
-      "label": "Respiratory conditions"
-    },
-    {
-      "code": "gastrointestinal",
-      "label": "Gastrointestinal problems"
+      "label": "Musculoskeletal problems",
+      "source_cell": "A6"
     },
     {
       "code": "other",
       "label": "Other",
-      "note": "ONS 'Other' includes COVID-19, accidents, poisonings, infectious diseases, skin disorders, diabetes"
+      "note": "Source residual category; see workbook notes 12 and 13. Not an unspecified or non-disclosure code.",
+      "source_cell": "A7"
+    },
+    {
+      "code": "mental-health",
+      "label": "Mental health conditions",
+      "source_cell": "A8"
+    },
+    {
+      "code": "gastrointestinal",
+      "label": "Gastrointestinal problems",
+      "source_cell": "A9"
+    },
+    {
+      "code": "respiratory",
+      "label": "Respiratory conditions",
+      "source_cell": "A10"
+    },
+    {
+      "code": "eye-ear-nose-mouth-dental",
+      "label": "Eye/ear/nose/mouth/dental problems",
+      "source_cell": "A11"
+    },
+    {
+      "code": "genito-urinary",
+      "label": "Genito-urinary problems",
+      "source_cell": "A12"
+    },
+    {
+      "code": "heart-blood-pressure-circulation",
+      "label": "Heart, blood pressure, circulation problems",
+      "source_cell": "A13"
+    },
+    {
+      "code": "headaches-migraines",
+      "label": "Headaches and migraines",
+      "source_cell": "A14"
+    },
+    {
+      "code": "prefers-not-to-give-details",
+      "label": "Prefers not to give details",
+      "note": "Non-disclosure response, not a clinical reason. Preserve separately from Other and from missing data.",
+      "source_cell": "A15"
     }
   ]
 }

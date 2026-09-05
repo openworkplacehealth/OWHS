@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/InstrumentAdministration.json",
+  "title": "OWHS InstrumentAdministration v0.2",
+  "description": "One completed, partial or abandoned administration of a validated instrument: scores and bands, never item text. Individual-never at this grain. The schema does not grant a licence to administer the instrument.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "administrationId",
+    "orgId",
+    "pseudonymId",
+    "contextId",
+    "instrumentId",
+    "instrumentCitation",
+    "instrumentVersion",
+    "occasionTs",
+    "constructCodes",
+    "completionStatus"
+  ],
+  "properties": {
+    "administrationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Primary identifier, unique within the organisation."
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Organisation scope."
+    },
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "WorkerPseudonym reference."
+    },
+    "contextId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Same-organisation MeasurementContext reference."
+    },
+    "instrumentId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Stable identifier of the exact instrument or form. Not its registry grade."
+    },
+    "instrumentCitation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "Bibliographic citation of the instrument. No questionnaire item text."
+    },
+    "instrumentVersion": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Form or version, separate from any dataset version."
+    },
+    "occasionTs": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "(Z|[+-]\\d{2}:\\d{2})$",
+      "description": "Administration occasion, with an asserted time zone."
+    },
+    "constructCodes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "demands",
+          "control",
+          "support",
+          "relationships",
+          "role",
+          "change",
+          "mental-health",
+          "physical-health",
+          "musculoskeletal",
+          "financial-wellbeing",
+          "sleep-fatigue"
+        ],
+        "$comment": "codelist:construct-domain@0.1.0"
+      },
+      "description": "Constructs the instrument measures; a multidimensional instrument lists several without inventing one total construct."
+    },
+    "completionStatus": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial",
+        "abandoned"
+      ],
+      "$comment": "codelist:completion-status@0.1.0",
+      "description": "complete, partial or abandoned."
+    },
+    "totalScore": {
+      "type": "number",
+      "description": "Total score, where the instrument defines one."
+    },
+    "subscaleScores": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "type": "number"
+      },
+      "description": "Subscale identifier to finite score."
+    },
+    "band": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Band label under the context's declared banding."
+    },
+    "aboveThresholdFlag": {
+      "type": "boolean",
+      "description": "Under the context's declared threshold. Severe-distress measures carry the n>=10 floor at aggregation (P2)."
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "completionStatus": {
+            "const": "complete"
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "required": [
+              "totalScore"
+            ]
+          },
+          {
+            "required": [
+              "subscaleScores"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "completionStatus": {
+            "const": "abandoned"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "totalScore"
+              ]
+            },
+            {
+              "required": [
+                "subscaleScores"
+              ]
+            },
+            {
+              "required": [
+                "band"
+              ]
+            },
+            {
+              "required": [
+                "aboveThresholdFlag"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

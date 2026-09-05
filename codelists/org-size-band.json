@@ -1,23 +1,46 @@
 {
   "codelist": "org-size-band",
-  "version": "0.1.0",
-  "anchor": "Companies Act 2006 size classification",
+  "version": "0.1.1",
+  "anchor": "Employee-count bands informed by DBT business population and small-business survey statistics; OWHS micro band includes zero employees. Not a Companies Act company-size classification.",
+  "notes": "This field records an employee headcount band for the specified organisation and reference date. It does not determine statutory company size, turnover, balance-sheet size, employment including proprietors, or full-time equivalents. DBT's employer survey uses micro for 1-9 employees; OWHS retains zero in its existing <10 band for compatibility. Missing headcount must not be coded as zero. Applying these bands outside private-sector businesses is an OWHS categorisation, not a claim about the population covered by the cited statistics.",
+  "sources": [
+    {
+      "name": "DBT Business Population Estimates 2025, statistical release, Table C",
+      "url": "https://www.gov.uk/government/statistics/business-population-estimates-2025/business-population-estimates-for-the-uk-and-regions-2025-statistical-release"
+    },
+    {
+      "name": "Longitudinal Small Business Survey 2024, definitions of business sizes",
+      "url": "https://www.gov.uk/government/statistics/small-business-survey-2024-businesses-with-employees/longitudinal-small-business-survey-2024-sme-employers-businesses-with-1-to-249-employees"
+    },
+    {
+      "name": "Companies House accounts guidance, small companies and micro-entities (a different classification, cited to distinguish it)",
+      "url": "https://www.gov.uk/annual-accounts/microentities-small-and-dormant-companies"
+    }
+  ],
   "values": [
     {
       "code": "micro",
-      "label": "Micro (<10)"
+      "label": "Micro (0-9 employees)",
+      "min_inclusive": 0,
+      "max_inclusive": 9
     },
     {
       "code": "small",
-      "label": "Small (10–49)"
+      "label": "Small (10-49 employees)",
+      "min_inclusive": 10,
+      "max_inclusive": 49
     },
     {
       "code": "medium",
-      "label": "Medium (50–249)"
+      "label": "Medium (50-249 employees)",
+      "min_inclusive": 50,
+      "max_inclusive": 249
     },
     {
       "code": "large",
-      "label": "Large (250+)"
+      "label": "Large (250+ employees)",
+      "min_inclusive": 250,
+      "max_inclusive": null
     }
   ]
 }

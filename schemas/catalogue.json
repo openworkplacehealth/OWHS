@@ -1,0 +1,65 @@
+{
+  "note": "Versioned schema catalogue. The unversioned files under schemas/ are the v0.1 entry points and are unchanged; schemas/v0.1/ holds byte-identical copies as the archived set. A caller names the version it validates against; validation does not choose a version from an unversioned payload.",
+  "versions": {
+    "0.1": {
+      "status": "archived",
+      "entities": {
+        "AbsenceEpisode": {
+          "file": "schemas/v0.1/AbsenceEpisode.json",
+          "entry_point": "schemas/AbsenceEpisode.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.1/AbsenceEpisode.json"
+        },
+        "ReturnToWorkOutcome": {
+          "file": "schemas/v0.1/ReturnToWorkOutcome.json",
+          "entry_point": "schemas/ReturnToWorkOutcome.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.1/ReturnToWorkOutcome.json"
+        },
+        "OHEpisode": {
+          "file": "schemas/v0.1/OHEpisode.json",
+          "entry_point": "schemas/OHEpisode.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.1/OHEpisode.json"
+        }
+      },
+      "codelists": {
+        "absence-reason": "0.1.0 (six codes), resolved through codelists/_registry.json versions to codelists/archive/absence-reason@0.1.0.json"
+      }
+    },
+    "0.2": {
+      "status": "current",
+      "extension": "ext, keyed by profile namespace; see profiles/",
+      "entities": {
+        "AbsenceEpisode": {
+          "file": "schemas/v0.2/AbsenceEpisode.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/AbsenceEpisode.json"
+        },
+        "ReturnToWorkOutcome": {
+          "file": "schemas/v0.2/ReturnToWorkOutcome.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/ReturnToWorkOutcome.json"
+        },
+        "OHEpisode": {
+          "file": "schemas/v0.2/OHEpisode.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/OHEpisode.json"
+        },
+        "WellbeingObservation": {
+          "file": "schemas/v0.2/WellbeingObservation.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/WellbeingObservation.json"
+        },
+        "InstrumentAdministration": {
+          "file": "schemas/v0.2/InstrumentAdministration.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/InstrumentAdministration.json"
+        },
+        "MeasurementContext": {
+          "file": "schemas/v0.2/MeasurementContext.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/MeasurementContext.json"
+        },
+        "AggregateReport": {
+          "file": "schemas/v0.2/AggregateReport.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/AggregateReport.json"
+        }
+      },
+      "codelists": {
+        "absence-reason": "0.2.0 (eleven codes); crosswalk codelists/mappings/absence-reason-ons-2025-v1.json"
+      }
+    }
+  }
+}

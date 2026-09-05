@@ -1,0 +1,20 @@
+{
+  "ohEpisodeId": "oh-2026-000045",
+  "pseudonymId": "owhs:pseudo:a1b2c3d4e5f60718",
+  "referralReason": "return-to-work",
+  "referralDate": "2026-03-05",
+  "assessmentType": "management-referral",
+  "assessmentDate": "2026-03-11",
+  "fitnessOpinion": "fit-with-adjustments",
+  "recommendationTypes": [
+    "phased-return",
+    "amended-duties"
+  ],
+  "opinionReleasedToEmployer": true,
+  "linkedAbsenceEpisodeId": "abs-2026-000123",
+  "ext": {
+    "owhs-x": {
+      "diagnosis": "..."
+    }
+  }
+}

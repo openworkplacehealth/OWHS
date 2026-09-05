@@ -1,0 +1,21 @@
+{
+  "administrationId": "adm-2",
+  "orgId": "org-demo",
+  "pseudonymId": "p-7f3a",
+  "contextId": "ctx-2026q3",
+  "instrumentId": "who-5",
+  "instrumentCitation": "Topp CW et al. The WHO-5 Well-Being Index: a systematic review of the literature. Psychother Psychosom 2015;84:167-176.",
+  "instrumentVersion": "1998",
+  "occasionTs": "2026-08-12T09:20:00+01:00",
+  "constructCodes": [
+    "mental-health",
+    "role"
+  ],
+  "completionStatus": "complete",
+  "band": "moderate",
+  "aboveThresholdFlag": false,
+  "subscaleScores": {
+    "vigour": 4.2,
+    "dedication": 3.9
+  }
+}
