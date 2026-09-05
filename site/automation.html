@@ -91,7 +91,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
     <tr><td>Flag a change to a licence source</td><td>Change a licence classification</td></tr>
     <tr><td>Suggest an instrument for consideration</td><td>Admit an instrument without the published review process</td></tr>
   </table>
-  <p>A search run does not authorise a grade change. New evidence is reviewed through the public corrections process. Since 5 September 2026 the session's instructions forbid any change to a grade, status or licence field outright: a finding that looks as though it would move a grade is written up for human re-adjudication and nothing is changed.</p>
+  <p>A search run does not authorise a grade change. New evidence is reviewed through the public corrections process. Findings that could affect a grade, status or licence classification are referred for human review through the public corrections process; automated sweeps do not apply these changes.</p>
 
   <h2>When it fails</h2>
   <p>The failure mode this design guards hardest against is silence: an early version of the sweep failed silently for a month in 2026, and nobody noticed until the next run. The session is now instructed to notify its operator on success and on failure. The planned failure monitor will check that a monthly sweep produced the expected report or proposal and will raise a visible alert if it did not. The monitor and a replay fixture using saved source responses are not yet running. A missing report must be treated as an incomplete maintenance cycle, not as a month with no new evidence.</p>
