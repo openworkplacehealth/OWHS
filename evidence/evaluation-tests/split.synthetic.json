@@ -1,0 +1,33 @@
+{
+ "components": [
+  {
+   "component_id": "c0",
+   "work_ids": [
+    "doi:10.5555/w0"
+   ],
+   "allocation": "holdout"
+  },
+  {
+   "component_id": "c1",
+   "work_ids": [
+    "doi:10.5555/w1"
+   ],
+   "allocation": "holdout"
+  },
+  {
+   "component_id": "c2",
+   "work_ids": [
+    "doi:10.5555/w2"
+   ],
+   "allocation": "holdout"
+  },
+  {
+   "component_id": "c3",
+   "work_ids": [
+    "doi:10.5555/w3"
+   ],
+   "allocation": "holdout"
+  }
+ ],
+ "excluded": []
+}

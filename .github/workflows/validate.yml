@@ -33,3 +33,5 @@ jobs:
         run: python tools/harvest.py --self-test
       - name: retraction watcher coverage accounting
         run: python tools/watch_retractions.py --self-test
+      - name: retrieval evaluator accounting
+        run: python tools/measure_recall.py --self-test

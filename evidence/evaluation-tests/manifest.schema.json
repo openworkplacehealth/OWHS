@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/evidence/evaluation-manifest.schema.json",
+  "title": "OWHS retrieval-evaluation manifest",
+  "description": "Judged bibliography for the held-out retrieval evaluation. Closed objects. Judgements concern relevance to retrieval, never the quality of a result or eligibility for a grade. The real judged manifest is private; this schema and the synthetic fixtures beside it are public.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "benchmark_id", "created_at", "dataset", "query_seed_source", "eligibility_protocol_version", "rows", "calibration_ids", "state"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "benchmark_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time", "pattern": "(Z|[+-]00:00)$"},
+    "dataset": {"type": "object", "additionalProperties": false, "required": ["commit", "relative_path", "sha256", "version"], "properties": {"commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "relative_path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "version": {"type": "string"}}},
+    "query_seed_source": {"type": "object", "additionalProperties": false, "required": ["version", "sha256"], "properties": {"version": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "eligibility_protocol_version": {"type": "string", "minLength": 1},
+    "calibration_ids": {"type": "array", "items": {"type": "string"}},
+    "state": {"enum": ["draft", "judged", "split_locked", "evaluated"]},
+    "rows": {"type": "array", "items": {"$ref": "#/$defs/row"}}
+  },
+  "$defs": {
+    "row": {
+      "type": "object", "additionalProperties": false,
+      "required": ["work_id", "identifiers", "citation", "publication_date", "record_type", "links", "study_families", "overlap_state", "seed_membership", "calibration_only", "judgements", "unresolved"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^(doi:10\\.[0-9]{4,9}/[^\\s]+|pmid:[0-9]+|report:[A-Za-z0-9._-]+)$"},
+        "identifiers": {"type": "object", "additionalProperties": false, "required": ["doi", "pmid", "openalex_id"], "properties": {"doi": {"type": ["string", "null"], "pattern": "^10\\.[0-9]{4,9}/[^\\s]+$"}, "pmid": {"type": ["string", "null"], "pattern": "^[0-9]+$"}, "openalex_id": {"type": ["string", "null"], "pattern": "^W[0-9]+$"}}},
+        "citation": {"type": "object", "additionalProperties": false, "required": ["title", "authors", "year", "source_url"], "properties": {"title": {"type": "string"}, "authors": {"type": "array", "items": {"type": "string"}}, "year": {"type": ["integer", "null"]}, "source_url": {"type": ["string", "null"]}}},
+        "publication_date": {"type": "object", "additionalProperties": false, "required": ["value", "precision", "source_url"], "properties": {"value": {"type": ["string", "null"]}, "precision": {"enum": ["day", "month", "year", "unknown"]}, "source_url": {"type": ["string", "null"]}}},
+        "record_type": {"enum": ["primary_study", "review", "report", "correction", "retraction", "dataset", "background", "other", "unknown"]},
+        "links": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/link"}},
+        "study_families": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "overlap_state": {"enum": ["resolved", "possible", "unknown"]},
+        "seed_membership": {"type": "array", "items": {"type": "string"}},
+        "calibration_only": {"type": "boolean"},
+        "judgements": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["actor_id", "actor_kind", "time", "source_access", "changes"], "properties": {"actor_id": {"type": "string"}, "actor_kind": {"enum": ["human", "ai_assisted_review"]}, "time": {"type": "string", "format": "date-time"}, "source_access": {"type": "string"}, "changes": {"type": "string"}}}},
+        "unresolved": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "link": {
+      "type": "object", "additionalProperties": false,
+      "required": ["instrument_id", "property", "form", "scope", "judgement", "reason", "source_location", "judged_by", "judged_at"],
+      "properties": {
+        "instrument_id": {"type": ["string", "null"]}, "property": {"type": ["string", "null"]}, "form": {"type": ["string", "null"]},
+        "scope": {"enum": ["measurement_property", "out_of_target"]},
+        "judgement": {"enum": ["eligible", "ineligible", "unresolved"]},
+        "reason": {"type": "string"},
+        "source_location": {"type": "object", "additionalProperties": false, "required": ["url", "read_level", "section", "printed_pages", "table_or_figure", "accessed_at", "response_status"],
+                            "properties": {"url": {"type": ["string", "null"]}, "read_level": {"enum": ["full_text", "abstract_only", "metadata_only", "inaccessible"]}, "section": {"type": ["string", "null"]}, "printed_pages": {"type": ["string", "null"]}, "table_or_figure": {"type": ["string", "null"]}, "accessed_at": {"type": ["string", "null"]}, "response_status": {"type": ["integer", "null"]}}},
+        "judged_by": {"type": "string"}, "judged_at": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

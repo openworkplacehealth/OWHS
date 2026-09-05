@@ -141,3 +141,7 @@ entries), never by prose. A signal opens one issue naming every record and cell 
 partial or failed run. Absence of a signal is not proof that a work stands; a DOI outside Crossref's coverage is
 reported as such, not as clean. `--self-test` stubs the paged source offline and checks the page-cap case with and
 without a signal, a deferred source and an all-sources failure.
+
+## The retrieval evaluation (designed; not yet run)
+
+`tools/measure_recall.py` measures held-out known-item retrieval against a judged bibliography: which judged-relevant holdout works the frozen discovery queries returned without being given their identifiers. Coverage (which indexes contain a work, looked up by identifier) is a separate quantity reported beside it. Seeds, disclosed calibration works and works previously exposed to query tuning are excluded and counted; unresolved relevance or boundary dates make the figure provisional and are never dropped from a denominator; a zero denominator is null and not evaluated, never 100 per cent. Every miss is listed. The judged manifest is private until the evaluation has run and a neutral report has been reviewed; `evidence/evaluation-tests/` holds the public manifest schema and synthetic fixtures. No recall figure exists yet.

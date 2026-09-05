@@ -1,0 +1,224 @@
+{
+ "schema_version": "1.0",
+ "benchmark_id": "synthetic-fixture",
+ "state": "split_locked",
+ "rows": [
+  {
+   "work_id": "doi:10.5555/w0",
+   "identifiers": {
+    "doi": "10.5555/w0",
+    "pmid": null,
+    "openalex_id": null
+   },
+   "citation": {
+    "title": "Title doi:10.5555/w0",
+    "authors": [
+     "A"
+    ],
+    "year": 2026,
+    "source_url": "https://example.org"
+   },
+   "publication_date": {
+    "value": "2026-08-15",
+    "precision": "day",
+    "source_url": "https://example.org"
+   },
+   "record_type": "primary_study",
+   "calibration_only": false,
+   "overlap_state": "resolved",
+   "study_families": [
+    "fam-doi:10.5555/w0"
+   ],
+   "seed_membership": [],
+   "links": [
+    {
+     "instrument_id": "isi",
+     "property": "internal_consistency",
+     "form": null,
+     "scope": "measurement_property",
+     "judgement": "eligible",
+     "reason": "fixture",
+     "source_location": {
+      "url": "https://example.org",
+      "read_level": "abstract_only",
+      "section": null,
+      "printed_pages": null,
+      "table_or_figure": null,
+      "accessed_at": "2026-09-05T00:00:00Z",
+      "response_status": 200
+     },
+     "judged_by": "fixture",
+     "judged_at": "2026-09-05T00:00:00Z"
+    }
+   ],
+   "judgements": [],
+   "unresolved": []
+  },
+  {
+   "work_id": "doi:10.5555/w1",
+   "identifiers": {
+    "doi": "10.5555/w1",
+    "pmid": null,
+    "openalex_id": null
+   },
+   "citation": {
+    "title": "Title doi:10.5555/w1",
+    "authors": [
+     "A"
+    ],
+    "year": 2026,
+    "source_url": "https://example.org"
+   },
+   "publication_date": {
+    "value": "2026-08-15",
+    "precision": "day",
+    "source_url": "https://example.org"
+   },
+   "record_type": "primary_study",
+   "calibration_only": false,
+   "overlap_state": "resolved",
+   "study_families": [
+    "fam-doi:10.5555/w1"
+   ],
+   "seed_membership": [],
+   "links": [
+    {
+     "instrument_id": "isi",
+     "property": "internal_consistency",
+     "form": null,
+     "scope": "measurement_property",
+     "judgement": "eligible",
+     "reason": "fixture",
+     "source_location": {
+      "url": "https://example.org",
+      "read_level": "abstract_only",
+      "section": null,
+      "printed_pages": null,
+      "table_or_figure": null,
+      "accessed_at": "2026-09-05T00:00:00Z",
+      "response_status": 200
+     },
+     "judged_by": "fixture",
+     "judged_at": "2026-09-05T00:00:00Z"
+    }
+   ],
+   "judgements": [],
+   "unresolved": []
+  },
+  {
+   "work_id": "doi:10.5555/w2",
+   "identifiers": {
+    "doi": "10.5555/w2",
+    "pmid": null,
+    "openalex_id": null
+   },
+   "citation": {
+    "title": "Title doi:10.5555/w2",
+    "authors": [
+     "A"
+    ],
+    "year": 2026,
+    "source_url": "https://example.org"
+   },
+   "publication_date": {
+    "value": "2026-08-15",
+    "precision": "day",
+    "source_url": "https://example.org"
+   },
+   "record_type": "primary_study",
+   "calibration_only": false,
+   "overlap_state": "resolved",
+   "study_families": [
+    "fam-doi:10.5555/w2"
+   ],
+   "seed_membership": [],
+   "links": [
+    {
+     "instrument_id": "isi",
+     "property": "internal_consistency",
+     "form": null,
+     "scope": "measurement_property",
+     "judgement": "eligible",
+     "reason": "fixture",
+     "source_location": {
+      "url": "https://example.org",
+      "read_level": "abstract_only",
+      "section": null,
+      "printed_pages": null,
+      "table_or_figure": null,
+      "accessed_at": "2026-09-05T00:00:00Z",
+      "response_status": 200
+     },
+     "judged_by": "fixture",
+     "judged_at": "2026-09-05T00:00:00Z"
+    }
+   ],
+   "judgements": [],
+   "unresolved": []
+  },
+  {
+   "work_id": "doi:10.5555/w3",
+   "identifiers": {
+    "doi": "10.5555/w3",
+    "pmid": null,
+    "openalex_id": null
+   },
+   "citation": {
+    "title": "Title doi:10.5555/w3",
+    "authors": [
+     "A"
+    ],
+    "year": 2026,
+    "source_url": "https://example.org"
+   },
+   "publication_date": {
+    "value": "2026-08-15",
+    "precision": "day",
+    "source_url": "https://example.org"
+   },
+   "record_type": "primary_study",
+   "calibration_only": false,
+   "overlap_state": "resolved",
+   "study_families": [
+    "fam-doi:10.5555/w3"
+   ],
+   "seed_membership": [],
+   "links": [
+    {
+     "instrument_id": "isi",
+     "property": "internal_consistency",
+     "form": null,
+     "scope": "measurement_property",
+     "judgement": "eligible",
+     "reason": "fixture",
+     "source_location": {
+      "url": "https://example.org",
+      "read_level": "abstract_only",
+      "section": null,
+      "printed_pages": null,
+      "table_or_figure": null,
+      "accessed_at": "2026-09-05T00:00:00Z",
+      "response_status": 200
+     },
+     "judged_by": "fixture",
+     "judged_at": "2026-09-05T00:00:00Z"
+    }
+   ],
+   "judgements": [],
+   "unresolved": []
+  }
+ ],
+ "created_at": "2026-09-05T00:00:00Z",
+ "dataset": {
+  "commit": "0000000000000000000000000000000000000000",
+  "relative_path": "none",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "version": "synthetic"
+ },
+ "query_seed_source": {
+  "version": "synthetic",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+ },
+ "eligibility_protocol_version": "synthetic",
+ "calibration_ids": []
+}
