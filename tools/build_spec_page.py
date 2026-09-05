@@ -82,7 +82,10 @@ def check():
         if r.returncode != 0:
             sys.exit("[check] stamp failed:\n" + r.stdout + r.stderr)
         if not filecmp.cmp(tmp_site / "spec" / "index.html", committed, shallow=False):
-            sys.exit("site/spec/index.html does not match a fresh render of site/spec/OWHS-v0.1-draft.md; run tools/build_spec_page.py then tools/stamp_canonical.py")
+            import difflib
+            a = committed.read_text(encoding="utf-8").splitlines(); b = (tmp_site / "spec" / "index.html").read_text(encoding="utf-8").splitlines()
+            excerpt = "\n".join(list(difflib.unified_diff(a, b, "committed", "fresh render", n=0, lineterm=""))[:20])
+            sys.exit("site/spec/index.html does not match a fresh render of site/spec/OWHS-v0.1-draft.md; run tools/build_spec_page.py then tools/stamp_canonical.py\n" + excerpt)
         print("up to date: site/spec/index.html matches its markdown")
 
 
