@@ -35,3 +35,5 @@ jobs:
         run: python tools/watch_retractions.py --self-test
       - name: retrieval evaluator accounting
         run: python tools/measure_recall.py --self-test
+      - name: screening proposal allowlist gate
+        run: python tools/check_proposal_allowlist.py --self-test
