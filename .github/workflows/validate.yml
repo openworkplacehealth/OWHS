@@ -37,3 +37,5 @@ jobs:
         run: python tools/check_remaining_entities.py --self-test
       - name: the v0.2 specification matches its sources
         run: python tools/build_spec_v0_2.py --check
+      - name: entity-graph checker (envelope, G01 to G10, retained measurement checks, profiles, strict input) through its own command line
+        run: python tools/check_entity_graph.py --self-test
