@@ -88,13 +88,25 @@ def identity_problems(rows, candidates):
     given one identifier), refused rather than merged or matched. A candidate whose identifiers map to two manifest works is a conflict
     too. Returns (problems, alias -> work_id for unambiguous aliases)."""
     p = []; owner = {}
+    def by_ns(aliases): return {a.split(":", 1)[0]: a for a in aliases}
     for w, r in rows.items():
+        # the preferred id must agree with the identifier of its own namespace: pmid:X with identifiers.pmid Y is a contradiction within one row
+        ns, _, val = w.partition(":"); ids = r.get("identifiers") or {}
+        own = {"doi": ("doi:" + norm_doi(ids["doi"])) if ids.get("doi") else None, "pmid": ("pmid:" + str(ids["pmid"]).strip()) if ids.get("pmid") else None, "openalex": ("openalex:" + str(ids["openalex_id"]).strip().upper()) if ids.get("openalex_id") else None}
+        if ns in own and own[ns] is not None and own[ns] != (("doi:" + norm_doi(val)) if ns == "doi" else f"{ns}:{val.strip().upper() if ns == 'openalex' else val.strip()}"): p.append(f"identity conflict: {w} carries identifiers.{ns if ns != 'openalex' else 'openalex_id'} {own[ns]}, which contradicts its own preferred id")
         for a in work_ids(r):
             if a in owner and owner[a] != w: p.append(f"identity conflict: {a} is claimed by both {owner[a]} and {w}; distinct works cannot share an identifier and one work cannot be two rows")
             owner.setdefault(a, w)
     for c in candidates.get("candidates", []) + candidates.get("new_instrument_candidates", []):
-        targets = {owner[a] for a in candidate_ids(c) if a in owner}
-        if len(targets) > 1: p.append(f"identity conflict: candidate {c.get('doi') or c.get('pmid') or c.get('openalex') or '?'} carries identifiers of {sorted(targets)}; its DOI and PMID do not name one manifest work")
+        cids = candidate_ids(c); targets = {owner[a] for a in cids if a in owner}
+        label = c.get("doi") or c.get("pmid") or c.get("openalex") or c.get("openalex_id") or "?"
+        if len(targets) > 1: p.append(f"identity conflict: candidate {label} carries identifiers of {sorted(targets)}; its DOI and PMID do not name one manifest work")
+        elif len(targets) == 1:
+            # every namespace populated on both sides must agree after normalisation; a different DOI, PMID or OpenAlex id in a namespace the
+            # manifest work also carries is a conflict even when the candidate's alias appears nowhere else in the manifest
+            w = next(iter(targets)); wn, cn = by_ns(work_ids(rows[w]) - {w} | {w}), by_ns(cids)
+            for ns_ in set(wn) & set(cn):
+                if wn[ns_] != cn[ns_]: p.append(f"identity conflict: candidate {label} matches {w} by one identifier but its {ns_} {cn[ns_]} contradicts the work's {wn[ns_]}; resolve from a primary identity source, do not match")
     return p, owner
 
 
@@ -452,12 +464,14 @@ def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, 
         r = rows[w]; hit = w in hits
         lang = (r.get("citation") or {}).get("language") or "unknown"
         per_language.setdefault(lang, {"eligible_works": 0, "found": 0}); per_language[lang]["eligible_works"] += 1; per_language[lang]["found"] += hit
-        for l in r["links"]:
-            if l["scope"] == "measurement_property" and l["judgement"] == "eligible":
-                per_property.setdefault(l["property"], {"eligible_work_links": 0, "found_work_links": 0, "miss_ids": []})
-                per_property[l["property"]]["eligible_work_links"] += 1
-                if hit: per_property[l["property"]]["found_work_links"] += 1
-                else: per_property[l["property"]]["miss_ids"].append(w)
+        # one unit per distinct (work, instrument, property) link, as for the instrument rows: a second supporting location or rationale for the same judgement adds nothing to a denominator
+        for (iid, prop) in sorted({(l["instrument_id"], l["property"]) for l in r["links"] if l["scope"] == "measurement_property" and l["judgement"] == "eligible"}):
+            per_property.setdefault(prop, {"eligible_work_links": 0, "found_work_links": 0, "miss_ids": [], "missed_links": []})
+            per_property[prop]["eligible_work_links"] += 1
+            if hit: per_property[prop]["found_work_links"] += 1
+            else:
+                if w not in per_property[prop]["miss_ids"]: per_property[prop]["miss_ids"].append(w)
+                per_property[prop]["missed_links"].append(f"{w} {iid}")
         if hit:
             for rt in set().union(*(found_routes.get(i, set()) for i in work_ids(r))): per_route[rt] = per_route.get(rt, 0) + 1
     for v in per_property.values(): v["recall"] = ratio(v["found_work_links"], v["eligible_work_links"])
@@ -466,7 +480,7 @@ def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, 
     non_gold = sorted(found_ids - {i for w in rows for i in work_ids(rows[w])})
     macro_vals = [v["recall"] for v in inst.values() if v["recall"] is not None]
     provisional = bool(unresolved_rel or recon["date_unresolved"] or unresolved_links or unresolved_alloc or candidates["status"] != "complete")
-    claim_state = {"unseen_holdout": "unseen holdout: discovery ran after the lock, bound to an independently captured execution record",
+    claim_state = {"unseen_holdout": "Requested unseen-holdout evaluation: supplied records place discovery after the lock and agree locally; independent execution verification is not established by this report.",
                    "retrospective_replay": "retrospective replay: regression coverage of the locked queries over an earlier run, not unseen holdout performance"}[lock["claim"]]
     run_status = candidates["status"]
     discovery_run = {"status": run_status, "requested_window": candidates["requested_window"], "channels_not_complete": len(candidates.get("channels_not_complete") or []) if isinstance(candidates.get("channels_not_complete"), list) else None,
@@ -680,6 +694,29 @@ def self_test():
     t("a candidate whose DOI names one manifest work and whose PMID names another is an identity conflict", "carries identifiers of" in (refused(m, s, c, cand, lock, q) or ""))
     m, s, c, cand, lock, q = _setup(); m["rows"][0]["identifiers"].update({"pmid": "999", "openalex_id": "W999"}); _relock(lock, manifest=m); cand["candidates"][0] = {"id": "x", "doi": None, "pmid": None, "openalex": "w999", "routes": ["names:europepmc:isi"]}
     r = run(m, s, c, cand, lock, q); t("legitimate multiple identifiers for one work resolve to it, with case normalisation of the OpenAlex id", "doi:10.5555/w0" in r["hits"])
+    # identity consistency within a row and between a candidate and its resolved work (the 0022 cases)
+    def as_pmid(m, s, c, cand, lock, q, wid, new, ident_pmid):
+        txt = json.dumps([m, s, c, cand]).replace(wid, new); m2, s2, c2, cand2 = json.loads(txt); m2["rows"][9]["identifiers"] = {"doi": None, "pmid": ident_pmid, "openalex_id": None}; return m2, s2, c2, cand2
+    m, s, c, cand, lock, q = _setup(); m, s, c, cand = as_pmid(m, s, c, cand, lock, q, "doi:10.5555/w9", "pmid:11111", "11111"); _relock(lock, manifest=m, split=s)
+    cand["candidates"].append({"id": "PMID:11111", "doi": None, "pmid": "11111", "openalex": None, "routes": ["names:europepmc:isi"]}); r = run(m, s, c, cand, lock, q)
+    t("a PMID-preferred work with a consistent identifiers.pmid is found by a PMID candidate (legitimate positive)", "pmid:11111" in r["hits"] and r["denominators"]["F_found"] == 8)
+    m, s, c, cand, lock, q = _setup(); m, s, c, cand = as_pmid(m, s, c, cand, lock, q, "doi:10.5555/w9", "pmid:11111", "22222"); _relock(lock, manifest=m, split=s)
+    cand["candidates"].append({"id": "PMID:22222", "doi": None, "pmid": "22222", "openalex": None, "routes": ["names:europepmc:isi"]})
+    t("a PMID-preferred work whose identifiers.pmid contradicts its own id is an identity conflict, refused before matching", "contradicts its own preferred id" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); m["rows"][9]["identifiers"]["pmid"] = "33333"; _relock(lock, manifest=m)
+    cand["candidates"].append({"id": "10.5555/other", "doi": "10.5555/other", "pmid": "33333", "openalex": None, "routes": ["names:europepmc:isi"]})
+    t("a candidate matching a work by PMID while carrying a different DOI is an identity conflict (a previously unseen alias does not license the match)", "contradicts the work's" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); m["rows"][9]["identifiers"]["pmid"] = "33333"; _relock(lock, manifest=m)
+    cand["candidates"].append({"id": "10.5555/w9", "doi": "10.5555/w9", "pmid": "33333", "openalex": None, "routes": ["names:europepmc:isi"]}); r = run(m, s, c, cand, lock, q)
+    t("a candidate carrying a consistent additional identifier is not a conflict and counts once", "doi:10.5555/w9" in r["hits"] and r["denominators"]["F_found"] == 8)
+    # repeated judgements do not add denominator units
+    m, s, c, cand, lock, q = _setup(); m["rows"][9]["links"].append(copy.deepcopy(m["rows"][9]["links"][0])); _relock(lock, manifest=m); r = run(m, s, c, cand, lock, q)
+    t("a duplicated eligible link on a miss leaves the property row at the same distinct work-link count and lists the miss once", r["by_property"]["internal_consistency"]["eligible_work_links"] == 10 and r["by_property"]["internal_consistency"]["miss_ids"].count("doi:10.5555/w9") == 1 and r["instruments"]["isi"]["eligible_work_links"] == 10)
+    m, s, c, cand, lock, q = _setup(); l2 = copy.deepcopy(m["rows"][9]["links"][0]); l2["reason"] = "second location supports the same relevance judgement"; m["rows"][9]["links"].append(l2); _relock(lock, manifest=m); r = run(m, s, c, cand, lock, q)
+    t("the same link with a second rationale adds no denominator unit", r["by_property"]["internal_consistency"]["eligible_work_links"] == 10 and r["work_level_recall"] == 0.7)
+    m, s, c, cand, lock, q = _setup(); m["rows"][9]["links"].append({**m["rows"][9]["links"][0], "instrument_id": "who-5"}); _relock(lock, manifest=m); r = run(m, s, c, cand, lock, q)
+    t("a work serving two instruments contributes two distinct property links and one work", r["by_property"]["internal_consistency"]["eligible_work_links"] == 11 and r["denominators"]["E_eligible_holdout_works"] == 10 and "doi:10.5555/w9 who-5" in r["by_property"]["internal_consistency"]["missed_links"])
+    t("the unseen-holdout claim state says independent execution verification is not established by this report", "not established by this report" in run(*_setup())["claim_state"])
     # reading provenance and lock chronology
     m, s, c, cand, lock, q = _setup(); m["rows"][0]["links"][0]["source_location"].update({"read_level": "full_text", "url": None, "section": None, "printed_pages": None, "table_or_figure": None, "accessed_at": None, "response_status": None}); _relock(lock, manifest=m); msg = refused(m, s, c, cand, lock, q) or ""
     t("a full_text reading with every access and location field null is refused as reading provenance", "no URL" in msg and "names no section, page or table" in msg, msg[:300])
