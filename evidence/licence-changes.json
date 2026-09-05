@@ -1,0 +1,33 @@
+{
+  "status": "partial",
+  "attempted": 38,
+  "succeeded": 34,
+  "failed": 4,
+  "baseline_pages": 30,
+  "changed": [],
+  "unreachable": [
+    {
+      "instrument": "k10",
+      "url": "https://www.hcp.med.harvard.edu/ncs/k6_scales.php",
+      "error": "http 503"
+    },
+    {
+      "instrument": "wai",
+      "url": "https://www.baua.de/EN/Topics/Prevention/Mental-health/Work-Ability-Index",
+      "error": "http 403"
+    },
+    {
+      "instrument": "was",
+      "url": "https://www.baua.de/EN/Topics/Prevention/Mental-health/Work-Ability-Index",
+      "error": "http 403"
+    },
+    {
+      "instrument": "eurofound-ewcs",
+      "url": "https://www.eurofound.europa.eu/en/surveys/about-eurofounds-surveys/data-availability",
+      "error": "http 429"
+    }
+  ],
+  "baseline_written": false,
+  "first_run": false,
+  "note": "A changed hash means the page's visible text changed. It is a reason to read the page; it says nothing about what changed or whether a licence class should move. An unreachable page is unchecked, not unchanged."
+}
