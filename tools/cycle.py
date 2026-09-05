@@ -104,13 +104,49 @@ def plan(event, in_from, in_to, today, marks, qsha):
     return {"cycle_id": cycle_id, "kind": kind, "from": f, "to": t, "catch_from": catch_from, "full_history": quarterly}
 
 
-def authoritative_plan(cfg, env):
-    """The channel set a run with this envelope's cycle, windows and full-history flag was required to cover, reconstructed from
-    the hashed query file (whose provider profile fixes what is required and what is declared unavailable). The envelope's own
-    expected_channels is evidence to validate against this, never the authority."""
-    rw = env.get("requested_window") or {}; db = env.get("date_bases") or {}
-    catch = (db.get("first_indexed") or {}).get("from")
-    return expected_channels(cfg, rw.get("from"), rw.get("to"), catch, bool(db.get("full_history")))
+def read_at_head(head_sha, path, root=None):
+    """Bytes of `path` as committed at `head_sha`, from this repository's object store; None when unreadable. The working tree is
+    never consulted: the plan is derived from what the run actually checked out."""
+    try:
+        r = subprocess.run(["git", "-C", str(root or ROOT), "show", f"{head_sha}:{path}"], capture_output=True)
+        return r.stdout if r.returncode == 0 else None
+    except Exception: return None
+
+
+def trusted_plan(run, reader=read_at_head):
+    """The plan a run was required to follow, derived from trusted run context and the pinned policy, never from the artefact:
+    the run's event, its start date (UTC) and the watermarks and query configuration as committed at the run's head. Returns
+    (plan dict with the head's configuration and query hash, None) or (None, reason) when the provenance is not readable."""
+    head, started, event = run.get("head_sha"), run.get("started_at"), run.get("event")
+    if not head or not started or not event: return None, "run context lacks head, start time or event; the plan cannot be derived"
+    try: today = datetime.datetime.fromisoformat(str(started).replace("Z", "+00:00")).astimezone(datetime.timezone.utc).date()
+    except ValueError: return None, f"run start time {started!r} is not a date-time"
+    qbytes = reader(head, "evidence/queries/instruments-v1.json")
+    if qbytes is None: return None, f"query configuration at head {str(head)[:12]} is not readable; the plan cannot be derived"
+    wbytes = reader(head, "evidence/watermarks.json")
+    try:
+        cfg = json.loads(qbytes.decode("utf-8")); marks = json.loads(wbytes.decode("utf-8")) if wbytes is not None else load_watermarks("/nonexistent")
+    except (ValueError, UnicodeDecodeError) as e: return None, f"configuration at head {str(head)[:12]} does not parse: {e}"
+    qsha_head = hashlib.sha256(qbytes).hexdigest()
+    if event not in ("schedule", "workflow_dispatch"): return None, f"run event {event!r} is not a harvest trigger"
+    try: pl = plan(event, None, None, today, marks, qsha_head)          # a planned cycle: explicit inputs would make a manual cycle, which cannot satisfy it
+    except SystemExit as e: return None, str(e)
+    return {**pl, "cfg": cfg, "qsha_at_head": qsha_head, "head_sha": head, "run_date": today}, None
+
+
+def envelope_against_plan(env, pl):
+    """Every window and date-base declaration in the artefact must equal the trusted plan; the artefact never relabels the plan."""
+    p = []
+    cyc = env.get("cycle") or {}
+    if cyc.get("id") != pl["cycle_id"] or cyc.get("kind") != pl["kind"]: p.append(f"cycle {cyc.get('id')!r}/{cyc.get('kind')!r} is not the trusted {pl['cycle_id']!r}/{pl['kind']!r}")
+    rw = env.get("requested_window") or {}
+    if (rw.get("from"), rw.get("to")) != (pl["from"].isoformat(), pl["to"].isoformat()): p.append(f"requested window {rw.get('from')} to {rw.get('to')} is not the trusted {pl['from']} to {pl['to']}")
+    db = env.get("date_bases") or {}
+    fi = db.get("first_indexed") or {}
+    if (fi.get("from"), fi.get("to")) != (pl["catch_from"].isoformat(), pl["to"].isoformat()): p.append(f"first-index catch-up {fi.get('from')} to {fi.get('to')} is not the trusted {pl['catch_from']} to {pl['to']}")
+    if bool(db.get("full_history")) != bool(pl["full_history"]): p.append(f"full history {bool(db.get('full_history'))} is not the trusted {pl['full_history']} for {pl['cycle_id']}")
+    if env.get("query_sha256") != pl["qsha_at_head"]: p.append(f"query file hash {str(env.get('query_sha256'))[:12]} is not the configuration at the run's head {pl['qsha_at_head'][:12]}")
+    return p
 
 
 def policy_problems(expected, declared):
@@ -131,11 +167,13 @@ def policy_problems(expected, declared):
     return p
 
 
-def verify(cycle_id, qsha, expected, runs, artefacts, issues, cfg=None):
-    """Pure correlation. runs: [{github_run_id, conclusion, event}]; artefacts: {github_run_id: (envelope dict, sha256)};
-    issues: [{author, body}]; expected: an authoritative channel plan, or None with cfg given so the plan is reconstructed from
-    the query file at the envelope's own dates. The artefact's declared set is validated against that plan channel by channel
-    (policy included); it is never the authority. Returns (accepted_run_id or None, reasons)."""
+def verify(cycle_id, qsha, expected, runs, artefacts, issues, cfg=None, trusted=None):
+    """Pure correlation. runs: [{github_run_id, conclusion, event, head_sha, started_at}]; artefacts: {github_run_id: (envelope dict,
+    sha256)}; issues: [{author, body}]. The plan is either `expected` (a fixed authoritative channel set, for offline contract tests)
+    or, in the live path, `trusted[run_id]`: the plan derived from the run's own context by trusted_plan(), against which the
+    artefact's windows, date bases, cycle and configuration hash are compared before its channels are judged. An artefact's own
+    dates never reconstruct the plan; a run without a derivable plan is unverified with the reason. Returns (accepted_run_id or
+    None, reasons)."""
     reasons = []
     marks = []
     for i in issues:
@@ -155,8 +193,14 @@ def verify(cycle_id, qsha, expected, runs, artefacts, issues, cfg=None):
         if env.get("query_sha256") != qsha: reasons.append(f"run {rid}: query file hash {str(env.get('query_sha256'))[:12]} is not the current {qsha[:12]}"); continue
         declared = env.get("expected_channels") if isinstance(env.get("expected_channels"), list) else None
         if not declared: reasons.append(f"run {rid}: artefact carries no expected channel set"); continue
-        plan = expected if expected is not None else (authoritative_plan(cfg, env) if cfg is not None else None)
-        if plan is None: reasons.append(f"run {rid}: no authoritative plan available to judge the artefact against"); continue
+        if expected is not None: plan = expected
+        elif trusted is not None:
+            tp, why_not = trusted.get(rid, (None, "no trusted plan derived for this run"))
+            if tp is None: reasons.append(f"run {rid}: unverified, {why_not}"); continue
+            mism = envelope_against_plan(env, tp)
+            if mism: reasons.append(f"run {rid}: artefact departs from the trusted plan: " + "; ".join(mism[:3])); continue
+            plan = expected_channels(tp["cfg"], tp["from"].isoformat(), tp["to"].isoformat(), tp["catch_from"].isoformat(), tp["full_history"])
+        else: reasons.append(f"run {rid}: no authoritative plan available to judge the artefact against (the artefact's own dates are not one)"); continue
         pol = policy_problems(plan, declared)
         if pol: reasons.append(f"run {rid}: " + "; ".join(pol[:3])); continue
         missing = channels_not_complete(plan, env.get("channels", []))          # judged against the plan's policy, not the artefact's
@@ -181,8 +225,8 @@ def fetch_live(cycle_id, repo, gh_json=None, download=None):
     """Read-only collection through gh: runs of the workflow this month, each successful run's artefact, and the cycle's issues."""
     gh_json = gh_json or gh
     since = f"{cycle_id}-01T00:00:00Z"
-    runs = json.loads(gh_json("run", "list", "--repo", repo, "--workflow", WORKFLOW, "--created", f">={since}", "--json", "databaseId,conclusion,event", "--limit", "50"))
-    runs = [{"github_run_id": str(r["databaseId"]), "conclusion": r["conclusion"], "event": r["event"]} for r in runs]
+    runs = json.loads(gh_json("run", "list", "--repo", repo, "--workflow", WORKFLOW, "--created", f">={since}", "--json", "databaseId,conclusion,event,headSha,startedAt", "--limit", "50"))
+    runs = [{"github_run_id": str(r["databaseId"]), "conclusion": r["conclusion"], "event": r["event"], "head_sha": r.get("headSha"), "started_at": r.get("startedAt")} for r in runs]
     artefacts = {}
     for r in runs:
         if r["conclusion"] != "success": continue
@@ -203,16 +247,19 @@ def _download_artefact(run_id, repo, cycle_id):
         return (json.loads(files[0].read_text(encoding="utf-8")), hashlib.sha256(files[0].read_bytes()).hexdigest())
 
 
-def verify_live(cycle_id, repo, gh_json=None, download=None, cfg=None, qsha=None):
-    """The live wrapper: fetch, then judge every artefact against the authoritative plan reconstructed from the hashed query
-    file at the artefact's own recorded dates. Nothing in the ambient environment (a key present or absent) changes the plan."""
+def verify_live(cycle_id, repo, gh_json=None, download=None, cfg=None, qsha=None, reader=read_at_head):
+    """The live wrapper: fetch, derive each run's trusted plan from its head commit (watermarks and query configuration as
+    committed there), start date and event, then judge every artefact against that plan. Nothing in the artefact and nothing in
+    the ambient environment (a key present or absent) changes the plan; a run whose provenance is unreadable is unverified."""
     runs, artefacts, issues = fetch_live(cycle_id, repo, gh_json, download)
-    cfg = cfg if cfg is not None else json.loads(QUERIES.read_text(encoding="utf-8"))
-    return verify(cycle_id, qsha or query_sha(), None, runs, artefacts, issues, cfg=cfg)
+    trusted = {r["github_run_id"]: trusted_plan(r, reader) for r in runs}
+    return verify(cycle_id, qsha or query_sha(), None, runs, artefacts, issues, cfg=cfg, trusted=trusted)
 
 
-def advance_problems(env):
-    """Why an artefact cannot advance the watermark. The proposal is checked against the envelope it sits in, never trusted alone."""
+def advance_problems(env, reader=read_at_head, queries_path=None):
+    """Why an artefact cannot advance the watermark. Fails closed: the current query configuration must exist and carry the
+    proposal's hash, and the plan is derived from the run's recorded head (registry_commit) and start time through the trusted
+    reader; the artefact's own dates and channel list are validated against it, never used in their place."""
     p = []
     prop = env.get("watermark_proposal")
     if not isinstance(prop, dict): return ["no watermark proposal: the run was not a complete full-inventory planned run"]
@@ -222,16 +269,19 @@ def advance_problems(env):
     if env.get("channels_not_complete"): p.append(f"{len(env['channels_not_complete'])} expected channels not complete")
     exp = env.get("expected_channels") or []
     if not exp: p.append("no expected channel set")
-    else:
-        try:
-            cfg = json.loads(QUERIES.read_text(encoding="utf-8")) if QUERIES.exists() else None
-            plan = authoritative_plan(cfg, env) if cfg and prop.get("query_sha256") == query_sha() else None
-        except Exception: plan = None
-        if plan is not None:
-            pol = policy_problems(plan, exp)
-            if pol: p.append("the artefact's expected set differs from the authoritative plan: " + pol[0])
-            elif channels_not_complete(plan, env.get("channels", [])): p.append("a channel required by the plan did not complete")
-        elif channels_not_complete(exp, env.get("channels", [])): p.append("a channel in the expected set did not complete")
+    qpath = Path(queries_path) if queries_path else QUERIES
+    if not qpath.exists(): p.append("the query configuration is missing; cannot advance without it")
+    elif prop.get("query_sha256") != query_sha(qpath): p.append(f"the proposal's query hash {str(prop.get('query_sha256'))[:12]} is not the current configuration's {query_sha(qpath)[:12]}; a watermark belongs to the configuration that produced it")
+    tp, why = trusted_plan({"head_sha": env.get("registry_commit"), "started_at": env.get("started_at"), "event": env.get("run_event", "schedule")}, reader)
+    if tp is None: p.append(f"run provenance: {why}")
+    elif exp:
+        mism = envelope_against_plan(env, tp)
+        if mism: p.append("the artefact departs from the trusted plan: " + mism[0])
+        else:
+            plan_ch = expected_channels(tp["cfg"], tp["from"].isoformat(), tp["to"].isoformat(), tp["catch_from"].isoformat(), tp["full_history"])
+            pol = policy_problems(plan_ch, exp)
+            if pol: p.append("the artefact's expected set differs from the trusted plan: " + pol[0])
+            elif channels_not_complete(plan_ch, env.get("channels", [])): p.append("a channel required by the trusted plan did not complete")
     if prop.get("query_sha256") != env.get("query_sha256"): p.append("proposal query hash differs from the envelope's")
     if prop.get("cycle_id") != (env.get("cycle") or {}).get("id"): p.append("proposal cycle id differs from the envelope's")
     if prop.get("run_id") != env.get("run_id"): p.append("proposal run id differs from the envelope's")
@@ -246,9 +296,9 @@ def advance_problems(env):
     return p
 
 
-def advance(artefact_path, path=WATERMARKS):
+def advance(artefact_path, path=WATERMARKS, reader=read_at_head, queries_path=None):
     env = json.loads(Path(artefact_path).read_text(encoding="utf-8"))
-    problems = advance_problems(env)
+    problems = advance_problems(env, reader, queries_path)
     if problems: raise SystemExit("this artefact cannot advance the watermark: " + "; ".join(problems))
     prop = env["watermark_proposal"]
     marks = load_watermarks(path)
@@ -331,35 +381,73 @@ def self_test():
             if args[0] == "issue": return json.dumps(issues_json)
             raise AssertionError(args)
         return stub
-    def env_live(expected, channels, **kw):
-        e = {"cycle": {"id": "2026-10", "kind": "planned"}, "status": "complete", "full_inventory": True, "query_sha256": Q, "run_id": "r1",
+    def env_live(expected, channels, q=Q, **kw):
+        e = {"cycle": {"id": "2026-10", "kind": "planned"}, "status": "complete", "full_inventory": True, "query_sha256": q, "run_id": "r1",
              "requested_window": {"from": "2026-09-01", "to": "2026-10-01"}, "date_bases": {"publication": {"from": "2026-09-01", "to": "2026-10-01"}, "first_indexed": {"from": "2026-07-03", "to": "2026-10-01"}, "full_history": False},
              "expected_channels": expected, "channels": channels}
         e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
-    plan_live = expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)
+    # trusted run context: the fixture configuration is what the run's head committed, so its hash is the query hash everywhere below
+    CFG_BYTES = json.dumps(cfg).encode(); QH = hashlib.sha256(CFG_BYTES).hexdigest(); HEAD = "a" * 40
+    MARKS_AT_HEAD = {"overlap_days": 14, "entries": {}}
+    def reader_factory(marks=None, missing_query=False):
+        def reader(head, path):
+            if head != HEAD: return None
+            if path.endswith("instruments-v1.json"): return None if missing_query else CFG_BYTES
+            if path.endswith("watermarks.json"): return json.dumps(marks if marks is not None else MARKS_AT_HEAD).encode()
+            return None
+        return reader
+    # 1 October 2026 is a quarterly month: the trusted plan is 1 September to 1 October, catch-up from 3 July, full history on
+    plan_live = expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", True)
     full_live = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in plan_live]
-    runs_json = [{"databaseId": 100, "conclusion": "success", "event": "schedule"}]
-    def live_with(envelope):
+    runs_json = [{"databaseId": 100, "conclusion": "success", "event": "schedule", "headSha": HEAD, "startedAt": "2026-10-01T06:00:12Z"}]
+    def env_trusted(expected, channels, **kw):
+        e = env_live(expected, channels, q=QH, date_bases={"publication": {"from": "2026-09-01", "to": "2026-10-01"}, "first_indexed": {"from": "2026-07-03", "to": "2026-10-01"}, "full_history": True})
+        e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
+    def live_with(envelope, runs=runs_json, reader=None, cycle="2026-10", run_id="100"):
         sha_ = hashlib.sha256(json.dumps(envelope).encode()).hexdigest()
-        issues = [{"author": {"login": "github-actions", "is_bot": True}, "body": f"<!-- owhs-cycle cycle_id=2026-10 kind=planned github_run_id=100 artefact_sha256={sha_} -->"}]
-        return verify_live("2026-10", "example/repo", gh_json=stub_gh_factory(runs_json, issues), download=lambda run_id, repo, cyc: (envelope, sha_), cfg=cfg, qsha=Q)
-    rid, why = live_with(env_live(plan_live, full_live)); t("live wrapper: a complete authoritative manifest passes", rid == "100", why)
-    one = env_live([plan_live[0]], [full_live[0]]); rid, why = live_with(one)
-    t("live wrapper: a one-channel self-declared manifest fails against the reconstructed plan", rid is None and "required by the plan are absent" in why[0], why)
+        issues = [{"author": {"login": "github-actions", "is_bot": True}, "body": f"<!-- owhs-cycle cycle_id={cycle} kind=planned github_run_id={run_id} artefact_sha256={sha_} -->"}]
+        return verify_live(cycle, "example/repo", gh_json=stub_gh_factory(runs, issues), download=lambda rid_, repo, cyc: (envelope, sha_), cfg=cfg, qsha=QH, reader=reader or reader_factory())
+    rid, why = live_with(env_trusted(plan_live, full_live)); t("live wrapper: an artefact matching the trusted plan (windows, catch-up, quarterly full history, configuration at head) passes", rid == "100", why)
+    # five counterexamples: each departs from the trusted plan in one declaration and is refused
+    nofh = env_trusted(expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False), [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)])
+    nofh["date_bases"]["full_history"] = False
+    rid, why = live_with(nofh); t("trusted plan: an October artefact with full history disabled is refused", rid is None and "full history" in why[0], why)
+    nocatch = env_trusted(expected_channels(cfg, "2026-09-01", "2026-10-01", None, True), [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in expected_channels(cfg, "2026-09-01", "2026-10-01", None, True)])
+    nocatch["date_bases"]["first_indexed"] = None
+    rid, why = live_with(nocatch); t("trusted plan: an artefact omitting the first-index catch-up is refused", rid is None and "first-index catch-up" in why[0], why)
+    narrow = env_trusted(plan_live, full_live, requested_window={"from": "2026-09-30", "to": "2026-10-01"}); narrow["date_bases"]["publication"] = {"from": "2026-09-30", "to": "2026-10-01"}
+    rid, why = live_with(narrow); t("trusted plan: a publication window narrowed to two days is refused even with the same channel count", rid is None and "requested window" in why[0], why)
+    old = env_trusted(plan_live, full_live, requested_window={"from": "2020-09-01", "to": "2020-10-01"}); old["date_bases"] = {"publication": {"from": "2020-09-01", "to": "2020-10-01"}, "first_indexed": {"from": "2020-07-03", "to": "2020-10-01"}, "full_history": True}
+    rid, why = live_with(old); t("trusted plan: a 2020 window labelled cycle 2026-10 is refused", rid is None and "requested window" in why[0], why)
+    # provenance missing: unverified with the reason, never a fallback to the artefact's own dates
+    rid, why = live_with(env_trusted(plan_live, full_live), reader=reader_factory(missing_query=True)); t("trusted plan: configuration unreadable at the run's head leaves the run unverified with the reason", rid is None and "not readable" in why[0], why)
+    rid, why = live_with(env_trusted(plan_live, full_live), runs=[{"databaseId": 100, "conclusion": "success", "event": "schedule"}]); t("trusted plan: a run listed without head or start time is unverified", rid is None and "lacks head" in why[0], why)
+    # legitimate replay: a planned re-run by dispatch on 2 October (window to 2 October, catch-up from 4 July) passes
+    rerun = [{"databaseId": 101, "conclusion": "success", "event": "workflow_dispatch", "headSha": HEAD, "startedAt": "2026-10-02T09:30:00Z"}]
+    pl2 = expected_channels(cfg, "2026-09-01", "2026-10-02", "2026-07-04", True); fl2 = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in pl2]
+    e2 = env_trusted(pl2, fl2, requested_window={"from": "2026-09-01", "to": "2026-10-02"}); e2["date_bases"] = {"publication": {"from": "2026-09-01", "to": "2026-10-02"}, "first_indexed": {"from": "2026-07-04", "to": "2026-10-02"}, "full_history": True}
+    rid, why = live_with(e2, runs=rerun, run_id="101"); t("trusted plan: a later planned re-run by dispatch with its own run-date window passes", rid == "101", why)
+    # a previously advanced watermark at the run's head moves the trusted window start (15 September minus 14 days = 1 September)
+    marks_adv = {"overlap_days": 14, "entries": {QH: {"last_complete_to": "2026-09-15"}}}
+    rid, why = live_with(env_trusted(plan_live, full_live), reader=reader_factory(marks=marks_adv)); t("trusted plan: a previously advanced watermark at the run's head is honoured (window from 1 September)", rid == "100", why)
+    marks_adv2 = {"overlap_days": 14, "entries": {QH: {"last_complete_to": "2026-09-20"}}}
+    rid, why = live_with(env_trusted(plan_live, full_live), reader=reader_factory(marks=marks_adv2)); t("trusted plan: an artefact whose window start ignores the head's watermark (6 September expected) is refused", rid is None and "requested window" in why[0], why)
+    one = env_trusted([plan_live[0]], [full_live[0]]); rid, why = live_with(one)
+    t("live wrapper: a one-channel self-declared manifest fails against the trusted plan", rid is None and "required by the plan are absent" in why[0], why)
     exempt = [dict(c) for c in plan_live]; req = next(c for c in exempt if not c["unavailable"]); req["unavailable"] = "synthetic exemption not in the plan"
     chans = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in exempt]
-    rid, why = live_with(env_live(exempt, chans)); t("live wrapper: a required channel self-exempted as unavailable by the artefact fails", rid is None and "declares unavailable, the plan says required" in why[0], why)
+    rid, why = live_with(env_trusted(exempt, chans)); t("live wrapper: a required channel self-exempted as unavailable by the artefact fails", rid is None and "declares unavailable, the plan says required" in why[0], why)
     import os as _os
     saved = _os.environ.get("OPENALEX_API_KEY"); _os.environ["OPENALEX_API_KEY"] = "probe-not-a-real-key"
     try:
-        rid_k, _ = live_with(env_live(plan_live, full_live)); plan_k = [c["channel_id"] for c in expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)]
+        rid_k, _ = live_with(env_trusted(plan_live, full_live)); plan_k = [c["channel_id"] for c in expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", True)]
     finally:
         if saved is None: _os.environ.pop("OPENALEX_API_KEY", None)
         else: _os.environ["OPENALEX_API_KEY"] = saved
     t("live wrapper: a key present in the ambient environment changes neither the authorised inventory nor the verdict", rid_k == "100" and plan_k == [c["channel_id"] for c in plan_live])
     unav = next(c for c in plan_live if c["unavailable"])
-    rid, why = live_with(env_live(plan_live, full_live)); t("a configured unavailable channel stays reported as unavailable and the cycle still verifies", rid == "100" and any(c["channel_id"] == unav["channel_id"] and c["outcome"] == "unavailable" for c in full_live))
-    dup = env_live(plan_live + [plan_live[0]], full_live); rid, why = live_with(dup); t("duplicate channel ids in the artefact are refused", rid is None and "duplicate channel ids" in why[0], why)
+    rid, why = live_with(env_trusted(plan_live, full_live)); t("a configured unavailable channel stays reported as unavailable and the cycle still verifies", rid == "100" and any(c["channel_id"] == unav["channel_id"] and c["outcome"] == "unavailable" for c in full_live))
+    dup = env_trusted(plan_live + [plan_live[0]], full_live); rid, why = live_with(dup); t("duplicate channel ids in the artefact are refused", rid is None and "duplicate channel ids" in why[0], why)
     failed_runs = [{"github_run_id": "100", "conclusion": "failure", "event": "schedule"}]
     rid, why = verify("2026-10", Q, exp, failed_runs, {"100": (good, sha)}, [mark("100", sha)])
     t("a failed run with a complete-looking issue is refused", rid is None and "conclusion failure" in why[0], why)
@@ -383,29 +471,44 @@ def self_test():
     t("1 November plan: not quarterly", pl["full_history"] is False)
     # watermark advance: the proposal is checked against its envelope; a stale proposal on a failed, partial or incomplete envelope is refused
     with tempfile.TemporaryDirectory() as tmp:
-        wm = Path(tmp) / "w.json"; art = Path(tmp) / "a.json"
-        stale = {"query_sha256": Q, "last_complete_to": "2026-10-01", "catch_from": "2026-07-03", "cycle_id": "2026-10", "run_id": "r1", "channels_complete": len(exp)}
-        art.write_text(json.dumps({"status": "failed", "full_inventory": False, "channels": [], "expected_channels": exp, "cycle": {"id": "2026-10", "kind": "planned"}, "query_sha256": Q, "run_id": "r1", "requested_window": {"to": "2026-10-01"}, "watermark_proposal": stale}))
-        try: advance(art, wm); t("a failed envelope carrying a populated proposal is refused", False)
+        wm = Path(tmp) / "w.json"; art = Path(tmp) / "a.json"; qfile = Path(tmp) / "instruments-v1.json"; qfile.write_bytes(CFG_BYTES)
+        rd = reader_factory()
+        def adv(): return advance(art, wm, reader=rd, queries_path=qfile)
+        # a complete planned envelope with its run provenance (head, start) and the trusted plan's windows and channel set
+        def env_adv(**kw):
+            e = env_trusted(plan_live, full_live, registry_commit=HEAD, started_at="2026-10-01T06:00:12+00:00")
+            e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
+        stale = {"query_sha256": QH, "last_complete_to": "2026-10-01", "catch_from": "2026-07-03", "cycle_id": "2026-10", "run_id": "r1", "channels_complete": len(plan_live)}
+        art.write_text(json.dumps({**env_adv(status="failed", full_inventory=False, channels=[]), "watermark_proposal": stale}))
+        try: adv(); t("a failed envelope carrying a populated proposal is refused", False)
         except SystemExit as e: t("a failed envelope carrying a populated proposal is refused", "not complete" in str(e) and "full-inventory" in str(e))
-        partial = env(status="partial"); partial["watermark_proposal"] = stale; art.write_text(json.dumps(partial))
-        try: advance(art, wm); t("a partial envelope with a stale proposal is refused", False)
+        partial = env_adv(status="partial"); partial["watermark_proposal"] = stale; art.write_text(json.dumps(partial))
+        try: adv(); t("a partial envelope with a stale proposal is refused", False)
         except SystemExit as e: t("a partial envelope with a stale proposal is refused", "partial" in str(e))
-        missing_ch = env(drop=alias[1]["channel_id"]); missing_ch["watermark_proposal"] = stale; art.write_text(json.dumps(missing_ch))
-        try: advance(art, wm); t("a complete-looking envelope missing one expected channel is refused", False)
-        except SystemExit as e: t("a complete-looking envelope missing one expected channel is refused", "not complete" in str(e))
-        okenv = env(); okenv["watermark_proposal"] = dict(stale); art.write_text(json.dumps(okenv))
+        missing_ch = env_adv(channels=[c for c in full_live if c["channel_id"] != plan_live[0]["channel_id"]]); missing_ch["watermark_proposal"] = stale; art.write_text(json.dumps(missing_ch))
+        try: adv(); t("a complete-looking envelope missing one expected channel is refused", False)
+        except SystemExit as e: t("a complete-looking envelope missing one expected channel is refused", "not complete" in str(e), str(e))
+        okenv = env_adv(); okenv["watermark_proposal"] = dict(stale); art.write_text(json.dumps(okenv))
         import io, contextlib
-        with contextlib.redirect_stdout(io.StringIO()): advance(art, wm)
-        t("a legitimate complete forward advance writes the proposal with its date bases", json.loads(wm.read_text())["entries"][Q]["last_complete_to"] == "2026-10-01")
-        try: advance(art, wm); t("re-advance refused", False)
+        with contextlib.redirect_stdout(io.StringIO()): adv()
+        t("a legitimate complete forward advance writes the proposal with its date bases", json.loads(wm.read_text())["entries"][QH]["last_complete_to"] == "2026-10-01")
+        try: adv(); t("re-advance refused", False)
         except SystemExit: t("an advance that does not move forward is refused", True)
-        bad = env(); bad["watermark_proposal"] = dict(stale, query_sha256="y" * 64); art.write_text(json.dumps(bad))
-        try: advance(art, wm); t("a proposal whose query hash disagrees with its envelope is refused", False)
-        except SystemExit as e: t("a proposal whose query hash disagrees with its envelope is refused", "query hash" in str(e))
-        bad = env(); bad["watermark_proposal"] = dict(stale, last_complete_to="2026-13-40"); art.write_text(json.dumps(bad))
-        try: advance(art, wm); t("a proposal with an invalid date is refused", False)
+        bad = env_adv(); bad["watermark_proposal"] = dict(stale, query_sha256="y" * 64); art.write_text(json.dumps(bad))
+        try: adv(); t("a proposal whose query hash is not the current configuration's is refused", False)
+        except SystemExit as e: t("a proposal whose query hash is not the current configuration's is refused", "query hash" in str(e) or "configuration" in str(e))
+        bad = env_adv(); bad["watermark_proposal"] = dict(stale, last_complete_to="2026-13-40"); art.write_text(json.dumps(bad))
+        try: adv(); t("a proposal with an invalid date is refused", False)
         except SystemExit as e: t("a proposal with an invalid date is refused", "valid date" in str(e) or "differs" in str(e))
+        # fail closed: configuration missing, or the run's head unreadable, or the artefact departing from the trusted plan
+        okenv = env_adv(); okenv["watermark_proposal"] = dict(stale); art.write_text(json.dumps(okenv))
+        try: advance(art, Path(tmp) / "w2.json", reader=rd, queries_path=Path(tmp) / "absent.json"); t("advance with the query configuration missing is refused (fail closed)", False)
+        except SystemExit as e: t("advance with the query configuration missing is refused (fail closed)", "missing" in str(e))
+        try: advance(art, Path(tmp) / "w2.json", reader=reader_factory(missing_query=True), queries_path=qfile); t("advance with the run's head unreadable is refused", False)
+        except SystemExit as e: t("advance with the run's head unreadable is refused", "provenance" in str(e))
+        narrow_adv = env_adv(requested_window={"from": "2026-09-30", "to": "2026-10-01"}); narrow_adv["date_bases"]["publication"] = {"from": "2026-09-30", "to": "2026-10-01"}; narrow_adv["watermark_proposal"] = dict(stale); art.write_text(json.dumps(narrow_adv))
+        try: advance(art, Path(tmp) / "w2.json", reader=rd, queries_path=qfile); t("advance from an artefact whose window departs from the trusted plan is refused", False)
+        except SystemExit as e: t("advance from an artefact whose window departs from the trusted plan is refused", "trusted plan" in str(e))
     print(f"{'all' if not failures else failures} cycle contract cases {'as expected' if not failures else 'FAILED'}")
     sys.exit(1 if failures else 0)
 
