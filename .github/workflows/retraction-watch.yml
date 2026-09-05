@@ -1,0 +1,48 @@
+name: retraction-watch
+
+# Monthly: every DOI the registry cites is checked for Crossref update notices pointing at it (correction,
+# expression of concern, retraction, withdrawal, reinstatement are different events), for being itself a
+# notice, and for OpenAlex's retraction flag. A signal opens one issue naming the work and every record and
+# cell that cites it. Nothing is removed or regraded by this workflow; a person reads the notice.
+
+on:
+  schedule:
+    - cron: '0 7 2 * *'        # second of the month, 07:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: check every cited DOI
+        id: w
+        continue-on-error: true
+        run: python tools/watch_retractions.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: retraction-signals
+          path: evidence/retraction-signals.json
+      - name: issue on signal
+        if: steps.w.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY' > /tmp/body.md
+          import json
+          d = json.load(open('evidence/retraction-signals.json'))
+          print(f"{d['dois_checked']} cited DOIs checked. The following carry a Crossref update notice, an OpenAlex retraction flag, or are themselves a notice about another work. Read each notice: a correction is not a retraction. Nothing has been changed in the registry.\n")
+          for s in d['signals']:
+              cells = sorted({(w['instrument_id'], c) for w in s['cited_by'] for c in w['cells']})
+              print(f"- **{s['doi']}**: " + ("; ".join(f"{n['type'] or n['label']} {n['notice_doi']}" for n in s['crossref_notices']) or "") + (" | OpenAlex retracted" if s['openalex_is_retracted'] else "") + (f" | is a notice about {s['is_itself_a_notice_about']}" if s['is_itself_a_notice_about'] else "") + f" | cited by {sorted({w['instrument_id'] for w in s['cited_by']})}" + (f" in cells {cells}" if cells else ""))
+          if d['unchecked']:
+              print(f"\n{len(d['unchecked'])} DOIs could not be checked this run (listed in the artefact).")
+          PY
+          gh issue create --title "Retraction and correction signals: $(date -u +%Y-%m)" --label maintenance --body-file /tmp/body.md
