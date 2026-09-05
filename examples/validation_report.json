@@ -713,5 +713,5 @@
       }
     }
   },
-  "note_v0_2": "Schema version 0.2 has sixteen entity types. The report records per-instance structure, formats and named within-record rules C1-C18. The separately run measurement-bundle checker supplies only its documented context joins. External references, terminology currentness, release decisions and scientific interpretation are not established by this report."
+  "note_v0_2": "Schema version 0.2 has sixteen entity types. The report records per-instance structure, formats and named within-record rules C1-C18. The separately run measurement-bundle checker supplies only its documented context joins, and the separately run entity-graph checker (tools/check_entity_graph.py, docs/entity-graph-validation-v0.2.md) the organisation-scoped relationship checks G01-G10 on a supplied bundle; this report concerns individual instances. External references, terminology currentness, release decisions and scientific interpretation are not established by this report."
 }

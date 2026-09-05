@@ -30,14 +30,18 @@ RULES = {"C1": ("AbsenceEpisode", "endDate not before startDate"), "C2": ("OHEpi
          "C18": ("OrgUnit", "parentUnitId, if supplied, differs from unitId; the direct self-loop only")}
 OPENING = ("Version 0.2 provides executable Draft 2020-12 schemas for sixteen entity types. The validation report records the schema version and the expected and observed errors for each example. "
            "The reference validator checks the declared structure, asserted formats, generic extensions, explicitly supplied profiles and named within-record rules. The measurement-bundle checker adds its "
-           "documented supplied-context joins. These checks do not establish full Level 2 or Level 3 conformance, external terminology resolution, lawful processing, safe disclosure or scientific validity.")
+           "documented supplied-context joins. These checks do not establish full Level 2 or Level 3 conformance, external terminology resolution, lawful processing, safe disclosure or scientific validity. "
+           "The separate entity-graph envelope and G01-G10 relationship checks are documented in the supplied-entity graph guide (docs/entity-graph-validation-v0.2.md).")
 SECTION6_INTRO = ("Each of the sixteen entity types in the v0.2 catalogue has an executable schema and passing and failing examples. The generated validation report identifies each entity and schema version and records "
                   "its observed errors. C1-C18 are documented within-record checks implemented by the reference validator; they are not all JSON Schema keywords. ConstructDomain remains a code list. RiskAssessment and "
-                  "WorkplaceIncident remain reserved without executable schemas. DisabilityParticipation is an executable reserved-minimal shape with the stated disclosure limitations.")
+                  "WorkplaceIncident remain reserved without executable schemas. DisabilityParticipation is an executable reserved-minimal shape with the stated disclosure limitations. "
+                  "The separate entity-graph envelope and G01-G10 relationship checks are documented in the supplied-entity graph guide (docs/entity-graph-validation-v0.2.md).")
 P1_NEW = ("All sixteen v0.2 entity types have executable schemas. Closed core objects reject undeclared property names, while extension objects apply the documented recursive named-key restriction. "
           "These rules cannot detect identifiers or sensitive meaning hidden in permitted values or aliases. Metadata is not automatically non-personal, and a structural pass is not a privacy-profile assessment.")
-SECTION9_ADD = ("The supplied measurement bundle checks only its documented context relationships. Other entity references, organisation hierarchies, cross-record clinical/absence links, benchmark applicability and "
-                "the truth of submitted provenance and counts require additional checks. Creating a schema for a referenced entity does not itself implement those joins. No full Level 2 or Level 3 certificate is produced.")
+SECTION9_ADD = ("The measurement-bundle checker retains its documented context checks. The optional entity-graph checker additionally validates the declared organisation-scoped references, identity uniqueness, "
+                "unit hierarchy and named benchmark-reference rules in a supplied bundle. Each report lists its exercised checks, unresolved external references and interpretation limits. These checks do not "
+                "establish a complete dataset, the truth of submitted provenance or counts, benchmark comparability, safe disclosure or full Level 2 or Level 3 conformance.")
+GRAPH_SENTENCE = "The separate entity-graph envelope and G01-G10 relationship checks are documented in the supplied-entity graph guide (docs/entity-graph-validation-v0.2.md)."
 CODELIST_LIMITS = ("These schemas retain UK SIC 2007 explicitly as an edition. ONS also publishes SIC 2026; codes from different editions must not be mixed or relabelled without an explicit mapping. Country, SIC, currency, "
                    "ISO clause and reserved WHIU strings are checked only to the stated syntactic extent. They are not resolved against live external registers. The existing headcount bands have no zero/unknown category, "
                    "and the existing tenure labels do not by themselves settle the shared ten-year boundary. No producer should infer an absent category or boundary rule from a structural pass.")
@@ -160,7 +164,7 @@ def error_map():
             tags = [l[1:l.index("]")] for l in c["errors"] if not l.startswith("[profile]")]      # a [profile] line is a note that an extension's semantics were not checked, not an error
             L.append(f"| `{ent}` | `{label}` | {c['expected']} | {', '.join(f'`{t}`' for t in tags) if tags else 'none'} ({len(tags)}) |")
     L += ["", "### Named within-record rules", "", "| Rule | Entity | Predicate |", "|---|---|---|"] + [f"| {k} | `{v[0]}` | {v[1]} |" for k, v in RULES.items()]
-    L += ["", "Rules run only after the entity's structural operands are valid; a malformed date is the format check's finding, and a negative count the schema's. Malformed inputs yield named validation or tool errors, never a traceback. Cross-record joins (organisation hierarchies beyond the direct self-loop, references to other entities, benchmark applicability) are not within-record rules and are outside this validator.", ""]
+    L += ["", "Rules run only after the entity's structural operands are valid; a malformed date is the format check's finding, and a negative count the schema's. Malformed inputs yield named validation or tool errors, never a traceback. Cross-record joins (organisation hierarchies beyond the direct self-loop, references to other entities, benchmark applicability) are not within-record rules and are outside this validator; the optional entity-graph checker covers them on a supplied bundle (G01-G10, docs/entity-graph-validation-v0.2.md).", ""]
     return L
 
 

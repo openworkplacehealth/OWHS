@@ -63,8 +63,9 @@ def main():
     if (ROOT / "schemas" / "v0.2").is_dir():
         report["results_v0_2"] = collect(ROOT / "schemas" / "v0.2", ROOT / "examples" / "v0.2")
         report["note_v0_2"] = ("Schema version 0.2 has sixteen entity types. The report records per-instance structure, formats and named within-record rules C1-C18. "
-                               "The separately run measurement-bundle checker supplies only its documented context joins. External references, terminology currentness, "
-                               "release decisions and scientific interpretation are not established by this report.")
+                               "The separately run measurement-bundle checker supplies only its documented context joins, and the separately run entity-graph checker "
+                               "(tools/check_entity_graph.py, docs/entity-graph-validation-v0.2.md) the organisation-scoped relationship checks G01-G10 on a supplied bundle; this report "
+                               "concerns individual instances. External references, terminology currentness, release decisions and scientific interpretation are not established by this report.")
     serialised = json.dumps(report, indent=2) + "\n"
     if "--check" in sys.argv[1:]:
         current = OUT.read_text(encoding="utf-8") if OUT.exists() else ""

@@ -14,7 +14,7 @@ FILES = {  # archive path -> source path
     "README.md": ROOT / "README.md", "GOVERNANCE.md": ROOT / "GOVERNANCE.md", "DECISIONS.md": ROOT / "DECISIONS.md",
     "LICENSE": ROOT / "LICENSE", "LICENSE-DOCS.md": ROOT / "LICENSE-DOCS.md", "NOTICE": ROOT / "NOTICE", "tools/validate.py": ROOT / "tools" / "validate.py",
 }
-SUBDIRS = {"schemas": ("v0.1", "v0.2"), "examples": ("v0.2",), "codelists": ("archive", "mappings")}   # versioned sets, fixtures, archived lists and the crosswalk
+SUBDIRS = {"schemas": ("v0.1", "v0.2", "bundles"), "examples": ("v0.2", "bundles/v0.2", "bundles/v0.2/cases"), "codelists": ("archive", "mappings")}   # versioned sets, the graph envelope, fixtures, archived lists and the crosswalk
 for d, subs in SUBDIRS.items():
     for p in sorted((ROOT / d).glob("*.json")):
         FILES[f"{d}/{p.name}"] = p
@@ -23,7 +23,8 @@ for d, subs in SUBDIRS.items():
             FILES[f"{d}/{sub}/{p.name}"] = p
 for p in sorted((ROOT / "profiles").rglob("*.json")):
     FILES[f"profiles/{p.relative_to(ROOT / 'profiles').as_posix()}"] = p
-for t in ("check_profiles.py", "check_measurement.py", "check_codelist_mappings.py", "check_remaining_entities.py"):
+FILES["docs/entity-graph-validation-v0.2.md"] = ROOT / "docs" / "entity-graph-validation-v0.2.md"
+for t in ("check_profiles.py", "check_measurement.py", "check_codelist_mappings.py", "check_remaining_entities.py", "check_entity_graph.py"):
     FILES[f"tools/{t}"] = ROOT / "tools" / t
 assert not any("domain-coverage" in k or "domain_routing" in k for k in FILES)
 with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
@@ -44,7 +45,7 @@ for d, subs in SUBDIRS.items():
             shutil.copy2(p, dest / p.name)
         for sub in subs:
             if (ROOT / d / sub).is_dir():
-                (dest / sub).mkdir(exist_ok=True)
+                (dest / sub).mkdir(parents=True, exist_ok=True)
                 for p in (dest / sub).glob("*.json"):
                     p.unlink()
                 for p in sorted((ROOT / d / sub).glob("*.json")):
