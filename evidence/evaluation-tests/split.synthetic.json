@@ -1,33 +1,196 @@
 {
+ "algorithm": "sort component ids by sha256('owhs-recall-v1|' + component_id); floor(0.70*N) development, remainder holdout",
  "components": [
   {
-   "component_id": "c0",
+   "component_id": "c14",
    "work_ids": [
     "doi:10.5555/w0"
    ],
    "allocation": "holdout"
   },
   {
-   "component_id": "c1",
+   "component_id": "c21",
    "work_ids": [
     "doi:10.5555/w1"
    ],
    "allocation": "holdout"
   },
   {
-   "component_id": "c2",
+   "component_id": "c22",
    "work_ids": [
     "doi:10.5555/w2"
    ],
    "allocation": "holdout"
   },
   {
-   "component_id": "c3",
+   "component_id": "c26",
    "work_ids": [
     "doi:10.5555/w3"
    ],
    "allocation": "holdout"
+  },
+  {
+   "component_id": "c30",
+   "work_ids": [
+    "doi:10.5555/d0"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c16",
+   "work_ids": [
+    "doi:10.5555/d1"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c10",
+   "work_ids": [
+    "doi:10.5555/d2"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c12",
+   "work_ids": [
+    "doi:10.5555/d3"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c23",
+   "work_ids": [
+    "doi:10.5555/d4"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c24",
+   "work_ids": [
+    "doi:10.5555/d5"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c31",
+   "work_ids": [
+    "doi:10.5555/d6"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c7",
+   "work_ids": [
+    "doi:10.5555/d7"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c13",
+   "work_ids": [
+    "doi:10.5555/d8"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c0",
+   "work_ids": [
+    "doi:10.5555/d9"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c3",
+   "work_ids": [
+    "doi:10.5555/d10"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c11",
+   "work_ids": [
+    "doi:10.5555/d11"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c18",
+   "work_ids": [
+    "doi:10.5555/d12"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c17",
+   "work_ids": [
+    "doi:10.5555/d13"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c25",
+   "work_ids": [
+    "doi:10.5555/d14"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c32",
+   "work_ids": [
+    "doi:10.5555/d15"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c15",
+   "work_ids": [
+    "doi:10.5555/d16"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c19",
+   "work_ids": [
+    "doi:10.5555/d17"
+   ],
+   "allocation": "development"
+  },
+  {
+   "component_id": "c5",
+   "work_ids": [
+    "doi:10.5555/d18"
+   ],
+   "allocation": "holdout"
+  },
+  {
+   "component_id": "c4",
+   "work_ids": [
+    "doi:10.5555/d19"
+   ],
+   "allocation": "holdout"
+  },
+  {
+   "component_id": "c6",
+   "work_ids": [
+    "doi:10.5555/d20"
+   ],
+   "allocation": "holdout"
+  },
+  {
+   "component_id": "c2",
+   "work_ids": [
+    "doi:10.5555/d21"
+   ],
+   "allocation": "holdout"
+  },
+  {
+   "component_id": "c29",
+   "work_ids": [
+    "doi:10.5555/d22"
+   ],
+   "allocation": "holdout"
   }
  ],
- "excluded": []
+ "excluded": [],
+ "unknown_overlap_dispositions": []
 }

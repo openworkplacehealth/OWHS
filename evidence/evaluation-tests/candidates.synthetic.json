@@ -1,4 +1,13 @@
 {
+ "execution": {
+  "query_sha256": "57d295ef4eacbee55a94c6a54c21a0cfbe7335c20ea7815f1cb27e63e507c78e",
+  "requested_window": {
+   "from": "2026-08-01",
+   "to": "2026-09-05"
+  },
+  "harvester_version": "tools/harvest.py fixture",
+  "run_id": "fx-run"
+ },
  "candidates": [
   {
    "doi": "10.5555/w0",

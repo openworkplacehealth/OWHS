@@ -1,14 +1,14 @@
 {
- "query_sha256": "729cd4435656683931ea719191f6786bbca51754bd7e573f413a655d71fdde49",
- "manifest_sha256": "774429a8dbf57f4693f0ce46d73e07e4980334e6efaa1e3bdbf881330cb10925",
- "split_sha256": "afd742288314c3d92e814ef57a9b42ad8e44e1a41a5b05f6c155f3d15c816e19",
+ "query_sha256": "57d295ef4eacbee55a94c6a54c21a0cfbe7335c20ea7815f1cb27e63e507c78e",
+ "manifest_sha256": "a1297938989345abc6146f48977a6072fc80f7b155313ca32018071870ee0e23",
+ "split_sha256": "afee585fe78703c7551d1c123f275b68223110df16576084ef74612220aea8ce",
  "run_window": {
   "from": "2026-08-01",
   "to": "2026-09-05"
  },
  "exposed_work_ids": [],
- "seed_work_ids": [],
  "instrument_ids": [
-  "isi"
+  "isi",
+  "who-5"
  ]
 }

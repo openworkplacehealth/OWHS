@@ -1,3 +1,3 @@
 # Evaluation fixtures
 
-Synthetic inputs for `tools/measure_recall.py`: four fictitious works, three retrieved, one indexed but missed. They exercise the accounting; they carry no real judged relevance and no real gold list. The real judged manifest is private until the evaluation has run and a neutral report is reviewed. `manifest.schema.json` is the public shape of a manifest.
+Synthetic inputs for `tools/measure_recall.py`: 33 fictitious works split by the declared deterministic algorithm (23 development, 10 holdout), four holdout works of interest, three retrieved; a synthetic query configuration with a provider profile; coverage rows with lookup provenance; a candidate artefact bound to its execution. They exercise the contracts and the accounting; they carry no real judged relevance and no real gold list. The real judged manifest is private until the evaluation has run and a neutral report is reviewed. `manifest.schema.json` is the public shape of a manifest.
