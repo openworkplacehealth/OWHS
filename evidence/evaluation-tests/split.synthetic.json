@@ -1,4 +1,5 @@
 {
+ "schema_version": "1.0",
  "algorithm": "sort component ids by sha256('owhs-recall-v1|' + component_id); floor(0.70*N) development, remainder holdout",
  "components": [
   {

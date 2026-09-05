@@ -335,7 +335,7 @@ def harvest(cfg, records, date_from, date_to, verify=True, now=None, catch_from=
     return items, new_list, channels, low, warnings
 
 
-def envelope(cfg, records, date_from, date_to, started, items, new_list, channels, low, warnings, sources):
+def envelope(cfg, records, date_from, date_to, started, items, new_list, channels, low, warnings, sources, evaluation_id=None):
     ran = [c for c in channels if c["outcome"] != "unavailable"]
     failed = [c for c in ran if c["outcome"] != "complete"]
     if not ran:
@@ -349,6 +349,7 @@ def envelope(cfg, records, date_from, date_to, started, items, new_list, channel
             "registry_commit": commit, "query_version": cfg["version"],
             "query_sha256": hashlib.sha256(QUERIES.read_bytes()).hexdigest() if QUERIES.exists() else None,
             "requested_window": {"from": date_from, "to": date_to, "type": "publication date, inclusive"},
+            "evaluation_id": evaluation_id,          # predeclared by a retrieval-evaluation lock when this run is its discovery run; null otherwise
             "started_at": started, "finished_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
             "status": status, "sources": sources, "instruments": sorted(r["instrument_id"] for r in records),
             "channels": channels, "candidates": items, "new_instrument_candidates": new_list,
@@ -414,6 +415,7 @@ def main():
     ap.add_argument("--no-verify", action="store_true"); ap.add_argument("--self-test", action="store_true")
     ap.add_argument("--cycle-id", help="from tools/cycle.py window; a planned cycle is YYYY-MM, a manual one manual-FROM-TO")
     ap.add_argument("--cycle-kind", choices=["planned", "manual"])
+    ap.add_argument("--evaluation-id", help="the predeclared id of a retrieval-evaluation lock this run serves; recorded in the artefact so the evaluator can bind it")
     ap.add_argument("--catch-from", help="start of the ingestion catch-up window (first-index date, Europe PMC); from tools/cycle.py window")
     ap.add_argument("--full-history", action="store_true", help="quarterly: names and citation links with no date filter, beside the windowed channels")
     a = ap.parse_args()
@@ -438,7 +440,8 @@ def main():
     items, new_list, channels, low, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started, catch_from=a.catch_from, full_history=a.full_history)
     prov = cfg.get("providers") or {}
     sources = ["europepmc", "openalex (" + ("cites, names, abbreviation" if prov.get("openalex", {}).get("search_routes") else "cites only, per the provider profile") + ("; authenticated" if OPENALEX_KEY else "; keyless") + ")"] + (["crossref"] if not a.no_verify else [])
-    out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, low, warnings, sources)
+    if a.evaluation_id and not re.fullmatch(r"[A-Za-z0-9_.:-]{4,80}", a.evaluation_id): sys.exit("configuration error: --evaluation-id is 4 to 80 characters of letters, digits, _ . : -")
+    out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, low, warnings, sources, a.evaluation_id)
     out["full_inventory"] = not a.instrument       # a manual one-instrument run is not a monthly cycle
     if a.instrument and a.cycle_kind == "planned": sys.exit("configuration error: a planned cycle covers the full inventory; use no --cycle-kind or manual for a one-instrument run")
     out["cycle"] = {"id": a.cycle_id or f"manual-{a.date_from}-{a.date_to}", "kind": a.cycle_kind or "manual",

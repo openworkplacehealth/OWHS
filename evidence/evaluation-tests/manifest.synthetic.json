@@ -1,6 +1,19 @@
 {
  "schema_version": "1.0",
  "benchmark_id": "synthetic-fixture",
+ "created_at": "2026-09-04T00:00:00Z",
+ "dataset": {
+  "commit": "0000000000000000000000000000000000000000",
+  "relative_path": "none",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "version": "synthetic"
+ },
+ "query_seed_source": {
+  "version": "synthetic",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+ },
+ "eligibility_protocol_version": "synthetic",
+ "calibration_ids": [],
  "state": "split_locked",
  "rows": [
   {
@@ -44,11 +57,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -95,11 +108,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -146,11 +159,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -197,11 +210,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -248,11 +261,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -299,11 +312,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -350,11 +363,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -401,11 +414,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -452,11 +465,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -503,11 +516,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -554,11 +567,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -605,11 +618,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -656,11 +669,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -707,11 +720,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -758,11 +771,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -809,11 +822,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -860,11 +873,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -911,11 +924,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -962,11 +975,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -1013,11 +1026,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -1064,11 +1077,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -1115,11 +1128,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -1166,11 +1179,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -1217,11 +1230,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -1268,11 +1281,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -1319,11 +1332,11 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
@@ -1370,28 +1383,15 @@
       "section": null,
       "printed_pages": null,
       "table_or_figure": null,
-      "accessed_at": "2026-09-05T00:00:00Z",
+      "accessed_at": "2026-09-04T00:00:00Z",
       "response_status": 200
      },
      "judged_by": "fixture-judge",
-     "judged_at": "2026-09-05T00:00:00Z"
+     "judged_at": "2026-09-04T01:00:00Z"
     }
    ],
    "judgements": [],
    "unresolved": []
   }
- ],
- "created_at": "2026-09-05T00:00:00Z",
- "dataset": {
-  "commit": "0000000000000000000000000000000000000000",
-  "relative_path": "none",
-  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-  "version": "synthetic"
- },
- "query_seed_source": {
-  "version": "synthetic",
-  "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
- },
- "eligibility_protocol_version": "synthetic",
- "calibration_ids": []
+ ]
 }

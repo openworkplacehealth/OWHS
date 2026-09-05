@@ -1,0 +1,111 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://openworkplacehealth.org/evidence/evaluation-query-lock.schema.json",
+ "title": "OWHS retrieval-evaluation query lock",
+ "description": "What was frozen before discovery ran: the query file, manifest and split hashes; the immutable harvester commit and the hashes of its code and configuration; the lock time; a predeclared evaluation id; the claim the run may support. The provider-assigned run id is not here: it belongs to the execution record captured after the run. Closed object.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema_version",
+  "evaluation_id",
+  "locked_at",
+  "claim",
+  "query_sha256",
+  "manifest_sha256",
+  "split_sha256",
+  "harvester",
+  "run_window",
+  "exposed_work_ids",
+  "instrument_ids"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": "1.0"
+  },
+  "evaluation_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_.:-]{4,80}$"
+  },
+  "locked_at": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "claim": {
+   "enum": [
+    "unseen_holdout",
+    "retrospective_replay"
+   ]
+  },
+  "query_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "manifest_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "split_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "harvester": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "commit",
+    "tools_sha256"
+   ],
+   "properties": {
+    "commit": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{40}$"
+    },
+    "tools_sha256": {
+     "type": "object",
+     "minProperties": 1,
+     "additionalProperties": false,
+     "patternProperties": {
+      "^[A-Za-z0-9_./-]+$": {
+       "type": "string",
+       "pattern": "^[0-9a-f]{64}$"
+      }
+     }
+    }
+   }
+  },
+  "run_window": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "from",
+    "to"
+   ],
+   "properties": {
+    "from": {
+     "type": "string",
+     "format": "date"
+    },
+    "to": {
+     "type": "string",
+     "format": "date"
+    }
+   }
+  },
+  "exposed_work_ids": {
+   "type": "array",
+   "uniqueItems": true,
+   "items": {
+    "type": "string",
+    "pattern": "^(doi:10\\.\\d{4,9}/\\S+|pmid:\\d+|report:[A-Za-z0-9_.:-]+)$"
+   }
+  },
+  "instrument_ids": {
+   "type": "array",
+   "uniqueItems": true,
+   "items": {
+    "type": "string",
+    "minLength": 1
+   }
+  }
+ }
+}

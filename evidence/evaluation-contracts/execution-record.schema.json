@@ -1,0 +1,85 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://openworkplacehealth.org/evidence/evaluation-execution-record.schema.json",
+ "title": "OWHS evaluation execution record",
+ "description": "Independently captured provenance of the discovery run the evaluator consumes: the run's identity, head commit, start and finish, and the dependency set that ran. For a GitHub Actions run this is the captured record from evidence/runs/, verified by tools/check_automations.py against the immutable head; the evaluator only binds the lock and the candidates file to it by equality. Closed object.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema_version",
+  "run_id",
+  "mode",
+  "head_sha",
+  "started_at",
+  "finished_at",
+  "run_url",
+  "dependencies",
+  "captured_at",
+  "captured_by"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": "1.0"
+  },
+  "run_id": {
+   "type": "string",
+   "minLength": 1
+  },
+  "mode": {
+   "enum": [
+    "github_action",
+    "local_live",
+    "managed_routine"
+   ]
+  },
+  "head_sha": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{40}$"
+  },
+  "started_at": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "finished_at": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "run_url": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "pattern": "^https://"
+  },
+  "dependencies": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "path",
+     "sha256"
+    ],
+    "properties": {
+     "path": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_./-]+$"
+     },
+     "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+     }
+    }
+   }
+  },
+  "captured_at": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "captured_by": {
+   "type": "string",
+   "minLength": 1
+  }
+ }
+}

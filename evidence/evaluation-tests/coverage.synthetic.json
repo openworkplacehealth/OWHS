@@ -1,10 +1,11 @@
 {
+ "schema_version": "1.0",
  "rows": [
   {
    "work_id": "doi:10.5555/w0",
    "source_id": "europepmc",
    "status": "indexed",
-   "checked_at": "2026-09-05T00:00:00Z",
+   "checked_at": "2026-09-05T08:00:00Z",
    "lookup_method": "fixture",
    "response_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -12,7 +13,7 @@
    "work_id": "doi:10.5555/w0",
    "source_id": "openalex",
    "status": "indexed",
-   "checked_at": "2026-09-05T00:00:00Z",
+   "checked_at": "2026-09-05T08:00:00Z",
    "lookup_method": "fixture",
    "response_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -20,7 +21,7 @@
    "work_id": "doi:10.5555/w1",
    "source_id": "europepmc",
    "status": "indexed",
-   "checked_at": "2026-09-05T00:00:00Z",
+   "checked_at": "2026-09-05T08:00:00Z",
    "lookup_method": "fixture",
    "response_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -28,7 +29,7 @@
    "work_id": "doi:10.5555/w1",
    "source_id": "openalex",
    "status": "indexed",
-   "checked_at": "2026-09-05T00:00:00Z",
+   "checked_at": "2026-09-05T08:00:00Z",
    "lookup_method": "fixture",
    "response_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -36,7 +37,7 @@
    "work_id": "doi:10.5555/w2",
    "source_id": "europepmc",
    "status": "indexed",
-   "checked_at": "2026-09-05T00:00:00Z",
+   "checked_at": "2026-09-05T08:00:00Z",
    "lookup_method": "fixture",
    "response_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -44,7 +45,7 @@
    "work_id": "doi:10.5555/w2",
    "source_id": "openalex",
    "status": "indexed",
-   "checked_at": "2026-09-05T00:00:00Z",
+   "checked_at": "2026-09-05T08:00:00Z",
    "lookup_method": "fixture",
    "response_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -52,7 +53,7 @@
    "work_id": "doi:10.5555/w3",
    "source_id": "europepmc",
    "status": "indexed",
-   "checked_at": "2026-09-05T00:00:00Z",
+   "checked_at": "2026-09-05T08:00:00Z",
    "lookup_method": "fixture",
    "response_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -60,7 +61,7 @@
    "work_id": "doi:10.5555/w3",
    "source_id": "openalex",
    "status": "indexed",
-   "checked_at": "2026-09-05T00:00:00Z",
+   "checked_at": "2026-09-05T08:00:00Z",
    "lookup_method": "fixture",
    "response_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   }

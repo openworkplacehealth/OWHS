@@ -1,31 +1,50 @@
 {
- "execution": {
-  "query_sha256": "57d295ef4eacbee55a94c6a54c21a0cfbe7335c20ea7815f1cb27e63e507c78e",
-  "requested_window": {
-   "from": "2026-08-01",
-   "to": "2026-09-05"
-  },
-  "harvester_version": "tools/harvest.py fixture",
-  "run_id": "fx-run"
+ "schema_version": "1.1",
+ "harvester": "tools/harvest.py 0.2",
+ "run_id": "fx-run-0001",
+ "registry_commit": "1111111111111111111111111111111111111111",
+ "query_version": "fixture",
+ "query_sha256": "57d295ef4eacbee55a94c6a54c21a0cfbe7335c20ea7815f1cb27e63e507c78e",
+ "requested_window": {
+  "from": "2026-08-01",
+  "to": "2026-09-05",
+  "type": "publication date, inclusive"
  },
+ "started_at": "2026-09-05T06:00:00+00:00",
+ "finished_at": "2026-09-05T06:20:00+00:00",
+ "status": "complete",
+ "evaluation_id": "eval-fixture-001",
  "candidates": [
   {
+   "id": "10.5555/w0",
    "doi": "10.5555/w0",
+   "pmid": null,
+   "openalex": null,
+   "title": "Title doi:10.5555/w0",
    "routes": [
-    "names"
+    "names:europepmc:isi"
    ]
   },
   {
+   "id": "10.5555/w1",
    "doi": "10.5555/w1",
+   "pmid": null,
+   "openalex": null,
+   "title": "Title doi:10.5555/w1",
    "routes": [
-    "names"
+    "names:europepmc:isi"
    ]
   },
   {
+   "id": "10.5555/w2",
    "doi": "10.5555/w2",
+   "pmid": null,
+   "openalex": null,
+   "title": "Title doi:10.5555/w2",
    "routes": [
-    "names"
+    "names:europepmc:isi"
    ]
   }
- ]
+ ],
+ "new_instrument_candidates": []
 }

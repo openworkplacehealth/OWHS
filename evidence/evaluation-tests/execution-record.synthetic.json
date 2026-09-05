@@ -1,0 +1,29 @@
+{
+ "schema_version": "1.0",
+ "run_id": "fx-run-0001",
+ "mode": "github_action",
+ "head_sha": "1111111111111111111111111111111111111111",
+ "started_at": "2026-09-05T06:00:00+00:00",
+ "finished_at": "2026-09-05T06:20:00+00:00",
+ "run_url": "https://github.com/example/repo/actions/runs/1",
+ "dependencies": [
+  {
+   "path": "tools/harvest.py",
+   "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+  },
+  {
+   "path": "tools/cycle.py",
+   "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+  },
+  {
+   "path": "evidence/queries/instruments-v1.json",
+   "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  {
+   "path": ".github/workflows/harvest.yml",
+   "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+  }
+ ],
+ "captured_at": "2026-09-05T07:00:00Z",
+ "captured_by": "fixture"
+}
