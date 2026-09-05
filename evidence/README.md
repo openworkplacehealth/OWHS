@@ -12,7 +12,7 @@ folder changes a grade, a status or a licence class. These tools find and watch.
 
 ## The harvester
 
-`tools/harvest.py` queries OpenAlex, Europe PMC and Crossref directly. Its configuration is
+`tools/harvest.py` queries Europe PMC, OpenAlex and Crossref directly. Europe PMC serves the names and abbreviation routes; OpenAlex serves the citation route, and the other two as well when an `OPENALEX_API_KEY` secret is set. Keyless OpenAlex use has a daily credit budget (1,000 credits, 10 per search when this was written) that a full run of every route exceeds, and a run that hits it fails those channels fast and reports itself partial rather than waiting hours. The key, if used, is read from the environment and never written to a log or an artefact. Its configuration is
 `queries/instruments-v1.json`: one entry per parent record with long names, abbreviations and the context
 each abbreviation requires, citation seeds (development and anchor papers, with their OpenAlex identifiers,
 each verified to resolve on the date recorded), an exclusion list that starts empty by design, and a note where

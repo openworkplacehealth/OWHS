@@ -24,11 +24,14 @@ filter is applied to every route here; the design asked for the names and cites 
 the counts show why they are not: over two months the unfiltered routes returned more than ten uses for
 every candidate. Screening capacity is the constraint; the counts are published so the trade-off is visible.
 
-Sources: OpenAlex (polite pool), Europe PMC REST, Crossref for DOI verification and the update-to field.
-No credentials. The mailto identifies the steward so a runaway script can be reported; it is not a secret.
+Sources: Europe PMC REST for the names and abbreviation routes; OpenAlex for the cites route, and for the names and
+abbreviation routes as well when OPENALEX_API_KEY is set. Keyless OpenAlex use has a daily credit budget (1,000
+credits, 10 per search at the time of writing), which a full run of every route exceeds; the 24 citation lookups
+fit. Crossref for DOI verification and the update-to field. The mailto identifies the steward so a runaway
+script can be reported; it is not a secret. A key, if used, is read from the environment and never logged.
 Abstracts are read for matching and not stored: metadata APIs can carry copyrighted abstracts.
 """
-import argparse, datetime, hashlib, json, re, subprocess, sys, time, urllib.parse, urllib.request, urllib.error
+import argparse, datetime, hashlib, json, os, re, subprocess, sys, time, urllib.parse, urllib.request, urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,6 +39,7 @@ QUERIES = ROOT / "evidence" / "queries" / "instruments-v1.json"
 MAILTO = "registry@openworkplacehealth.org"
 UA = f"OWHS-harvester/0.2 (https://openworkplacehealth.org; mailto:{MAILTO})"
 PAUSE = 0.5
+OPENALEX_KEY = os.environ.get("OPENALEX_API_KEY")          # optional; restores OpenAlex on every route
 PAGE_BUDGET = 25            # pages per channel; reaching it marks the channel partial rather than looping
 SCHEMA_VERSION = "1.0"
 
@@ -54,6 +58,8 @@ def get(url, tries=5):
         except urllib.error.HTTPError as e:
             if e.code == 429 or e.code >= 500:
                 ra = e.headers.get("Retry-After")
+                if ra and ra.isdigit() and int(ra) > 300:
+                    return None, f"http {e.code}, retry-after {ra}s (daily budget exhausted)"   # fail the channel now; the run reports partial
                 time.sleep(min(60, float(ra)) if ra and ra.isdigit() else 3 * (attempt + 1)); continue
             return None, f"http {e.code}"
         except Exception:
@@ -93,6 +99,7 @@ def openalex_channel(search, date_from, date_to, filter_extra=None):
     if search: flt = f"title_and_abstract.search:{search}," + flt
     q = {"filter": flt, "select": "id,doi,title,publication_date,primary_location,ids,abstract_inverted_index,type,language",
          "per-page": 200, "mailto": MAILTO, "cursor": "*"}
+    if OPENALEX_KEY: q["api_key"] = OPENALEX_KEY
     while q["cursor"]:
         data, err = get("https://api.openalex.org/works?" + urllib.parse.urlencode(q))
         if err: break
@@ -140,14 +147,16 @@ def channels_for(rec, cfg, date_from, date_to):
     """Yield (route, source, query, runner) for one record."""
     props = cfg["property_terms"]
     for name in rec["names"]:
-        yield ("names", "openalex", q_phrase(name), lambda n=name: openalex_channel(q_phrase(n), date_from, date_to))
+        if OPENALEX_KEY:
+            yield ("names", "openalex", q_phrase(name), lambda n=name: openalex_channel(q_phrase(n), date_from, date_to))
         yield ("names", "europepmc", f"TITLE_ABS:{q_phrase(name)}", lambda n=name: europepmc_channel(f"TITLE_ABS:{q_phrase(n)}", date_from, date_to))
     ctx = rec.get("abbreviation_context") or []
     for ab in rec.get("abbreviations") or []:
         if not ctx: continue          # an abbreviation without required context is never queried bare
         oa = f'{q_phrase(ab)} AND ({" OR ".join(q_phrase(c) for c in ctx)})'      # property terms are applied locally; a 28-term OR makes OpenAlex time out
         ep = f'TITLE_ABS:{q_phrase(ab)} AND ({epmc_terms("TITLE_ABS", ctx)}) AND ({epmc_terms("TITLE_ABS", props)})'
-        yield ("abbreviation", "openalex", oa, lambda s=oa: openalex_channel(s, date_from, date_to))
+        if OPENALEX_KEY:
+            yield ("abbreviation", "openalex", oa, lambda s=oa: openalex_channel(s, date_from, date_to))
         yield ("abbreviation", "europepmc", ep, lambda s=ep: europepmc_channel(s, date_from, date_to))
     for seed in rec.get("citation_seeds") or []:
         wid = seed.get("openalex_id")
@@ -288,7 +297,7 @@ def main():
     records = [r for r in cfg["records"] if not a.instrument or r["instrument_id"] in a.instrument]
     started = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     items, new_list, channels, uses, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started)
-    sources = ["openalex", "europepmc"] + (["crossref"] if not a.no_verify else [])
+    sources = ["europepmc", "openalex (cites" + (", names, abbreviation)" if OPENALEX_KEY else " only: no API key)")] + (["crossref"] if not a.no_verify else [])
     out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, uses, warnings, sources)
     text = json.dumps(out, indent=2, ensure_ascii=False) + "\n"
     if a.out: Path(a.out).parent.mkdir(parents=True, exist_ok=True); Path(a.out).write_text(text, encoding="utf-8")

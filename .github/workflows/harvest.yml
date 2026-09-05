@@ -39,6 +39,8 @@ jobs:
           echo "from=$FROM" >> "$GITHUB_OUTPUT"; echo "to=$TO" >> "$GITHUB_OUTPUT"
           echo "month=$(date -u -d "$FROM" +%Y-%m)" >> "$GITHUB_OUTPUT"
       - name: harvest
+        env:
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}     # optional; absent, OpenAlex is used for citation lookups only
         run: python tools/harvest.py --from "${{ steps.w.outputs.from }}" --to "${{ steps.w.outputs.to }}" --out "evidence/candidates/${{ steps.w.outputs.month }}.json"
       - uses: actions/upload-artifact@v4
         with:
