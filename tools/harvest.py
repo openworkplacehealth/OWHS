@@ -43,6 +43,7 @@ PAUSE = 0.5
 OPENALEX_KEY = os.environ.get("OPENALEX_API_KEY")          # optional; restores OpenAlex on every route
 PAGE_BUDGET = 25            # pages per channel; reaching it marks the channel partial rather than looping
 RETRY_BUDGET = 120          # seconds: the longest server-requested wait honoured inside a run; longer defers the channel
+POLICY_VERSION = "2026.09-1"      # planning policy shared with tools/cycle.py (window, catch-up, quarterly full history, channel set); the verifier binds a run to it at its head
 SCHEMA_VERSION = "1.1"          # 1.1 adds cycle, expected_channels, channels_not_complete, watermark_proposal
 
 

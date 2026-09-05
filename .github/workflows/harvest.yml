@@ -1,4 +1,7 @@
 name: evidence-harvest
+# The run name records the trigger and the dispatch inputs in GitHub's own run record, so the verifier can establish from
+# trusted context (not from the artefact) whether a dispatch carried a window; empty brackets mean a planned re-run.
+run-name: "evidence-harvest ${{ github.event_name }} from=[${{ inputs.from }}] to=[${{ inputs.to }}]"
 
 # Deterministic monthly harvest of candidate psychometric literature for every instrument in the registry
 # (tools/harvest.py). It queries the open indexes directly, writes the candidates file as a run artefact, and
@@ -97,7 +100,7 @@ jobs:
                 f"{len(d['candidates'])} candidates ({low} low priority: no property term found in title or abstract), {len(d['new_instrument_candidates'])} new-instrument candidates, {len(d['expected_channels'])} expected channels of which {len(nc)} did not complete.\n")
           print(f"<!-- owhs-cycle cycle_id={d['cycle']['id']} kind={d['cycle']['kind']} github_run_id={os.environ['GH_RUN_ID']} artefact_sha256={sha} query_sha256={d['query_sha256']} status={d['status']} full_inventory={str(bool(d.get('full_inventory'))).lower()} -->\n")
           if d.get('watermark_proposal'):
-              print(f"Watermark proposal: last complete window end {d['watermark_proposal']['last_complete_to']}; apply in the screening pull request with `python tools/cycle.py advance --artefact <this artefact>`. Nothing advances until that merges.\n")
+              print(f"Watermark proposal: last complete window end {d['watermark_proposal']['last_complete_to']}; apply in the screening pull request with `python tools/cycle.py advance --cycle <cycle> --repo <owner/repo>`, which re-verifies the cycle and writes the accepted run's proposal. Nothing advances until that merges.\n")
           print("| Instrument | Candidates |\n|---|---|")
           for k, v in sorted(c.items(), key=lambda kv: -kv[1]): print(f"| {k} | {v} |")
           flagged = [x for x in d['candidates'] if (x.get('crossref') or {}).get('update_to')]
