@@ -55,6 +55,42 @@
         "AggregateReport": {
           "file": "schemas/v0.2/AggregateReport.json",
           "$id": "https://openworkplacehealth.org/schemas/v0.2/AggregateReport.json"
+        },
+        "Organisation": {
+          "file": "schemas/v0.2/Organisation.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/Organisation.json"
+        },
+        "OrgUnit": {
+          "file": "schemas/v0.2/OrgUnit.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/OrgUnit.json"
+        },
+        "WorkerPseudonym": {
+          "file": "schemas/v0.2/WorkerPseudonym.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/WorkerPseudonym.json"
+        },
+        "ReasonableAdjustment": {
+          "file": "schemas/v0.2/ReasonableAdjustment.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/ReasonableAdjustment.json"
+        },
+        "BenefitEntitlement": {
+          "file": "schemas/v0.2/BenefitEntitlement.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/BenefitEntitlement.json"
+        },
+        "BenefitUtilisation": {
+          "file": "schemas/v0.2/BenefitUtilisation.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/BenefitUtilisation.json"
+        },
+        "DisabilityParticipation": {
+          "file": "schemas/v0.2/DisabilityParticipation.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/DisabilityParticipation.json"
+        },
+        "BenchmarkRelease": {
+          "file": "schemas/v0.2/BenchmarkRelease.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/BenchmarkRelease.json"
+        },
+        "Crosswalk": {
+          "file": "schemas/v0.2/Crosswalk.json",
+          "$id": "https://openworkplacehealth.org/schemas/v0.2/Crosswalk.json"
         }
       },
       "codelists": {
