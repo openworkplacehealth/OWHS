@@ -1,0 +1,9 @@
+{
+  "outcomeId": "rtw-BAD",
+  "absenceEpisodeId": "abs-2026-000123",
+  "pseudonymId": "owhs:pseudo:a1b2c3d4e5f60718",
+  "outcomeType": "did-not-return",
+  "adjustmentTypes": [
+    "phased-return"
+  ]
+}

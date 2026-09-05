@@ -25,3 +25,9 @@ jobs:
       - run: pip install -r requirements.txt
       - name: validation report is current and every fixture matches its name
         run: python tools/build_validation_report.py --check
+      - name: v0.2 schemas match their generator
+        run: python tools/build_schemas_v0_2.py --check
+      - name: extension mechanism and profile validation behave as documented
+        run: python tools/check_profiles.py --self-test
+      - name: bundle join checks behave as documented
+        run: python tools/check_measurement.py --self-test

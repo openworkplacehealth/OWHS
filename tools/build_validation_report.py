@@ -31,13 +31,15 @@ def run(schema, instance):
     return proc.returncode, lines
 
 
-def main():
+def collect(schema_dir, example_dir):
+    """Every <Entity>.<label>.json in example_dir against schema_dir/<Entity>.json. Files without $schema (the catalogue) are not schemas."""
     results = collections.OrderedDict()
-    for schema in sorted((ROOT / "schemas").glob("*.json")):
+    for schema in sorted(schema_dir.glob("*.json")):
+        if "$schema" not in json.loads(schema.read_text(encoding="utf-8")):
+            continue
         entity = schema.stem
-        instances = sorted((ROOT / "examples").glob(f"{entity}.*.json"))
         cases = collections.OrderedDict()
-        for instance in instances:
+        for instance in sorted(example_dir.glob(f"{entity}.*.json")):
             label = instance.name[len(entity) + 1:-len(".json")]
             code, lines = run(schema, instance)
             cases[label] = collections.OrderedDict([
@@ -47,12 +49,21 @@ def main():
                 ("errors", lines),
             ])
         results[entity] = cases
+    return results
+
+
+def main():
+    results = collect(ROOT / "schemas", ROOT / "examples")
     report = collections.OrderedDict([
         ("specVersion", SPEC_VERSION),
         ("validator", "tools/validate.py, jsonschema Draft202012Validator with FORMAT_CHECKER and the Level 1 cross-field rules"),
         ("generatedBy", "tools/build_validation_report.py"),
         ("results", results),
     ])
+    if (ROOT / "schemas" / "v0.2").is_dir():
+        report["results_v0_2"] = collect(ROOT / "schemas" / "v0.2", ROOT / "examples" / "v0.2")
+        report["note_v0_2"] = ("Schema version 0.2: the three v0.1 entities with the extension mechanism and four measurement entities. "
+                               "Cross-field rules C3 to C9 apply to AggregateReport and MeasurementContext. Bundle-level joins are checked by tools/check_measurement.py, not here.")
     serialised = json.dumps(report, indent=2) + "\n"
     if "--check" in sys.argv[1:]:
         current = OUT.read_text(encoding="utf-8") if OUT.exists() else ""
@@ -63,7 +74,8 @@ def main():
     else:
         OUT.write_text(serialised, encoding="utf-8")
         print(f"written: {OUT.relative_to(ROOT)}")
-    unexpected = [f"{e}.{l}" for e, cases in results.items() for l, c in cases.items()
+    allres = dict(results); allres.update({f"v0.2/{k}": v for k, v in report.get("results_v0_2", {}).items()})
+    unexpected = [f"{e}.{l}" for e, cases in allres.items() for l, c in cases.items()
                   if (c["expected"] == "pass") != (c["exit_code"] == 0)]
     if unexpected:
         raise SystemExit("verdict does not match the instance name: " + ", ".join(unexpected))

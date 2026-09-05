@@ -15,6 +15,12 @@ FILES = {  # archive path -> source path
 for d in ("schemas", "examples", "codelists"):
     for p in sorted((ROOT / d).glob("*.json")):
         FILES[f"{d}/{p.name}"] = p
+    for p in sorted((ROOT / d / "v0.2").glob("*.json")):          # the versioned v0.2 schemas and their fixtures
+        FILES[f"{d}/v0.2/{p.name}"] = p
+for p in sorted((ROOT / "profiles").rglob("*.json")):
+    FILES[f"profiles/{p.relative_to(ROOT / 'profiles').as_posix()}"] = p
+for t in ("check_profiles.py", "check_measurement.py"):
+    FILES[f"tools/{t}"] = ROOT / "tools" / t
 assert not any("domain-coverage" in k or "domain_routing" in k for k in FILES)
 with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
     for arc, src in sorted(FILES.items()):
@@ -32,4 +38,10 @@ for d in ("schemas", "examples", "codelists"):
             p.unlink()
         for p in sorted((ROOT / d).glob("*.json")):
             shutil.copy2(p, dest / p.name)
-print("site/spec mirror refreshed from schemas/, examples/ and codelists/")
+        if (ROOT / d / "v0.2").is_dir():
+            (dest / "v0.2").mkdir(exist_ok=True)
+            for p in (dest / "v0.2").glob("*.json"):
+                p.unlink()
+            for p in sorted((ROOT / d / "v0.2").glob("*.json")):
+                shutil.copy2(p, dest / "v0.2" / p.name)
+print("site/spec mirror refreshed from schemas/, examples/ and codelists/ (including v0.2)")

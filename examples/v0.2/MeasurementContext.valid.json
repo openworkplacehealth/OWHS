@@ -1,0 +1,42 @@
+{
+  "contextId": "ctx-2026q3",
+  "orgId": "org-demo",
+  "producingSystem": "demo-scoring 2.1",
+  "knownLimitations": "Synthetic example. Not assessed.",
+  "scoringDescriptor": {
+    "descriptorId": "desc-mean",
+    "descriptorVersion": "1",
+    "method": "period mean of native responses",
+    "estimand": "mean response over the observation window",
+    "observationWindow": {
+      "start": "2026-07-01T00:00:00Z",
+      "end": "2026-09-30T23:59:59Z"
+    },
+    "sourceRef": "https://example.org/methods/desc-mean-1",
+    "higherScoreMeaning": "higher-construct",
+    "nativeScale": {
+      "min": 1,
+      "max": 5
+    },
+    "normalisation": {
+      "id": "norm-linear",
+      "version": "1",
+      "sourceRef": "https://example.org/methods/norm-linear-1"
+    },
+    "banding": {
+      "id": "band-3",
+      "version": "1",
+      "sourceRef": "https://example.org/methods/band-3-1"
+    },
+    "threshold": {
+      "id": "thr-1",
+      "version": "1",
+      "sourceRef": "https://example.org/methods/thr-1"
+    },
+    "missingResponseRule": {
+      "id": "mrr-prorate",
+      "version": "1",
+      "sourceRef": "https://example.org/methods/mrr-prorate-1"
+    }
+  }
+}

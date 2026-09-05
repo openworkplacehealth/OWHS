@@ -1,0 +1,38 @@
+{
+  "profile_id": "owhs-example",
+  "version": "0.1.0",
+  "description": "A wholly synthetic profile that demonstrates schema composition: it requires its own namespace under ext and constrains that payload to one integer field. It is not a deployment recommendation and describes no commercial implementation.",
+  "core_schema_ids": [
+    "https://openworkplacehealth.org/schemas/v0.2/AbsenceEpisode.json"
+  ],
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": [
+      "ext"
+    ],
+    "properties": {
+      "ext": {
+        "type": "object",
+        "required": [
+          "owhs-example"
+        ],
+        "properties": {
+          "owhs-example": {
+            "type": "object",
+            "required": [
+              "wave"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "wave": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
