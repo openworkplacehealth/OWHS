@@ -2,3 +2,6 @@
 Icon?
 __pycache__/
 .vercel
+evidence/licence-changes.json
+__pycache__/
+.venv/

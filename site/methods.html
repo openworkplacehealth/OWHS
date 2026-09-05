@@ -75,7 +75,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 
 <article><div class="wrap">
   <h1>How the instrument registry grades evidence</h1>
-  <p class="meta">methods · updated 3 September 2026 · registry v0.9.0 · rubric v1.6</p>
+  <p class="meta">methods · updated 5 September 2026 · registry v0.9.0 · rubric v1.6</p>
 
   <p><strong>The <a href="instrument-registry/index.html">instrument registry</a> is the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing.</strong> For every instrument it records what it measures, how well, in which populations and languages, and on what licence terms, drawn from the literature and existing systematic reviews, every claim cited, every grade conservative. It is maintained, machine-readable and free to use, so that nobody choosing, building, licensing or reviewing a workplace measure has to reassemble the field's evidence themselves. This page explains how to read it, in plain language, and what the grades can and cannot tell you.</p>
 
@@ -113,16 +113,9 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   </ul>
 
   <h2>Search design and its present limits</h2>
-  <p>The September 2026 sweep used web search under direct-database access restrictions. The planned deterministic harvester will use instrument names and aliases, measurement-property terms and citation links; its exact queries, sources, search windows and retrieval logs will be published with the implementation. The four strings below are the search design as written and tested once over a twelve-month window in 2026. The volumes are historical estimates from that test, not a measure of retrieval completeness and not evidence of a live monthly workflow.</p>
+  <p>The September 2026 sweep used web search under direct-database access restrictions. The planned deterministic harvester will use instrument names and aliases, measurement-property terms and citation links; its exact queries, sources, search windows and retrieval logs will be published with the implementation. The search strings written for the earlier passes remain in the repository history; their historical hit counts are not a measure of retrieval completeness and not evidence of a live monthly workflow.</p>
   <p>Earlier literature passes were non-systematic and were not logged per cell. The as-of dates on cells describe those passes. A new citation or a completed search is distinct from human confirmation of a grade.</p>
-  <table>
-    <tr><th>String</th><th>What it isolates</th><th>Volume in the 2026 twelve-month test</th></tr>
-    <tr><td><span class="mono">(instrument block) AND (validity OR reliability OR psychometric* OR "measurement invariance" OR responsiveness OR "factor structure" OR Rasch OR "internal consistency" OR "test-retest")</span>, title and abstract</td><td>Broad psychometric sweep, the primary monthly run</td><td>303 hits in twelve months, about 25 a month</td></tr>
-    <tr><td><span class="mono">(instrument block) AND ("measurement invariance" OR "measurement equivalence" OR "differential item functioning" OR "scalar invariance" OR "cross-cultural validation")</span></td><td>Cross-group and cross-language comparability</td><td>62 hits, about 5 a month</td></tr>
-    <tr><td><span class="mono">(instrument block) AND ("factor structure" OR "confirmatory factor analysis" OR Rasch OR "item response theory" OR bifactor OR dimensionality)</span></td><td>Internal structure, re-analyses of existing instruments</td><td>183 hits, about 15 a month</td></tr>
-    <tr><td><span class="mono">(broad sweep) AND (workplace OR employee* OR worker* OR occupational)</span></td><td>Validations in working samples, the ones that make a cell direct</td><td>32 hits, about 3 a month</td></tr>
-  </table>
-  <p class="small">The Europe PMC counterpart of the broad string (TITLE_ABS field, FIRST_PDATE range) returned 301 hits over the same test window with a different tail. The property filter is a keyword intersection, not a quality screen: a human triages every batch.</p>
+
 
   \1<p>Evidence reports and accepted corrections are recorded in the <a href="changelog.html">changelog</a> and the <a href="sweeps/2026-09.html">sweep reports</a>. Automated retrieval and the end-to-end update pipeline are being built; the <a href="automation.html">maintenance page</a> distinguishes what has run from what is planned. Grades remain frozen; a search result may prompt review but does not confirm or change a grade.</p>
 </div></article>

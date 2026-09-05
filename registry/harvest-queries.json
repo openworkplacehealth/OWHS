@@ -1,0 +1,349 @@
+{
+  "version": "0.1.0",
+  "note": "Per-instrument search terms for tools/harvest.py. names: exact phrases searched in title and abstract. exclude: a candidate whose title contains any of these (case-insensitive) is dropped and the drop is recorded. development_dois: the papers whose citing works are collected. First version authored from the registry dataset; instrument ids match instrument-evidence-base-v0.9.0.json.",
+  "property_terms": [
+    "validity",
+    "validation",
+    "reliability",
+    "psychometric",
+    "measurement invariance",
+    "measurement equivalence",
+    "factor structure",
+    "confirmatory factor analysis",
+    "Rasch",
+    "item response theory",
+    "internal consistency",
+    "test-retest",
+    "responsiveness",
+    "minimal important change",
+    "differential item functioning",
+    "cut-off",
+    "cutoff",
+    "sensitivity and specificity",
+    "norms",
+    "normative data"
+  ],
+  "instruments": {
+    "ons-4": {
+      "names": [
+        "ONS-4",
+        "ONS4",
+        "Office for National Statistics personal well-being questions",
+        "ONS personal wellbeing questions",
+        "ONS personal well-being"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "who-5": {
+      "names": [
+        "WHO-5",
+        "WHO-5 Well-Being Index",
+        "WHO Five Well-Being Index",
+        "WHO-Five"
+      ],
+      "exclude": [
+        "children",
+        "adolescent",
+        "paediatric",
+        "pediatric"
+      ],
+      "development_dois": [
+        "10.1159/000376585"
+      ]
+    },
+    "wemwbs": {
+      "names": [
+        "WEMWBS",
+        "SWEMWBS",
+        "Warwick-Edinburgh Mental Well-being Scale",
+        "Warwick-Edinburgh Mental Wellbeing Scale",
+        "Short Warwick-Edinburgh"
+      ],
+      "exclude": [
+        "children",
+        "adolescent",
+        "paediatric",
+        "pediatric"
+      ],
+      "development_dois": [
+        "10.1186/1477-7525-5-63"
+      ]
+    },
+    "hse-msit": {
+      "names": [
+        "HSE Management Standards Indicator Tool",
+        "Management Standards Indicator Tool",
+        "HSE Indicator Tool",
+        "HSE-MS Indicator Tool"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "perma": {
+      "names": [
+        "PERMA-Profiler",
+        "PERMA Profiler",
+        "Workplace PERMA-Profiler",
+        "Workplace PERMA Profiler"
+      ],
+      "exclude": [
+        "children",
+        "adolescent",
+        "student"
+      ],
+      "development_dois": []
+    },
+    "uwes-9": {
+      "names": [
+        "UWES-9",
+        "UWES-3",
+        "Utrecht Work Engagement Scale"
+      ],
+      "exclude": [
+        "student"
+      ],
+      "development_dois": []
+    },
+    "phq-9": {
+      "names": [
+        "PHQ-9",
+        "Patient Health Questionnaire-9",
+        "Patient Health Questionnaire 9"
+      ],
+      "exclude": [
+        "children",
+        "adolescent",
+        "paediatric",
+        "pediatric"
+      ],
+      "development_dois": [
+        "10.1046/j.1525-1497.2001.016009606.x"
+      ]
+    },
+    "gad-7": {
+      "names": [
+        "GAD-7",
+        "Generalized Anxiety Disorder-7",
+        "Generalised Anxiety Disorder-7",
+        "Generalized Anxiety Disorder 7-item"
+      ],
+      "exclude": [
+        "children",
+        "adolescent",
+        "paediatric",
+        "pediatric"
+      ],
+      "development_dois": [
+        "10.1001/archinte.166.10.1092"
+      ]
+    },
+    "k10": {
+      "names": [
+        "K10",
+        "K6",
+        "Kessler Psychological Distress Scale",
+        "Kessler 10",
+        "Kessler-10"
+      ],
+      "exclude": [
+        "children",
+        "adolescent"
+      ],
+      "development_dois": []
+    },
+    "ghq-12": {
+      "names": [
+        "GHQ-12",
+        "General Health Questionnaire-12",
+        "General Health Questionnaire 12",
+        "12-item General Health Questionnaire"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "copsoq-iii": {
+      "names": [
+        "COPSOQ",
+        "COPSOQ III",
+        "COPSOQ-III",
+        "Copenhagen Psychosocial Questionnaire"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "mbi": {
+      "names": [
+        "Maslach Burnout Inventory",
+        "MBI-GS",
+        "MBI-HSS",
+        "MBI-ES"
+      ],
+      "exclude": [
+        "student",
+        "MBI-SS"
+      ],
+      "development_dois": []
+    },
+    "cbi": {
+      "names": [
+        "Copenhagen Burnout Inventory",
+        "CBI burnout"
+      ],
+      "exclude": [
+        "student"
+      ],
+      "development_dois": []
+    },
+    "olbi": {
+      "names": [
+        "Oldenburg Burnout Inventory",
+        "OLBI"
+      ],
+      "exclude": [
+        "student"
+      ],
+      "development_dois": []
+    },
+    "wai": {
+      "names": [
+        "Work Ability Index",
+        "WAI work ability"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "was": {
+      "names": [
+        "Work Ability Score",
+        "single-item work ability",
+        "single item work ability"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "wpai": {
+      "names": [
+        "WPAI",
+        "Work Productivity and Activity Impairment"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "ipaq-sf": {
+      "names": [
+        "IPAQ-SF",
+        "IPAQ short form",
+        "International Physical Activity Questionnaire short form",
+        "International Physical Activity Questionnaire-Short Form"
+      ],
+      "exclude": [
+        "children",
+        "adolescent"
+      ],
+      "development_dois": []
+    },
+    "isi": {
+      "names": [
+        "Insomnia Severity Index",
+        "ISI insomnia"
+      ],
+      "exclude": [
+        "children",
+        "adolescent",
+        "paediatric",
+        "pediatric"
+      ],
+      "development_dois": [
+        "10.1093/sleep/34.5.601"
+      ]
+    },
+    "miss": {
+      "names": [
+        "Minimal Insomnia Symptom Scale",
+        "MISS insomnia"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "tis-6": {
+      "names": [
+        "Turnover Intention Scale",
+        "TIS-6"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "csps-wellbeing": {
+      "names": [
+        "Civil Service People Survey"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "eurofound-ewcs": {
+      "names": [
+        "European Working Conditions Survey",
+        "EWCS",
+        "European Quality of Life Survey"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "fcs-maps": {
+      "names": [
+        "Financial Capability Survey",
+        "Financial Wellbeing Survey",
+        "Money and Pensions Service"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "single-job-satisfaction": {
+      "names": [
+        "single-item job satisfaction",
+        "single item job satisfaction",
+        "single-item measure of job satisfaction"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "single-stress": {
+      "names": [
+        "single-item stress",
+        "single item stress",
+        "single-item measure of stress symptoms",
+        "SISQ stress"
+      ],
+      "exclude": [],
+      "development_dois": []
+    },
+    "single-fatigue": {
+      "names": [
+        "single-item fatigue",
+        "single item fatigue",
+        "single-item measure of fatigue"
+      ],
+      "exclude": [],
+      "development_dois": []
+    }
+  },
+  "new_instrument_query": {
+    "note": "Untargeted monthly query for validations of instruments the registry does not yet track. Candidates go to the admission process, never straight into the registry.",
+    "title_phrases": [
+      "development and validation",
+      "psychometric properties",
+      "psychometric validation",
+      "validation of the",
+      "factor structure"
+    ],
+    "context_terms": [
+      "workplace",
+      "employees",
+      "workers",
+      "occupational",
+      "work-related",
+      "job"
+    ]
+  }
+}

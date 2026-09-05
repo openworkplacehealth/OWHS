@@ -1,0 +1,71 @@
+name: evidence-harvest
+
+# Deterministic monthly harvest of candidate psychometric literature for every instrument in the registry
+# (tools/harvest.py). It queries OpenAlex, Europe PMC and Crossref directly, writes a candidates file as a run
+# artefact, and opens one issue labelled evidence-sweep that summarises the run. It changes no dataset, no
+# grade and no page: a candidate is a work to be read, not a finding. Screening and any proposal to add a
+# citation happen afterwards, in a pull request a person merges.
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'        # first of the month, 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      from:
+        description: 'window start YYYY-MM-DD (default: first day of last month)'
+        required: false
+      to:
+        description: 'window end YYYY-MM-DD (default: today)'
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: window
+        id: w
+        run: |
+          FROM="${{ github.event.inputs.from }}"; TO="${{ github.event.inputs.to }}"
+          [ -z "$FROM" ] && FROM=$(date -u -d "$(date -u +%Y-%m-01) -1 month" +%Y-%m-%d)
+          [ -z "$TO" ] && TO=$(date -u +%Y-%m-%d)
+          echo "from=$FROM" >> "$GITHUB_OUTPUT"; echo "to=$TO" >> "$GITHUB_OUTPUT"
+          echo "month=$(date -u -d "$FROM" +%Y-%m)" >> "$GITHUB_OUTPUT"
+      - name: harvest
+        run: python tools/harvest.py --from "${{ steps.w.outputs.from }}" --to "${{ steps.w.outputs.to }}" --out "evidence/candidates/${{ steps.w.outputs.month }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: candidates-${{ steps.w.outputs.month }}
+          path: evidence/candidates/${{ steps.w.outputs.month }}.json
+      - name: summary issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY' > /tmp/body.md
+          import json, os, collections
+          d = json.load(open(f"evidence/candidates/{os.environ['MONTH']}.json"))
+          c = collections.Counter(i for x in d['candidates'] for i in x['instruments'])
+          print(f"Harvest window {d['window'][0]} to {d['window'][1]}. {len(d['candidates'])} candidates, {len(d['dropped'])} dropped by exclusion terms, "
+                f"{sum(d.get('seen_without_property_terms', {}).values())} works naming or citing an instrument without a psychometric term (uses, not evidence), "
+                f"{len(d['failures'])} request failures.\n")
+          print("| Instrument | Candidates |\n|---|---|")
+          for k, v in sorted(c.items(), key=lambda kv: -kv[1]): print(f"| {k} | {v} |")
+          flagged = [x for x in d['candidates'] if (x.get('crossref') or {}).get('update_to')]
+          if flagged:
+              print("\nCrossref records an update (correction or retraction) against:")
+              for x in flagged: print(f"- {x['doi']}: {x['title'][:90]}")
+          if d['failures']:
+              print("\nRequests that failed:")
+              for f in d['failures']: print(f"- {f['instrument']} {f['source']} `{f['query']}`: {f['error']}")
+          print(f"\nThe full candidates file is the run artefact `candidates-{os.environ['MONTH']}`. A candidate is a work that names an instrument and a psychometric property term in its title or abstract. Nothing here is a grade, a judgement or a registry change; screening and any proposed citation follow in a pull request a person merges.")
+          PY
+          gh issue create --title "Evidence harvest ${{ steps.w.outputs.month }}: candidates for screening" --label evidence-sweep --body-file /tmp/body.md
+        env:
+          MONTH: ${{ steps.w.outputs.month }}
