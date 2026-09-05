@@ -397,6 +397,7 @@ Every list is a standalone JSON file with its own `version` (semver), independen
 | `rtw-checkpoint` | 0.1.0 | 3 | OWHS v0.1 provisional sustained-RTW checkpoints |
 | `rtw-outcome` | 0.1.0 | 5 | OWHS v0.1; return-to-work outcome types (no official UK taxonomy; insurer/OH case systems use proprietary ones) |
 | `rtw-sustained-status` | 0.1.0 | 3 | OWHS v0.1; sustained-return status at a checkpoint (no UK incumbent) |
+| `safeguarding-category` | 0.1.0 | 6 | OWHS v0.1 provisional; governance-owned; categories only |
 | `sampling-design` | 0.1.0 | 3 | OWHS sampling design descriptor |
 | `source-type` | 0.1.0 | 4 | OWHS record provenance |
 | `suppression-reason` | 0.1.0 | 3 | OWHS aggregate suppression reasons |
@@ -455,7 +456,7 @@ The privacy profile is not left to prose, the schemas enforce the parts a valida
 
 The valid instances model the same worker (one pseudonym) through a coherent journey: a 10-working-day (75-hour, ONS 7.5h/day) musculoskeletal absence → an OH management referral returning `fit-with-adjustments` with released opinion → a phased RTW with altered hours, sustained at 4 and 13 weeks. That the three valid instances cross-reference cleanly (`absenceEpisodeId`, `linkedAbsenceEpisodeId`) demonstrates the relationships in the ERD hold at instance level.
 
-**Note on cross-field rules a single schema cannot enforce.** Two rules are *conformance-checked by the validator tool, not by JSON Schema alone*: (1) `endDate ≥ startDate`, and (2) the aggregation floors (n≥5 / n≥10), these are payload-level and cross-record checks that belong to the privacy-profile conformance level (§2g), not to per-instance structural validation. The schema carries the `$comment` markers; the reference validator enforces them.
+**Note on cross-field rules a single schema cannot enforce.** Two rules are *conformance-checked by the validator tool, not by JSON Schema alone*: (1) `endDate ≥ startDate`, and (2) the aggregation floors (n≥5 / n≥10), these are payload-level and cross-record checks that belong to the privacy-profile conformance level (§2g), not to per-instance structural validation. The schema carries the `$comment` markers. The reference validator enforces (1) as the named Level 1 rules C1 and C2; (2) is a Level 3 obligation that no tool in this repository verifies (section 9).
 
 
 ---
@@ -560,7 +561,7 @@ Three registers, none smoothed over: decisions reasonable standards authors woul
 
 5. **Adopting the ONS six-category reason taxonomy as the core enum.** ONS designed it for a *population survey*, not an employer episode record; its "minor illness" / "other" buckets are coarse for management use, and "other" explicitly mixes COVID-19, accidents and diabetes [1]. Anchoring to it buys comparability at the cost of analytic resolution, and some authors would prefer a richer employer taxonomy that *rolls up* to ONS.
 
-6. **`additionalProperties:false` everywhere.** Strict closure guarantees the identifier ban but makes the schema brittle to legitimate extension; producers must route everything non-core through `ext`, which some integrators will find heavy-handed versus an open-world model with a denylist.
+6. **`additionalProperties:false` everywhere.** Strict closure enforces the identifier ban at the field level (an identifier cannot occupy a field of its own; nothing structural can detect one inside a permitted string) but makes the schema brittle to legitimate extension; producers must route everything non-core through `ext`, which some integrators will find heavy-handed versus an open-world model with a denylist.
 
 7. **Modelling `ill-health-exit` as an RTW *value* rather than its own entity.** Compresses a significant, sensitive event (medical capability dismissal / ill-health retirement) into an enum on an outcome record. Defensible for SME simplicity; disputable because it under-models an event with distinct legal and pension dimensions.
 

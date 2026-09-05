@@ -2450,7 +2450,7 @@ tool, not by JSON Schema alone</em>: (1)
 n≥10), these are payload-level and cross-record checks that belong to
 the privacy-profile conformance level (§2g), not to per-instance
 structural validation. The schema carries the <code>$comment</code>
-markers; the reference validator enforces them.</p>
+markers. The reference validator enforces (1) as the named Level 1 rules C1 and C2; (2) is a Level 3 obligation that no tool in this repository verifies (section 9).</p>
 <hr />
 <h2 id="the-profile-mechanism">7. The profile mechanism</h2>
 <p>OWHS follows the FHIR profiling pattern: a <strong>vendor profile
@@ -2672,7 +2672,7 @@ accidents and diabetes [1]. Anchoring to it buys comparability at the
 cost of analytic resolution, and some authors would prefer a richer
 employer taxonomy that <em>rolls up</em> to ONS.</p></li>
 <li><p><strong><code>additionalProperties:false</code>
-everywhere.</strong> Strict closure guarantees the identifier ban but
+everywhere.</strong> Strict closure enforces the identifier ban at the field level (an identifier cannot occupy a field of its own; nothing structural can detect one inside a permitted string) but
 makes the schema brittle to legitimate extension; producers must route
 everything non-core through <code>ext</code>, which some integrators
 will find heavy-handed versus an open-world model with a

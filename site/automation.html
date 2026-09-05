@@ -75,15 +75,15 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 
 <article><div class="wrap">
   <h1>How the monthly automation runs</h1>
-  <p class="meta">the maintenance engine · updated 1 September 2026</p>
+  <p class="meta">the maintenance engine · updated 5 September 2026</p>
 
   <p>The registry's central promise is that it stays current. This page explains exactly how, including what the automation is allowed to do, what it is forbidden to do, and what happens when it fails. It is written so a reader can audit the process rather than take it on trust.</p>
 
   <h2>The monthly cycle</h2>
   <ol>
-    <li><strong>Sweep.</strong> On the first of each month, an automated literature sweep searches the published research for new psychometric evidence on every instrument the registry tracks: validations, reliability studies, invariance findings, responsiveness data, new populations and languages, licence changes, and genuinely new instruments. Citations are verified against independent sources before anything is reported. The sweep runs on PubMed and Europe PMC in parallel with four published search strings; the venues, the strings and their tested volumes are on the <a href="methods.html">methods page</a>, so the coverage can be checked and improved by anyone.</li>
+    <li><strong>Sweep.</strong> On the first of each month, an automated literature sweep searches the published research for new psychometric evidence on every instrument the registry tracks: validations, reliability studies, invariance findings, responsiveness data, new populations and languages, licence changes, and genuinely new instruments. The sweep is run by an assisted session using web search over the major indexes. It verifies that the DOI of everything it reports resolves and, where its environment can reach them, checks its highest-value citations against Crossref or Europe PMC; each report states which sources the run could reach. Direct querying of the indexes with the published search strings is the harvester described under planned work below; the venues, the strings and their tested volumes are on the <a href="methods.html">methods page</a>, so the coverage can be checked and improved by anyone.</li>
     <li><strong>Propose.</strong> The sweep writes a dated report and prepares a new version of the registry dataset: new citations attached to the affected records, last-reviewed dates refreshed on everything checked, and a changelog entry. The changes are opened as a public proposal, visible in full before anything is applied.</li>
-    <li><strong>Human review.</strong> A person reviews and merges the proposal. The automation cannot merge its own work. Once merged, the site rebuilds so the public last-reviewed dates and the download files advance together.</li>
+    <li><strong>Human review.</strong> A person reviews and merges the proposal. The automation cannot merge its own work. Once merged, the steward regenerates the registry pages from the merged dataset so the public last-reviewed dates and the download files advance together. That rebuild is a manual step today; when it runs on merge, this page will say so.</li>
     <li><strong>Publish.</strong> The month's findings appear as a <a href="sweeps/2026-09.html">sweep report page</a>, and the version lands in the <a href="changelog.html">changelog</a>.</li>
   </ol>
 
@@ -95,13 +95,13 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
     <tr><td>Flag licence-page changes for manual verification</td><td>Rewrite a licence status (only a human, checking the steward's live page, may do that)</td></tr>
     <tr><td>Propose new watchlist candidates</td><td>Add an instrument to the registry (admission needs independent evidence and a human decision)</td></tr>
   </table>
-  <p>Most months should see citations added and no grades move. A registry whose grades moved every month would be measuring its own search noise, not the literature.</p>
+  <p>Since 5 September 2026 the sweep's instructions forbid any change to a grade, status or licence field outright: a finding that looks as though it would move a grade is written up for human re-adjudication and nothing is changed. Most months should see citations added and no grades move. A registry whose grades moved every month would be measuring its own search noise, not the literature.</p>
 
   <h2>When it fails</h2>
-  <p>The failure mode this design guards hardest against is silence. The sweep notifies its operator on success and on failure; a separate monthly check verifies that a sweep proposal actually exists for the month; and any change to the automation itself is tested against a frozen month of known input with known-correct output, so quiet drift in its behaviour is caught rather than discovered. This caution exists because the project has lived the alternative: an early version of the sweep failed silently for a month, and the fix was rebuilt into the process rather than patched over.</p>
+  <p>The failure mode this design guards hardest against is silence. The sweep is instructed to notify its operator on success and on failure. Two further guards are designed and not yet running, and are listed under planned work below: a separate monthly check that a sweep proposal actually exists for the month, and a frozen month of known input with known-correct output against which any change to the automation is tested, so quiet drift in its behaviour is caught rather than discovered. This caution exists because the project has lived the alternative: an early version of the sweep failed silently for a month, and the fix was rebuilt into the process rather than patched over.</p>
 
   <h2>Planned, and stated as planned</h2>
-  <p>Two additions are designed but not yet running, and this page will say so until they are: a weekly deterministic harvester querying the open scholarly indexes directly, so coverage never depends on search luck; and an automated weekly check of every instrument's licence page against an archived copy. When they go live, this page changes and the change is dated.</p>
+  <p>The following are designed but not yet running, and this page will say so until they are. A deterministic harvester that queries the open scholarly indexes directly with the published search strings, so coverage never depends on search luck. An automated weekly check of every instrument's licence page against an archived copy. A separate monthly check that a sweep proposal exists. A frozen month of known input against which any change to the automation is tested. Regeneration of the registry pages on merge. As each goes live, this page changes and the change is dated.</p>
 
   <h2>The blind spots, stated</h2>
   <p>The sweep reads the major indexes and verifies what it cites. It will miss: journals not indexed in the sources it queries, non-English-language literature, instrument manuals and technical supplements, conference proceedings and theses. Silence on an instrument in any month means nothing corroborated was found, not that nothing exists.</p>
