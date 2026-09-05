@@ -43,7 +43,7 @@ PAUSE = 0.5
 OPENALEX_KEY = os.environ.get("OPENALEX_API_KEY")          # optional; restores OpenAlex on every route
 PAGE_BUDGET = 25            # pages per channel; reaching it marks the channel partial rather than looping
 RETRY_BUDGET = 120          # seconds: the longest server-requested wait honoured inside a run; longer defers the channel
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"          # 1.1 adds cycle, expected_channels, channels_not_complete, watermark_proposal
 
 
 # ---------- http ----------
@@ -330,7 +330,11 @@ def self_test():
     for r in q["records"]:
         assert r["names"] and r["canonical_name"] == r["names"][0]
         if r.get("abbreviations"): assert r.get("abbreviation_context"), f"{r['instrument_id']}: abbreviations need context"
-    print("self-test passed: canonicalisation, matching, status logic, query file shape")
+    from cycle import expected_channels
+    planned = sorted({(r["instrument_id"], route) for r in q["records"] for route, *_ in channels_for(r, q, "2026-01-01", "2026-01-31")}
+                     | {(None, route) for route, *_ in new_instrument_channels(q, "2026-01-01", "2026-01-31")}, key=lambda x: (x[0] or "", x[1]))
+    assert planned == expected_channels(q), f"the cycle module's expected channel set differs from the channels the harvester plans: {set(planned) ^ set(expected_channels(q))}"
+    print(f"self-test passed: canonicalisation, matching, status logic, query file shape, {len(planned)} expected channels agree with tools/cycle.py")
 
 
 def main():
@@ -338,6 +342,8 @@ def main():
     ap.add_argument("--from", dest="date_from"); ap.add_argument("--to", dest="date_to")
     ap.add_argument("--instrument", action="append"); ap.add_argument("--out")
     ap.add_argument("--no-verify", action="store_true"); ap.add_argument("--self-test", action="store_true")
+    ap.add_argument("--cycle-id", help="from tools/cycle.py window; a planned cycle is YYYY-MM, a manual one manual-FROM-TO")
+    ap.add_argument("--cycle-kind", choices=["planned", "manual"])
     a = ap.parse_args()
     if a.self_test: return self_test()
     if not (a.date_from and a.date_to): sys.exit("--from and --to are required (YYYY-MM-DD)")
@@ -357,6 +363,18 @@ def main():
     sources = ["europepmc", "openalex (cites" + (", names, abbreviation)" if OPENALEX_KEY else " only: no API key)")] + (["crossref"] if not a.no_verify else [])
     out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, low, warnings, sources)
     out["full_inventory"] = not a.instrument       # a manual one-instrument run is not a monthly cycle
+    if a.instrument and a.cycle_kind == "planned": sys.exit("configuration error: a planned cycle covers the full inventory; use no --cycle-kind or manual for a one-instrument run")
+    out["cycle"] = {"id": a.cycle_id or f"manual-{a.date_from}-{a.date_to}", "kind": a.cycle_kind or "manual",
+                    "note": "planned cycles are named by the month of the run; the publication window is separate and recorded in requested_window"}
+    from cycle import expected_channels, complete_pairs
+    out["expected_channels"] = [{"instrument_id": i, "route": r} for i, r in expected_channels(cfg)]
+    done = complete_pairs(channels)
+    out["channels_not_complete"] = [{"instrument_id": i, "route": r} for i, r in expected_channels(cfg) if (i, r) not in done]
+    if out["status"] == "complete" and out["full_inventory"] and not out["channels_not_complete"]:
+        out["watermark_proposal"] = {"query_sha256": out["query_sha256"], "last_complete_to": a.date_to, "cycle_id": out["cycle"]["id"], "run_id": out["run_id"],
+                                     "note": "apply with tools/cycle.py advance --artefact FILE in the screening pull request; nothing advances automatically"}
+    else:
+        out["watermark_proposal"] = None
     text = json.dumps(out, indent=2, ensure_ascii=False) + "\n"
     if a.out: Path(a.out).parent.mkdir(parents=True, exist_ok=True); Path(a.out).write_text(text, encoding="utf-8")
     else: sys.stdout.write(text)

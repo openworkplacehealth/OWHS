@@ -1,11 +1,13 @@
 name: sweep-tripwire
 
-# The guard against silence. On the third of each month, checks that the evidence-harvest workflow produced a
-# complete, full-inventory cycle for this month: a successful run of that workflow this month, and an issue
-# labelled evidence-sweep, authored by the Actions bot, whose title names this month and says "complete run".
-# A hand-labelled issue, a one-instrument manual run or a partial run does not satisfy it. If the check fails,
-# one issue is opened for the month (never a second). A missing sweep is an incomplete maintenance cycle, not
-# a month with no new evidence. This runs two days after the harvest; that is the response time, not 24 hours.
+# The guard against silence. On the third of each month, verifies that this month's planned maintenance cycle
+# happened, through tools/cycle.py verify (read-only): a successful run of the evidence-harvest workflow whose
+# artefact names this cycle as planned, reports status complete over the full inventory with every expected
+# channel complete, was built from the current query file, and is named, with its hash and GitHub run id, by
+# an issue the workflow itself authored. A partial run, a manual catch-up, an unrelated successful run, a
+# hand-written issue or an issue describing a failed run does not satisfy it. If the check fails, one issue is
+# opened for the cycle (never a second). A missing sweep is an incomplete maintenance cycle, not a month with
+# no new evidence. This runs two days after the harvest; that is the response time.
 
 on:
   schedule:
@@ -15,25 +17,27 @@ on:
 permissions:
   issues: write
   actions: read
+  contents: read
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: look for this month's complete cycle
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: verify this month's planned cycle
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
-          MONTH=$(date -u +%Y-%m); SINCE="${MONTH}-01T00:00:00Z"
-          RUNS=$(gh run list --repo "$REPO" --workflow evidence-harvest --created ">=$SINCE" --json conclusion --jq '[.[] | select(.conclusion=="success")] | length')
-          N=$(gh issue list --repo "$REPO" --label evidence-sweep --author app/github-actions --state all --search "\"Evidence harvest $MONTH: complete run\" in:title" --json number --jq 'length')
-          echo "successful evidence-harvest runs this month: $RUNS; bot-authored complete-run issues for $MONTH: $N"
-          if [ "$RUNS" = "0" ] || [ "$N" = "0" ]; then
-            EXISTING=$(gh issue list --repo "$REPO" --label maintenance --state open --search "\"No complete evidence sweep for $MONTH\" in:title" --json number --jq 'length')
-            if [ "$EXISTING" = "0" ]; then
-              gh issue create --repo "$REPO" --title "No complete evidence sweep for $MONTH" --label maintenance \
-                --body "The tripwire found $RUNS successful evidence-harvest runs and $N complete-run issues authored by the workflow for $MONTH. The monthly harvest did not run to completion for the full inventory, or did not report. Treat this month as an incomplete maintenance cycle until a complete run and its issue exist. A partial run, a manual one-instrument run or a hand-labelled issue does not count."
-            fi
-            exit 1
+          CYCLE=$(python tools/cycle.py window --event schedule | sed -n 's/^cycle_id=//p')
+          echo "cycle $CYCLE"
+          if python tools/cycle.py verify --cycle "$CYCLE" --repo "$REPO" | tee /tmp/verify.txt; then exit 0; fi
+          EXISTING=$(gh issue list --repo "$REPO" --label maintenance --state open --search "\"No verified evidence sweep for $CYCLE\" in:title" --json number --jq 'length')
+          if [ "$EXISTING" = "0" ]; then
+            gh issue create --repo "$REPO" --title "No verified evidence sweep for $CYCLE" --label maintenance \
+              --body "$(printf 'tools/cycle.py verify could not correlate a successful evidence-harvest run, a complete full-inventory artefact for cycle %s built from the current query file, and a workflow-authored issue naming that run and artefact. Treat this cycle as incomplete until they exist. A partial run, a manual catch-up, an unrelated run or a hand-written issue does not count.\n\nReasons:\n```\n%s\n```' "$CYCLE" "$(cat /tmp/verify.txt)")"
           fi
+          exit 1

@@ -8,7 +8,8 @@ folder changes a grade, a status or a licence class. These tools find and watch.
 | `tools/harvest.py` | monthly, `.github/workflows/harvest.yml`, first of the month | `candidates/YYYY-MM.json` as a run artefact; one issue labelled `evidence-sweep` | touch the dataset |
 | `tools/watch_licences.py` | weekly, `.github/workflows/licence-watch.yml`, Mondays | `licence-changes.json` as a run artefact; an issue when a page's visible text changed | change a licence class or status |
 | `tools/watch_retractions.py` | monthly, `.github/workflows/retraction-watch.yml`, the second | `retraction-signals.json` as a run artefact; an issue when a cited work carries an update notice or retraction flag | remove evidence or move a grade |
-| tripwire | monthly, `.github/workflows/tripwire.yml`, the third | an issue if this month has no successful full-inventory harvest run with a bot-authored `evidence-sweep` issue saying "complete run" | anything else |
+| tripwire | monthly, `.github/workflows/tripwire.yml`, the third | an issue if `tools/cycle.py verify` cannot correlate a successful harvest run, a complete full-inventory artefact for this month's planned cycle and the workflow's own issue naming both | anything else |
+| `tools/cycle.py` | called by both workflows | nothing on its own; `advance` writes `watermarks.json` locally for the screening pull request | run a harvest, open an issue |
 
 ## The harvester
 
@@ -33,11 +34,14 @@ Abstracts are read for matching and not stored. The untargeted channel keeps eve
 mention a tracked instrument (whole-phrase match; an abbreviation only beside its context terms) rather than
 dropping them, since a paper can introduce one instrument while comparing it with another.
 
-Each run writes one envelope: schema version, run id, the registry commit, the query file version and hash, the
-requested window, whether the run covered the full inventory, start and finish times, a status (`complete` when
-every planned channel completed all its pages; `partial` or `failed` otherwise; an empty channel set is a
-configuration failure), one record per channel with its exact query, page count, reported and collected hits and
-outcome, the candidates, the new-instrument candidates, the low-priority counts and any warnings. A run whose
+Each run writes one envelope (schema 1.1): schema version, run id, the registry commit, the query file version and
+hash, the cycle (id and kind, below), the requested publication window, whether the run covered the full
+inventory, start and finish times, a status (`complete` when every planned channel completed all its pages;
+`partial` or `failed` otherwise; an empty channel set is a configuration failure), the expected channel set
+derived from the query file and the expected channels that did not complete (so a channel that never ran is
+counted, not forgotten), one record per channel with its exact query, page count, reported and collected hits and
+outcome, the candidates, the new-instrument candidates, the low-priority counts, any warnings, and a watermark
+proposal when the run was complete over the full inventory. A run whose
 status is not `complete` exits non-zero after writing its artefact, so the workflow shows the cycle as
 incomplete. A server-requested wait of up to two minutes is honoured inside the run; a longer one defers the
 channel with the reason recorded. The candidate list is sorted, so two runs over one window diff cleanly.
@@ -45,8 +49,23 @@ Saved source responses and pinned code and configuration support reproducible re
 change between requests. No language model is involved at any point. `--self-test` checks the pure functions
 and the query file's shape offline; replay fixtures against saved responses are designed and not yet built.
 
+### Cycles, windows and watermarks
+
+`tools/cycle.py` is the one definition both workflows use. A planned cycle is named by the month the run happens
+in: the run on 1 October is cycle `2026-10`, and the tripwire on 3 October looks for cycle `2026-10`. The
+publication window it searches is separate: from the watermark (the end of the last complete full-inventory
+run) minus `overlap_days` (14, so a work indexed late is seen again), or the first day of the previous month
+when no watermark exists, to today. A manual run with an explicit window is a manual cycle named
+`manual-FROM-TO`; it never satisfies a planned cycle. A manual run with no window is a re-run of the current
+planned cycle. `watermarks.json` advances only after a complete full-inventory run and only through the
+screening pull request a person merges: the harvest writes a proposal into its artefact and the issue, and
+`python tools/cycle.py advance --artefact FILE` copies it in. Nothing advances automatically, so a failed or
+partial month leaves the window where it was and the next run covers it again. `python tools/cycle.py --self-test`
+runs the offline contract suite: month rollover, manual old window, watermark-derived window, changed query file,
+and every verification refusal below.
+
 ```
-python tools/harvest.py --from 2026-08-01 --to 2026-08-31 --out evidence/candidates/2026-08.json
+python tools/harvest.py --from 2026-08-01 --to 2026-08-31 --cycle-id manual-2026-08-01-2026-08-31 --cycle-kind manual --out evidence/candidates/manual-2026-08-01-2026-08-31.json
 python tools/harvest.py --instrument isi --from 2026-01-01 --to 2026-09-05 --no-verify
 python tools/harvest.py --self-test
 ```
@@ -85,20 +104,27 @@ the archived copy the record links; it says nothing about what changed. Baseline
 ## The tripwire
 
 An early version of the monthly sweep failed silently for a month. The tripwire exists so that cannot recur
-unnoticed: on the third of each month it looks for a successful `evidence-harvest` run this month and an
-`evidence-sweep` issue authored by the workflow whose title names the month and says "complete run", and opens one
-`maintenance` issue for the month if either is missing. A partial run, a manual one-instrument run or a
-hand-labelled issue does not satisfy it. It runs two days after the harvest; that is its response time. All
-index-consuming workflows share one concurrency group, so two never run at once against the open indexes.
+unnoticed. On the third of each month it runs `python tools/cycle.py verify --cycle <this month>`, which is
+read-only: it lists the `evidence-harvest` runs of the month, downloads the cycle's artefact from each successful
+one, and accepts the cycle only when one artefact names this cycle as planned, reports status complete over the
+full inventory with every expected channel complete (the denominator is the query file's channel set), was built
+from the current query file, and an issue authored by the workflow carries a marker naming that exact GitHub run
+and that artefact's SHA-256. A partial run, a manual catch-up, an unrelated successful run, a hand-written issue,
+or an issue describing a run that failed does not satisfy it; the refusal reasons go into the one `maintenance`
+issue it opens for the cycle. It runs two days after the harvest; that is its response time. All index-consuming
+workflows share one concurrency group, so two never run at once against the open indexes.
 
 ## The retraction watcher
 
 `tools/watch_retractions.py` checks every distinct DOI in the current dataset's citation arrays against three
 sources, each recorded separately so one source's failure never hides another's answer: Crossref update
-notices pointing at the work (the `updates` filter, paged, marked truncated if the page budget is reached), the
+notices pointing at the work (the `updates` filter, paged; reaching the page cap before the index is exhausted is
+recorded as incomplete coverage for that DOI and source, whether or not a notice was found, and makes the run
+partial with a non-zero exit), the
 work's own `update-to` with its type and target (it is itself a notice), and OpenAlex's retraction flag.
 Correction, expression of concern, retraction, withdrawal and reinstatement are different events and are kept
 by type. Cells are mapped to citations by the dataset's typed references (precondition evidence and retest
 entries), never by prose. A signal opens one issue naming every record and cell that cites the work; so does a
 partial or failed run. Absence of a signal is not proof that a work stands; a DOI outside Crossref's coverage is
-reported as such, not as clean.
+reported as such, not as clean. `--self-test` stubs the paged source offline and checks the page-cap case with and
+without a signal, a deferred source and an all-sources failure.
