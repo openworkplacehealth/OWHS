@@ -140,8 +140,8 @@ The Mermaid source is [`erd.mmd`](erd.mmd) (renders natively in GitHub/Markdown)
 
 Restated here because §2b field tables reference it on every row. The scope draft's P1 to P5 stand; this draft adds the fourth visibility class made necessary by occupational health and adjustments (§1.2).
 
-- **P1, no direct identifiers** in an OWHS payload; pseudonymous IDs and banded demographics only. What is enforced in schema (§2d): a direct identifier cannot be carried in a field of its own, because every entity and every nested object declares its permitted properties and rejects the rest. What is not enforced: an identifier written into the value of a permitted string field, such as a source-system provider name, is structurally valid. No schema keyword detects it. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.
-- **P2, aggregation floors:** n≥5 for any employer-visible value; **n≥10** for severe-distress measures. A conformant producer **refuses to emit**, not merely hides.
+- **P1, no direct identifiers** in an OWHS payload; pseudonymous IDs and banded demographics only. In the three executable schemas, undeclared properties are rejected on the core objects. This rejects separate identifier fields but cannot detect identifiers embedded in permitted string values: an identifier written into a permitted string field, such as a source-system provider name, is structurally valid and no schema keyword detects it. The remaining entity field tables are specifications, not executable schemas. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.
+- **P2, aggregation floors:** employer-visible aggregates require n≥5, or n≥10 for severe-distress measures. Below the applicable floor a conformant producer emits suppression metadata instead of the value; it refuses to emit, not merely hides. The enumerated `individual-employer` fields are exempt under the independent-legal-basis condition below.
 - **P3, visibility is a field-level property** with four classes: `open` / `aggregate-only` / `individual-employer` / `individual-never`. All instrument results are `individual-never` by definition.
 - **P4, safeguarding-category signals** (bullying, harassment, discrimination, crisis) are excluded from employer-visible outputs entirely, **at any n**.
 - **P5, completeness travels:** every aggregate carries its completion rate and suppression metadata.
@@ -397,6 +397,7 @@ Every list is a standalone JSON file with its own `version` (semver), independen
 | `rtw-checkpoint` | 0.1.0 | 3 | OWHS v0.1 provisional sustained-RTW checkpoints |
 | `rtw-outcome` | 0.1.0 | 5 | OWHS v0.1; return-to-work outcome types (no official UK taxonomy; insurer/OH case systems use proprietary ones) |
 | `rtw-sustained-status` | 0.1.0 | 3 | OWHS v0.1; sustained-return status at a checkpoint (no UK incumbent) |
+| `safeguarding-category` | 0.1.0 | 6 | OWHS v0.1 provisional safeguarding categories; governance-owned |
 | `sampling-design` | 0.1.0 | 3 | OWHS sampling design descriptor |
 | `source-type` | 0.1.0 | 4 | OWHS record provenance |
 | `suppression-reason` | 0.1.0 | 3 | OWHS aggregate suppression reasons |
@@ -434,7 +435,7 @@ Schemas: [`AbsenceEpisode.json`](schemas/AbsenceEpisode.json) · [`ReturnToWorkO
 
 ### Privacy and boundary rules expressed *in schema*
 
-The privacy profile is not left to prose, the schemas enforce the parts a validator can see:
+The three executable schemas enforce the following structural constraints. They do not enforce the whole privacy profile or detect sensitive content embedded in permitted string values:
 
 - **Direct-identifier ban (P1):** `additionalProperties:false` on each entity and on every nested object rejects `name`, `nino`, `email`, `dateOfBirth`, `address` and every other property not declared in the schema, whether it arrives as a known identifier name or as a typo. An earlier `not/anyOf` member asserting the same five names has been removed: it duplicated an error that `additionalProperties` already raised, changed no verdict, and its comment claimed to forbid identifiers "anywhere", which was untrue of values. A key-based rule cannot reach an identifier pasted into a permitted string field; that is stated as a producer obligation in §3 P1.
 - **Pseudonym shape:** `pseudonymId` must match `^owhs:pseudo:[0-9a-f]{16,64}$`, so a raw employee reference (`EMP-Jane-Smith`) is a schema error, not a warning.
@@ -455,7 +456,7 @@ The privacy profile is not left to prose, the schemas enforce the parts a valida
 
 The valid instances model the same worker (one pseudonym) through a coherent journey: a 10-working-day (75-hour, ONS 7.5h/day) musculoskeletal absence → an OH management referral returning `fit-with-adjustments` with released opinion → a phased RTW with altered hours, sustained at 4 and 13 weeks. That the three valid instances cross-reference cleanly (`absenceEpisodeId`, `linkedAbsenceEpisodeId`) demonstrates the relationships in the ERD hold at instance level.
 
-**Note on cross-field rules a single schema cannot enforce.** Two rules are *conformance-checked by the validator tool, not by JSON Schema alone*: (1) `endDate ≥ startDate`, and (2) the aggregation floors (n≥5 / n≥10), these are payload-level and cross-record checks that belong to the privacy-profile conformance level (§2g), not to per-instance structural validation. The schema carries the `$comment` markers; the reference validator enforces them.
+**Cross-field checks and implementation limits.** The reference validator implements C1 (`AbsenceEpisode.endDate` not before `startDate`) and C2 (`OHEpisode.assessmentDate` not before `referralDate`) in addition to JSON Schema and format validation. Aggregation floors, suppression and visibility requirements belong to Level 3 and are not implemented by the current reference validator. A schema comment records a requirement; it does not execute it.
 
 
 ---
@@ -527,7 +528,7 @@ Level 1, plus every coded field resolves to a **current** code-list version.
 
 ### Level 3, +Privacy profile
 Level 2, plus the normative privacy MUSTs, the level that makes a payload *safe to emit*.
-- **Aggregation floor:** any employer-visible value is delivered only through an `AggregateReport` with `n ≥ 5`; `aboveThresholdFlag`/severe-distress measures require `n ≥ 10`. Below floor ⇒ the producer MUST set `suppressed:true` with a `suppressionReason`, not emit the value.
+- **Aggregation floor:** employer-visible aggregates are delivered through an `AggregateReport` with n≥5, or n≥10 for severe-distress measures. Below the applicable floor the producer MUST emit `suppressed:true` with a `suppressionReason` and omit the value. The `individual-employer` fields enumerated in section 3 are exempt from aggregation floors only under that section's independent-legal-basis condition.
 - **Safeguarding exclusion (P4):** any record with `safeguardingCategory:true` (or a safeguarding-tagged construct) is absent from every employer-visible output at any n.
 - **Visibility classes (P3):** no `individual-never` field value appears at individual grain in any output; `individual-employer` fields appear only where the declared legal basis is present.
 - **Completeness travels (P5):** every `AggregateReport` carries `completionRate`, `suppressed`, and (where applicable) `suppressionReason`.
@@ -560,7 +561,7 @@ Three registers, none smoothed over: decisions reasonable standards authors woul
 
 5. **Adopting the ONS six-category reason taxonomy as the core enum.** ONS designed it for a *population survey*, not an employer episode record; its "minor illness" / "other" buckets are coarse for management use, and "other" explicitly mixes COVID-19, accidents and diabetes [1]. Anchoring to it buys comparability at the cost of analytic resolution, and some authors would prefer a richer employer taxonomy that *rolls up* to ONS.
 
-6. **`additionalProperties:false` everywhere.** Strict closure guarantees the identifier ban but makes the schema brittle to legitimate extension; producers must route everything non-core through `ext`, which some integrators will find heavy-handed versus an open-world model with a denylist.
+6. **Closed core objects.** Rejecting undeclared properties prevents extra identifier fields in the implemented core schemas, but cannot detect identifiers inside allowed string values. The specified `ext` mechanism is not yet implemented by the three schemas. Any extension implementation must preserve the producer's P1 obligation and define its validation boundary explicitly.
 
 7. **Modelling `ill-health-exit` as an RTW *value* rather than its own entity.** Compresses a significant, sensitive event (medical capability dismissal / ill-health retirement) into an enum on an outcome record. Defensible for SME simplicity; disputable because it under-models an event with distinct legal and pension dimensions.
 

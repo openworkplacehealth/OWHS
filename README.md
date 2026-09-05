@@ -14,7 +14,7 @@ OWHS is an independent, open proposal for what standardised workplace-health dat
 | Path | Contents |
 |---|---|
 | `spec/` | The v0.1 specification draft: entity catalogue, per-field tables with privacy classes, profile mechanism, pseudonymisation design, conformance levels, and an honesty pass listing every disputable decision. Plus the ERD and the domain-coverage decision table. |
-| `schemas/` | Worked JSON Schemas (Draft 2020-12) for `AbsenceEpisode`, `ReturnToWorkOutcome` and `OHEpisode`. Privacy rules are enforced *in schema*: payloads carrying direct identifiers or clinical content are structurally invalid. |
+| `schemas/` | Three executable JSON Schemas (Draft 2020-12) for `AbsenceEpisode`, `ReturnToWorkOutcome` and `OHEpisode`. They reject undeclared properties and implement the documented structural constraints. They cannot detect identifiers or clinical content embedded in permitted string values, and do not implement all privacy-profile requirements. |
 | `examples/` | A valid and a deliberately invalid instance per schema, with the validation report showing exactly which conformance errors the invalid ones raise. |
 | `codelists/` | 24 independently versioned code lists (ONS absence reasons, fit-note adjustment categories, HSE-anchored construct domains, the provisional safeguarding-category list, and more) plus the registry. |
 | `tools/` | The reference validator (Level 1, structural). `python tools/validate.py <schema> <instance>` |
@@ -24,7 +24,7 @@ OWHS is an independent, open proposal for what standardised workplace-health dat
 
 ## The privacy profile, in one paragraph
 
-No direct identifiers anywhere, ever (enforced in schema). No employer-visible value below an aggregation floor of five people, ten for severe-distress measures. Individual instrument results are never employer-visible, by definition. Safeguarding-category signals are excluded from employer-visible outputs at any group size. Every aggregate carries its completion rate and suppression metadata, so consumers can see what is not being said. A conformant producer refuses to emit a violating payload rather than merely hiding it.
+OWHS prohibits direct identifiers in its payloads. The current schemas reject undeclared properties, but identifiers inside permitted string values remain a producer obligation. Employer-visible aggregates have a floor of five respondents, or ten for severe-distress measures. The narrowly defined `individual-employer` fields are exempt from these floors where an independent legal basis permits disclosure. Individual instrument results are not employer-visible, and safeguarding-category signals are excluded from employer-visible output at every group size. Aggregates must carry completion and suppression metadata. These are conformance requirements: the reference validator currently implements Level 1 structural checks, including formats and named date-order rules, and does not verify Level 2 or Level 3.
 
 ## Status
 
