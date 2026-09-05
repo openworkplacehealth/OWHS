@@ -39,26 +39,29 @@ def query_sha(path=QUERIES):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def expected_channels(cfg):
-    """Every (instrument, route) a full-inventory run must complete, from the query file alone: names for every record,
-    abbreviation where the record has abbreviations with context terms, cites where a seed carries an OpenAlex id, and
-    the untargeted new-instrument channel (instrument None) when the query file defines one. The harvester's self-test
-    asserts this equals the channels it plans, so the two cannot drift."""
+def expected_channels(cfg, date_from, date_to, catch_from=None, full_history=False):
+    """Every channel a full-inventory run must account for, at query granularity: one descriptor per instrument, route, provider,
+    date basis and exact query (or seed), with a stable channel id, from the harvester's own planning function so the verifier's
+    denominator is exactly what the harvester planned. A provider filter that is not available in this configuration is listed
+    with its reason; the run reports it as unavailable rather than claiming it ran."""
+    import harvest
     out = []
-    for r in cfg["records"]:
-        out.append((r["instrument_id"], "names"))
-        if r.get("abbreviations") and r.get("abbreviation_context"): out.append((r["instrument_id"], "abbreviation"))
-        if any(sd.get("openalex_id") for sd in (r.get("citation_seeds") or [])): out.append((r["instrument_id"], "cites"))
-    if cfg.get("new_instrument_query"): out.append((None, "new-instrument"))
-    return sorted(out, key=lambda x: (x[0] or "", x[1]))
+    for rec in cfg["records"]:
+        out += harvest.planned_channels(rec, cfg, date_from, date_to, catch_from, full_history)
+    out += [desc for desc, _ in harvest.new_instrument_channels(cfg, date_from, date_to)]
+    return sorted(out, key=lambda c: (c["instrument_id"] or "", c["route"], c["source"], c["date_basis"], c["query"]))
 
 
-def complete_pairs(channels):
-    """(instrument, route) pairs every one of whose channels completed; a pair with one failed source is not complete."""
-    by = {}
-    for c in channels:
-        by.setdefault((c.get("instrument_id"), c.get("route")), []).append(c.get("outcome") == "complete")
-    return {k for k, v in by.items() if all(v)}
+def channels_not_complete(expected, channels):
+    """Expected channels whose run did not complete, by channel id. A channel declared unavailable in the plan may be reported as
+    unavailable; anything else must be complete. A channel absent from the run is missing, and stays in the denominator."""
+    by_id = {c.get("channel_id"): c for c in channels}
+    out = []
+    for e in expected:
+        ran = by_id.get(e["channel_id"])
+        ok = ran is not None and (ran.get("outcome") == "complete" or (e.get("unavailable") and ran.get("outcome") == "unavailable"))
+        if not ok: out.append({k: e[k] for k in ("instrument_id", "route", "source", "date_basis", "channel_id")} | {"outcome": ran.get("outcome") if ran else "missing"})
+    return out
 
 
 def load_watermarks(path=WATERMARKS):
@@ -66,8 +69,13 @@ def load_watermarks(path=WATERMARKS):
     return {"schema_version": "1.0", "overlap_days": 14, "entries": {}, "note": "Advanced only through a merged pull request, after a complete full-inventory run."}
 
 
+CATCH_UP_DAYS = 90       # ingestion catch-up: Europe PMC first-index date over this many days before the window end
+QUARTER_MONTHS = (1, 4, 7, 10)
+
+
 def window(event, in_from, in_to, today, marks, qsha):
-    """(cycle_id, kind, from, to). Explicit inputs make a manual cycle; otherwise the planned cycle of today's month."""
+    """(cycle_id, kind, from, to). Explicit inputs make a manual cycle; otherwise the planned cycle of today's month.
+    See plan() for the catch-up window and the quarterly full-history flag."""
     def parse(v):
         v = (v or "").strip()
         if not v: return None
@@ -87,9 +95,19 @@ def window(event, in_from, in_to, today, marks, qsha):
     return today.strftime("%Y-%m"), "planned", f, today
 
 
+def plan(event, in_from, in_to, today, marks, qsha):
+    """The full plan for a run: cycle id and kind, publication window, first-index catch-up window (90 days before the end) and
+    whether this planned cycle is a quarterly one that also reruns names and citation links over the full history."""
+    cycle_id, kind, f, t = window(event, in_from, in_to, today, marks, qsha)
+    catch_from = t - datetime.timedelta(days=CATCH_UP_DAYS)
+    quarterly = kind == "planned" and today.month in QUARTER_MONTHS
+    return {"cycle_id": cycle_id, "kind": kind, "from": f, "to": t, "catch_from": catch_from, "full_history": quarterly}
+
+
 def verify(cycle_id, qsha, expected, runs, artefacts, issues):
     """Pure correlation. runs: [{github_run_id, conclusion, event}]; artefacts: {github_run_id: (envelope dict, sha256)};
-    issues: [{author, body}]. Returns (accepted_run_id or None, reasons)."""
+    issues: [{author, body}]; expected: the current plan's channel descriptors for this cycle (None: accept the artefact's own set).
+    Returns (accepted_run_id or None, reasons)."""
     reasons = []
     marks = []
     for i in issues:
@@ -107,9 +125,13 @@ def verify(cycle_id, qsha, expected, runs, artefacts, issues):
         if env.get("status") != "complete": reasons.append(f"run {rid}: status {env.get('status')!r}"); continue
         if env.get("full_inventory") is not True: reasons.append(f"run {rid}: not a full-inventory run"); continue
         if env.get("query_sha256") != qsha: reasons.append(f"run {rid}: query file hash {str(env.get('query_sha256'))[:12]} is not the current {qsha[:12]}"); continue
-        done = complete_pairs(env.get("channels", []))
-        missing = [f"{i}/{r}" for i, r in expected if (i, r) not in done]
-        if missing: reasons.append(f"run {rid}: {len(missing)} of {len(expected)} expected channels not complete: {missing[:5]}"); continue
+        exp = env.get("expected_channels") if isinstance(env.get("expected_channels"), list) else None
+        if not exp: reasons.append(f"run {rid}: artefact carries no expected channel set"); continue
+        if expected is not None and {c["channel_id"] for c in exp} != {c["channel_id"] for c in expected}:
+            reasons.append(f"run {rid}: the artefact's expected channel set differs from the current plan for this cycle"); continue
+        missing = channels_not_complete(exp, env.get("channels", []))
+        if missing: reasons.append(f"run {rid}: {len(missing)} of {len(exp)} expected channels not complete: {[m['channel_id'] for m in missing][:5]}"); continue
+        if env.get("channels_not_complete"): reasons.append(f"run {rid}: artefact itself lists {len(env['channels_not_complete'])} channels not complete"); continue
         matched = [m for m in marks if m.get("cycle_id") == cycle_id and m.get("github_run_id") == rid and m.get("artefact_sha256") == sha]
         if not matched: reasons.append(f"run {rid}: no bot-authored issue names this run and artefact hash {sha[:12]}"); continue
         return rid, reasons
@@ -141,17 +163,46 @@ def verify_live(cycle_id, repo):
     issues = json.loads(gh("issue", "list", "--repo", repo, "--label", "evidence-sweep", "--state", "all", "--search", f'"Evidence harvest {cycle_id}" in:title', "--json", "author,body"))
     issues = [{"author": ("app/" + i["author"]["login"]) if i["author"].get("is_bot") else i["author"]["login"], "body": i["body"]} for i in issues]
     cfg = json.loads(QUERIES.read_text(encoding="utf-8"))
-    return verify(cycle_id, query_sha(), expected_channels(cfg), runs, artefacts, issues)
+    pl = plan("schedule", None, None, datetime.date.fromisoformat(f"{cycle_id}-01"), load_watermarks(), query_sha())
+    # the expected set is compared on channel ids, which depend on the exact queries and not on the window dates
+    return verify(cycle_id, query_sha(), None, runs, artefacts, issues)
+
+
+def advance_problems(env):
+    """Why an artefact cannot advance the watermark. The proposal is checked against the envelope it sits in, never trusted alone."""
+    p = []
+    prop = env.get("watermark_proposal")
+    if not isinstance(prop, dict): return ["no watermark proposal: the run was not a complete full-inventory planned run"]
+    if env.get("status") != "complete": p.append(f"status is {env.get('status')!r}, not complete")
+    if env.get("full_inventory") is not True: p.append("not a full-inventory run")
+    if (env.get("cycle") or {}).get("kind") != "planned": p.append("not a planned cycle")
+    if env.get("channels_not_complete"): p.append(f"{len(env['channels_not_complete'])} expected channels not complete")
+    exp = env.get("expected_channels") or []
+    if not exp: p.append("no expected channel set")
+    elif channels_not_complete(exp, env.get("channels", [])): p.append("a channel in the expected set did not complete")
+    if prop.get("query_sha256") != env.get("query_sha256"): p.append("proposal query hash differs from the envelope's")
+    if prop.get("cycle_id") != (env.get("cycle") or {}).get("id"): p.append("proposal cycle id differs from the envelope's")
+    if prop.get("run_id") != env.get("run_id"): p.append("proposal run id differs from the envelope's")
+    if prop.get("last_complete_to") != (env.get("requested_window") or {}).get("to"): p.append("proposal window end differs from the requested window")
+    if prop.get("channels_complete") != len(exp): p.append("proposal channel count differs from the expected set")
+    for k in ("last_complete_to", "catch_from"):
+        v = prop.get(k)
+        if v is not None:
+            try: datetime.date.fromisoformat(v)
+            except (TypeError, ValueError): p.append(f"proposal {k} is not a valid date")
+    if not isinstance(prop.get("query_sha256"), str) or len(prop["query_sha256"]) != 64: p.append("proposal query hash malformed")
+    return p
 
 
 def advance(artefact_path, path=WATERMARKS):
     env = json.loads(Path(artefact_path).read_text(encoding="utf-8"))
-    prop = env.get("watermark_proposal")
-    if not prop: raise SystemExit("this artefact carries no watermark proposal: the run was not a complete full-inventory run")
+    problems = advance_problems(env)
+    if problems: raise SystemExit("this artefact cannot advance the watermark: " + "; ".join(problems))
+    prop = env["watermark_proposal"]
     marks = load_watermarks(path)
     cur = marks["entries"].get(prop["query_sha256"])
     if cur and cur["last_complete_to"] >= prop["last_complete_to"]: raise SystemExit(f"watermark already at {cur['last_complete_to']}; nothing to advance")
-    marks["entries"][prop["query_sha256"]] = {**prop, "advanced_on": datetime.date.today().isoformat()}
+    marks["entries"][prop["query_sha256"]] = {k: v for k, v in prop.items() if k != "note"} | {"advanced_on": datetime.date.today().isoformat(), "date_bases": env.get("date_bases")}
     Path(path).write_text(json.dumps(marks, indent=2) + "\n", encoding="utf-8")
     print(f"watermark for query {prop['query_sha256'][:12]} advanced to {prop['last_complete_to']} (cycle {prop['cycle_id']}, run {prop['run_id']}); commit this in the screening pull request")
 
@@ -180,16 +231,28 @@ def self_test():
     try: window("schedule", "2026-01-01", None, D(2026, 10, 1), marks0, "q1"); t("scheduled run with inputs refused", False)
     except SystemExit: t("scheduled run with window inputs is a configuration error", True)
 
-    cfg = {"new_instrument_query": {"x": 1}, "records": [{"instrument_id": "a", "abbreviations": ["A"], "abbreviation_context": ["c"], "citation_seeds": [{"openalex_id": "W1"}]},
-                                                       {"instrument_id": "b", "abbreviations": ["B"], "citation_seeds": [{"doi": "no id"}]}]}
-    exp = expected_channels(cfg)
-    t("expected channel set: names for both, abbreviation and cites for a only (b lacks context and an OpenAlex id), plus new-instrument",
-      exp == [(None, "new-instrument"), ("a", "abbreviation"), ("a", "cites"), ("a", "names"), ("b", "names")], exp)
-    t("a pair with one failed source channel is not complete", complete_pairs([{"instrument_id": "a", "route": "names", "outcome": "complete"}, {"instrument_id": "a", "route": "names", "outcome": "failed"}]) == set())
+    cfg = {"property_terms": ["validation"], "new_instrument_query": {"context_terms": ["work"], "object_terms": ["scale"], "evidence_terms": ["validation"]},
+           "records": [{"instrument_id": "a", "names": ["Alpha Scale", "Alpha Inventory"], "abbreviations": ["A"], "abbreviation_context": ["c"], "citation_seeds": [{"openalex_id": "W1"}, {"openalex_id": "W2"}]},
+                       {"instrument_id": "b", "names": ["Beta"], "abbreviations": ["B"], "citation_seeds": [{"doi": "no id"}]}]}
+    exp = expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)
+    kinds = sorted({(c["instrument_id"] or "", c["route"], c["source"], c["date_basis"]) for c in exp})
+    t("expected channels at query granularity: two alias names and two seeds for a are separate channels; b has no abbreviation context and no OpenAlex seed id",
+      sum(1 for c in exp if c["instrument_id"] == "a" and c["route"] == "names" and c["date_basis"] == "publication") == 2 and sum(1 for c in exp if c["route"] == "cites") == 2 and not any(c["instrument_id"] == "b" and c["route"] in ("abbreviation", "cites") for c in exp), kinds)
+    t("the catch-up basis adds first-index channels on Europe PMC and lists the OpenAlex update filter as unavailable", any(c["date_basis"] == "first_indexed" and c["source"] == "europepmc" for c in exp) and any(c["unavailable"] for c in exp))
+    expq = expected_channels(cfg, "2026-09-01", "2026-10-01", None, True)
+    t("a quarterly plan adds full-history names and citation channels", any(c["date_basis"] == "full_history" and c["route"] == "cites" for c in expq) and not any(c["date_basis"] == "full_history" and c["route"] == "abbreviation" for c in expq))
+    alias = [c for c in exp if c["instrument_id"] == "a" and c["route"] == "names" and c["date_basis"] == "publication" and c["source"] == "europepmc"]
+    ran_minus_one = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in exp if c["channel_id"] != alias[1]["channel_id"]]
+    t("dropping one alias channel while its sibling completes is visible in the denominator", [m["channel_id"] for m in channels_not_complete(exp, ran_minus_one)] == [alias[1]["channel_id"]])
+    full_run = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in exp]
+    t("a full run with the declared-unavailable filter reported as unavailable has nothing missing", channels_not_complete(exp, full_run) == [])
     Q = "q" * 64
-    def env(cycle="2026-10", kind="planned", status="complete", full=True, q=Q, drop=None):
-        chans = [{"instrument_id": i, "route": r, "outcome": "complete"} for i, r in exp if (i, r) != drop]
-        return {"cycle": {"id": cycle, "kind": kind}, "status": status, "full_inventory": full, "query_sha256": q, "channels": chans}
+    def env(cycle="2026-10", kind="planned", status="complete", full=True, q=Q, drop=None, channels=None, expected=None):
+        chans = channels if channels is not None else [c for c in full_run if c["channel_id"] != drop]
+        e = {"cycle": {"id": cycle, "kind": kind}, "status": status, "full_inventory": full, "query_sha256": q, "run_id": "r1",
+             "requested_window": {"from": "2026-09-01", "to": "2026-10-01"}, "expected_channels": expected if expected is not None else exp, "channels": chans}
+        e["channels_not_complete"] = channels_not_complete(e["expected_channels"], chans)
+        return e
     def mark(run, sha, cycle="2026-10", status="complete"):
         return {"author": "app/github-actions", "body": f"text\n<!-- owhs-cycle cycle_id={cycle} kind=planned github_run_id={run} artefact_sha256={sha} status={status} -->"}
     good = env(); sha = hashlib.sha256(json.dumps(good).encode()).hexdigest()
@@ -200,12 +263,15 @@ def self_test():
     t("an unrelated successful run plus an issue naming another run is refused", rid is None and "names this run" in why[0], why)
     rid, why = verify("2026-10", Q, exp, runs, {"100": (good, sha)}, [{"author": "someone", "body": mark("100", sha)["body"]}])
     t("a hand-authored issue with the right marker is refused", rid is None, why)
-    miss = env(drop=("b", "names")); s2 = hashlib.sha256(json.dumps(miss).encode()).hexdigest()
+    miss = env(drop=alias[1]["channel_id"]); s2 = hashlib.sha256(json.dumps(miss).encode()).hexdigest()
     rid, why = verify("2026-10", Q, exp, runs, {"100": (miss, s2)}, [mark("100", s2)])
-    t("a missing channel is counted against the expected denominator and refused", rid is None and "expected channels not complete" in why[0], why)
+    t("one missing alias channel (sibling complete) is refused against the full denominator", rid is None and "not complete" in why[0], why)
     alt = env(q="z" * 64); s3 = hashlib.sha256(json.dumps(alt).encode()).hexdigest()
     rid, why = verify("2026-10", Q, exp, runs, {"100": (alt, s3)}, [mark("100", s3)])
     t("an artefact built from a different query file is refused", rid is None and "query file hash" in why[0], why)
+    narrower = env(expected=[c for c in exp if c["route"] != "cites"], channels=[c for c in full_run if c["route"] != "cites"]); s7 = hashlib.sha256(json.dumps(narrower).encode()).hexdigest()
+    rid, why = verify("2026-10", Q, exp, runs, {"100": (narrower, s7)}, [mark("100", s7)])
+    t("an artefact whose own expected set is narrower than the current plan is refused", rid is None and "differs from the current plan" in why[0], why)
     failed_runs = [{"github_run_id": "100", "conclusion": "failure", "event": "schedule"}]
     rid, why = verify("2026-10", Q, exp, failed_runs, {"100": (good, sha)}, [mark("100", sha)])
     t("a failed run with a complete-looking issue is refused", rid is None and "conclusion failure" in why[0], why)
@@ -222,18 +288,36 @@ def self_test():
     one = env(full=False); s6 = hashlib.sha256(json.dumps(one).encode()).hexdigest()
     rid, why = verify("2026-10", Q, exp, runs, {"100": (one, s6)}, [mark("100", s6)])
     t("a one-instrument run is refused as not full inventory", rid is None and "full-inventory" in why[0], why)
-    # watermark advance only from a complete proposal, only forward, in a temporary file
+    # plan: quarterly flag and catch-up window
+    pl = plan("schedule", None, None, D(2026, 10, 1), marks0, "q1")
+    t("1 October plan: cycle 2026-10, catch-up from 3 July (90 days), quarterly full history on", (pl["cycle_id"], pl["catch_from"], pl["full_history"]) == ("2026-10", D(2026, 7, 3), True), pl)
+    pl = plan("schedule", None, None, D(2026, 11, 1), marks0, "q1")
+    t("1 November plan: not quarterly", pl["full_history"] is False)
+    # watermark advance: the proposal is checked against its envelope; a stale proposal on a failed, partial or incomplete envelope is refused
     with tempfile.TemporaryDirectory() as tmp:
         wm = Path(tmp) / "w.json"; art = Path(tmp) / "a.json"
-        art.write_text(json.dumps({"status": "partial"})); 
-        try: advance(art, wm); t("advance from a partial artefact refused", False)
-        except SystemExit: t("advance from an artefact without a proposal is refused", True)
-        art.write_text(json.dumps({"watermark_proposal": {"query_sha256": Q, "last_complete_to": "2026-10-01", "cycle_id": "2026-10", "run_id": "r1"}}))
+        stale = {"query_sha256": Q, "last_complete_to": "2026-10-01", "catch_from": "2026-07-03", "cycle_id": "2026-10", "run_id": "r1", "channels_complete": len(exp)}
+        art.write_text(json.dumps({"status": "failed", "full_inventory": False, "channels": [], "expected_channels": exp, "cycle": {"id": "2026-10", "kind": "planned"}, "query_sha256": Q, "run_id": "r1", "requested_window": {"to": "2026-10-01"}, "watermark_proposal": stale}))
+        try: advance(art, wm); t("a failed envelope carrying a populated proposal is refused", False)
+        except SystemExit as e: t("a failed envelope carrying a populated proposal is refused", "not complete" in str(e) and "full-inventory" in str(e))
+        partial = env(status="partial"); partial["watermark_proposal"] = stale; art.write_text(json.dumps(partial))
+        try: advance(art, wm); t("a partial envelope with a stale proposal is refused", False)
+        except SystemExit as e: t("a partial envelope with a stale proposal is refused", "partial" in str(e))
+        missing_ch = env(drop=alias[1]["channel_id"]); missing_ch["watermark_proposal"] = stale; art.write_text(json.dumps(missing_ch))
+        try: advance(art, wm); t("a complete-looking envelope missing one expected channel is refused", False)
+        except SystemExit as e: t("a complete-looking envelope missing one expected channel is refused", "not complete" in str(e))
+        okenv = env(); okenv["watermark_proposal"] = dict(stale); art.write_text(json.dumps(okenv))
         import io, contextlib
         with contextlib.redirect_stdout(io.StringIO()): advance(art, wm)
-        t("advance writes the proposal", json.loads(wm.read_text())["entries"][Q]["last_complete_to"] == "2026-10-01")
+        t("a legitimate complete forward advance writes the proposal with its date bases", json.loads(wm.read_text())["entries"][Q]["last_complete_to"] == "2026-10-01")
         try: advance(art, wm); t("re-advance refused", False)
         except SystemExit: t("an advance that does not move forward is refused", True)
+        bad = env(); bad["watermark_proposal"] = dict(stale, query_sha256="y" * 64); art.write_text(json.dumps(bad))
+        try: advance(art, wm); t("a proposal whose query hash disagrees with its envelope is refused", False)
+        except SystemExit as e: t("a proposal whose query hash disagrees with its envelope is refused", "query hash" in str(e))
+        bad = env(); bad["watermark_proposal"] = dict(stale, last_complete_to="2026-13-40"); art.write_text(json.dumps(bad))
+        try: advance(art, wm); t("a proposal with an invalid date is refused", False)
+        except SystemExit as e: t("a proposal with an invalid date is refused", "valid date" in str(e) or "differs" in str(e))
     print(f"{'all' if not failures else failures} cycle contract cases {'as expected' if not failures else 'FAILED'}")
     sys.exit(1 if failures else 0)
 
@@ -244,8 +328,8 @@ def main():
     if a and a[0] == "window":
         opts = dict(zip(a[1::2], a[2::2]))
         today = datetime.date.fromisoformat(opts["--today"]) if "--today" in opts else datetime.date.today()
-        cycle_id, kind, f, t = window(opts.get("--event", "workflow_dispatch"), opts.get("--from"), opts.get("--to"), today, load_watermarks(), query_sha())
-        print(f"cycle_id={cycle_id}\nkind={kind}\nfrom={f.isoformat()}\nto={t.isoformat()}"); return
+        pl = plan(opts.get("--event", "workflow_dispatch"), opts.get("--from"), opts.get("--to"), today, load_watermarks(), query_sha())
+        print(f"cycle_id={pl['cycle_id']}\nkind={pl['kind']}\nfrom={pl['from'].isoformat()}\nto={pl['to'].isoformat()}\ncatch_from={pl['catch_from'].isoformat()}\nfull_history={'true' if pl['full_history'] else 'false'}"); return
     if a and a[0] == "verify":
         opts = dict(zip(a[1::2], a[2::2])); repo = opts.get("--repo") or os.environ.get("GITHUB_REPOSITORY") or "openworkplacehealth/OWHS"
         rid, why = verify_live(opts["--cycle"], repo)

@@ -2,5 +2,6 @@
   "schema_version": "1.0",
   "overlap_days": 14,
   "entries": {},
-  "note": "Keyed by the SHA-256 of the query file. Advanced only through a merged pull request, after a complete full-inventory run, with tools/cycle.py advance. Empty means the next planned window starts on the first day of the previous month."
+  "note": "Keyed by the SHA-256 of the query file. Advanced only through a merged pull request, after a complete full-inventory planned run, with tools/cycle.py advance, which checks the proposal against its envelope. overlap_days is subtracted from the watermark for the publication window; catch_up_days is the first-index catch-up before the window end. Empty means the next planned window starts on the first day of the previous month.",
+  "catch_up_days": 90
 }

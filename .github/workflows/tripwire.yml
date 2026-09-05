@@ -28,16 +28,25 @@ jobs:
         with:
           python-version: '3.11'
       - name: verify this month's planned cycle
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
+          # explicit bash with pipefail: a verifier that says "not verified" must reach the maintenance branch, and a tool error must too
+          set -euo pipefail
           CYCLE=$(python tools/cycle.py window --event schedule | sed -n 's/^cycle_id=//p')
           echo "cycle $CYCLE"
-          if python tools/cycle.py verify --cycle "$CYCLE" --repo "$REPO" | tee /tmp/verify.txt; then exit 0; fi
+          set +e
+          python tools/cycle.py verify --cycle "$CYCLE" --repo "$REPO" > /tmp/verify.txt 2>&1
+          RC=$?
+          set -e
+          cat /tmp/verify.txt
+          if [ "$RC" -eq 0 ]; then exit 0; fi
+          if [ "$RC" -ne 1 ]; then echo "verifier tool error (exit $RC); treated as not verified" | tee -a /tmp/verify.txt; fi
           EXISTING=$(gh issue list --repo "$REPO" --label maintenance --state open --search "\"No verified evidence sweep for $CYCLE\" in:title" --json number --jq 'length')
           if [ "$EXISTING" = "0" ]; then
             gh issue create --repo "$REPO" --title "No verified evidence sweep for $CYCLE" --label maintenance \
-              --body "$(printf 'tools/cycle.py verify could not correlate a successful evidence-harvest run, a complete full-inventory artefact for cycle %s built from the current query file, and a workflow-authored issue naming that run and artefact. Treat this cycle as incomplete until they exist. A partial run, a manual catch-up, an unrelated run or a hand-written issue does not count.\n\nReasons:\n```\n%s\n```' "$CYCLE" "$(cat /tmp/verify.txt)")"
+              --body "$(printf 'tools/cycle.py verify could not correlate a successful evidence-harvest run, a complete full-inventory artefact for cycle %s built from the current query file, and a workflow-authored issue naming that run and artefact. Treat this cycle as incomplete until they exist. A partial run, a manual catch-up, an unrelated run or a hand-written issue does not count.\n\nVerifier exit %s. Output:\n```\n%s\n```' "$CYCLE" "$RC" "$(cat /tmp/verify.txt)")"
           fi
           exit 1

@@ -52,14 +52,23 @@ and the query file's shape offline; replay fixtures against saved responses are 
 ### Cycles, windows and watermarks
 
 `tools/cycle.py` is the one definition both workflows use. A planned cycle is named by the month the run happens
-in: the run on 1 October is cycle `2026-10`, and the tripwire on 3 October looks for cycle `2026-10`. The
-publication window it searches is separate: from the watermark (the end of the last complete full-inventory
-run) minus `overlap_days` (14, so a work indexed late is seen again), or the first day of the previous month
-when no watermark exists, to today. A manual run with an explicit window is a manual cycle named
+in: the run on 1 October is cycle `2026-10`, and the tripwire on 3 October looks for cycle `2026-10`. Three date
+bases are searched, and every channel records which one it used. The publication window: from the watermark
+(the end of the last complete full-inventory run) minus `overlap_days` (14), or the first day of the previous
+month when no watermark exists, to today. The ingestion catch-up: Europe PMC's first-index date over the 90 days
+before the window end, so a work published earlier but indexed late is still seen (on a single instrument in
+September 2026 this basis returned records the publication window did not); OpenAlex's update-date filter needs a
+premium key and is listed in every plan as unavailable rather than claimed to have run. The quarterly rerun: in
+January, April, July and October the names and citation channels also run with no date filter, over the full
+history. A channel that never ran is missing and stays in the denominator; expected channels are identified at
+query granularity (instrument, route, provider, date basis, exact query or seed), so a missing alias or seed is
+visible even when its sibling completed. A manual run with an explicit window is a manual cycle named
 `manual-FROM-TO`; it never satisfies a planned cycle. A manual run with no window is a re-run of the current
 planned cycle. `watermarks.json` advances only after a complete full-inventory run and only through the
 screening pull request a person merges: the harvest writes a proposal into its artefact and the issue, and
-`python tools/cycle.py advance --artefact FILE` copies it in. Nothing advances automatically, so a failed or
+`python tools/cycle.py advance --artefact FILE` copies it in after checking the proposal against the envelope
+it sits in (status complete, full inventory, planned cycle, every expected channel complete, matching query hash,
+cycle, run id, window end and channel count, valid dates). Nothing advances automatically, so a failed or
 partial month leaves the window where it was and the next run covers it again. `python tools/cycle.py --self-test`
 runs the offline contract suite: month rollover, manual old window, watermark-derived window, changed query file,
 and every verification refusal below.

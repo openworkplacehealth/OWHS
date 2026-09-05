@@ -107,11 +107,13 @@ def openalex_work(w):
 
 
 def openalex_channel(search, date_from, date_to, filter_extra=None):
-    """One OpenAlex channel. search may be None when filter_extra carries the whole filter (cites:)."""
+    """One OpenAlex channel on publication date (date_from None: no date filter, a full-history run). search may be None when
+    filter_extra carries the whole filter (cites:). OpenAlex's from_updated_date filter needs a premium key and is not used."""
     hits, pages, err, reported = [], 0, None, None
-    flt = f"from_publication_date:{date_from},to_publication_date:{date_to}"
-    if filter_extra: flt = filter_extra + "," + flt
-    if search: flt = f"title_and_abstract.search:{search}," + flt
+    parts = [] if date_from is None else [f"from_publication_date:{date_from},to_publication_date:{date_to}"]
+    if filter_extra: parts.insert(0, filter_extra)
+    if search: parts.insert(0, f"title_and_abstract.search:{search}")
+    flt = ",".join(parts)
     q = {"filter": flt, "select": "id,doi,title,publication_date,primary_location,ids,abstract_inverted_index,type,language",
          "per-page": 200, "mailto": MAILTO, "cursor": "*"}
     if OPENALEX_KEY: q["api_key"] = OPENALEX_KEY
@@ -126,9 +128,11 @@ def openalex_channel(search, date_from, date_to, filter_extra=None):
     return hits, pages, reported, err
 
 
-def europepmc_channel(query, date_from, date_to):
+def europepmc_channel(query, date_from, date_to, date_field="FIRST_PDATE"):
+    """One Europe PMC channel. date_field FIRST_PDATE is the publication date; FIRST_IDATE is the date Europe PMC first indexed
+    the record, used for the ingestion catch-up so a work published earlier but indexed late is still seen. None: no date filter."""
     hits, pages, err, reported = [], 0, None, None
-    full = f"({query}) AND (FIRST_PDATE:[{date_from} TO {date_to}])"
+    full = f"({query}) AND ({date_field}:[{date_from} TO {date_to}])" if date_from is not None else f"({query})"
     cursor = "*"
     while cursor:
         q = {"query": full, "format": "json", "pageSize": 100, "resultType": "core", "cursorMark": cursor}
@@ -158,25 +162,63 @@ def q_phrase(s): return '"' + s.replace('"', "") + '"'
 
 def epmc_terms(field, terms): return " OR ".join(f"{field}:{q_phrase(t)}" for t in terms)
 
-def channels_for(rec, cfg, date_from, date_to):
-    """Yield (route, source, query, runner) for one record."""
+def channel_id(instrument_id, route, source, date_basis, query):
+    return hashlib.sha256(f"{instrument_id}|{route}|{source}|{date_basis}|{query}".encode()).hexdigest()[:16]
+
+
+def planned_channels(rec, cfg, date_from, date_to, catch_from=None, full_history=False):
+    """Every channel a run plans for one record, as descriptors (no runner, no network): instrument, route, source, date basis,
+    exact query, channel id, and for a provider filter that is not available in this configuration the reason. The date bases are
+    publication (the requested window), first_indexed (Europe PMC's first-index date over the catch-up window, so late indexing is
+    caught) and full_history (no date filter; quarterly). The harvester's runners and the cycle verifier both derive from this list,
+    so the denominator the verifier uses is exactly what the harvester planned."""
     props = cfg["property_terms"]
+    out = []
+    def add(route, source, query, basis, unavailable=None):
+        out.append({"instrument_id": rec["instrument_id"], "route": route, "source": source, "date_basis": basis, "query": query,
+                    "channel_id": channel_id(rec["instrument_id"], route, source, basis, query), "unavailable": unavailable})
+    bases = [("publication", date_from, date_to)] + ([("first_indexed", catch_from, date_to)] if catch_from else []) + ([("full_history", None, None)] if full_history else [])
     for name in rec["names"]:
-        if OPENALEX_KEY:
-            yield ("names", "openalex", q_phrase(name), lambda n=name: openalex_channel(q_phrase(n), date_from, date_to))
-        yield ("names", "europepmc", f"TITLE_ABS:{q_phrase(name)}", lambda n=name: europepmc_channel(f"TITLE_ABS:{q_phrase(n)}", date_from, date_to))
+        for basis, f, t in bases:
+            if basis == "first_indexed":
+                add("names", "europepmc", f"TITLE_ABS:{q_phrase(name)}", basis)
+                add("names", "openalex", q_phrase(name), basis, unavailable="OpenAlex update-date filtering needs a premium key; not configured")
+                continue
+            if OPENALEX_KEY: add("names", "openalex", q_phrase(name), basis)
+            add("names", "europepmc", f"TITLE_ABS:{q_phrase(name)}", basis)
     ctx = rec.get("abbreviation_context") or []
     for ab in rec.get("abbreviations") or []:
         if not ctx: continue          # an abbreviation without required context is never queried bare
         oa = f'{q_phrase(ab)} AND ({" OR ".join(q_phrase(c) for c in ctx)})'      # property terms are applied locally; a 28-term OR makes OpenAlex time out
         ep = f'TITLE_ABS:{q_phrase(ab)} AND ({epmc_terms("TITLE_ABS", ctx)}) AND ({epmc_terms("TITLE_ABS", props)})'
-        if OPENALEX_KEY:
-            yield ("abbreviation", "openalex", oa, lambda s=oa: openalex_channel(s, date_from, date_to))
-        yield ("abbreviation", "europepmc", ep, lambda s=ep: europepmc_channel(s, date_from, date_to))
+        for basis, f, t in bases:
+            if basis == "full_history": continue                     # the quarterly rerun covers names and citation links
+            if basis == "first_indexed": add("abbreviation", "europepmc", ep, basis); continue
+            if OPENALEX_KEY: add("abbreviation", "openalex", oa, basis)
+            add("abbreviation", "europepmc", ep, basis)
     for seed in rec.get("citation_seeds") or []:
         wid = seed.get("openalex_id")
         if not wid: continue
-        yield ("cites", "openalex", f"cites:{wid}", lambda w=wid: openalex_channel(None, date_from, date_to, filter_extra=f"cites:{w}"))
+        for basis, f, t in bases:
+            if basis == "first_indexed": continue                    # citation links have no index-date filter without a premium key
+            add("cites", "openalex", f"cites:{wid}", basis)
+    return out
+
+
+def channels_for(rec, cfg, date_from, date_to, catch_from=None, full_history=False):
+    """Yield (descriptor, runner) for one record, from planned_channels."""
+    windows = {"publication": (date_from, date_to), "first_indexed": (catch_from, date_to), "full_history": (None, None)}
+    for ch in planned_channels(rec, cfg, date_from, date_to, catch_from, full_history):
+        f, t = windows[ch["date_basis"]]
+        if ch["unavailable"]:
+            yield ch, None; continue
+        if ch["source"] == "europepmc":
+            field = "FIRST_IDATE" if ch["date_basis"] == "first_indexed" else "FIRST_PDATE"
+            yield ch, (lambda q=ch["query"], f=f, t=t, field=field: europepmc_channel(q, f, t, field))
+        elif ch["route"] == "cites":
+            yield ch, (lambda q=ch["query"], f=f, t=t: openalex_channel(None, f, t, filter_extra=q))
+        else:
+            yield ch, (lambda q=ch["query"], f=f, t=t: openalex_channel(q, f, t))
 
 
 def new_instrument_channels(cfg, date_from, date_to):
@@ -184,7 +226,9 @@ def new_instrument_channels(cfg, date_from, date_to):
     if not q: return
     ctx, obj, ev = q["context_terms"], q["object_terms"], q["evidence_terms"]
     ep = f'({epmc_terms("TITLE_ABS", ctx)}) AND ({epmc_terms("TITLE_ABS", obj)}) AND ({epmc_terms("TITLE", ev)})'
-    yield ("new-instrument", "europepmc", ep, lambda s=ep: europepmc_channel(s, date_from, date_to))
+    desc = {"instrument_id": None, "route": "new-instrument", "source": "europepmc", "date_basis": "publication", "query": ep,
+            "channel_id": channel_id(None, "new-instrument", "europepmc", "publication", ep), "unavailable": None}
+    yield desc, (lambda s=ep: europepmc_channel(s, date_from, date_to))
 
 
 # ---------- assembly ----------
@@ -194,7 +238,7 @@ def matched_terms(text, terms):
     return sorted({term for term in terms if term.lower() in t})
 
 
-def harvest(cfg, records, date_from, date_to, verify=True, now=None):
+def harvest(cfg, records, date_from, date_to, verify=True, now=None, catch_from=None, full_history=False):
     now = now or datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     props = cfg["property_terms"]
     by_id = {r["instrument_id"]: r for r in records}
@@ -236,18 +280,18 @@ def harvest(cfg, records, date_from, date_to, verify=True, now=None):
             if not c[k] and w.get(k): c[k] = w[k]
 
     for rec in records:
-        for route, source, query, run in channels_for(rec, cfg, date_from, date_to):
+        for desc, run in channels_for(rec, cfg, date_from, date_to, catch_from, full_history):
+            if run is None:      # a provider filter this configuration cannot use: logged as unavailable, never as run
+                channels.append({**desc, "pages": 0, "reported_hits": None, "collected_hits": 0, "outcome": "unavailable", "error": desc["unavailable"]}); continue
             hits, pages, reported, err = run()
-            ch = {"instrument_id": rec["instrument_id"], "route": route, "source": source, "query": query, "pages": pages,
-                  "reported_hits": reported, "collected_hits": len(hits),
+            ch = {**desc, "pages": pages, "reported_hits": reported, "collected_hits": len(hits),
                   "outcome": "complete" if not err else ("partial" if hits else "failed"), "error": err}
             channels.append(ch)
-            for w in hits: absorb(rec["instrument_id"], route, w, ch)
+            for w in hits: absorb(rec["instrument_id"], desc["route"], w, ch)
     new_items = {}
-    for route, source, query, run in new_instrument_channels(cfg, date_from, date_to):
+    for desc, run in new_instrument_channels(cfg, date_from, date_to):
         hits, pages, reported, err = run()
-        channels.append({"instrument_id": None, "route": route, "source": source, "query": query, "pages": pages, "reported_hits": reported,
-                         "collected_hits": len(hits), "outcome": "complete" if not err else ("partial" if hits else "failed"), "error": err})
+        channels.append({**desc, "pages": pages, "reported_hits": reported, "collected_hits": len(hits), "outcome": "complete" if not err else ("partial" if hits else "failed"), "error": err})
         for w in hits:
             overlap = tracked_mentions(w["title"] + " " + w["abstract"])
             key = w["doi"] or (f"pmid:{w['pmid']}" if w["pmid"] else None) or f"title:{norm_title(w['title'])}"
@@ -288,11 +332,12 @@ def harvest(cfg, records, date_from, date_to, verify=True, now=None):
 
 
 def envelope(cfg, records, date_from, date_to, started, items, new_list, channels, low, warnings, sources):
-    failed = [c for c in channels if c["outcome"] != "complete"]
-    if not channels:
+    ran = [c for c in channels if c["outcome"] != "unavailable"]
+    failed = [c for c in ran if c["outcome"] != "complete"]
+    if not ran:
         status = "failed"; warnings = warnings + [{"type": "configuration", "detail": "no retrieval channels were planned"}]
     else:
-        status = "complete" if not failed else ("failed" if all(c["outcome"] == "failed" for c in channels) else "partial")
+        status = "complete" if not failed else ("failed" if all(c["outcome"] == "failed" for c in ran) else "partial")
     try: commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=ROOT).stdout.strip() or None
     except Exception: commit = None
     return {"schema_version": SCHEMA_VERSION, "harvester": "tools/harvest.py 0.2",
@@ -330,11 +375,26 @@ def self_test():
     for r in q["records"]:
         assert r["names"] and r["canonical_name"] == r["names"][0]
         if r.get("abbreviations"): assert r.get("abbreviation_context"), f"{r['instrument_id']}: abbreviations need context"
-    from cycle import expected_channels
-    planned = sorted({(r["instrument_id"], route) for r in q["records"] for route, *_ in channels_for(r, q, "2026-01-01", "2026-01-31")}
-                     | {(None, route) for route, *_ in new_instrument_channels(q, "2026-01-01", "2026-01-31")}, key=lambda x: (x[0] or "", x[1]))
-    assert planned == expected_channels(q), f"the cycle module's expected channel set differs from the channels the harvester plans: {set(planned) ^ set(expected_channels(q))}"
-    print(f"self-test passed: canonicalisation, matching, status logic, query file shape, {len(planned)} expected channels agree with tools/cycle.py")
+    from cycle import expected_channels, channels_not_complete
+    exp = expected_channels(q, "2026-01-01", "2026-01-31", "2025-11-02", False)
+    ids = [c["channel_id"] for c in exp]
+    assert len(ids) == len(set(ids)), "channel ids must be unique"
+    assert any(c["date_basis"] == "first_indexed" and c["source"] == "europepmc" for c in exp), "catch-up channels planned on first-index date"
+    assert any(c["unavailable"] for c in exp), "the unavailable OpenAlex update-date filter is listed, not hidden"
+    exp_q = expected_channels(q, "2026-01-01", "2026-01-31", None, True)
+    assert any(c["date_basis"] == "full_history" and c["route"] == "cites" for c in exp_q), "quarterly full-history citation channels planned"
+    # dropping one sibling alias while its sibling completes leaves the pair incomplete at channel granularity
+    two = [c for c in exp if c["route"] == "names" and c["date_basis"] == "publication" and c["source"] == "europepmc"]
+    rec_two = next(r for r in q["records"] if len(r["names"]) > 1)
+    sib = [c for c in two if c["instrument_id"] == rec_two["instrument_id"]]
+    ran = [{**c, "outcome": "complete"} for c in exp if c["channel_id"] != sib[0]["channel_id"]]
+    missing = channels_not_complete(exp, ran)
+    assert [m["channel_id"] for m in missing] == [sib[0]["channel_id"]], "a missing alias channel must stay visible in the denominator"
+    assert channels_not_complete(exp, [{**c, "outcome": "complete"} for c in exp]) == [], "all complete: nothing missing"
+    unav = [c for c in exp if c["unavailable"]][0]
+    assert channels_not_complete(exp, [{**c, "outcome": ("unavailable" if c["channel_id"] == unav["channel_id"] else "complete")} for c in exp]) == [], "a declared-unavailable channel reported as unavailable is not counted missing"
+    assert channels_not_complete(exp, [{**c, "outcome": ("complete" if c["channel_id"] != unav["channel_id"] else "complete")} for c in exp]) == [], "an unavailable channel that did run and complete is also fine"
+    print(f"self-test passed: canonicalisation, matching, status logic, query file shape, {len(exp)} expected channels at query granularity with one catch-up basis, {len(exp_q)} with the quarterly rerun")
 
 
 def main():
@@ -344,6 +404,8 @@ def main():
     ap.add_argument("--no-verify", action="store_true"); ap.add_argument("--self-test", action="store_true")
     ap.add_argument("--cycle-id", help="from tools/cycle.py window; a planned cycle is YYYY-MM, a manual one manual-FROM-TO")
     ap.add_argument("--cycle-kind", choices=["planned", "manual"])
+    ap.add_argument("--catch-from", help="start of the ingestion catch-up window (first-index date, Europe PMC); from tools/cycle.py window")
+    ap.add_argument("--full-history", action="store_true", help="quarterly: names and citation links with no date filter, beside the windowed channels")
     a = ap.parse_args()
     if a.self_test: return self_test()
     if not (a.date_from and a.date_to): sys.exit("--from and --to are required (YYYY-MM-DD)")
@@ -359,19 +421,24 @@ def main():
     records = [r for r in cfg["records"] if not a.instrument or r["instrument_id"] in a.instrument]
     if not records: sys.exit("configuration error: no records selected")
     started = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
-    items, new_list, channels, low, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started)
+    if a.catch_from:
+        try: cf = datetime.date.fromisoformat(a.catch_from)
+        except ValueError: sys.exit("configuration error: --catch-from must be YYYY-MM-DD")
+        if cf > d1: sys.exit("configuration error: --catch-from after --to")
+    items, new_list, channels, low, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started, catch_from=a.catch_from, full_history=a.full_history)
     sources = ["europepmc", "openalex (cites" + (", names, abbreviation)" if OPENALEX_KEY else " only: no API key)")] + (["crossref"] if not a.no_verify else [])
     out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, low, warnings, sources)
     out["full_inventory"] = not a.instrument       # a manual one-instrument run is not a monthly cycle
     if a.instrument and a.cycle_kind == "planned": sys.exit("configuration error: a planned cycle covers the full inventory; use no --cycle-kind or manual for a one-instrument run")
     out["cycle"] = {"id": a.cycle_id or f"manual-{a.date_from}-{a.date_to}", "kind": a.cycle_kind or "manual",
                     "note": "planned cycles are named by the month of the run; the publication window is separate and recorded in requested_window"}
-    from cycle import expected_channels, complete_pairs
-    out["expected_channels"] = [{"instrument_id": i, "route": r} for i, r in expected_channels(cfg)]
-    done = complete_pairs(channels)
-    out["channels_not_complete"] = [{"instrument_id": i, "route": r} for i, r in expected_channels(cfg) if (i, r) not in done]
-    if out["status"] == "complete" and out["full_inventory"] and not out["channels_not_complete"]:
-        out["watermark_proposal"] = {"query_sha256": out["query_sha256"], "last_complete_to": a.date_to, "cycle_id": out["cycle"]["id"], "run_id": out["run_id"],
+    from cycle import expected_channels, channels_not_complete
+    out["date_bases"] = {"publication": {"from": a.date_from, "to": a.date_to}, "first_indexed": ({"from": a.catch_from, "to": a.date_to} if a.catch_from else None), "full_history": bool(a.full_history)}
+    out["expected_channels"] = expected_channels(cfg, a.date_from, a.date_to, a.catch_from, a.full_history)
+    out["channels_not_complete"] = channels_not_complete(out["expected_channels"], channels)
+    if out["status"] == "complete" and out["full_inventory"] and not out["channels_not_complete"] and a.cycle_kind == "planned":
+        out["watermark_proposal"] = {"query_sha256": out["query_sha256"], "last_complete_to": a.date_to, "catch_from": a.catch_from, "cycle_id": out["cycle"]["id"], "run_id": out["run_id"],
+                                     "channels_complete": len(out["expected_channels"]),
                                      "note": "apply with tools/cycle.py advance --artefact FILE in the screening pull request; nothing advances automatically"}
     else:
         out["watermark_proposal"] = None

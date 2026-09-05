@@ -55,7 +55,12 @@ jobs:
           TO: ${{ steps.w.outputs.to }}
           CYCLE: ${{ steps.w.outputs.cycle_id }}
           KIND: ${{ steps.w.outputs.kind }}
-        run: python tools/harvest.py --from "$FROM" --to "$TO" --cycle-id "$CYCLE" --cycle-kind "$KIND" --out "evidence/candidates/$CYCLE.json"
+          CATCH_FROM: ${{ steps.w.outputs.catch_from }}
+          FULL_HISTORY: ${{ steps.w.outputs.full_history }}
+        run: |
+          # publication window plus the 90-day first-index catch-up; on a quarterly cycle the names and citation channels also run over the full history
+          FH=""; if [ "$FULL_HISTORY" = "true" ]; then FH="--full-history"; fi
+          python tools/harvest.py --from "$FROM" --to "$TO" --catch-from "$CATCH_FROM" $FH --cycle-id "$CYCLE" --cycle-kind "$KIND" --out "evidence/candidates/$CYCLE.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -86,7 +91,9 @@ jobs:
           c = collections.Counter(i for x in d['candidates'] for i in x['instruments'])
           nc = d.get('channels_not_complete', [])
           low = sum(1 for x in d['candidates'] if x.get('screening_priority') == 'low')
-          print(f"Cycle **{d['cycle']['id']}** ({d['cycle']['kind']}), run `{d['run_id']}`, status **{d['status']}**, full inventory: {d.get('full_inventory')}, window {d['requested_window']['from']} to {d['requested_window']['to']}, query file {d['query_version']} (`{d['query_sha256'][:12]}`), workflow run {os.environ['RUN_URL']}, artefact sha256 `{sha[:12]}`. "
+          db = d.get('date_bases') or {}
+          bases = f"publication {d['requested_window']['from']} to {d['requested_window']['to']}" + (f"; first indexed {db['first_indexed']['from']} to {db['first_indexed']['to']}" if db.get('first_indexed') else "") + ("; full history (quarterly)" if db.get('full_history') else "")
+          print(f"Cycle **{d['cycle']['id']}** ({d['cycle']['kind']}), run `{d['run_id']}`, status **{d['status']}**, full inventory: {d.get('full_inventory')}, windows: {bases}, query file {d['query_version']} (`{d['query_sha256'][:12]}`), workflow run {os.environ['RUN_URL']}, artefact sha256 `{sha[:12]}`. "
                 f"{len(d['candidates'])} candidates ({low} low priority: no property term found in title or abstract), {len(d['new_instrument_candidates'])} new-instrument candidates, {len(d['expected_channels'])} expected channels of which {len(nc)} did not complete.\n")
           print(f"<!-- owhs-cycle cycle_id={d['cycle']['id']} kind={d['cycle']['kind']} github_run_id={os.environ['GH_RUN_ID']} artefact_sha256={sha} query_sha256={d['query_sha256']} status={d['status']} full_inventory={str(bool(d.get('full_inventory'))).lower()} -->\n")
           if d.get('watermark_proposal'):
@@ -99,7 +106,7 @@ jobs:
               for x in flagged: print(f"- {x['doi']}: {x['title'][:90]}")
           if nc:
               print("\nExpected channels that did not complete (treat these instruments as not fully searched this cycle):")
-              for ch in nc: print(f"- {ch['instrument_id']} {ch['route']}")
+              for ch in nc: print(f"- {ch['instrument_id']} {ch['route']} {ch['source']} {ch['date_basis']} ({ch['outcome']})")
               for ch in [x for x in d['channels'] if x['outcome'] != 'complete']: print(f"  - {ch['instrument_id']} {ch['route']} {ch['source']}: {ch['outcome']}, {ch['error']}")
           if d['warnings']:
               print(f"\n{len(d['warnings'])} warnings in the artefact.")
