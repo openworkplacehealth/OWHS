@@ -10,13 +10,16 @@ import html, json, re
 from pathlib import Path
 
 import os, sys
+sys.dont_write_bytecode = True      # the build and the check leave no bytecode in the source tree
 HERE = Path(__file__).resolve().parent            # registry/: the dataset versions, rubrics, admission policy, gate
 ROOT = HERE.parent                                 # repository root
 SITE_ROOT = Path(os.environ.get("OWHS_SITE_DIR", ROOT / "site"))   # overridable so --check can build into a copy
 SITE = SITE_ROOT / "instrument-registry"
 SITE.mkdir(parents=True, exist_ok=True)
 DATASET = "instrument-evidence-base-v0.9.0.json"
-PREVIOUS = ["instrument-evidence-base-v0.8.0.json", "instrument-evidence-base-v0.7.0.json", "instrument-evidence-base-v0.6.0.json", "instrument-evidence-base-v0.5.0.json", "instrument-evidence-base-v0.4.0.json", "instrument-evidence-base-v0.3.0.json", "instrument-evidence-base-v0.2.2.json"]   # kept at stable URLs for citation
+# Every earlier dataset, rubric and admission version is copied to the site unchanged, at a stable URL for citation.
+PREVIOUS = sorted((p.name for p in HERE.glob("instrument-evidence-base-v*.json") if p.name != DATASET), reverse=True)
+ARCHIVED_DOCS = sorted(p.name for p in list(HERE.glob("RUBRIC-v*.md")) + list(HERE.glob("ADMISSION-v*.md")))
 RUBRIC_MD = HERE / "RUBRIC-v1.6.md"
 ADMISSION_MD = HERE / "ADMISSION-v1.1.md"
 D = json.loads((HERE / DATASET).read_text(encoding="utf-8"))
@@ -28,14 +31,14 @@ LIC_LABEL = {"open": "open licence", "free-no-permission": "free, no permission 
 RECORDS = D["records"]
 BY_ID = {r["instrument_id"]: r for r in RECORDS}
 PARENTS = [r for r in RECORDS if not r.get("parent_id")]
-# Counting rule (2 Sep 2026, E11): graded and watchlist instruments are counted separately, never summed.
+# Counting rule: graded and watchlist instruments are counted separately, never summed.
 # A parent is on the watchlist when every property is still not_assessed; none is in this version.
 def _on_watchlist(r):
     props = [v for v in r.values() if isinstance(v, dict) and "evidence_state" in v]
     return bool(props) and all(p.get("evidence_state") == "not_assessed" for p in props)
 WATCHLIST = [r for r in PARENTS if _on_watchlist(r)]
 GRADED = [r for r in PARENTS if not _on_watchlist(r)]
-# Organisational criterion validity, counted live so the founding finding stays true as instruments are added (2 Sep 2026).
+# Organisational criterion validity, counted live so the statement stays true as instruments are added.
 def _org_grade(r):
     return (r.get("criterion_validity_organisational") or {}).get("grade", "Absent")
 ORG_ABSENT = sum(1 for r in GRADED if _org_grade(r) == "Absent")
@@ -45,7 +48,7 @@ CONFIRMED = "2026-09-03"   # grade_last_confirmed across the dataset (rubric 1.6
 FROZEN = str(RATER.get("frozen_since", "from first publication"))
 FROZEN_PHRASE = f"frozen {FROZEN}" if FROZEN.startswith("from") else f"frozen since {FROZEN}"
 
-# Purpose statement (adopted 2 Sep 2026). Rendered on the index, the how-to-read page and the README.
+# Purpose statement. Rendered on the index, the how-to-read page and the README.
 PURPOSE = ("<b>The instrument registry is the open synthesis of the published evidence on instruments used to measure "
            "workplace health and wellbeing.</b> For every instrument it records what it measures, how well, in which populations "
            "and languages, and on what licence terms, drawn from the literature and existing systematic reviews, every claim cited, "
@@ -1231,19 +1234,22 @@ def write_matrix_csv():
         row += [ident.get("licence_class", ""), ident.get("licence_verified_date", ""), len(r.get("citations") or []),
                 D["version"], D.get("rubric", {}).get("version", "")]
         w.writerow(row)
-    for dest in (SITE / "instrument-evidence-matrix-full.csv", HERE / "instrument-evidence-matrix-full.csv"):
-        dest.write_text(buf.getvalue(), encoding="utf-8")
+    (SITE / "instrument-evidence-matrix-full.csv").write_text(buf.getvalue(), encoding="utf-8")
 
 def check():
-    """Regenerate into a temporary copy of site/, apply the stamping tool to it, and fail if any generated file
-    (the PDF excepted: its bytes carry a build date) differs from the committed one. CI runs this so a change to
-    the dataset, the rubric or this generator cannot merge without the pages that show it."""
+    """Regenerate into a temporary copy of site/ whose instrument-registry directory starts empty, apply the stamping
+    tool to it, and fail if any generated file differs from the committed one or if a committed file was not produced
+    (the PDF excepted: its bytes carry a build date, so this check does not verify PDF reproducibility). Nothing in the
+    real tree is written. CI reports a failure so a change to the dataset, the rubric or this generator is visible
+    without the pages that show it."""
     import shutil, subprocess, tempfile, filecmp
     committed = ROOT / "site" / "instrument-registry"
     with tempfile.TemporaryDirectory() as tmp:
         tmp_site = Path(tmp) / "site"
         shutil.copytree(ROOT / "site", tmp_site)
-        env = dict(os.environ, OWHS_SITE_DIR=str(tmp_site))
+        shutil.rmtree(tmp_site / "instrument-registry")      # start empty: every file the check accepts must be produced by this build
+        (tmp_site / "instrument-registry").mkdir()
+        env = dict(os.environ, OWHS_SITE_DIR=str(tmp_site), PYTHONDONTWRITEBYTECODE="1")   # the check writes nothing in the real tree, not even bytecode
         r = subprocess.run([sys.executable, str(Path(__file__).resolve())], env=env, capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit("[check] build failed:\n" + r.stdout + r.stderr)
@@ -1255,8 +1261,8 @@ def check():
         stale = [n for n in names if not (committed / n).exists() or not filecmp.cmp(fresh / n, committed / n, shallow=False)]
         orphan = sorted(p.name for p in committed.iterdir() if p.suffix != ".pdf" and p.name not in names)
         if stale or orphan:
-            sys.exit("site/instrument-registry is out of date; run registry/build_registry_site.py then tools/stamp_canonical.py\n"
-                     + "".join(f"  differs: {n}\n" for n in stale) + "".join(f"  not generated: {n}\n" for n in orphan))
+            sys.exit("site/instrument-registry does not match a fresh build; run registry/build_registry_site.py then tools/stamp_canonical.py\n"
+                     + "".join(f"  differs: {n}\n" for n in stale) + "".join(f"  committed but not generated by this build: {n}\n" for n in orphan))
         print(f"up to date: site/instrument-registry ({len(names)} generated files match the source)")
 
 def main():
@@ -1268,8 +1274,8 @@ def main():
     # data files into site
     for fn in [DATASET] + PREVIOUS:
         (SITE / fn).write_text((HERE / fn).read_text(encoding="utf-8"), encoding="utf-8")
-    (SITE / RUBRIC_MD.name).write_text(RUBRIC_MD.read_text(encoding="utf-8"), encoding="utf-8")
-    (SITE / ADMISSION_MD.name).write_text(ADMISSION_MD.read_text(encoding="utf-8"), encoding="utf-8")
+    for fn in ARCHIVED_DOCS:      # includes the current rubric and admission policy
+        (SITE / fn).write_text((HERE / fn).read_text(encoding="utf-8"), encoding="utf-8")
     write_matrix_csv()
     build_pdf()
 
@@ -1302,7 +1308,7 @@ def main():
             if chr(8212) in f.read_text(encoding="utf-8") or chr(8211) in f.read_text(encoding="utf-8")]
     if dash:
         raise SystemExit("DASH GATE FAILED: " + ", ".join(dash))
-    # FILTER-NEVER-SORT GATE (2 Sep 2026 scope review, A3): the registry may let a reader
+    # FILTER-NEVER-SORT GATE: filter-only presentation, no ordering or composite score based on grades. The registry may let a reader
     # filter on what evidence exists; it may never order instruments on a grade. No sort
     # control, no sortable attribute, no composite or overall score anywhere in output.
     RANKING = [r"data-sort", r"\bsortable\b", r"class=\"[^\"]*\bsort", r"onclick=\"[^\"]*sort",
