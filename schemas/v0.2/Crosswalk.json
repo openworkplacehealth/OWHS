@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/Crosswalk.json",
+  "title": "OWHS Crosswalk v0.2",
+  "description": "Versioned, sourced mapping assertions. At least one target is required; construct codes remain the shared vocabulary, not extra person-level entities.",
+  "type": "object",
+  "properties": {
+    "constructCode": {
+      "type": "string",
+      "enum": [
+        "demands",
+        "control",
+        "support",
+        "relationships",
+        "role",
+        "change",
+        "mental-health",
+        "physical-health",
+        "musculoskeletal",
+        "financial-wellbeing",
+        "sleep-fatigue"
+      ],
+      "$comment": "codelist:construct-domain@0.1.0"
+    },
+    "hseDomain": {
+      "type": "string",
+      "enum": [
+        "demands",
+        "control",
+        "support",
+        "relationships",
+        "role",
+        "change"
+      ],
+      "$comment": "codelist:hse-management-domain@0.1.0"
+    },
+    "iso45003Clause": {
+      "type": "string",
+      "pattern": "^[0-9]+(?:\\.[0-9]+)*$",
+      "maxLength": 64,
+      "not": {
+        "pattern": "\\s"
+      },
+      "description": "Clause-number syntax only. Clause existence, version and mapping meaning are not checked. No ISO text is reproduced."
+    },
+    "iso45003Edition": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      },
+      "description": "Edition identifying the ISO document being mapped."
+    },
+    "whiuCode": {
+      "type": "string",
+      "pattern": "^whiu:[a-z0-9-]+$",
+      "maxLength": 128,
+      "not": {
+        "pattern": "\\s"
+      },
+      "$comment": "Reserved namespace syntax only. No WHIU terminology or endorsement is inferred."
+    },
+    "crosswalkVersion": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "sourceRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "Source and rationale for this mapping. A structural pass is not HSE, ISO or WHIU endorsement."
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "constructCode",
+    "crosswalkVersion",
+    "sourceRef"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "anyOf": [
+        {
+          "required": [
+            "hseDomain"
+          ]
+        },
+        {
+          "required": [
+            "iso45003Clause"
+          ]
+        },
+        {
+          "required": [
+            "whiuCode"
+          ]
+        }
+      ]
+    },
+    {
+      "dependentRequired": {
+        "iso45003Clause": [
+          "iso45003Edition"
+        ],
+        "iso45003Edition": [
+          "iso45003Clause"
+        ]
+      }
+    }
+  ]
+}
