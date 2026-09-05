@@ -82,6 +82,22 @@ def candidate_ids(c):
     return out
 
 
+def identity_problems(rows, candidates):
+    """Canonical identity before matching. Every identifier of every manifest row is an alias of exactly one work: two rows sharing a
+    DOI, PMID or OpenAlex id are a conflict (one bibliographic work listed twice under different preferred ids, or two works wrongly
+    given one identifier), refused rather than merged or matched. A candidate whose identifiers map to two manifest works is a conflict
+    too. Returns (problems, alias -> work_id for unambiguous aliases)."""
+    p = []; owner = {}
+    for w, r in rows.items():
+        for a in work_ids(r):
+            if a in owner and owner[a] != w: p.append(f"identity conflict: {a} is claimed by both {owner[a]} and {w}; distinct works cannot share an identifier and one work cannot be two rows")
+            owner.setdefault(a, w)
+    for c in candidates.get("candidates", []) + candidates.get("new_instrument_candidates", []):
+        targets = {owner[a] for a in candidate_ids(c) if a in owner}
+        if len(targets) > 1: p.append(f"identity conflict: candidate {c.get('doi') or c.get('pmid') or c.get('openalex') or '?'} carries identifiers of {sorted(targets)}; its DOI and PMID do not name one manifest work")
+    return p, owner
+
+
 def route_of(tag):
     """The harvester's route tag is route:source:instrument; the route is the first field."""
     return str(tag).split(":", 1)[0]
@@ -97,9 +113,39 @@ def calendar_problems(where, pub):
     try:
         if prec == "day": datetime.date.fromisoformat(v)
         elif prec == "month": datetime.date(int(v[:4]), int(v[5:7]), 1)
-        else: int(v)
+        else: datetime.date(int(v), 1, 1)          # a real calendar year, not merely four digits (0000 is refused)
     except ValueError: return [f"{where}: {v!r} is not a calendar date"]
     return []
+
+
+def window_problems(where, win):
+    """A window must be two real dates with from not after to; a reversed window is invalid even when two documents agree on it."""
+    try: f, t = datetime.date.fromisoformat(str(win.get("from"))), datetime.date.fromisoformat(str(win.get("to")))
+    except (TypeError, ValueError, AttributeError): return [f"{where}: window bounds are not calendar dates"]
+    return [f"{where}: window from {win['from']} is after to {win['to']}"] if f > t else []
+
+
+def query_shape_problems(queries):
+    """The shape of the query configuration actually consumed, checked before any field is read: records with instrument ids, optional
+    inherited records, a provider mapping and citation seeds as objects. Reuses the harvester's query contract when it is importable."""
+    if not isinstance(queries, dict): return ["queries: root is not an object"]
+    p = []
+    recs = queries.get("records")
+    if not isinstance(recs, list): return ["queries: records is not a list"]
+    for i, r in enumerate(recs):
+        if not isinstance(r, dict) or not isinstance(r.get("instrument_id"), str): p.append(f"queries: record {i} is not an object with an instrument_id"); continue
+        seeds = r.get("citation_seeds")
+        if seeds is not None and (not isinstance(seeds, list) or any(not isinstance(x, dict) for x in seeds)): p.append(f"queries: record {r['instrument_id']} citation_seeds is not a list of objects")
+    inh = queries.get("inherited_records")
+    if inh is not None and (not isinstance(inh, list) or any(not isinstance(x, dict) for x in inh)): p.append("queries: inherited_records is not a list of objects")
+    prov = queries.get("providers")
+    if prov is not None and not isinstance(prov, dict): p.append("queries: providers is not an object")
+    if not p:
+        try:
+            import harvest
+            if hasattr(harvest, "query_file_problems"): p += [f"queries: {x}" for x in harvest.query_file_problems(queries)]
+        except Exception: pass          # the harvester's own contract is a bonus, not a dependency of the shape check
+    return p
 
 
 def date_in_window(pub, win_from, win_to):
@@ -167,9 +213,14 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
     for kind, obj in (("manifest", manifest), ("split", split), ("coverage", coverage), ("candidates", candidates), ("query-lock", lock)):
         p += schema_problems(kind, obj)
     if execution is not None: p += schema_problems("execution-record", execution)
+    p += query_shape_problems(queries)
+    if p: return p
+    p += window_problems("query-lock: run_window", lock["run_window"]) + window_problems("candidates: requested_window", candidates["requested_window"])
     if p: return p
     rows = {r["work_id"]: r for r in manifest["rows"]}
     if len(rows) != len(manifest["rows"]): p.append("manifest: duplicate work ids")
+    ip, _ = identity_problems(rows, candidates); p += ip
+    lt_ = instant(lock["locked_at"])
     if manifest["state"] not in ("split_locked", "evaluated"): p.append(f"manifest: state {manifest['state']!r}: judgements and split must be locked before evaluation")
     instruments = {r["instrument_id"] for r in queries.get("records", [])} | {r["instrument_id"] for r in queries.get("inherited_records", []) if isinstance(r, dict) and r.get("instrument_id")}
     for w, r in rows.items():
@@ -183,12 +234,23 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
                 if l["instrument_id"] not in instruments: p.append(f"{w}: link names instrument {l['instrument_id']!r} that the query configuration does not carry")
                 if l["property"] not in PROPS: p.append(f"{w}: link names property {l['property']!r} that is not a registry property")
             if l["judgement"] in ("eligible", "ineligible"):
+                sl = l["source_location"]
                 if not l["reason"].strip(): p.append(f"{w}: a judged link needs a rationale")
-                if l["source_location"]["read_level"] in ("metadata_only", "inaccessible"): p.append(f"{w}: a link judged {l['judgement']} needs a read source (full_text or abstract_only); metadata alone cannot judge relevance")
+                if sl["read_level"] in ("metadata_only", "inaccessible"): p.append(f"{w}: a link judged {l['judgement']} needs a read source (full_text or abstract_only); metadata alone cannot judge relevance")
+                else:
+                    # substantive reading provenance: where it was read, when, and a location usable at that reading level
+                    if not sl["url"]: p.append(f"{w}: link {i} judged from a source with no URL; reading provenance must name where the source was read")
+                    if sl["accessed_at"] is None: p.append(f"{w}: link {i} judged from a source with no access time")
+                    if sl["read_level"] == "full_text" and not (sl["section"] or sl["printed_pages"] or sl["table_or_figure"]): p.append(f"{w}: link {i} is judged from full text but names no section, page or table; a full-text reading needs a location")
+                    if sl["read_level"] == "abstract_only" and not (sl["section"] and "abstract" in sl["section"].lower()): p.append(f"{w}: link {i} is judged from the abstract only but its location does not say so (section must name the abstract; no printed pages may be invented)")
+                    if sl["read_level"] == "abstract_only" and sl["printed_pages"]: p.append(f"{w}: link {i} is abstract-only yet carries printed pages")
                 if not l["judged_by"] or l["judged_by"] == "unjudged": p.append(f"{w}: a judged link needs an attributed judge")
                 if l["judged_at"] is None: p.append(f"{w}: a judged link needs a judgement time")
             acc, jud = instant(l["source_location"]["accessed_at"]), instant(l["judged_at"])
             if acc and jud and jud < acc: p.append(f"{w}: link {i} judged before its source was accessed")
+            if lock["claim"] == "unseen_holdout" and lt_ and l["judgement"] in ("eligible", "ineligible"):
+                if jud and jud > lt_: p.append(f"{w}: link {i} judged at {l['judged_at']}, after the lock {lock['locked_at']}; an unseen-holdout claim needs the frozen judgement to predate the lock (a later correction needs a new lock or an explicitly retrospective claim)")
+                if acc and acc > lt_: p.append(f"{w}: link {i} source accessed at {l['source_location']['accessed_at']}, after the lock; the reading that supports a locked judgement cannot postdate it")
         if r["overlap_state"] == "resolved" and not r["study_families"]: p.append(f"{w}: overlap resolved but no study family recorded")
     # split structure: unique component ids, unique membership, every reference a manifest work
     comp_ids, membership = {}, {}
@@ -213,12 +275,19 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
     fam = family_components(rows) if rows else {}
     calib_component = set().union(*(fam[w] for w, r in rows.items() if r["calibration_only"])) if any(r["calibration_only"] for r in rows.values()) else set()
     exposed_lock = set(lock["exposed_work_ids"])
+    # exposure closes over the complete family graph before partitioning: a sibling of an exposed work is exposed too, whether or not
+    # the exposed work itself survived into the split
+    exposed_closure = set().union(*(fam[w] for w in exposed_lock if w in fam)) if any(w in fam for w in exposed_lock) else set()
+    for w in sorted(exposed_closure):
+        if w in membership: p.append(f"{w}: in the family of exposed work(s) {sorted(exposed_lock & fam[w]) or sorted(exposed_lock)} yet allocated to component {membership[w]}; exposure closes over the family graph, so it must be excluded as exposed")
+        elif w in excluded and excluded[w]["category"] not in ("seed", "calibration", "exposed"): p.append(f"{w}: in an exposed family but excluded as {excluded[w]['category']!r}; the deterministic category is seed, then calibration, then exposed")
+        elif w in rows and w not in excluded: p.append(f"{w}: in an exposed family but neither excluded nor allocated")
     for w, e in excluded.items():
         if w not in rows: continue
         r = rows[w]
         if e["category"] == "seed" and not (seeds & work_ids(r) or r["seed_membership"]): p.append(f"{w}: excluded as a seed but neither the pinned query file nor seed_membership names it")
         if e["category"] == "calibration" and w not in calib_component: p.append(f"{w}: excluded as calibration but it is neither a disclosed calibration work nor in one's family component")
-        if e["category"] == "exposed" and w not in exposed_lock: p.append(f"{w}: excluded as exposed but the lock does not list it")
+        if e["category"] == "exposed" and w not in exposed_closure: p.append(f"{w}: excluded as exposed but the lock does not list it and it shares no family with a listed exposed work")
     for w, r in rows.items():
         is_seed = bool(seeds & work_ids(r) or r["seed_membership"])
         if is_seed and w in membership: p.append(f"{w}: a seed work is in the split; it must be excluded")
@@ -235,9 +304,9 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
         if d["work_id"] in disp: p.append(f"{d['work_id']}: two dispositions")
         disp[d["work_id"]] = d
     for w, cid in membership.items():
-        if (rows.get(w) or {}).get("overlap_state") == "unknown":
+        if (rows.get(w) or {}).get("overlap_state") in ("unknown", "possible"):
             d = disp.get(w)
-            if d is None: p.append(f"{w}: unknown overlap allocated without a recorded disposition"); continue
+            if d is None: p.append(f"{w}: {rows[w]['overlap_state']} overlap allocated without a recorded disposition (an empty family list is not resolved independence)"); continue
             if d["component_id"] != cid: p.append(f"{w}: disposition names component {d['component_id']} but the work sits in {cid}")
             others = sorted(set(comp_ids[cid]["work_ids"]) - {w}) if cid in comp_ids else []
             if sorted(d["grouped_with"]) != others: p.append(f"{w}: disposition grouped_with {sorted(d['grouped_with'])} is not the component's other works {others}; the actual conservative grouping must be stated")
@@ -249,10 +318,10 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
     want = {c["component_id"]: ("development" if i < n_dev else "holdout") for i, c in enumerate(comps)}
     bad = [c["component_id"] for c in comps if c["allocation"] != want[c["component_id"]]]
     if bad: p.append(f"split allocation does not follow the declared algorithm for components {bad[:5]}")
-    # exposure propagates to the whole component
+    # exposure propagates to the whole component as well as the whole family
     for comp in split["components"]:
         ws = set(comp["work_ids"])
-        if exposed_lock & ws and not ws <= exposed_lock: p.append(f"component {comp['component_id']}: exposure of one work must exclude the whole component (siblings share the leak)")
+        if exposed_closure & ws and not ws <= exposed_closure: p.append(f"component {comp['component_id']}: exposure of one work must exclude the whole component (siblings share the leak)")
     # provenance: candidates bound to the lock; an unseen-holdout claim bound to an independently captured execution record
     if candidates["query_sha256"] != lock["query_sha256"]: p.append("candidates were not produced by the locked query file (query hash differs)")
     rw = candidates["requested_window"]
@@ -299,7 +368,7 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
     return p
 
 
-def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, execution=None, candidates_sha256=None):
+def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, execution=None, candidates_sha256=None, input_hashes=None):
     """Accounting after the contracts hold. Returns the report dict; raises Refused (a SystemExit) on a stale lock or a contract failure."""
     stale = []
     if not isinstance(lock, dict): raise Refused("contract problems, nothing measured:\n  query-lock: <root>: not an object")
@@ -317,8 +386,13 @@ def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, 
         for w in comp["work_ids"]: component_of[w] = comp
     holdout = {w for w, c in component_of.items() if c["allocation"] == "holdout"}
     excluded = {e["work_id"]: e["category"] for e in split["excluded"]}
-    exposed = set(lock["exposed_work_ids"])
-    # candidates found by a discovery route: the harvester's route tags, and the separate new-instrument list
+    fam = family_components(rows) if rows else {}
+    exposed_direct = set(lock["exposed_work_ids"])
+    exposed = set().union(*(fam[w] for w in exposed_direct if w in fam)) if any(w in fam for w in exposed_direct) else set()
+    exposure_closure = {w: {"cause": "listed in the lock" if w in exposed_direct else "family of " + ", ".join(sorted(exposed_direct & fam[w])), "family": sorted(fam[w])} for w in sorted(exposed) if w in rows}
+    # candidates found by a discovery route: the harvester's route tags, and the separate new-instrument list; every identifier is
+    # resolved to its one manifest work first (identity_problems has refused any conflict), so an alias never satisfies a second row
+    _, owner = identity_problems(rows, candidates)
     found_ids, found_routes = set(), {}
     for c in candidates["candidates"]:
         disc = {route_of(t) for t in c["routes"]} & DISCOVERY_ROUTES
@@ -326,6 +400,7 @@ def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, 
         for i in candidate_ids(c): found_ids.add(i); found_routes.setdefault(i, set()).update(disc)
     for c in candidates["new_instrument_candidates"]:
         for i in candidate_ids(c): found_ids.add(i); found_routes.setdefault(i, set()).add("new-instrument")
+    found_works = {owner[i] for i in found_ids if i in owner}
     recon = {"manifest_total": len(rows), "seed": 0, "calibration": 0, "exposed": 0, "unresolved_allocation": 0, "development": 0, "out_of_window": 0, "date_unresolved": 0, "no_eligible_link": 0, "relevance_unresolved": 0, "eligible_holdout": 0}
     E, unresolved_rel, misses, hits, unresolved_alloc = [], [], [], [], []
     for w, r in rows.items():
@@ -343,7 +418,7 @@ def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, 
         if dw == "out": recon["out_of_window"] += 1; continue
         if dw == "unresolved": recon["date_unresolved"] += 1; continue
         recon["eligible_holdout"] += 1; E.append(w)
-        (hits if work_ids(r) & found_ids else misses).append(w)
+        (hits if w in found_works else misses).append(w)
     assert sum(v for k, v in recon.items() if k != "manifest_total") == recon["manifest_total"], "reconciliation does not sum to the manifest"
     # coverage: indexed by any enabled source at the coverage check; failed/unsupported/unresolved counted, never read as not indexed
     cov = {}
@@ -390,13 +465,23 @@ def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, 
     unresolved_links = {w: [f"{l['instrument_id']}.{l['property']}" for l in rows[w]["links"] if l["scope"] == "measurement_property" and l["judgement"] == "unresolved"] for w in E if any(l["judgement"] == "unresolved" for l in rows[w]["links"])}
     non_gold = sorted(found_ids - {i for w in rows for i in work_ids(rows[w])})
     macro_vals = [v["recall"] for v in inst.values() if v["recall"] is not None]
-    provisional = bool(unresolved_rel or recon["date_unresolved"] or unresolved_links or unresolved_alloc)
+    provisional = bool(unresolved_rel or recon["date_unresolved"] or unresolved_links or unresolved_alloc or candidates["status"] != "complete")
     claim_state = {"unseen_holdout": "unseen holdout: discovery ran after the lock, bound to an independently captured execution record",
                    "retrospective_replay": "retrospective replay: regression coverage of the locked queries over an earlier run, not unseen holdout performance"}[lock["claim"]]
-    return {"schema_version": "1.1", "state": "evaluated" if not provisional else "evaluated_provisional", "claim": lock["claim"], "claim_state": claim_state,
+    run_status = candidates["status"]
+    discovery_run = {"status": run_status, "requested_window": candidates["requested_window"], "channels_not_complete": len(candidates.get("channels_not_complete") or []) if isinstance(candidates.get("channels_not_complete"), list) else None,
+                     "expected_channels": len(candidates["expected_channels"]) if isinstance(candidates.get("expected_channels"), list) else None,
+                     "meaning": "a completed discovery run over the requested window" if run_status == "complete" else f"observed retrieval accounting from a {run_status} discovery run: some planned channels did not complete, so a miss may be the run's, not the queries'; this is not a completed discovery evaluation"}
+    if run_status != "complete": claim_state = f"{run_status} discovery run: {claim_state}; read as observed retrieval accounting, not a completed discovery evaluation"
+    state = ("evaluated_partial_run" if run_status != "complete" else ("evaluated" if not provisional else "evaluated_provisional"))
+    binding = {"local_equality_checks": "passed: lock, candidates and execution record agree on query hash, window, commit, run id, start time, tool hashes and candidates bytes",
+               "independent_verification": "not performed by this evaluator; the automation status record (tools/check_automations.py) verifies run identity and artefact bytes against the workflow provider, and until that record has been consumed for this run the binding here is locally equal, not independently verified"} if execution is not None else {"local_equality_checks": "no execution record supplied", "independent_verification": "none; a retrospective replay only"}
+    return {"schema_version": "1.2", "state": state, "claim": lock["claim"], "claim_state": claim_state, "discovery_run": discovery_run,
             "provenance": {"evaluation_id": lock["evaluation_id"], "locked_at": lock["locked_at"], "harvester_commit": lock["harvester"]["commit"], "locked_tool_hashes": lock["harvester"]["tools_sha256"],
                            "candidates_run_id": candidates["run_id"], "candidates_started_at": candidates["started_at"], "candidates_evaluation_id": candidates["evaluation_id"],
-                           "execution_record": (None if execution is None else {k: execution[k] for k in ("run_id", "mode", "head_sha", "started_at", "run_url", "captured_at", "captured_by")})},
+                           "execution_record": (None if execution is None else {k: execution[k] for k in ("run_id", "mode", "head_sha", "started_at", "run_url", "captured_at", "captured_by")}),
+                           "execution_binding": binding, "input_sha256": input_hashes or {"manifest": sha_obj(manifest), "split": sha_obj(split), "coverage": sha_obj(coverage), "query_lock": sha_obj(lock), "queries": queries_sha, "candidates_bytes": candidates_sha256, "execution_record": (sha_obj(execution) if execution is not None else None)},
+                           "exposure_closure": exposure_closure},
             "window": win, "denominators": {"E_eligible_holdout_works": len(E), "F_found": len(hits), "C_indexed_by_an_enabled_source": len(C), "F_and_C": len([w for w in hits if w in C]),
                                             "coverage_failed_or_unresolved": len(cov_failed), "coverage_unknown": len(cov_unknown)},
             "work_level_recall": ratio(len(hits), len(E)), "work_level_recall_state": "evaluated" if E else "not_evaluated",
@@ -424,7 +509,7 @@ def _row(wid, inst_links, date=("2026-08-15", "day"), calib=False, ids=None, rea
             "publication_date": {"value": date[0], "precision": date[1], "source_url": "https://example.org"},
             "record_type": "primary_study", "calibration_only": calib, "overlap_state": "resolved", "study_families": families if families is not None else [f"fam-{wid}"], "seed_membership": [],
             "links": [{"instrument_id": i, "property": pr, "form": None, "scope": "measurement_property", "judgement": j, "reason": "fixture rationale" if j != "unresolved" else "",
-                       "source_location": {"url": "https://example.org", "read_level": read, "section": None, "printed_pages": None, "table_or_figure": None, "accessed_at": "2026-09-04T00:00:00Z", "response_status": 200},
+                       "source_location": {"url": "https://example.org", "read_level": read, "section": ("abstract" if read == "abstract_only" else ("Methods" if read == "full_text" else None)), "printed_pages": None, "table_or_figure": None, "accessed_at": "2026-09-04T00:00:00Z", "response_status": 200},
                        "judged_by": judged_by if j != "unresolved" else "unjudged", "judged_at": "2026-09-04T01:00:00Z" if j != "unresolved" else None} for i, pr, j in inst_links],
             "judgements": [], "unresolved": []}
 
@@ -560,13 +645,64 @@ def self_test():
     m, s, c, cand, lock, q = _setup(); m["rows"][0]["unresolved"] = ["x"]; t("a stale manifest hash stops the run", "manifest hash" in (refused(m, s, c, cand, lock, q) or ""))
     m, s, c, cand, lock, q = _setup(10, 3); c = {"schema_version": "1.0", "rows": [{**row, "status": "failed"} for row in c["rows"]]}; r = run(m, s, c, cand, lock, q)
     t("a failed coverage lookup is not read as not indexed: conditional recall not evaluated, failures counted", r["conditional_state"] == "not_evaluated" and r["denominators"]["coverage_failed_or_unresolved"] == 10)
-    # exposure propagates to the component
-    m, s, c, cand, lock, q = _setup(); lock["exposed_work_ids"] = ["doi:10.5555/w0"]; r = run(m, s, c, cand, lock, q)
-    t("an exposed holdout work is excluded and counted as exposure", r["reconciliation"]["exposed"] == 1 and r["denominators"]["E_eligible_holdout_works"] == 9)
+    # exposure closes over the family graph and the component, and must be recorded as an exclusion in the split
+    def exclude(s, wid, cat, detail="x"):
+        s["components"] = [x for x in s["components"] if wid not in x["work_ids"]] if any(x["work_ids"] == [wid] for x in s["components"]) else [{**x, "work_ids": [w for w in x["work_ids"] if w != wid]} for x in s["components"]]
+        s["excluded"].append({"work_id": wid, "category": cat, "detail": detail}); return rebuild(s)
+    m, s, c, cand, lock, q = _setup(); lock["exposed_work_ids"] = ["doi:10.5555/w0"]
+    t("an exposed work still allocated in the split is refused; exposure must be recorded as an exclusion", "exposure closes over the family graph" in (refused(m, s, c, cand, lock, q) or ""))
+    s = exclude(s, "doi:10.5555/w0", "exposed", "exposed during the sprint"); _relock(lock, split=s); r = run(m, s, c, cand, lock, q)
+    t("an exposed holdout work excluded as exposed is counted as exposure and named in the closure with its cause", r["reconciliation"]["exposed"] == 1 and r["denominators"]["E_eligible_holdout_works"] == 9 and r["provenance"]["exposure_closure"]["doi:10.5555/w0"]["cause"] == "listed in the lock")
+    # the 2102 counterexample: w0 exposed and excluded, its family sibling w1 (linked, allocated) must not stay a hit
+    m, s, c, cand, lock, q = _setup(); m["rows"][1]["study_families"] = ["fam-doi:10.5555/w0"]; lock["exposed_work_ids"] = ["doi:10.5555/w0"]
+    s = exclude(s, "doi:10.5555/w0", "exposed", "exposed"); _relock(lock, manifest=m, split=s); msg = refused(m, s, c, cand, lock, q) or ""
+    t("a family sibling of an exposed work left in the split is refused even when the exposed work itself was excluded (closure over the original graph)", "in the family of exposed work(s)" in msg and "doi:10.5555/w1" in msg, msg[:300])
+    s = exclude(s, "doi:10.5555/w1", "exposed", "family of the exposed work"); _relock(lock, split=s); r = run(m, s, c, cand, lock, q)
+    t("with both linked works excluded the run evaluates, both counted as exposed, the sibling's cause naming its exposed parent", r["reconciliation"]["exposed"] == 2 and r["provenance"]["exposure_closure"]["doi:10.5555/w1"]["cause"] == "family of doi:10.5555/w0" and r["denominators"]["E_eligible_holdout_works"] == 8)
+    m, s, c, cand, lock, q = _setup(); m["rows"][1]["study_families"] = ["fam-doi:10.5555/w0"]; lock["exposed_work_ids"] = ["doi:10.5555/w0"]
+    s = exclude(s, "doi:10.5555/w0", "exposed", "exposed"); s = exclude(s, "doi:10.5555/w1", "unresolved_allocation", "deferred"); _relock(lock, manifest=m, split=s)
+    t("a sibling of an exposed work excluded under another category is refused: the category is deterministic (seed, calibration, exposed)", "deterministic category" in (refused(m, s, c, cand, lock, q) or ""))
     m, s, c, cand, lock, q = _setup(); c1 = comp_of(s, "doi:10.5555/w1"); s["components"].remove(c1); comp_of(s, "doi:10.5555/w0")["work_ids"].append("doi:10.5555/w1")
     m["rows"][1]["study_families"] = ["fam-doi:10.5555/w0"]; s = rebuild(s); _relock(lock, manifest=m, split=s); lock["exposed_work_ids"] = ["doi:10.5555/w0"]
-    t("exposure of one work in a two-work component without its sibling is refused", "exclude the whole component" in (refused(m, s, c, cand, lock, q) or ""))
-    lock["exposed_work_ids"] = ["doi:10.5555/w0", "doi:10.5555/w1"]; r = run(m, s, c, cand, lock, q); t("exposure declared for the whole component excludes both", r["reconciliation"]["exposed"] == 2)
+    t("exposure of one work in a two-work component without its sibling is refused", "must be excluded as exposed" in (refused(m, s, c, cand, lock, q) or ""))
+    # unresolved overlap: possible as well as unknown needs a disposition
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["overlap_state"] = "possible"; m["rows"][0]["study_families"] = []; _relock(lock, manifest=m)
+    t("possible overlap with an empty family list and no disposition is refused (not resolved independence)", "possible overlap allocated without a recorded disposition" in (refused(m, s, c, cand, lock, q) or ""))
+    # identity: canonical works before matching
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["identifiers"]["pmid"] = "12345"; m["rows"][3]["identifiers"]["pmid"] = "12345"; _relock(lock, manifest=m); cand["candidates"][0]["pmid"] = "12345"
+    t("two manifest rows sharing a PMID are an identity conflict, refused before matching (the shared alias cannot turn the miss into a hit)", "identity conflict" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["identifiers"]["openalex_id"] = "W1"; m["rows"][1]["identifiers"]["openalex_id"] = "W1"; _relock(lock, manifest=m)
+    t("two manifest rows sharing an OpenAlex id are an identity conflict", "identity conflict" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["identifiers"]["pmid"] = "777"; m["rows"].append({**_row("pmid:777", [("isi", "internal_consistency", "eligible")]), "identifiers": {"doi": None, "pmid": "777", "openalex_id": None}, "study_families": ["fam-x"]})
+    comp_of(s, "doi:10.5555/w0")["work_ids"].append("pmid:777"); m["rows"][-1]["study_families"] = ["fam-doi:10.5555/w0"]; _relock(lock, manifest=m, split=s)
+    t("one work listed twice, once by DOI and once by PMID, is an identity conflict", "identity conflict" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); m["rows"][3]["identifiers"]["pmid"] = "555"; _relock(lock, manifest=m); cand["candidates"][0]["pmid"] = "555"
+    t("a candidate whose DOI names one manifest work and whose PMID names another is an identity conflict", "carries identifiers of" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["identifiers"].update({"pmid": "999", "openalex_id": "W999"}); _relock(lock, manifest=m); cand["candidates"][0] = {"id": "x", "doi": None, "pmid": None, "openalex": "w999", "routes": ["names:europepmc:isi"]}
+    r = run(m, s, c, cand, lock, q); t("legitimate multiple identifiers for one work resolve to it, with case normalisation of the OpenAlex id", "doi:10.5555/w0" in r["hits"])
+    # reading provenance and lock chronology
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["links"][0]["source_location"].update({"read_level": "full_text", "url": None, "section": None, "printed_pages": None, "table_or_figure": None, "accessed_at": None, "response_status": None}); _relock(lock, manifest=m); msg = refused(m, s, c, cand, lock, q) or ""
+    t("a full_text reading with every access and location field null is refused as reading provenance", "no URL" in msg and "names no section, page or table" in msg, msg[:300])
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["links"][0]["source_location"].update({"read_level": "full_text", "section": "Methods", "response_status": None}); _relock(lock, manifest=m)
+    t("a full-text reading through a documented route without an HTTP status is accepted (URL, time and section present)", refused(m, s, c, cand, lock, q) is None)
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["links"][0]["source_location"].update({"printed_pages": "12-13"}); _relock(lock, manifest=m)
+    t("an abstract-only reading carrying printed pages is refused (no invented pages)", "abstract-only yet carries printed pages" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); late = "2026-09-05T12:00:00Z"
+    for r_ in m["rows"]: r_["links"][0]["judged_at"] = late; r_["links"][0]["source_location"]["accessed_at"] = late
+    _relock(lock, manifest=m); msg = refused(m, s, c, cand, lock, q) or ""
+    t("judgements made after the lock cannot support an unseen-holdout claim", "after the lock" in msg, msg[:200])
+    lock["claim"] = "retrospective_replay"; cand["evaluation_id"] = None; r = run(m, s, c, cand, lock, q, ex=None); t("the same late judgements evaluate under an explicitly retrospective claim", r["claim"] == "retrospective_replay")
+    # typed inputs and run completeness
+    m, s, c, cand, lock, q = _setup(); msg = refused(m, s, c, cand, lock, []) or ""; t("a query configuration that is a list is refused by name, not by exception", "queries: root is not an object" in msg, msg[:200])
+    m, s, c, cand, lock, q = _setup(); q2 = dict(q); q2["records"] = [{"no_id": 1}]; t("a query record without an instrument id is refused by name", "record 0 is not an object with an instrument_id" in (refused(m, s, c, cand, lock, q2) or ""))
+    m, s, c, cand, lock, q = _setup(); m["rows"][0]["publication_date"] = {"value": "0000", "precision": "year", "source_url": "x"}; _relock(lock, manifest=m)
+    t("a year of 0000 is not a calendar year and is refused by name", "not a calendar date" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); lock["run_window"] = {"from": "2026-09-05", "to": "2026-08-01"}; cand["requested_window"] = {"from": "2026-09-05", "to": "2026-08-01", "type": "publication date, inclusive"}; msg = refused(m, s, c, cand, lock, q) or ""
+    t("matching reversed windows are refused in preflight, never evaluated to zero", "is after to" in msg, msg[:200])
+    m, s, c, cand, lock, q = _setup(); cand["status"] = "failed"; cand["channels_not_complete"] = [{"channel_id": "x"}]; r = run(m, s, c, cand, lock, q)
+    t("a failed discovery run evaluates as observed retrieval accounting: status preserved, state and claim labelled, provisional", r["discovery_run"]["status"] == "failed" and r["state"] == "evaluated_partial_run" and r["claim_state"].startswith("failed discovery run") and r["provisional"] and r["discovery_run"]["channels_not_complete"] == 1)
+    m, s, c, cand, lock, q = _setup(); r = run(m, s, c, cand, lock, q)
+    t("the report carries every input hash and states that the execution binding is locally equal, not independently verified", set(r["provenance"]["input_sha256"]) >= {"manifest", "split", "coverage", "query_lock", "queries", "candidates_bytes"} and "not independently verified" in r["provenance"]["execution_binding"]["independent_verification"])
     m, s, c, cand, lock, q = _setup(); m["rows"][1]["citation"]["title"] = m["rows"][0]["citation"]["title"]; _relock(lock, manifest=m); cand["candidates"] = [{"id": "10.5555/w0", "doi": "10.5555/w0", "pmid": None, "openalex": None, "title": "Title doi:10.5555/w0", "routes": ["names:europepmc:isi"]}]
     r = run(m, s, c, cand, lock, q); t("a title collision with a different DOI does not count the second work as found", r["hits"] == ["doi:10.5555/w0"])
     m, s, c, cand, lock, q = _setup(); m["rows"].append(_row("doi:10.5555/w0corr", [("isi", "internal_consistency", "eligible")])); m["rows"][-1]["record_type"] = "correction"
@@ -715,7 +851,9 @@ def main():
     execution = load(a.execution_record, "execution-record") if a.execution_record else None
     try: cbytes = Path(a.candidates).read_bytes()
     except OSError as e: sys.exit(f"candidates: {a.candidates} cannot be read ({e.strerror})")
-    rep = evaluate(load(a.manifest, "manifest"), load(a.split, "split"), load(a.coverage, "coverage"), load(a.candidates, "candidates"), load(a.query_lock, "query-lock"), sha(qbytes), load(a.queries, "queries"), execution, sha(cbytes))
+    hashes = {k: sha(Path(getattr(a, k.replace("-", "_"))).read_bytes()) for k in ("manifest", "split", "coverage", "query-lock")}
+    hashes.update({"queries": sha(qbytes), "candidates_bytes": sha(cbytes), "execution_record": (sha(Path(a.execution_record).read_bytes()) if a.execution_record else None)})
+    rep = evaluate(load(a.manifest, "manifest"), load(a.split, "split"), load(a.coverage, "coverage"), load(a.candidates, "candidates"), load(a.query_lock, "query-lock"), sha(qbytes), load(a.queries, "queries"), execution, sha(cbytes), input_hashes={k.replace("-", "_"): v for k, v in hashes.items()})
     Path(a.out).write_text(json.dumps(rep, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"report written to {a.out}: E={rep['denominators']['E_eligible_holdout_works']} F={rep['denominators']['F_found']} recall={rep['work_level_recall']} ({rep['state']}; {rep['claim']})")
 
