@@ -62,7 +62,11 @@ premium key and is listed in every plan as unavailable rather than claimed to ha
 January, April, July and October the names and citation channels also run with no date filter, over the full
 history. A channel that never ran is missing and stays in the denominator; expected channels are identified at
 query granularity (instrument, route, provider, date basis, exact query or seed), so a missing alias or seed is
-visible even when its sibling completed. A manual run with an explicit window is a manual cycle named
+visible even when its sibling completed. Which providers and routes are required, and which are declared
+unavailable, is fixed by the provider profile inside the hashed query file; a key present in the environment
+authenticates requests and never changes the plan. The verifier reconstructs that plan from the query file at the
+artefact's own recorded dates and judges the artefact against it channel by channel, policy included: an artefact
+cannot narrow its own expected set or exempt a required channel by declaring it unavailable. A manual run with an explicit window is a manual cycle named
 `manual-FROM-TO`; it never satisfies a planned cycle. A manual run with no window is a re-run of the current
 planned cycle. `watermarks.json` advances only after a complete full-inventory run and only through the
 screening pull request a person merges: the harvest writes a proposal into its artefact and the issue, and

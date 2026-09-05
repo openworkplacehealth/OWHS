@@ -104,10 +104,38 @@ def plan(event, in_from, in_to, today, marks, qsha):
     return {"cycle_id": cycle_id, "kind": kind, "from": f, "to": t, "catch_from": catch_from, "full_history": quarterly}
 
 
-def verify(cycle_id, qsha, expected, runs, artefacts, issues):
+def authoritative_plan(cfg, env):
+    """The channel set a run with this envelope's cycle, windows and full-history flag was required to cover, reconstructed from
+    the hashed query file (whose provider profile fixes what is required and what is declared unavailable). The envelope's own
+    expected_channels is evidence to validate against this, never the authority."""
+    rw = env.get("requested_window") or {}; db = env.get("date_bases") or {}
+    catch = (db.get("first_indexed") or {}).get("from")
+    return expected_channels(cfg, rw.get("from"), rw.get("to"), catch, bool(db.get("full_history")))
+
+
+def policy_problems(expected, declared):
+    """The artefact's declared channel set must equal the authoritative plan channel by channel, including whether each is
+    required or declared unavailable, its provider, route, date basis and exact query. Duplicate ids are refused."""
+    p = []
+    ids = [c.get("channel_id") for c in declared]
+    if len(ids) != len(set(ids)): p.append("duplicate channel ids in the artefact's expected set")
+    exp = {c["channel_id"]: c for c in expected}; dec = {c.get("channel_id"): c for c in declared}
+    missing = sorted(set(exp) - set(dec)); extra = sorted(set(dec) - set(exp))
+    if missing: p.append(f"{len(missing)} channels required by the plan are absent from the artefact's expected set: {missing[:5]}")
+    if extra: p.append(f"{len(extra)} channels in the artefact's expected set are not in the plan: {extra[:5]}")
+    for cid in set(exp) & set(dec):
+        e, d = exp[cid], dec[cid]
+        for k in ("instrument_id", "route", "source", "date_basis", "query"):
+            if e.get(k) != d.get(k): p.append(f"channel {cid}: {k} differs from the plan"); break
+        if bool(e.get("unavailable")) != bool(d.get("unavailable")): p.append(f"channel {cid}: the artefact declares {'unavailable' if d.get('unavailable') else 'required'}, the plan says {'unavailable' if e.get('unavailable') else 'required'}")
+    return p
+
+
+def verify(cycle_id, qsha, expected, runs, artefacts, issues, cfg=None):
     """Pure correlation. runs: [{github_run_id, conclusion, event}]; artefacts: {github_run_id: (envelope dict, sha256)};
-    issues: [{author, body}]; expected: the current plan's channel descriptors for this cycle (None: accept the artefact's own set).
-    Returns (accepted_run_id or None, reasons)."""
+    issues: [{author, body}]; expected: an authoritative channel plan, or None with cfg given so the plan is reconstructed from
+    the query file at the envelope's own dates. The artefact's declared set is validated against that plan channel by channel
+    (policy included); it is never the authority. Returns (accepted_run_id or None, reasons)."""
     reasons = []
     marks = []
     for i in issues:
@@ -125,12 +153,14 @@ def verify(cycle_id, qsha, expected, runs, artefacts, issues):
         if env.get("status") != "complete": reasons.append(f"run {rid}: status {env.get('status')!r}"); continue
         if env.get("full_inventory") is not True: reasons.append(f"run {rid}: not a full-inventory run"); continue
         if env.get("query_sha256") != qsha: reasons.append(f"run {rid}: query file hash {str(env.get('query_sha256'))[:12]} is not the current {qsha[:12]}"); continue
-        exp = env.get("expected_channels") if isinstance(env.get("expected_channels"), list) else None
-        if not exp: reasons.append(f"run {rid}: artefact carries no expected channel set"); continue
-        if expected is not None and {c["channel_id"] for c in exp} != {c["channel_id"] for c in expected}:
-            reasons.append(f"run {rid}: the artefact's expected channel set differs from the current plan for this cycle"); continue
-        missing = channels_not_complete(exp, env.get("channels", []))
-        if missing: reasons.append(f"run {rid}: {len(missing)} of {len(exp)} expected channels not complete: {[m['channel_id'] for m in missing][:5]}"); continue
+        declared = env.get("expected_channels") if isinstance(env.get("expected_channels"), list) else None
+        if not declared: reasons.append(f"run {rid}: artefact carries no expected channel set"); continue
+        plan = expected if expected is not None else (authoritative_plan(cfg, env) if cfg is not None else None)
+        if plan is None: reasons.append(f"run {rid}: no authoritative plan available to judge the artefact against"); continue
+        pol = policy_problems(plan, declared)
+        if pol: reasons.append(f"run {rid}: " + "; ".join(pol[:3])); continue
+        missing = channels_not_complete(plan, env.get("channels", []))          # judged against the plan's policy, not the artefact's
+        if missing: reasons.append(f"run {rid}: {len(missing)} of {len(plan)} required channels not complete: {[m['channel_id'] for m in missing][:5]}"); continue
         if env.get("channels_not_complete"): reasons.append(f"run {rid}: artefact itself lists {len(env['channels_not_complete'])} channels not complete"); continue
         matched = [m for m in marks if m.get("cycle_id") == cycle_id and m.get("github_run_id") == rid and m.get("artefact_sha256") == sha]
         if not matched: reasons.append(f"run {rid}: no bot-authored issue names this run and artefact hash {sha[:12]}"); continue
@@ -147,25 +177,38 @@ def gh(*args):
     return r.stdout
 
 
-def verify_live(cycle_id, repo):
+def fetch_live(cycle_id, repo, gh_json=None, download=None):
+    """Read-only collection through gh: runs of the workflow this month, each successful run's artefact, and the cycle's issues."""
+    gh_json = gh_json or gh
     since = f"{cycle_id}-01T00:00:00Z"
-    runs = json.loads(gh("run", "list", "--repo", repo, "--workflow", WORKFLOW, "--created", f">={since}", "--json", "databaseId,conclusion,event", "--limit", "50"))
+    runs = json.loads(gh_json("run", "list", "--repo", repo, "--workflow", WORKFLOW, "--created", f">={since}", "--json", "databaseId,conclusion,event", "--limit", "50"))
     runs = [{"github_run_id": str(r["databaseId"]), "conclusion": r["conclusion"], "event": r["event"]} for r in runs]
     artefacts = {}
-    with tempfile.TemporaryDirectory() as tmp:
-        for r in runs:
-            if r["conclusion"] != "success": continue
-            d = Path(tmp) / r["github_run_id"]
-            p = subprocess.run(["gh", "run", "download", r["github_run_id"], "--repo", repo, "-n", f"candidates-{cycle_id}", "-D", str(d)], capture_output=True, text=True)
-            if p.returncode != 0: continue
-            files = list(d.glob("*.json"))
-            if files: artefacts[r["github_run_id"]] = (json.loads(files[0].read_text(encoding="utf-8")), hashlib.sha256(files[0].read_bytes()).hexdigest())
-    issues = json.loads(gh("issue", "list", "--repo", repo, "--label", "evidence-sweep", "--state", "all", "--search", f'"Evidence harvest {cycle_id}" in:title', "--json", "author,body"))
+    for r in runs:
+        if r["conclusion"] != "success": continue
+        got = (download or _download_artefact)(r["github_run_id"], repo, cycle_id)
+        if got: artefacts[r["github_run_id"]] = got
+    issues = json.loads(gh_json("issue", "list", "--repo", repo, "--label", "evidence-sweep", "--state", "all", "--search", f'"Evidence harvest {cycle_id}" in:title', "--json", "author,body"))
     issues = [{"author": ("app/" + i["author"]["login"]) if i["author"].get("is_bot") else i["author"]["login"], "body": i["body"]} for i in issues]
-    cfg = json.loads(QUERIES.read_text(encoding="utf-8"))
-    pl = plan("schedule", None, None, datetime.date.fromisoformat(f"{cycle_id}-01"), load_watermarks(), query_sha())
-    # the expected set is compared on channel ids, which depend on the exact queries and not on the window dates
-    return verify(cycle_id, query_sha(), None, runs, artefacts, issues)
+    return runs, artefacts, issues
+
+
+def _download_artefact(run_id, repo, cycle_id):
+    with tempfile.TemporaryDirectory() as tmp:
+        d = Path(tmp) / run_id
+        p = subprocess.run(["gh", "run", "download", run_id, "--repo", repo, "-n", f"candidates-{cycle_id}", "-D", str(d)], capture_output=True, text=True)
+        if p.returncode != 0: return None
+        files = list(d.glob("*.json"))
+        if not files: return None
+        return (json.loads(files[0].read_text(encoding="utf-8")), hashlib.sha256(files[0].read_bytes()).hexdigest())
+
+
+def verify_live(cycle_id, repo, gh_json=None, download=None, cfg=None, qsha=None):
+    """The live wrapper: fetch, then judge every artefact against the authoritative plan reconstructed from the hashed query
+    file at the artefact's own recorded dates. Nothing in the ambient environment (a key present or absent) changes the plan."""
+    runs, artefacts, issues = fetch_live(cycle_id, repo, gh_json, download)
+    cfg = cfg if cfg is not None else json.loads(QUERIES.read_text(encoding="utf-8"))
+    return verify(cycle_id, qsha or query_sha(), None, runs, artefacts, issues, cfg=cfg)
 
 
 def advance_problems(env):
@@ -179,7 +222,16 @@ def advance_problems(env):
     if env.get("channels_not_complete"): p.append(f"{len(env['channels_not_complete'])} expected channels not complete")
     exp = env.get("expected_channels") or []
     if not exp: p.append("no expected channel set")
-    elif channels_not_complete(exp, env.get("channels", [])): p.append("a channel in the expected set did not complete")
+    else:
+        try:
+            cfg = json.loads(QUERIES.read_text(encoding="utf-8")) if QUERIES.exists() else None
+            plan = authoritative_plan(cfg, env) if cfg and prop.get("query_sha256") == query_sha() else None
+        except Exception: plan = None
+        if plan is not None:
+            pol = policy_problems(plan, exp)
+            if pol: p.append("the artefact's expected set differs from the authoritative plan: " + pol[0])
+            elif channels_not_complete(plan, env.get("channels", [])): p.append("a channel required by the plan did not complete")
+        elif channels_not_complete(exp, env.get("channels", [])): p.append("a channel in the expected set did not complete")
     if prop.get("query_sha256") != env.get("query_sha256"): p.append("proposal query hash differs from the envelope's")
     if prop.get("cycle_id") != (env.get("cycle") or {}).get("id"): p.append("proposal cycle id differs from the envelope's")
     if prop.get("run_id") != env.get("run_id"): p.append("proposal run id differs from the envelope's")
@@ -271,7 +323,43 @@ def self_test():
     t("an artefact built from a different query file is refused", rid is None and "query file hash" in why[0], why)
     narrower = env(expected=[c for c in exp if c["route"] != "cites"], channels=[c for c in full_run if c["route"] != "cites"]); s7 = hashlib.sha256(json.dumps(narrower).encode()).hexdigest()
     rid, why = verify("2026-10", Q, exp, runs, {"100": (narrower, s7)}, [mark("100", s7)])
-    t("an artefact whose own expected set is narrower than the current plan is refused", rid is None and "differs from the current plan" in why[0], why)
+    t("an artefact whose own expected set is narrower than the current plan is refused", rid is None and "required by the plan are absent" in why[0], why)
+    # the live wrapper, with gh stubbed: the plan is reconstructed from the query file at the artefact's dates, never taken from the artefact
+    def stub_gh_factory(runs_json, issues_json):
+        def stub(*args):
+            if args[0] == "run": return json.dumps(runs_json)
+            if args[0] == "issue": return json.dumps(issues_json)
+            raise AssertionError(args)
+        return stub
+    def env_live(expected, channels, **kw):
+        e = {"cycle": {"id": "2026-10", "kind": "planned"}, "status": "complete", "full_inventory": True, "query_sha256": Q, "run_id": "r1",
+             "requested_window": {"from": "2026-09-01", "to": "2026-10-01"}, "date_bases": {"publication": {"from": "2026-09-01", "to": "2026-10-01"}, "first_indexed": {"from": "2026-07-03", "to": "2026-10-01"}, "full_history": False},
+             "expected_channels": expected, "channels": channels}
+        e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
+    plan_live = expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)
+    full_live = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in plan_live]
+    runs_json = [{"databaseId": 100, "conclusion": "success", "event": "schedule"}]
+    def live_with(envelope):
+        sha_ = hashlib.sha256(json.dumps(envelope).encode()).hexdigest()
+        issues = [{"author": {"login": "github-actions", "is_bot": True}, "body": f"<!-- owhs-cycle cycle_id=2026-10 kind=planned github_run_id=100 artefact_sha256={sha_} -->"}]
+        return verify_live("2026-10", "example/repo", gh_json=stub_gh_factory(runs_json, issues), download=lambda run_id, repo, cyc: (envelope, sha_), cfg=cfg, qsha=Q)
+    rid, why = live_with(env_live(plan_live, full_live)); t("live wrapper: a complete authoritative manifest passes", rid == "100", why)
+    one = env_live([plan_live[0]], [full_live[0]]); rid, why = live_with(one)
+    t("live wrapper: a one-channel self-declared manifest fails against the reconstructed plan", rid is None and "required by the plan are absent" in why[0], why)
+    exempt = [dict(c) for c in plan_live]; req = next(c for c in exempt if not c["unavailable"]); req["unavailable"] = "synthetic exemption not in the plan"
+    chans = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in exempt]
+    rid, why = live_with(env_live(exempt, chans)); t("live wrapper: a required channel self-exempted as unavailable by the artefact fails", rid is None and "declares unavailable, the plan says required" in why[0], why)
+    import os as _os
+    saved = _os.environ.get("OPENALEX_API_KEY"); _os.environ["OPENALEX_API_KEY"] = "probe-not-a-real-key"
+    try:
+        rid_k, _ = live_with(env_live(plan_live, full_live)); plan_k = [c["channel_id"] for c in expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)]
+    finally:
+        if saved is None: _os.environ.pop("OPENALEX_API_KEY", None)
+        else: _os.environ["OPENALEX_API_KEY"] = saved
+    t("live wrapper: a key present in the ambient environment changes neither the authorised inventory nor the verdict", rid_k == "100" and plan_k == [c["channel_id"] for c in plan_live])
+    unav = next(c for c in plan_live if c["unavailable"])
+    rid, why = live_with(env_live(plan_live, full_live)); t("a configured unavailable channel stays reported as unavailable and the cycle still verifies", rid == "100" and any(c["channel_id"] == unav["channel_id"] and c["outcome"] == "unavailable" for c in full_live))
+    dup = env_live(plan_live + [plan_live[0]], full_live); rid, why = live_with(dup); t("duplicate channel ids in the artefact are refused", rid is None and "duplicate channel ids" in why[0], why)
     failed_runs = [{"github_run_id": "100", "conclusion": "failure", "event": "schedule"}]
     rid, why = verify("2026-10", Q, exp, failed_runs, {"100": (good, sha)}, [mark("100", sha)])
     t("a failed run with a complete-looking issue is refused", rid is None and "conclusion failure" in why[0], why)

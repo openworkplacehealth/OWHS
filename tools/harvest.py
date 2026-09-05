@@ -173,6 +173,9 @@ def planned_channels(rec, cfg, date_from, date_to, catch_from=None, full_history
     caught) and full_history (no date filter; quarterly). The harvester's runners and the cycle verifier both derive from this list,
     so the denominator the verifier uses is exactly what the harvester planned."""
     props = cfg["property_terms"]
+    prov = cfg.get("providers") or {"openalex": {"search_routes": False, "update_date_filter": False}}
+    oa_search = bool(prov.get("openalex", {}).get("search_routes"))          # from the hashed profile, never from the environment
+    oa_update = bool(prov.get("openalex", {}).get("update_date_filter"))
     out = []
     def add(route, source, query, basis, unavailable=None):
         out.append({"instrument_id": rec["instrument_id"], "route": route, "source": source, "date_basis": basis, "query": query,
@@ -182,9 +185,10 @@ def planned_channels(rec, cfg, date_from, date_to, catch_from=None, full_history
         for basis, f, t in bases:
             if basis == "first_indexed":
                 add("names", "europepmc", f"TITLE_ABS:{q_phrase(name)}", basis)
-                add("names", "openalex", q_phrase(name), basis, unavailable="OpenAlex update-date filtering needs a premium key; not configured")
+                if oa_update: add("names", "openalex", q_phrase(name), basis)
+                else: add("names", "openalex", q_phrase(name), basis, unavailable="OpenAlex update-date filtering is off in the provider profile (needs a premium key)")
                 continue
-            if OPENALEX_KEY: add("names", "openalex", q_phrase(name), basis)
+            if oa_search: add("names", "openalex", q_phrase(name), basis)
             add("names", "europepmc", f"TITLE_ABS:{q_phrase(name)}", basis)
     ctx = rec.get("abbreviation_context") or []
     for ab in rec.get("abbreviations") or []:
@@ -194,7 +198,7 @@ def planned_channels(rec, cfg, date_from, date_to, catch_from=None, full_history
         for basis, f, t in bases:
             if basis == "full_history": continue                     # the quarterly rerun covers names and citation links
             if basis == "first_indexed": add("abbreviation", "europepmc", ep, basis); continue
-            if OPENALEX_KEY: add("abbreviation", "openalex", oa, basis)
+            if oa_search: add("abbreviation", "openalex", oa, basis)
             add("abbreviation", "europepmc", ep, basis)
     for seed in rec.get("citation_seeds") or []:
         wid = seed.get("openalex_id")
@@ -369,15 +373,21 @@ def self_test():
     assert st([]) == "failed", "an empty channel set is a configuration failure, not a complete run"
     assert norm_doi("10.1027//1015-5759.19.1.12") == "10.1027//1015-5759.19.1.12", "the OLBI double slash survives"
     assert retry_after_seconds("120") == 120 and retry_after_seconds(None) is None and retry_after_seconds("garbage") is None
+    from cycle import expected_channels, channels_not_complete
     q = json.loads(QUERIES.read_text(encoding="utf-8"))
+    assert "providers" in q and "openalex" in q["providers"] and isinstance(q["providers"]["openalex"].get("search_routes"), bool), "the provider profile is pinned in the query file"
+    import os as _os
+    with_key = dict(_os.environ); _os.environ["OPENALEX_API_KEY"] = "probe-not-a-real-key"
+    try: plan_key = [c["channel_id"] for c in expected_channels(q, "2026-01-01", "2026-01-31", "2025-11-02", False)]
+    finally: _os.environ.pop("OPENALEX_API_KEY", None); _os.environ.update({k: v for k, v in with_key.items() if k == "OPENALEX_API_KEY"})
     ids = [r["instrument_id"] for r in q["records"]]
     assert len(ids) == len(set(ids)) == 27, "27 unique parent records expected"
     for r in q["records"]:
         assert r["names"] and r["canonical_name"] == r["names"][0]
         if r.get("abbreviations"): assert r.get("abbreviation_context"), f"{r['instrument_id']}: abbreviations need context"
-    from cycle import expected_channels, channels_not_complete
     exp = expected_channels(q, "2026-01-01", "2026-01-31", "2025-11-02", False)
     ids = [c["channel_id"] for c in exp]
+    assert ids == plan_key, "a key in the environment must not change the plan"
     assert len(ids) == len(set(ids)), "channel ids must be unique"
     assert any(c["date_basis"] == "first_indexed" and c["source"] == "europepmc" for c in exp), "catch-up channels planned on first-index date"
     assert any(c["unavailable"] for c in exp), "the unavailable OpenAlex update-date filter is listed, not hidden"
@@ -426,7 +436,8 @@ def main():
         except ValueError: sys.exit("configuration error: --catch-from must be YYYY-MM-DD")
         if cf > d1: sys.exit("configuration error: --catch-from after --to")
     items, new_list, channels, low, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started, catch_from=a.catch_from, full_history=a.full_history)
-    sources = ["europepmc", "openalex (cites" + (", names, abbreviation)" if OPENALEX_KEY else " only: no API key)")] + (["crossref"] if not a.no_verify else [])
+    prov = cfg.get("providers") or {}
+    sources = ["europepmc", "openalex (" + ("cites, names, abbreviation" if prov.get("openalex", {}).get("search_routes") else "cites only, per the provider profile") + ("; authenticated" if OPENALEX_KEY else "; keyless") + ")"] + (["crossref"] if not a.no_verify else [])
     out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, low, warnings, sources)
     out["full_inventory"] = not a.instrument       # a manual one-instrument run is not a monthly cycle
     if a.instrument and a.cycle_kind == "planned": sys.exit("configuration error: a planned cycle covers the full inventory; use no --cycle-kind or manual for a one-instrument run")
