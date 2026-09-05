@@ -1,6 +1,6 @@
 name: validate
 
-# Runs the Level 1 conformance evidence on every push and pull request. The gate is
+# Runs the Level 1 conformance evidence and the registry build check on every push and pull request. The gate is
 # --check, which regenerates the report in memory and fails if it differs from the
 # committed one, so a stale examples/validation_report.json cannot merge. It also fails
 # if any fixture stops matching the verdict its filename claims.
@@ -25,3 +25,5 @@ jobs:
       - run: pip install -r requirements.txt
       - name: validation report is current and every fixture matches its name
         run: python tools/build_validation_report.py --check
+      - name: registry pages are generated from the committed dataset, rubric and generator
+        run: python registry/build_registry_site.py --check
