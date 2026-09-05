@@ -5,8 +5,10 @@
 
 Every case below names the behaviour it establishes. The last group states the documented boundary: a permitted
 string containing an identifier-shaped value is core-valid, and nothing here claims P1 conformance for it.
+
+Every case runs with OWHS_ASSERT_NO_NETWORK=1, so a validator that opened a socket would fail the case.
 """
-import copy, json, subprocess, sys, tempfile
+import copy, json, os, subprocess, sys, tempfile
 from pathlib import Path
 
 sys.dont_write_bytecode = True
@@ -16,14 +18,24 @@ S = ROOT / "schemas" / "v0.2"
 P = ROOT / "profiles" / "owhs-example" / "0.1.0.json"
 
 
+class RawText(str):
+    """An instance given as file text rather than an object, for literals json.dump could not write faithfully."""
+
+
 def run(schema, instance, *profiles):
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
-        json.dump(instance, f); path = f.name
+        if isinstance(instance, RawText): f.write(instance)
+        else: json.dump(instance, f)
+        path = f.name
     args = [sys.executable, str(V), str(schema), path]
     for p in profiles: args += ["--profile", str(p)]
-    r = subprocess.run(args, capture_output=True, text=True)
+    r = subprocess.run(args, capture_output=True, text=True, env={**os.environ, "OWHS_ASSERT_NO_NETWORK": "1"})
     Path(path).unlink()
     return r.returncode, r.stdout + r.stderr
+
+
+def temp_json(obj):
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f: json.dump(obj, f); return Path(f.name)
 
 
 def load(name): return json.loads((ROOT / "examples" / "v0.2" / name).read_text(encoding="utf-8"))
@@ -79,13 +91,56 @@ def main():
     cases.append(("an unknown format is a tool error", 2, fmt_path, ab, (), "cannot assert"))
     cases.append(("the recursive local extension reference works", 0, S / "AbsenceEpisode.json", {**ab, "ext": {"owhs-x": {"a": [[{"b": [{"c": None}]}]]}}}, (), ""))
 
+    # references: $dynamicRef is preflighted like $ref, in used and unused branches; local anchors and local dynamic recursion are legitimate
+    base = json.loads((S / "AbsenceEpisode.json").read_text())
+    dyn_unused = copy.deepcopy(base); dyn_unused["properties"]["unused"] = {"$dynamicRef": "https://example.invalid/schema"}
+    dyn_used = copy.deepcopy(base); dyn_used["properties"]["episodeId"] = {"$dynamicRef": "https://example.invalid/schema"}
+    anchor = copy.deepcopy(base); anchor["$defs"]["E"] = {"$anchor": "valid", "type": "string"}; anchor["properties"]["episodeId"] = {"$ref": "#valid"}
+    anchor_missing = copy.deepcopy(base); anchor_missing["properties"]["episodeId"] = {"$ref": "#noSuchAnchor"}
+    dyn_local = copy.deepcopy(base)
+    dyn_local["$defs"]["tree"] = {"$dynamicAnchor": "node", "type": "object", "properties": {"kids": {"type": "array", "items": {"$dynamicRef": "#node"}}}, "additionalProperties": False}
+    dyn_local["properties"]["ext"]["additionalProperties"] = {"$ref": "#/$defs/tree"}
+    same_doc = copy.deepcopy(base); same_doc["$defs"]["E"] = {"type": "string"}; same_doc["properties"]["episodeId"] = {"$ref": base["$id"] + "#/$defs/E"}
+    temps = [temp_json(x) for x in (dyn_unused, dyn_used, anchor, anchor_missing, dyn_local, same_doc)]
+    cases += [
+        ("a remote $dynamicRef in an unused branch is a tool error, nothing is fetched", 2, temps[0], ab, (), "do not resolve locally"),
+        ("a remote $dynamicRef in a used branch is a tool error, nothing is fetched", 2, temps[1], ab, (), "do not resolve locally"),
+        ("a local named $anchor resolves", 0, temps[2], ab, (), "VALID"),
+        ("a missing named anchor is a tool error", 2, temps[3], ab, (), "do not resolve locally"),
+        ("local $dynamicRef recursion through $dynamicAnchor validates nested payloads", 0, temps[4], {**ab, "ext": {"owhs-x": {"kids": [{"kids": []}]}}}, (), "VALID"),
+        ("local $dynamicRef recursion rejects an unknown nested key", 1, temps[4], {**ab, "ext": {"owhs-x": {"kids": [{"other": 1}]}}}, (), "additionalProperties"),
+        ("a reference by the document's own $id resolves without fetching", 0, temps[5], ab, (), "VALID"),
+    ]
+    # numbers: NaN, Infinity and an overflowing literal are refused when read; a scalar instance is a normal type error
+    obs = load("WellbeingObservation.valid.json"); mc = load("MeasurementContext.valid.json"); obs_text = json.dumps(obs)
+    nv = f'"nativeValue": {obs["nativeValue"]}'
+    assert nv in obs_text
+    cases += [
+        ("NaN in the instance is refused with a diagnostic", 1, S / "WellbeingObservation.json", RawText(obs_text.replace(nv, '"nativeValue": NaN')), (), "[json]"),
+        ("Infinity in the instance is refused with a diagnostic", 1, S / "WellbeingObservation.json", RawText(obs_text.replace(nv, '"nativeValue": Infinity')), (), "[json]"),
+        ("-Infinity in the instance is refused with a diagnostic", 1, S / "WellbeingObservation.json", RawText(obs_text.replace(nv, '"nativeValue": -Infinity')), (), "[json]"),
+        ("a literal that overflows (1e999) is refused with a diagnostic", 1, S / "WellbeingObservation.json", RawText(obs_text.replace(nv, '"nativeValue": 1e999')), (), "not a finite number"),
+        ("a scalar instance is a type error, not a crash", 1, S / "WellbeingObservation.json", RawText("7"), (), "[type] <root>"),
+        ("a scalar scoringDescriptor is a type error, C4 and C5 report not evaluated", 1, S / "MeasurementContext.json", {**mc, "scoringDescriptor": "wrong"}, (), "[type] scoringDescriptor"),
+        ("a scalar observationWindow is a type error, not a crash", 1, S / "MeasurementContext.json", {**mc, "scoringDescriptor": {**mc["scoringDescriptor"], "observationWindow": 3}}, (), "[type] scoringDescriptor/observationWindow"),
+        ("a nested field of the wrong type is reported at its path", 1, S / "WellbeingObservation.json", {**obs, "orgId": {"nested": True}}, (), "[type] orgId"),
+    ]
+    # profiles: the envelope's version and hash are recorded together; an envelope whose schema references outward is a tool error
+    bad_env = json.loads(P.read_text()); bad_env["schema"] = {"$ref": "https://example.invalid/p.json"}
+    temps.append(temp_json(bad_env))
+    cases += [
+        ("a profile envelope with a remote reference is a tool error, nothing is fetched", 2, S / "AbsenceEpisode.json", ab, (temps[-1],), "do not resolve locally"),
+        ("the profile version and envelope hash are recorded together on a pass", 0, S / "AbsenceEpisode.json", {**ab, "ext": {"owhs-example": {"wave": 3}}}, (P,), "owhs-example@0.1.0 (envelope sha256 "),
+        ("the profile version and envelope hash are recorded together on a failure", 1, S / "AbsenceEpisode.json", {**ab, "ext": {"owhs-example": {"wave": 0}}}, (P,), "owhs-example@0.1.0 (envelope sha256 "),
+    ]
+
     failures = 0
     for label, expected, schema, inst, profiles, must in cases:
         code, out = run(schema, inst, *profiles)
         ok = code == expected and (must in out if must else True)
         print(("ok  " if ok else "FAIL"), label, "" if ok else f"(exit {code}, expected {expected}; output: {out.strip()[:160]})")
         failures += not ok
-    for p in (open_path, widen_path, net_path, miss_path, fmt_path): p.unlink(missing_ok=True)
+    for p in (open_path, widen_path, net_path, miss_path, fmt_path, *temps): p.unlink(missing_ok=True)
     print(f"{len(cases) - failures}/{len(cases)} cases as expected")
     sys.exit(1 if failures else 0)
 

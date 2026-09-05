@@ -31,3 +31,5 @@ jobs:
         run: python tools/check_profiles.py --self-test
       - name: bundle join checks behave as documented
         run: python tools/check_measurement.py --self-test
+      - name: code-list versions resolve, archives are intact, the absence-reason crosswalk is complete
+        run: python tools/check_codelist_mappings.py --self-test

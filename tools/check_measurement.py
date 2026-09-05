@@ -4,8 +4,11 @@
     python tools/check_measurement.py BUNDLE.json
     python tools/check_measurement.py --self-test
 
-A bundle is a closed object: schema_version "0.2" and four arrays, contexts, observations, administrations and
-reports, each item validated against its v0.2 schema and its cross-field rules through tools/validate.py. Then:
+A bundle is a closed object: schema_version "0.2" and all four arrays, contexts, observations, administrations and
+reports (empty arrays are allowed, missing ones are not). The envelope is checked first; a bundle that is not an
+object, carries unknown keys or lacks an array stops there with a diagnostic. Every item is then validated against
+its v0.2 schema and cross-field rules through tools/validate.py, and only the items that pass take part in the
+join checks below, so an invalid item is reported once, with the validator's own errors, and never a traceback:
 
   - (entity, orgId, primary id) is unique;
   - every contextId resolves to a context in the same bundle and the same organisation; the same string in
@@ -28,6 +31,8 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from validate import loads_strict  # noqa: E402  the same reader: NaN, Infinity and overflowing literals are refused
 V = ROOT / "tools" / "validate.py"
 S = ROOT / "schemas" / "v0.2"
 ENTITY = {"contexts": ("MeasurementContext", "contextId"), "observations": ("WellbeingObservation", "observationId"),
@@ -41,7 +46,7 @@ def instant(v):
 
 def validate_item(entity, item):
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
-        json.dump(item, f); p = f.name
+        json.dump(item, f); p = f.name      # a non-finite number in memory is written as its constant and refused by the validator
     r = subprocess.run([sys.executable, str(V), str(S / f"{entity}.json"), p], capture_output=True, text=True)
     Path(p).unlink()
     if r.returncode == 2: raise SystemExit(f"[tool] {r.stderr.strip()}")
@@ -50,23 +55,32 @@ def validate_item(entity, item):
 
 def check(bundle):
     problems, review, external = [], [], {"pseudonymId": set(), "unitId": set(), "benchmarkRef": set(), "itemId": set(), "instrumentId": set()}
-    if not isinstance(bundle, dict) or set(bundle) - {"schema_version", *ENTITY}:
-        return [f"bundle: unknown keys {sorted(set(bundle) - {'schema_version', *ENTITY})}"], review, external
+    empty_external = {k: [] for k in external}
+    # 1. the closed envelope, before anything is joined
+    if not isinstance(bundle, dict):
+        return [f"bundle: not an object ({type(bundle).__name__})"], review, empty_external
+    unknown = sorted(set(bundle) - {"schema_version", *ENTITY}); missing = sorted(set(ENTITY) - set(bundle))
+    if unknown: problems.append(f"bundle: unknown keys {unknown}")
+    if missing: problems.append(f"bundle: missing arrays {missing}; all four are required, empty is allowed")
     if bundle.get("schema_version") != "0.2":
         problems.append(f"bundle: schema_version {bundle.get('schema_version')!r}, expected '0.2'")
-    seen = set()
+    for arr in ENTITY:
+        if arr in bundle and not isinstance(bundle[arr], list):
+            problems.append(f"{arr}: not an array ({type(bundle[arr]).__name__})")
+    if problems:
+        return problems, review, empty_external
+    # 2. every item against its schema and rules; only valid items go on to the joins
+    seen, valid = set(), {arr: [] for arr in ENTITY}
     for arr, (entity, pk) in ENTITY.items():
-        items = bundle.get(arr, [])
-        if not isinstance(items, list):
-            problems.append(f"{arr}: not an array"); continue
-        for i, item in enumerate(items):
+        for i, item in enumerate(bundle[arr]):
             ok, errs = validate_item(entity, item)
             if not ok:
-                problems += [f"{arr}[{i}]: {e}" for e in errs]; continue
+                problems += [f"{arr}[{i}]: {e}" for e in errs] or [f"{arr}[{i}]: invalid {entity}"]; continue
             key = (entity, item.get("orgId"), item.get(pk))
             if key in seen: problems.append(f"{arr}[{i}]: duplicate {entity} {item.get(pk)!r} in organisation {item.get('orgId')!r}")
             seen.add(key)
-    ctx = {(c["orgId"], c["contextId"]): c for c in bundle.get("contexts", []) if isinstance(c, dict) and "orgId" in c and "contextId" in c}
+            valid[arr].append((i, item))
+    ctx = {(c["orgId"], c["contextId"]): c for _, c in valid["contexts"]}
 
     def context_for(arr, i, item):
         key = (item.get("orgId"), item.get("contextId"))
@@ -76,8 +90,7 @@ def check(bundle):
                         + (f" (a context with that id exists in organisation {elsewhere[0]!r}; ids do not join across organisations)" if elsewhere else ""))
         return None
 
-    for i, o in enumerate(bundle.get("observations", [])):
-        if not isinstance(o, dict): continue
+    for i, o in valid["observations"]:
         external["pseudonymId"].add(o.get("pseudonymId")); external["itemId"].add(o.get("itemId"))
         c = context_for("observations", i, o)
         if not c: continue
@@ -89,8 +102,7 @@ def check(bundle):
             problems.append(f"observations[{i}]: nativeValue {o['nativeValue']} outside the declared nativeScale {ns['min']} to {ns['max']}")
         if "normalisedValue" in o and "normalisation" not in sd:
             problems.append(f"observations[{i}]: normalisedValue present but the context declares no normalisation")
-    for i, a in enumerate(bundle.get("administrations", [])):
-        if not isinstance(a, dict): continue
+    for i, a in valid["administrations"]:
         external["pseudonymId"].add(a.get("pseudonymId")); external["instrumentId"].add(a.get("instrumentId"))
         c = context_for("administrations", i, a)
         if not c: continue
@@ -101,8 +113,7 @@ def check(bundle):
         if "aboveThresholdFlag" in a and "threshold" not in sd: problems.append(f"administrations[{i}]: aboveThresholdFlag present but the context declares no threshold")
         if a.get("completionStatus") == "partial" and ("totalScore" in a or "subscaleScores" in a) and "missingResponseRule" not in sd:
             problems.append(f"administrations[{i}]: partial administration carries scores but the context declares no missingResponseRule")
-    for i, r in enumerate(bundle.get("reports", [])):
-        if not isinstance(r, dict): continue
+    for i, r in valid["reports"]:
         if r.get("unitId"): external["unitId"].add(r["unitId"])
         if r.get("benchmarkRef"): external["benchmarkRef"].add(f"{r['benchmarkRef'].get('benchmarkId')}@{r['benchmarkRef'].get('releaseVersion')}")
         c = context_for("reports", i, r)
@@ -167,6 +178,17 @@ def self_test():
     case("unknown bundle key fails", lambda b: b.update({"extra": []}), True, "unknown keys")
     case("wrong schema_version fails", lambda b: b.update({"schema_version": "0.1"}), True, "schema_version")
     case("empty arrays are allowed", lambda b: [b[k].clear() for k in ("observations", "administrations", "reports")], False)
+    case("a bundle with only schema_version fails: all four arrays are required", lambda b: [b.pop(k) for k in ENTITY], True, "missing arrays")
+    case("a missing single array fails", lambda b: b.pop("reports"), True, "missing arrays ['reports']")
+    case("an array that is not an array fails", lambda b: b.update({"contexts": {}}), True, "not an array")
+    def malformed_context(b): b["contexts"][0]["scoringDescriptor"] = "wrong"
+    case("a malformed context referenced by an observation: the context's own errors, no traceback", malformed_context, True, "contexts[0]: [type] scoringDescriptor")
+    def malformed_occasion(b): b["observations"][0]["occasionTs"] = 5
+    case("a malformed occasion: the observation's own errors, no traceback", malformed_occasion, True, "observations[0]: [type] occasionTs")
+    def nan_value(b): b["observations"][0]["nativeValue"] = float("nan")
+    case("a non-finite nativeValue fails", nan_value, True, "[json]")
+    def inf_endpoint(b): b["reports"][0]["interval"] = {"low": 0.1, "high": float("inf")}
+    case("a non-finite interval endpoint fails", inf_endpoint, True, "[json]")
 
     failures = 0
     for label, bundle, expect_fail, must in cases:
@@ -175,6 +197,16 @@ def self_test():
         ok = (bool(problems) == expect_fail) and (must in text if must else True)
         print(("ok  " if ok else "FAIL"), label, "" if ok else f"({problems[:2]} {review[:1]})")
         failures += not ok
+    for label, scalar in (("a scalar bundle is a diagnostic, not a crash", 7), ("a null bundle is a diagnostic", None), ("an array bundle is a diagnostic", [])):
+        problems, _, _ = check(scalar)
+        ok = problems and "not an object" in problems[0]
+        print(("ok  " if ok else "FAIL"), label, "" if ok else problems); failures += not ok; cases.append((label, None, True, ""))
+    try:
+        loads_strict('{"schema_version": "0.2", "contexts": [], "observations": [{"nativeValue": NaN}], "administrations": [], "reports": []}')
+        print("FAIL a bundle file carrying NaN is refused when read"); failures += 1
+    except ValueError:
+        print("ok   a bundle file carrying NaN is refused when read")
+    cases.append(("read", None, True, ""))
     _, _, external = check(base)
     assert external["pseudonymId"] and external["benchmarkRef"] and external["unitId"], "external references must be listed"
     print("ok   external references (pseudonymId, unitId, benchmarkRef, itemId, instrumentId) listed as not checked:", {k: len(v) for k, v in external.items()})
@@ -186,7 +218,11 @@ if __name__ == "__main__":
     if "--self-test" in sys.argv:
         self_test()
     elif len(sys.argv) == 2:
-        problems, review, external = check(json.loads(Path(sys.argv[1]).read_text(encoding="utf-8")))
+        try:
+            bundle = loads_strict(Path(sys.argv[1]).read_text(encoding="utf-8"))
+        except ValueError as error:
+            report([f"bundle: not readable as JSON: {error}"], [], {}); sys.exit(1)
+        problems, review, external = check(bundle)
         report(problems, review, external); sys.exit(1 if problems else 0)
     else:
         sys.exit("usage: check_measurement.py BUNDLE.json | --self-test")

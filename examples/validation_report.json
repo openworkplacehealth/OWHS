@@ -116,7 +116,27 @@
           "[additionalProperties] <root>: Additional properties are not allowed ('name' was unexpected)",
           "[required] <root>: 'sourceProvenance' is a required property",
           "[pattern] pseudonymId: 'EMP-Jane-Smith' does not match '^owhs:pseudo:[0-9a-f]{16,64}$'",
-          "[enum] reasonCode: 'back-pain' is not one of ['minor-illness', 'musculoskeletal', 'mental-health', 'respiratory', 'gastrointestinal', 'other']"
+          "[enum] reasonCode: 'back-pain' is not one of ['minor-illness', 'musculoskeletal', 'other', 'mental-health', 'gastrointestinal', 'respiratory', 'eye-ear-nose-mouth-dental', 'genito-urinary', 'heart-blood-pressure-circulation', 'headaches-migraines', 'prefers-not-to-give-details']"
+        ]
+      },
+      "new-reason.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "non-disclosure.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "unknown-reason.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[enum] reasonCode: 'unknown' is not one of ['minor-illness', 'musculoskeletal', 'other', 'mental-health', 'gastrointestinal', 'respiratory', 'eye-ear-nose-mouth-dental', 'genito-urinary', 'heart-blood-pressure-circulation', 'headaches-migraines', 'prefers-not-to-give-details']"
         ]
       },
       "valid": {

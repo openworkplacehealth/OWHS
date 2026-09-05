@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Write the v0.2 schemas: the three v0.1 entities with the extension mechanism, and four measurement entities.
 
-The v0.1 schemas are not touched; they stay at their versioned paths and the unversioned entry points keep pointing
-at them. Every v0.2 schema is Draft 2020-12, closed at every object, and carries one optional root property `ext`
+The v0.1 schemas are not touched: the unversioned files under schemas/ remain the v0.1 entry points, and the build
+writes byte-identical copies under schemas/v0.1/ as the archived set. Version 0.2 of AbsenceEpisode pins
+absence-reason at its current version (0.2.0, eleven codes); the v0.1 schema keeps its six-code enum and its pin at
+0.1.0, which the code-list registry resolves to the preserved archive file. Every v0.2 schema is Draft 2020-12, closed at every object, and carries one optional root property `ext`
 keyed by profile namespace. Extension payloads are objects whose nested values are structurally checked and whose
 named identifier keys (OHEpisode: also its named clinical-content keys) are prohibited at every depth. That is a
 key-based check and nothing more: an identifier inside a permitted string is not detected, and the schemas say so.
@@ -17,6 +19,7 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 V1 = ROOT / "schemas"
 V2 = ROOT / "schemas" / "v0.2"
+V1_ARCHIVE = ROOT / "schemas" / "v0.1"
 BASE = "https://openworkplacehealth.org/schemas/v0.2/"
 
 IDENTIFIER_KEYS = ["name", "nino", "email", "dateOfBirth", "address"]
@@ -218,13 +221,20 @@ def build():
         s = json.loads((V1 / f"{n}.json").read_text(encoding="utf-8"))
         s["$id"] = BASE + f"{n}.json"
         s["title"] = s.get("title", f"OWHS {n}").replace("v0.1", "v0.2")
+        if n == "AbsenceEpisode":
+            ar_v, ar_codes = codelist("absence-reason")
+            s["description"] = "Reported sickness-absence episode with versioned reason-category mapping. No direct identifiers."
+            s["properties"]["reasonCode"] = {"type": "string", "enum": ar_codes,
+                                             "$comment": f"codelist:absence-reason@{ar_v}. Reported reason categories following the ONS 2025 workbook plus its separate non-disclosure response; not diagnoses. The crosswalk from the v0.1 six-code list is codelists/mappings/absence-reason-ons-2025-v1.json; a legacy other is not upgraded automatically."}
         out[n] = with_ext(s, IDENTIFIER_KEYS + (OH_CLINICAL_KEYS if n == "OHEpisode" else []))
     for n, s in measurement_schemas().items():
         out[n] = with_ext(s, IDENTIFIER_KEYS)
-    catalogue = {"note": "Versioned schema catalogue. The unversioned files under schemas/ are the v0.1 entry points and are unchanged. A caller names the version it validates against.",
+    catalogue = {"note": "Versioned schema catalogue. The unversioned files under schemas/ are the v0.1 entry points and are unchanged; schemas/v0.1/ holds byte-identical copies as the archived set. A caller names the version it validates against; validation does not choose a version from an unversioned payload.",
                  "versions": {
-                     "0.1": {"status": "archived", "entities": {n: {"file": f"schemas/{n}.json", "$id": f"https://openworkplacehealth.org/schemas/v0.1/{n}.json"} for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]}},
-                     "0.2": {"status": "current", "extension": "ext, keyed by profile namespace; see profiles/", "entities": {n: {"file": f"schemas/v0.2/{n}.json", "$id": out[n]["$id"]} for n in out}}}}
+                     "0.1": {"status": "archived", "entities": {n: {"file": f"schemas/v0.1/{n}.json", "entry_point": f"schemas/{n}.json", "$id": f"https://openworkplacehealth.org/schemas/v0.1/{n}.json"} for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]},
+                             "codelists": {"absence-reason": "0.1.0 (six codes), resolved through codelists/_registry.json versions to codelists/archive/absence-reason@0.1.0.json"}},
+                     "0.2": {"status": "current", "extension": "ext, keyed by profile namespace; see profiles/", "entities": {n: {"file": f"schemas/v0.2/{n}.json", "$id": out[n]["$id"]} for n in out},
+                             "codelists": {"absence-reason": f"{codelist('absence-reason')[0]} (eleven codes); crosswalk codelists/mappings/absence-reason-ons-2025-v1.json"}}}}
     return out, catalogue
 
 
@@ -232,15 +242,17 @@ def main():
     out, catalogue = build()
     files = {V2 / f"{n}.json": json.dumps(s, indent=2, ensure_ascii=False) + "\n" for n, s in out.items()}
     files[V1 / "catalogue.json"] = json.dumps(catalogue, indent=2, ensure_ascii=False) + "\n"
+    for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]:      # the archived v0.1 set: byte-identical copies of the entry points
+        files[V1_ARCHIVE / f"{n}.json"] = (V1 / f"{n}.json").read_text(encoding="utf-8")
     if "--check" in sys.argv:
         stale = [str(p.relative_to(ROOT)) for p, t in files.items() if not p.exists() or p.read_text(encoding="utf-8") != t]
         if stale:
             sys.exit("schemas/v0.2 do not match a fresh build; run tools/build_schemas_v0_2.py\n" + "".join(f"  differs: {s}\n" for s in stale))
         print(f"up to date: {len(files)} schema files match their source"); return
-    V2.mkdir(parents=True, exist_ok=True)
+    V2.mkdir(parents=True, exist_ok=True); V1_ARCHIVE.mkdir(parents=True, exist_ok=True)
     for p, t in files.items():
         p.write_text(t, encoding="utf-8")
-    print(f"wrote {len(out)} v0.2 schemas and schemas/catalogue.json")
+    print(f"wrote {len(out)} v0.2 schemas, schemas/catalogue.json and the archived v0.1 copies")
 
 
 if __name__ == "__main__":

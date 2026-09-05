@@ -8,8 +8,13 @@ With --profile, each supplied profile envelope (profiles/profile-envelope.schema
 instance after the core schema passes its own checks. The core always runs first and cannot be overridden by a
 profile. An envelope whose core_schema_ids does not name the supplied core schema's $id is a configuration
 error (2). Extension namespaces present on the instance that no supplied profile covers are reported as
-"profile semantics not checked": the core validated their generic structure and nothing more. Every $ref must
-be local to its document; nothing is fetched from the network.
+"profile semantics not checked": the core validated their generic structure and nothing more. Every $ref and
+$dynamicRef must resolve inside its own document (a JSON pointer, a named $anchor or $dynamicAnchor, or an
+embedded $id resource); a URI is an identifier, not permission to fetch it, and the resolver's retrieval
+function refuses every request. Set OWHS_ASSERT_NO_NETWORK=1 to make any socket open a hard failure.
+
+Numbers must be finite. NaN and Infinity are not JSON values and a literal that overflows (1e999) is refused
+when the instance is read, and non-finite numbers are refused recursively for instances built in memory.
 
 Two things this tool does that a bare jsonschema call does not.
 
@@ -26,11 +31,28 @@ schema and never one field of an instance against another, so an ordering rule
 between two dates cannot be expressed in it. Those rules are listed in the
 specification under Level 1 and implemented here.
 """
-import re, sys, json
+import hashlib, math, os, re, socket, sys, json
 from datetime import date
 from pathlib import Path
-from jsonschema.validators import Draft202012Validator as V
+from urllib.parse import urldefrag, urljoin
 
+if os.environ.get("OWHS_ASSERT_NO_NETWORK"):
+    class _NoNetwork(socket.socket):
+        def __init__(self, *a, **k):
+            raise RuntimeError("network access attempted; the validator never opens a socket")
+    socket.socket = _NoNetwork
+
+from jsonschema.validators import Draft202012Validator as V
+from referencing import Registry
+from referencing.exceptions import NoSuchResource
+
+
+def _refuse_retrieval(uri):
+    """The registry's only retrieval function: nothing is fetched, whatever the URI."""
+    raise NoSuchResource(ref=uri)
+
+
+REGISTRY = Registry(retrieve=_refuse_retrieval)
 CHECKER = V.FORMAT_CHECKER
 ROOT_PROFILES = Path(__file__).resolve().parents[1] / "profiles"
 DATE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
@@ -71,8 +93,12 @@ def rule_fn(label, fn):
     return fn
 
 
+def _obj(value):
+    return value if isinstance(value, dict) else {}
+
+
 def window_ordered(inst):
-    w = ((inst.get("scoringDescriptor") or {}).get("observationWindow") or {}) if isinstance(inst, dict) else {}
+    w = _obj(_obj(_obj(inst).get("scoringDescriptor")).get("observationWindow"))
     a, b = instant(w.get("start")), instant(w.get("end"))
     if a and b and b < a:
         return f"observationWindow end {w['end']!r} precedes start {w['start']!r} (compared as UTC instants)"
@@ -80,7 +106,7 @@ def window_ordered(inst):
 
 
 def native_scale(inst):
-    ns = ((inst.get("scoringDescriptor") or {}).get("nativeScale") or {}) if isinstance(inst, dict) else {}
+    ns = _obj(_obj(_obj(inst).get("scoringDescriptor")).get("nativeScale"))
     lo, hi = ns.get("min"), ns.get("max")
     if isinstance(lo, (int, float)) and isinstance(hi, (int, float)) and not isinstance(lo, bool) and not isinstance(hi, bool) and not lo < hi:
         return f"nativeScale min {lo!r} is not below max {hi!r}"
@@ -141,25 +167,60 @@ CROSS_FIELD_RULES = {
 }
 
 NAMESPACE = re.compile(r"^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
+ANCHOR = re.compile(r"^[A-Za-z_][-A-Za-z0-9._]*$")
+NOT_SCHEMA_KEYS = ("enum", "const", "examples", "default")     # values here are data, not schema, so a "$ref" key inside them is not a reference
 
 
 def refs_used(node):
+    """Every $ref and $dynamicRef anywhere in the schema, used branches and unused alike."""
     if isinstance(node, dict):
-        if isinstance(node.get("$ref"), str):
-            yield node["$ref"]
-        for value in node.values():
-            yield from refs_used(value)
+        for key in ("$ref", "$dynamicRef"):
+            if isinstance(node.get(key), str):
+                yield node[key]
+        for key, value in node.items():
+            if key not in NOT_SCHEMA_KEYS:
+                yield from refs_used(value)
     elif isinstance(node, list):
         for value in node:
             yield from refs_used(value)
 
 
-def resolve_local(schema, ref):
-    """A local JSON-pointer reference resolves within its own document, or it is a tool error. Nothing is fetched."""
-    if not ref.startswith("#"):
-        return False
-    node = schema
-    for part in [p for p in ref[1:].split("/") if p]:
+def resources(schema, base=""):
+    """uri -> subschema for the root and every embedded $id, each resolved against its enclosing resource."""
+    out = {}
+    def walk(node, scope):
+        if isinstance(node, dict):
+            if isinstance(node.get("$id"), str):
+                scope = urldefrag(urljoin(scope, node["$id"]))[0]
+                out.setdefault(scope, node)
+            for key, value in node.items():
+                if key not in NOT_SCHEMA_KEYS:
+                    walk(value, scope)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value, scope)
+    root_id = urldefrag(urljoin(base, schema["$id"]))[0] if isinstance(schema, dict) and isinstance(schema.get("$id"), str) else ""
+    out[root_id] = schema
+    walk(schema, root_id)
+    return root_id, out
+
+
+def anchors(node):
+    """Every named $anchor and $dynamicAnchor in a resource."""
+    if isinstance(node, dict):
+        for key in ("$anchor", "$dynamicAnchor"):
+            if isinstance(node.get(key), str):
+                yield node[key]
+        for key, value in node.items():
+            if key not in NOT_SCHEMA_KEYS:
+                yield from anchors(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from anchors(value)
+
+
+def pointer_resolves(node, pointer):
+    for part in [p for p in pointer.split("/") if p]:
         part = part.replace("~1", "/").replace("~0", "~")
         if isinstance(node, dict) and part in node:
             node = node[part]
@@ -168,6 +229,21 @@ def resolve_local(schema, ref):
         else:
             return False
     return True
+
+
+def resolve_local(schema, ref):
+    """True when the reference resolves inside the document: a JSON pointer or a named anchor within the root
+    resource or an embedded $id resource. Anything else is refused without being fetched."""
+    root_id, res = resources(schema)
+    target, fragment = urldefrag(urljoin(root_id, ref)) if not ref.startswith("#") else (root_id, ref[1:])
+    if target not in res:
+        return False
+    node = res[target]
+    if fragment == "":
+        return True
+    if fragment.startswith("/"):
+        return pointer_resolves(node, fragment)
+    return bool(ANCHOR.match(fragment)) and fragment in set(anchors(node))
 
 
 def preflight(schema, what):
@@ -186,12 +262,54 @@ def preflight(schema, what):
         die(f"{what} carries references that do not resolve locally (nothing is fetched): " + ", ".join(bad))
 
 
+def _reject_constant(name):
+    raise ValueError(f"{name} is not a JSON value")
+
+
+def _finite_float(text):
+    value = float(text)
+    if not math.isfinite(value):
+        raise ValueError(f"numeric literal {text} is not a finite number")
+    return value
+
+
+def loads_strict(text):
+    """JSON with the standard's grammar only: NaN, Infinity and -Infinity are refused, and a literal that
+    overflows to infinity is refused. Raises ValueError (JSONDecodeError is a subclass)."""
+    return json.loads(text, parse_constant=_reject_constant, parse_float=_finite_float)
+
+
+def non_finite_paths(node, path=""):
+    """Paths of every non-finite number in an in-memory instance; a boolean is not a number."""
+    if isinstance(node, bool):
+        return
+    if isinstance(node, float) and not math.isfinite(node):
+        yield path or "<root>"
+    elif isinstance(node, dict):
+        for key, value in node.items():
+            yield from non_finite_paths(value, f"{path}/{key}" if path else key)
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from non_finite_paths(value, f"{path}/{index}" if path else str(index))
+
+
 def load_json(path):
+    """A schema or profile file: a reading problem is a tool error."""
     try:
-        with open(path, encoding="utf-8") as handle:
-            return json.load(handle)
-    except (OSError, json.JSONDecodeError) as error:
-        die(error)
+        return loads_strict(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        die(f"{path}: {error}")
+
+
+def load_instance(path):
+    """The instance file: a reading problem is an invalid instance with a diagnostic, exit 1."""
+    try:
+        return loads_strict(Path(path).read_text(encoding="utf-8"))
+    except OSError as error:
+        die(f"{path}: {error}")
+    except ValueError as error:
+        print(f"[json] <root>: {error}")
+        sys.exit(1)
 
 
 def formats_used(node):
@@ -221,23 +339,32 @@ def main():
         profiles.append(args[k + 1]); del args[k:k + 2]
     if len(args) != 2:
         die("usage: validate.py <schema.json> <instance.json> [--profile <envelope.json> ...]")
-    schema, inst = load_json(args[0]), load_json(args[1])
+    schema, inst = load_json(args[0]), load_instance(args[1])
     preflight(schema, "schema")
 
     try:
-        errs = sorted(V(schema, format_checker=CHECKER).iter_errors(inst),
+        errs = sorted(V(schema, format_checker=CHECKER, registry=REGISTRY).iter_errors(inst),
                       key=lambda e: [str(part) for part in e.path])
     except Exception as error:
         die(f"the schema could not be applied: {error}")
+    errs = [(e.validator, "/".join(map(str, e.path)) or "<root>", e.message) for e in errs]
+    errs += [("number", path, "not a finite number") for path in non_finite_paths(inst)]
 
     stem = schema.get("$id", args[0]).rstrip("/").split("/")[-1]
     stem = stem[:-5] if stem.endswith(".json") else stem
-    cross = [(rule_id, message)
-             for rule_id, rule in CROSS_FIELD_RULES.get(stem, [])
-             for message in [rule(inst)] if message]
+    cross = []
+    for rule_id, rule in CROSS_FIELD_RULES.get(stem, []):
+        try:
+            message = rule(inst)
+        except (TypeError, AttributeError, KeyError, ValueError) as error:
+            if not errs:
+                die(f"rule {rule_id} failed on a structurally valid instance: {error!r}")
+            message = "not evaluated: its operands failed structural validation (see the errors above)"
+        if message:
+            cross.append((rule_id, message))
 
     # Profiles: applied to the whole instance after the core; the core's verdict is never overridden.
-    profile_lines, covered = [], set()
+    profile_lines, covered = [], {}
     if profiles:
         env_schema_path = ROOT_PROFILES / "profile-envelope.schema.json"
         env_schema = load_json(env_schema_path)
@@ -255,22 +382,30 @@ def main():
             if schema.get("$id") not in env["core_schema_ids"]:
                 die(f"profile {env['profile_id']} {env['version']} targets {env['core_schema_ids']}, not this core schema {schema.get('$id')!r}")
             preflight(env["schema"], f"profile {env['profile_id']} schema")
-            covered.add(env["profile_id"])
-            for e in sorted(V(env["schema"], format_checker=CHECKER).iter_errors(inst), key=lambda e: [str(part) for part in e.path]):
+            digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+            covered[env["profile_id"]] = f"{env['profile_id']}@{env['version']} (envelope sha256 {digest})"
+            try:
+                found = sorted(V(env["schema"], format_checker=CHECKER, registry=REGISTRY).iter_errors(inst), key=lambda e: [str(part) for part in e.path])
+            except Exception as error:
+                die(f"profile {env['profile_id']} {env['version']} could not be applied: {error}")
+            for e in found:
                 profile_lines.append(f"[profile:{env['profile_id']}@{env['version']}] {'/'.join(map(str, e.path)) or '<root>'}: {e.message}")
-    unchecked = sorted(k for k in (inst.get("ext") or {}) if isinstance(inst, dict) and isinstance(inst.get("ext"), dict) and k not in covered)
+    ext = inst.get("ext") if isinstance(inst, dict) else None
+    unchecked = sorted(k for k in ext if k not in covered) if isinstance(ext, dict) else []
 
     if not errs and not cross and not profile_lines:
-        print("VALID" + (f" (profiles checked: {', '.join(sorted(covered))})" if covered else ""))
+        print("VALID" + (f" (profiles checked: {'; '.join(covered[k] for k in sorted(covered))})" if covered else ""))
         for k in unchecked:
             print(f"[profile] ext/{k}: profile semantics not checked")
         sys.exit(0)
-    for e in errs:
-        print(f"[{e.validator}] {'/'.join(map(str, e.path)) or '<root>'}: {e.message}")
+    for validator, where, message in errs:
+        print(f"[{validator}] {where}: {message}")
     for rule_id, message in cross:
         print(f"[{rule_id}] <root>: {message}")
     for line in profile_lines:
         print(line)
+    for k in sorted(covered):
+        print(f"[profile] {covered[k]} checked")
     for k in unchecked:
         print(f"[profile] ext/{k}: profile semantics not checked")
     sys.exit(1)

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openworkplacehealth.org/schemas/v0.2/AbsenceEpisode.json",
   "title": "OWHS AbsenceEpisode v0.2",
-  "description": "One episode of sickness absence, ONS-comparable. No direct identifiers.",
+  "description": "Reported sickness-absence episode with versioned reason-category mapping. No direct identifiers.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -20,12 +20,17 @@
       "enum": [
         "minor-illness",
         "musculoskeletal",
+        "other",
         "mental-health",
-        "respiratory",
         "gastrointestinal",
-        "other"
+        "respiratory",
+        "eye-ear-nose-mouth-dental",
+        "genito-urinary",
+        "heart-blood-pressure-circulation",
+        "headaches-migraines",
+        "prefers-not-to-give-details"
       ],
-      "$comment": "codelist:absence-reason@0.1.0 — ONS reason taxonomy"
+      "$comment": "codelist:absence-reason@0.2.0. Reported reason categories following the ONS 2025 workbook plus its separate non-disclosure response; not diagnoses. The crosswalk from the v0.1 six-code list is codelists/mappings/absence-reason-ons-2025-v1.json; a legacy other is not upgraded automatically."
     },
     "startDate": {
       "type": "string",

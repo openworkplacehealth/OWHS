@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://openworkplacehealth.org/schemas/v0.2/AbsenceEpisode.json",
-  "title": "OWHS AbsenceEpisode v0.2",
-  "description": "Reported sickness-absence episode with versioned reason-category mapping. No direct identifiers.",
+  "$id": "https://openworkplacehealth.org/schemas/v0.1/AbsenceEpisode.json",
+  "title": "OWHS AbsenceEpisode v0.1",
+  "description": "One episode of sickness absence, ONS-comparable. No direct identifiers.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -20,17 +20,12 @@
       "enum": [
         "minor-illness",
         "musculoskeletal",
-        "other",
         "mental-health",
-        "gastrointestinal",
         "respiratory",
-        "eye-ear-nose-mouth-dental",
-        "genito-urinary",
-        "heart-blood-pressure-circulation",
-        "headaches-migraines",
-        "prefers-not-to-give-details"
+        "gastrointestinal",
+        "other"
       ],
-      "$comment": "codelist:absence-reason@0.2.0. Reported reason categories following the ONS 2025 workbook plus its separate non-disclosure response; not diagnoses. The crosswalk from the v0.1 six-code list is codelists/mappings/absence-reason-ons-2025-v1.json; a legacy other is not upgraded automatically."
+      "$comment": "codelist:absence-reason@0.1.0 — ONS reason taxonomy"
     },
     "startDate": {
       "type": "string",
@@ -84,17 +79,6 @@
           "type": "string"
         }
       }
-    },
-    "ext": {
-      "type": "object",
-      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
-      "propertyNames": {
-        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
-        "maxLength": 64
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/owhsExtensionObject"
-      }
     }
   },
   "required": [
@@ -111,45 +95,5 @@
     {
       "$comment": "Chronology (endDate not before startDate) is not expressible in JSON Schema, which compares an instance against a schema and never one field against another. It is the named Level 1 cross-field rule C1, listed in the specification and implemented in tools/validate.py. The previous allOf member re-asserted the type and format of endDate and enforced no ordering."
     }
-  ],
-  "$defs": {
-    "owhsExtensionObject": {
-      "type": "object",
-      "propertyNames": {
-        "not": {
-          "enum": [
-            "name",
-            "nino",
-            "email",
-            "dateOfBirth",
-            "address"
-          ]
-        }
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/owhsExtensionValue"
-      }
-    },
-    "owhsExtensionValue": {
-      "anyOf": [
-        {
-          "type": [
-            "string",
-            "number",
-            "boolean",
-            "null"
-          ]
-        },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/owhsExtensionValue"
-          }
-        },
-        {
-          "$ref": "#/$defs/owhsExtensionObject"
-        }
-      ]
-    }
-  }
+  ]
 }
