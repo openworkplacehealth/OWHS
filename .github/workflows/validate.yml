@@ -25,3 +25,15 @@ jobs:
       - run: pip install -r requirements.txt
       - name: validation report is current and every fixture matches its name
         run: python tools/build_validation_report.py --check
+      - name: workflow files parse strictly
+        run: python tools/check_workflows.py
+      - name: cycle definition and verifier contract
+        run: python tools/cycle.py --self-test
+      - name: harvester pure functions and expected channel set
+        run: python tools/harvest.py --self-test
+      - name: retraction watcher coverage accounting
+        run: python tools/watch_retractions.py --self-test
+      - name: retrieval evaluator accounting
+        run: python tools/measure_recall.py --self-test
+      - name: screening proposal allowlist gate
+        run: python tools/check_proposal_allowlist.py --self-test

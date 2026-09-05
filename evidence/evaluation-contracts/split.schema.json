@@ -1,0 +1,123 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://openworkplacehealth.org/evidence/evaluation-split.schema.json",
+ "title": "OWHS retrieval-evaluation split",
+ "description": "Study-family components allocated to development or holdout by the declared deterministic algorithm, with every excluded work named and categorised and every unknown-overlap placement disposed with its actual grouping. Closed objects. The evaluator checks that split plus exclusions partition the manifest exactly.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema_version",
+  "algorithm",
+  "components",
+  "excluded",
+  "unknown_overlap_dispositions"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": "1.0"
+  },
+  "algorithm": {
+   "const": "sort component ids by sha256('owhs-recall-v1|' + component_id); floor(0.70*N) development, remainder holdout"
+  },
+  "components": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "component_id",
+     "work_ids",
+     "allocation"
+    ],
+    "properties": {
+     "component_id": {
+      "type": "string",
+      "minLength": 1
+     },
+     "work_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+       "$ref": "#/$defs/work_id"
+      }
+     },
+     "allocation": {
+      "enum": [
+       "development",
+       "holdout"
+      ]
+     }
+    }
+   }
+  },
+  "excluded": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "work_id",
+     "category",
+     "detail"
+    ],
+    "properties": {
+     "work_id": {
+      "$ref": "#/$defs/work_id"
+     },
+     "category": {
+      "enum": [
+       "seed",
+       "calibration",
+       "exposed",
+       "unresolved_allocation"
+      ]
+     },
+     "detail": {
+      "type": "string",
+      "minLength": 1
+     }
+    }
+   }
+  },
+  "unknown_overlap_dispositions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "work_id",
+     "component_id",
+     "grouped_with",
+     "rationale"
+    ],
+    "properties": {
+     "work_id": {
+      "$ref": "#/$defs/work_id"
+     },
+     "component_id": {
+      "type": "string",
+      "minLength": 1
+     },
+     "grouped_with": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+       "$ref": "#/$defs/work_id"
+      }
+     },
+     "rationale": {
+      "type": "string",
+      "minLength": 20
+     }
+    }
+   }
+  }
+ },
+ "$defs": {
+  "work_id": {
+   "type": "string",
+   "pattern": "^(doi:10\\.\\d{4,9}/\\S+|pmid:\\d+|report:[A-Za-z0-9_.:-]+)$"
+  }
+ }
+}

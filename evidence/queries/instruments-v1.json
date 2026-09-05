@@ -1,0 +1,850 @@
+{
+ "version": "1.1",
+ "registry_version": "0.9.0",
+ "contact": "registry@openworkplacehealth.org",
+ "note": "Per-instrument retrieval configuration for tools/harvest.py. Three routes per parent: exact long names; abbreviations with required context and a property term; forward citations of each seed. exclusions start empty by design. Seeds are discovery identifiers, not evidence of quality.",
+ "providers": {
+  "europepmc": {
+   "routes": [
+    "names",
+    "abbreviation",
+    "new-instrument"
+   ],
+   "date_bases": [
+    "publication",
+    "first_indexed",
+    "full_history"
+   ]
+  },
+  "openalex": {
+   "routes": [
+    "cites"
+   ],
+   "search_routes": false,
+   "update_date_filter": false,
+   "note": "cites on publication date and full history; the names and abbreviation search routes are off in this profile (keyless use has a daily credit budget); the update-date filter needs a premium key and is listed as unavailable in every plan. Changing this profile changes the query file hash and therefore the plan; a key in the environment authenticates requests and never changes the plan."
+  }
+ },
+ "property_terms": [
+  "validity",
+  "validation",
+  "reliability",
+  "psychometric",
+  "measurement invariance",
+  "measurement equivalence",
+  "differential item functioning",
+  "factor structure",
+  "confirmatory factor analysis",
+  "exploratory factor analysis",
+  "Rasch",
+  "item response theory",
+  "internal consistency",
+  "test-retest",
+  "responsiveness",
+  "minimal important change",
+  "minimal important difference",
+  "measurement error",
+  "standard error of measurement",
+  "content validity",
+  "normative",
+  "reference values",
+  "sensitivity",
+  "specificity",
+  "turnover",
+  "sickness absence",
+  "disability pension",
+  "work performance"
+ ],
+ "new_instrument_query": {
+  "note": "Untargeted discovery of validation papers in working populations that name no tracked instrument. Hits go to a separate admission-candidate list and are never added to the registry by this tool.",
+  "context_terms": [
+   "workplace",
+   "occupational",
+   "employee",
+   "employees",
+   "worker",
+   "workers"
+  ],
+  "object_terms": [
+   "questionnaire",
+   "scale",
+   "measure",
+   "instrument"
+  ],
+  "evidence_terms": [
+   "development",
+   "validation",
+   "psychometric"
+  ]
+ },
+ "records": [
+  {
+   "instrument_id": "ons-4",
+   "canonical_name": "ONS personal wellbeing questions",
+   "names": [
+    "ONS personal wellbeing questions",
+    "ONS personal well-being questions",
+    "Office for National Statistics personal wellbeing"
+   ],
+   "abbreviations": [
+    "ONS4",
+    "ONS-4"
+   ],
+   "abbreviation_context": [
+    "wellbeing",
+    "well-being",
+    "life satisfaction"
+   ],
+   "citation_seeds": [],
+   "exclusions": [],
+   "technical_source_keys": [
+    "ons_original_citation"
+   ],
+   "manual_source_review_due": true
+  },
+  {
+   "instrument_id": "who-5",
+   "canonical_name": "WHO-5 Well-Being Index",
+   "names": [
+    "WHO-5 Well-Being Index",
+    "World Health Organization Five Well-Being Index",
+    "WHO-Five Well-Being Scale"
+   ],
+   "abbreviations": [
+    "WHO5",
+    "WHO-5"
+   ],
+   "abbreviation_context": [
+    "wellbeing",
+    "well-being",
+    "scale",
+    "index"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1002/mpr.145",
+     "openalex_id": "W2078143933",
+     "role": "validation_anchor",
+     "form": "WHO-5",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "wemwbs",
+   "canonical_name": "Warwick-Edinburgh Mental Wellbeing Scale",
+   "names": [
+    "Warwick-Edinburgh Mental Wellbeing Scale",
+    "Warwick-Edinburgh Mental Well-being Scale",
+    "Short Warwick-Edinburgh Mental Wellbeing Scale"
+   ],
+   "abbreviations": [
+    "WEMWBS",
+    "SWEMWBS"
+   ],
+   "abbreviation_context": [
+    "wellbeing",
+    "well-being",
+    "scale"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1186/1477-7525-5-63",
+     "openalex_id": "W2123552131",
+     "role": "development",
+     "form": "WEMWBS-14",
+     "verified_on": null
+    },
+    {
+     "doi": "10.1186/1477-7525-7-15",
+     "openalex_id": "W2138241145",
+     "role": "development",
+     "form": "SWEMWBS-7",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "hse-msit",
+   "canonical_name": "HSE Management Standards Indicator Tool",
+   "names": [
+    "HSE Management Standards Indicator Tool",
+    "Management Standards Indicator Tool"
+   ],
+   "abbreviations": [
+    "MSIT",
+    "HSE-MSIT"
+   ],
+   "abbreviation_context": [
+    "stress",
+    "psychosocial",
+    "work"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1080/02678370410001734322",
+     "openalex_id": "W2078589806",
+     "role": "development",
+     "form": "HSE-MSIT",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "perma",
+   "canonical_name": "PERMA-Profiler",
+   "names": [
+    "PERMA-Profiler",
+    "Workplace PERMA-Profiler"
+   ],
+   "abbreviations": [
+    "PERMA"
+   ],
+   "abbreviation_context": [
+    "flourishing",
+    "wellbeing",
+    "well-being",
+    "profiler"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.5502/ijw.v6i3.526",
+     "openalex_id": "W2556622256",
+     "role": "parent_form",
+     "form": "PERMA-Profiler",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "uwes-9",
+   "canonical_name": "Utrecht Work Engagement Scale",
+   "names": [
+    "Utrecht Work Engagement Scale",
+    "Utrecht Work Engagement Scale 9"
+   ],
+   "abbreviations": [
+    "UWES",
+    "UWES9",
+    "UWES-9"
+   ],
+   "abbreviation_context": [
+    "engagement",
+    "work"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1177/0013164405282471",
+     "openalex_id": "W2172273046",
+     "role": "development",
+     "form": "UWES-9",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "phq-9",
+   "canonical_name": "Patient Health Questionnaire-9",
+   "names": [
+    "Patient Health Questionnaire-9",
+    "Patient Health Questionnaire 9"
+   ],
+   "abbreviations": [
+    "PHQ9",
+    "PHQ-9"
+   ],
+   "abbreviation_context": [
+    "depression",
+    "depressive",
+    "questionnaire"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1046/j.1525-1497.2001.016009606.x",
+     "openalex_id": "W2132322340",
+     "role": "development",
+     "form": "PHQ-9",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "gad-7",
+   "canonical_name": "Generalized Anxiety Disorder-7",
+   "names": [
+    "Generalized Anxiety Disorder-7",
+    "Generalised Anxiety Disorder-7",
+    "Generalized Anxiety Disorder 7"
+   ],
+   "abbreviations": [
+    "GAD7",
+    "GAD-7"
+   ],
+   "abbreviation_context": [
+    "anxiety",
+    "questionnaire"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1001/archinte.166.10.1092",
+     "openalex_id": "W2043705607",
+     "role": "development",
+     "form": "GAD-7",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "k10",
+   "canonical_name": "Kessler Psychological Distress Scale",
+   "names": [
+    "Kessler Psychological Distress Scale",
+    "Kessler 10",
+    "Kessler-10"
+   ],
+   "abbreviations": [
+    "K10",
+    "K-10"
+   ],
+   "abbreviation_context": [
+    "Kessler",
+    "distress",
+    "psychological"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1017/s0033291702006074",
+     "openalex_id": "W1989012023",
+     "role": "development",
+     "form": "K10/K6 family",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "ghq-12",
+   "canonical_name": "General Health Questionnaire-12",
+   "names": [
+    "General Health Questionnaire-12",
+    "General Health Questionnaire 12",
+    "twelve-item General Health Questionnaire"
+   ],
+   "abbreviations": [
+    "GHQ12",
+    "GHQ-12"
+   ],
+   "abbreviation_context": [
+    "health",
+    "psychiatric",
+    "questionnaire"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1017/s0033291796004242",
+     "openalex_id": "W2101471529",
+     "role": "validation_anchor",
+     "form": "GHQ short versions",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "copsoq-iii",
+   "canonical_name": "Copenhagen Psychosocial Questionnaire",
+   "names": [
+    "Copenhagen Psychosocial Questionnaire",
+    "Copenhagen Psychosocial Questionnaire III"
+   ],
+   "abbreviations": [
+    "COPSOQ",
+    "COPSOQ-III",
+    "COPSOQ III"
+   ],
+   "abbreviation_context": [
+    "psychosocial",
+    "questionnaire",
+    "work"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1016/j.shaw.2019.10.002",
+     "openalex_id": "W2984789174",
+     "role": "development",
+     "form": "COPSOQ III",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "mbi",
+   "canonical_name": "Maslach Burnout Inventory",
+   "names": [
+    "Maslach Burnout Inventory"
+   ],
+   "abbreviations": [
+    "MBI",
+    "MBI-GS",
+    "MBI-HSS",
+    "MBI-ES"
+   ],
+   "abbreviation_context": [
+    "burnout",
+    "exhaustion",
+    "depersonalisation",
+    "depersonalization"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1002/job.4030020205",
+     "openalex_id": "W2144816256",
+     "role": "development",
+     "form": "MBI",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "cbi",
+   "canonical_name": "Copenhagen Burnout Inventory",
+   "names": [
+    "Copenhagen Burnout Inventory"
+   ],
+   "abbreviations": [
+    "CBI"
+   ],
+   "abbreviation_context": [
+    "burnout",
+    "exhaustion",
+    "Copenhagen"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1080/02678370500297720",
+     "openalex_id": "W2160948541",
+     "role": "development",
+     "form": "CBI",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "olbi",
+   "canonical_name": "Oldenburg Burnout Inventory",
+   "names": [
+    "Oldenburg Burnout Inventory"
+   ],
+   "abbreviations": [
+    "OLBI"
+   ],
+   "abbreviation_context": [
+    "burnout",
+    "exhaustion",
+    "disengagement"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1027//1015-5759.19.1.12",
+     "openalex_id": "W1975762104",
+     "role": "validation_anchor",
+     "form": "OLBI",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "wai",
+   "canonical_name": "Work Ability Index",
+   "names": [
+    "Work Ability Index"
+   ],
+   "abbreviations": [
+    "WAI"
+   ],
+   "abbreviation_context": [
+    "work ability",
+    "workability",
+    "occupational"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1093/occmed/52.4.177",
+     "openalex_id": "W2115453233",
+     "role": "validation_anchor",
+     "form": "WAI",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "was",
+   "canonical_name": "Work Ability Score",
+   "names": [
+    "Work Ability Score",
+    "single-item work ability",
+    "single item work ability"
+   ],
+   "abbreviations": [
+    "WAS"
+   ],
+   "abbreviation_context": [
+    "work ability",
+    "workability"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.5271/sjweh.2917",
+     "openalex_id": "W2086387903",
+     "role": "validation_anchor",
+     "form": "WAS/WAI",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "wpai",
+   "canonical_name": "Work Productivity and Activity Impairment",
+   "names": [
+    "Work Productivity and Activity Impairment"
+   ],
+   "abbreviations": [
+    "WPAI",
+    "WPAI-GH"
+   ],
+   "abbreviation_context": [
+    "productivity",
+    "impairment",
+    "absenteeism",
+    "presenteeism"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.2165/00019053-199304050-00006",
+     "openalex_id": "W2086325363",
+     "role": "development",
+     "form": "WPAI",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "ipaq-sf",
+   "canonical_name": "International Physical Activity Questionnaire",
+   "names": [
+    "International Physical Activity Questionnaire",
+    "International Physical Activity Questionnaire Short Form"
+   ],
+   "abbreviations": [
+    "IPAQ",
+    "IPAQ-SF"
+   ],
+   "abbreviation_context": [
+    "physical activity",
+    "short form"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1249/01.MSS.0000078924.61453.FB",
+     "openalex_id": "W2171129594",
+     "role": "validation_anchor",
+     "form": "IPAQ short and long forms",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "isi",
+   "canonical_name": "Insomnia Severity Index",
+   "names": [
+    "Insomnia Severity Index"
+   ],
+   "abbreviations": [
+    "ISI"
+   ],
+   "abbreviation_context": [
+    "insomnia",
+    "sleep"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.1016/s1389-9457(00)00065-4",
+     "openalex_id": "W2082850379",
+     "role": "validation_anchor",
+     "form": "ISI-7",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "miss",
+   "canonical_name": "Minimal Insomnia Symptom Scale",
+   "names": [
+    "Minimal Insomnia Symptom Scale"
+   ],
+   "abbreviations": [
+    "MISS"
+   ],
+   "abbreviation_context": [
+    "insomnia",
+    "sleep"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.3109/2000-1967-221",
+     "openalex_id": "W2015052190",
+     "role": "development",
+     "form": "MISS",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "tis-6",
+   "canonical_name": "Turnover Intention Scale",
+   "names": [
+    "Turnover Intention Scale",
+    "Turnover Intentions Scale"
+   ],
+   "abbreviations": [
+    "TIS6",
+    "TIS-6"
+   ],
+   "abbreviation_context": [
+    "turnover",
+    "Roodt"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.4102/sajhrm.v11i1.507",
+     "openalex_id": "W2003978304",
+     "role": "validation_anchor",
+     "form": "TIS-6",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "csps-wellbeing",
+   "canonical_name": "Civil Service People Survey",
+   "names": [
+    "Civil Service People Survey"
+   ],
+   "abbreviations": [
+    "CSPS"
+   ],
+   "abbreviation_context": [
+    "civil service",
+    "engagement",
+    "wellbeing",
+    "well-being"
+   ],
+   "citation_seeds": [],
+   "exclusions": [],
+   "technical_source_keys": [
+    "csps_qmi2024"
+   ],
+   "manual_source_review_due": true
+  },
+  {
+   "instrument_id": "eurofound-ewcs",
+   "canonical_name": "European Working Conditions Survey",
+   "names": [
+    "European Working Conditions Survey",
+    "European Quality of Life Survey"
+   ],
+   "abbreviations": [
+    "EWCS",
+    "EQLS"
+   ],
+   "abbreviation_context": [
+    "working conditions",
+    "quality of life",
+    "Eurofound",
+    "wellbeing"
+   ],
+   "citation_seeds": [],
+   "exclusions": [],
+   "technical_source_keys": [
+    "eurofound_dataavail"
+   ],
+   "manual_source_review_due": true
+  },
+  {
+   "instrument_id": "fcs-maps",
+   "canonical_name": "Adult Financial Wellbeing Survey",
+   "names": [
+    "Adult Financial Wellbeing Survey",
+    "Financial Capability Survey",
+    "Financial Wellbeing Survey",
+    "Money and Pensions Service financial wellbeing"
+   ],
+   "abbreviations": [
+    "MaPS",
+    "MAS"
+   ],
+   "abbreviation_context": [
+    "financial wellbeing",
+    "financial well-being",
+    "financial capability"
+   ],
+   "citation_seeds": [],
+   "exclusions": [],
+   "technical_source_keys": [
+    "maps_workingwithdata",
+    "maps_fws2021"
+   ],
+   "manual_source_review_due": true
+  },
+  {
+   "instrument_id": "single-job-satisfaction",
+   "canonical_name": "single-item job satisfaction",
+   "names": [
+    "single-item job satisfaction",
+    "single item job satisfaction",
+    "overall job satisfaction"
+   ],
+   "abbreviations": [],
+   "abbreviation_context": [],
+   "citation_seeds": [
+    {
+     "doi": "10.1037/0021-9010.82.2.247",
+     "openalex_id": "W2125806375",
+     "role": "review_anchor",
+     "form": "single-item job satisfaction",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "single-stress",
+   "canonical_name": "single-item stress",
+   "names": [
+    "single-item stress",
+    "single item stress",
+    "single-item measure of stress symptoms"
+   ],
+   "abbreviations": [
+    "SISQ"
+   ],
+   "abbreviation_context": [
+    "stress",
+    "Elo"
+   ],
+   "citation_seeds": [
+    {
+     "doi": "10.5271/sjweh.752",
+     "openalex_id": "W2122981622",
+     "role": "validation_anchor",
+     "form": "Elo single stress item",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  },
+  {
+   "instrument_id": "single-fatigue",
+   "canonical_name": "single-item fatigue",
+   "names": [
+    "single-item fatigue",
+    "single item fatigue",
+    "How fatigued do you currently feel"
+   ],
+   "abbreviations": [],
+   "abbreviation_context": [],
+   "citation_seeds": [
+    {
+     "doi": "10.1539/joh.49.224",
+     "openalex_id": "W2129576989",
+     "role": "validation_anchor",
+     "form": "Van Hooff single fatigue item",
+     "verified_on": null
+    }
+   ],
+   "exclusions": [],
+   "technical_source_keys": [],
+   "manual_source_review_due": false
+  }
+ ],
+ "inherited_records": [
+  {
+   "instrument_id": "ons-4-anxiety",
+   "parent_id": "ons-4"
+  },
+  {
+   "instrument_id": "ons-4-happiness",
+   "parent_id": "ons-4"
+  },
+  {
+   "instrument_id": "ons-4-life-satisfaction",
+   "parent_id": "ons-4"
+  },
+  {
+   "instrument_id": "ons-4-worthwhile",
+   "parent_id": "ons-4"
+  }
+ ]
+}

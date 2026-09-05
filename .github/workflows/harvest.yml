@@ -1,0 +1,132 @@
+name: evidence-harvest
+
+# Deterministic monthly harvest of candidate psychometric literature for every instrument in the registry
+# (tools/harvest.py). It queries the open indexes directly, writes the candidates file as a run artefact, and
+# opens or updates one issue labelled evidence-sweep for the cycle. It changes no dataset, no grade and no page:
+# a candidate is a work to be read, not a finding. Screening and any proposal to add a citation happen afterwards,
+# in a pull request a person merges. A run whose channels did not all complete ends with a failure outcome; its
+# artefact and issue are still produced, and the issue says partial. The cycle id, the window and the marker the
+# tripwire correlates on come from tools/cycle.py, the single definition both workflows use.
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'        # first of the month, 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      from:
+        description: 'window start YYYY-MM-DD. Setting a window makes a manual cycle that never satisfies the planned one; leave both empty to re-run the planned cycle'
+        required: false
+      to:
+        description: 'window end YYYY-MM-DD (see from)'
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: index-consuming-jobs        # shared with the watchers: one job at a time against the open indexes
+  cancel-in-progress: false
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: cycle and window
+        id: w
+        env:
+          IN_FROM: ${{ github.event.inputs.from }}
+          IN_TO: ${{ github.event.inputs.to }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          # one definition for the cycle id and the publication window, shared with the tripwire (tools/cycle.py):
+          # a scheduled run is the planned cycle of this month; explicit inputs make a manual cycle that never satisfies a planned one
+          python tools/cycle.py window --event "$EVENT" --from "$IN_FROM" --to "$IN_TO" | tee -a "$GITHUB_OUTPUT"
+      - name: harvest
+        id: h
+        continue-on-error: true
+        env:
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}     # optional; absent, OpenAlex is used for citation lookups only
+          FROM: ${{ steps.w.outputs.from }}
+          TO: ${{ steps.w.outputs.to }}
+          CYCLE: ${{ steps.w.outputs.cycle_id }}
+          KIND: ${{ steps.w.outputs.kind }}
+          CATCH_FROM: ${{ steps.w.outputs.catch_from }}
+          FULL_HISTORY: ${{ steps.w.outputs.full_history }}
+        run: |
+          # publication window plus the 90-day first-index catch-up; on a quarterly cycle the names and citation channels also run over the full history
+          FH=""; if [ "$FULL_HISTORY" = "true" ]; then FH="--full-history"; fi
+          python tools/harvest.py --from "$FROM" --to "$TO" --catch-from "$CATCH_FROM" $FH --cycle-id "$CYCLE" --cycle-kind "$KIND" --out "evidence/candidates/$CYCLE.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: candidates-${{ steps.w.outputs.cycle_id }}
+          path: evidence/candidates/${{ steps.w.outputs.cycle_id }}.json
+          if-no-files-found: warn
+      - name: cycle issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MONTH: ${{ steps.w.outputs.cycle_id }}
+          KIND: ${{ steps.w.outputs.kind }}
+          GH_RUN_ID: ${{ github.run_id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -e
+          FILE="evidence/candidates/$MONTH.json"
+          if [ ! -f "$FILE" ]; then
+            TITLE="Evidence harvest $MONTH: failed run, no candidates file"
+            BODY="The harvest produced no candidates file. Run: $RUN_URL. Treat this cycle as incomplete.
+          <!-- owhs-cycle cycle_id=$MONTH kind=$KIND github_run_id=$GH_RUN_ID artefact_sha256=none status=failed -->"
+            STATUS=failed
+          else
+            python - <<'PY' > /tmp/body.md
+          import json, os, collections, hashlib
+          path = f"evidence/candidates/{os.environ['MONTH']}.json"
+          d = json.load(open(path)); sha = hashlib.sha256(open(path, 'rb').read()).hexdigest()
+          c = collections.Counter(i for x in d['candidates'] for i in x['instruments'])
+          nc = d.get('channels_not_complete', [])
+          low = sum(1 for x in d['candidates'] if x.get('screening_priority') == 'low')
+          db = d.get('date_bases') or {}
+          bases = f"publication {d['requested_window']['from']} to {d['requested_window']['to']}" + (f"; first indexed {db['first_indexed']['from']} to {db['first_indexed']['to']}" if db.get('first_indexed') else "") + ("; full history (quarterly)" if db.get('full_history') else "")
+          print(f"Cycle **{d['cycle']['id']}** ({d['cycle']['kind']}), run `{d['run_id']}`, status **{d['status']}**, full inventory: {d.get('full_inventory')}, windows: {bases}, query file {d['query_version']} (`{d['query_sha256'][:12]}`), workflow run {os.environ['RUN_URL']}, artefact sha256 `{sha[:12]}`. "
+                f"{len(d['candidates'])} candidates ({low} low priority: no property term found in title or abstract), {len(d['new_instrument_candidates'])} new-instrument candidates, {len(d['expected_channels'])} expected channels of which {len(nc)} did not complete.\n")
+          print(f"<!-- owhs-cycle cycle_id={d['cycle']['id']} kind={d['cycle']['kind']} github_run_id={os.environ['GH_RUN_ID']} artefact_sha256={sha} query_sha256={d['query_sha256']} status={d['status']} full_inventory={str(bool(d.get('full_inventory'))).lower()} -->\n")
+          if d.get('watermark_proposal'):
+              print(f"Watermark proposal: last complete window end {d['watermark_proposal']['last_complete_to']}; apply in the screening pull request with `python tools/cycle.py advance --artefact <this artefact>`. Nothing advances until that merges.\n")
+          print("| Instrument | Candidates |\n|---|---|")
+          for k, v in sorted(c.items(), key=lambda kv: -kv[1]): print(f"| {k} | {v} |")
+          flagged = [x for x in d['candidates'] if (x.get('crossref') or {}).get('update_to')]
+          if flagged:
+              print("\nCrossref records an update (correction or retraction) against:")
+              for x in flagged: print(f"- {x['doi']}: {x['title'][:90]}")
+          if nc:
+              print("\nExpected channels that did not complete (treat these instruments as not fully searched this cycle):")
+              for ch in nc: print(f"- {ch['instrument_id']} {ch['route']} {ch['source']} {ch['date_basis']} ({ch['outcome']})")
+              for ch in [x for x in d['channels'] if x['outcome'] != 'complete']: print(f"  - {ch['instrument_id']} {ch['route']} {ch['source']}: {ch['outcome']}, {ch['error']}")
+          if d['warnings']:
+              print(f"\n{len(d['warnings'])} warnings in the artefact.")
+          print(f"\nThe full candidates file is the run artefact `candidates-{os.environ['MONTH']}`. A candidate is a work retrieved by an instrument's names, abbreviation or citation route. Nothing here is a grade, a judgement or a registry change; screening and any proposed citation follow in a pull request a person merges.")
+          PY
+            STATUS=$(python -c "import json,os;print(json.load(open('evidence/candidates/'+os.environ['MONTH']+'.json'))['status'])")
+            TITLE="Evidence harvest $MONTH: $STATUS run, candidates for screening"
+            if [ "$KIND" = "manual" ]; then TITLE="Evidence harvest $MONTH (manual window, not a planned cycle): $STATUS run"; fi
+            BODY="$(cat /tmp/body.md)"
+          fi
+          EXISTING=$(gh issue list --label evidence-sweep --state all --search "\"Evidence harvest $MONTH\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --title "$TITLE" --body "$BODY"
+            echo "updated issue #$EXISTING"
+          else
+            gh issue create --title "$TITLE" --label evidence-sweep --body "$BODY"
+          fi
+      - name: cycle outcome
+        if: always()
+        run: |
+          if [ "${{ steps.h.outcome }}" != "success" ]; then
+            echo "harvest did not complete every channel; the cycle is incomplete"; exit 1
+          fi

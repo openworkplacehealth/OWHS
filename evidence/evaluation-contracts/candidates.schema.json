@@ -1,0 +1,155 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://openworkplacehealth.org/evidence/evaluation-candidates.schema.json",
+ "title": "OWHS harvester artefact as read by the evaluator",
+ "description": "The candidates file tools/harvest.py writes. The fields the evaluator reads are required and typed here; the envelope's channel, warning and count detail is governed by the harvester's own self-test and left open. Candidate items carry the harvester's route tags route:source:instrument; new-instrument candidates are a separate list without route tags.",
+ "type": "object",
+ "required": [
+  "schema_version",
+  "harvester",
+  "run_id",
+  "registry_commit",
+  "query_sha256",
+  "requested_window",
+  "started_at",
+  "finished_at",
+  "status",
+  "candidates",
+  "new_instrument_candidates",
+  "evaluation_id"
+ ],
+ "properties": {
+  "schema_version": {
+   "type": "string",
+   "minLength": 1
+  },
+  "harvester": {
+   "type": "string",
+   "minLength": 1
+  },
+  "run_id": {
+   "type": "string",
+   "minLength": 1
+  },
+  "registry_commit": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "pattern": "^[0-9a-f]{40}$"
+  },
+  "query_sha256": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "requested_window": {
+   "type": "object",
+   "required": [
+    "from",
+    "to"
+   ],
+   "properties": {
+    "from": {
+     "type": "string",
+     "format": "date"
+    },
+    "to": {
+     "type": "string",
+     "format": "date"
+    },
+    "type": {
+     "type": "string"
+    }
+   }
+  },
+  "started_at": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "finished_at": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "status": {
+   "enum": [
+    "complete",
+    "partial",
+    "failed"
+   ]
+  },
+  "evaluation_id": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "pattern": "^[A-Za-z0-9_.:-]{4,80}$"
+  },
+  "candidates": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "doi",
+     "pmid",
+     "openalex",
+     "routes"
+    ],
+    "properties": {
+     "doi": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "pmid": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "openalex": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+       "type": "string",
+       "pattern": "^(names|abbreviation|cites):[a-z]+:[A-Za-z0-9_.-]+$"
+      }
+     }
+    }
+   }
+  },
+  "new_instrument_candidates": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "doi",
+     "pmid"
+    ],
+    "properties": {
+     "doi": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "pmid": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   }
+  }
+ }
+}

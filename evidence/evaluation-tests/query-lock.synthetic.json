@@ -1,0 +1,26 @@
+{
+ "schema_version": "1.0",
+ "evaluation_id": "eval-fixture-001",
+ "locked_at": "2026-09-04T12:00:00Z",
+ "claim": "unseen_holdout",
+ "query_sha256": "57d295ef4eacbee55a94c6a54c21a0cfbe7335c20ea7815f1cb27e63e507c78e",
+ "manifest_sha256": "aad945d18d9d1b90a3e1b780e77846cd0918f88ac895f9e2e545506b3f1e6dd8",
+ "split_sha256": "b51227bcb2d4730857d68a25c10403dc6335b9f29f9184a2b26b387e69b9466f",
+ "harvester": {
+  "commit": "1111111111111111111111111111111111111111",
+  "tools_sha256": {
+   "tools/harvest.py": "2222222222222222222222222222222222222222222222222222222222222222",
+   "tools/cycle.py": "3333333333333333333333333333333333333333333333333333333333333333",
+   "evidence/queries/instruments-v1.json": "4444444444444444444444444444444444444444444444444444444444444444"
+  }
+ },
+ "run_window": {
+  "from": "2026-08-01",
+  "to": "2026-09-05"
+ },
+ "exposed_work_ids": [],
+ "instrument_ids": [
+  "isi",
+  "who-5"
+ ]
+}

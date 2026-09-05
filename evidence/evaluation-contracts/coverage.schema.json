@@ -1,0 +1,63 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://openworkplacehealth.org/evidence/evaluation-coverage.schema.json",
+ "title": "OWHS retrieval-evaluation coverage",
+ "description": "Per work and source: whether an identifier lookup found the work in that index at the check time, with the method and a hash of the response. A lookup with identifiers supplied is never discovery. Closed objects.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema_version",
+  "rows"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": "1.0"
+  },
+  "rows": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "work_id",
+     "source_id",
+     "status",
+     "checked_at",
+     "lookup_method",
+     "response_sha256"
+    ],
+    "properties": {
+     "work_id": {
+      "type": "string",
+      "pattern": "^(doi:10\\.\\d{4,9}/\\S+|pmid:\\d+|report:[A-Za-z0-9_.:-]+)$"
+     },
+     "source_id": {
+      "type": "string",
+      "minLength": 1
+     },
+     "status": {
+      "enum": [
+       "indexed",
+       "not_indexed",
+       "failed",
+       "unsupported",
+       "unresolved"
+      ]
+     },
+     "checked_at": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "lookup_method": {
+      "type": "string",
+      "minLength": 1
+     },
+     "response_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+     }
+    }
+   }
+  }
+ }
+}
