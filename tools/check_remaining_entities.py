@@ -159,7 +159,7 @@ def main():
         t("an overflowing number is refused by name, no traceback", rc == 1 and kw and "Traceback" not in err, (rc, kw, err[-120:]))
         # tool errors are tool errors
         rc, kw, rules, lines, err = cli(V2 / "Organisation.json", "{not json", tmp); t("unparseable JSON is an invalid instance with a [json] diagnostic (the validator's documented contract), no traceback", rc == 1 and kw == ["json"] and "Traceback" not in err, (rc, kw, err[-120:]))
-        r = subprocess.run([sys.executable, "-B", str(VALIDATE), str(V2 / "Absent.json"), str(EX / "Organisation.valid.json")], capture_output=True, text=True)
+        r = subprocess.run([sys.executable, "-B", str(VALIDATE), str(Path(tmp) / "absent-schema.json"), str(EX / "Organisation.valid.json")], capture_output=True, text=True)
         t("a missing schema path is a tool error (exit 2)", r.returncode == 2 and "Traceback" not in r.stderr, (r.returncode, r.stderr[-120:]))
         # C18 direct self-parent through the command line
         d = mut("OrgUnit", "parentUnitId", "unit-demo"); rc, kw, rules, lines, err = cli(V2 / "OrgUnit.json", d, tmp); t("OrgUnit parentUnitId equal to unitId names C18", rc == 1 and rules == ["C18"] and not kw, (rc, kw, rules))
