@@ -159,7 +159,7 @@ def schema_problems(kind, obj):
     return [f"{kind}: {'/'.join(map(str, e.path)) or '<root>'}: {e.message[:160]}" for e in errs]
 
 
-def contract_problems(manifest, split, coverage, candidates, lock, queries, execution=None):
+def contract_problems(manifest, split, coverage, candidates, lock, queries, execution=None, candidates_sha256=None):
     """Everything that must hold before any arithmetic. Typed schemas first; a schema failure returns at once, because semantic checks
     assume the shapes. Then identities, judgements, calendar validity, partition, exclusions, families, dispositions, algorithm,
     exposure, provenance binding, routes and coverage shape. Returns a list of named problems."""
@@ -263,10 +263,14 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
     if candidates["evaluation_id"] is not None and candidates["evaluation_id"] != lock["evaluation_id"]: p.append(f"candidates carry evaluation id {candidates['evaluation_id']!r}, the lock {lock['evaluation_id']!r}")
     rb = candidates.get("read_boundary")
     if rb is not None:
-        if rb["files_refused"]: p.append(f"the discovery run attempted to read {rb['files_refused']}; the harvester must not read any file")
-        if rb["files_opened"]: p.append(f"the discovery run opened {rb['files_opened']}; the harvester reads no file (gold, manifests and splits belong to the evaluator's process)")
+        if rb["allowed_paths"]: p.append(f"the read boundary declares an allowlist {rb['allowed_paths']}; the present discovery contract is no file at all, so the allowlist must be empty")
+        if rb["files_attempted"] or rb["files_refused"] or rb["files_opened"]: p.append(f"the discovery run attempted reads during the monitored interval (attempted {rb['files_attempted']}, refused {rb['files_refused']}, opened {rb['files_opened']}); the harvester must attempt no file")
     if lock["claim"] == "unseen_holdout":
-        if rb is None or not rb["enforced"]: p.append("an unseen-holdout claim needs the candidates file to carry the harvester's enforced read boundary (read_boundary.enforced true, no file opened)")
+        if rb is None or not rb["enforced"]: p.append("an unseen-holdout claim needs the candidates file to carry the harvester's enforced read boundary (read_boundary.enforced true, empty allowlist, no attempt)")
+        if execution is not None:
+            hashes = {a["sha256"] for a in execution.get("artifacts", [])}
+            if candidates_sha256 is None: p.append("an unseen-holdout claim needs the candidates file's bytes hashed and bound to the execution receipt; no hash was supplied")
+            elif candidates_sha256 not in hashes: p.append("the candidates file's bytes are not among the artefacts the execution receipt records; the attestation inside an unbound file cannot authenticate what executed")
         if candidates["evaluation_id"] is None: p.append("an unseen-holdout claim needs the candidates to carry the predeclared evaluation id (harvest.py --evaluation-id)")
         if cs and lt and cs <= lt: p.append(f"an unseen-holdout claim needs discovery to start after the lock ({candidates['started_at']} is not after {lock['locked_at']})")
         if execution is None: p.append("an unseen-holdout claim needs an independently captured execution record (--execution-record); without it the run can only be a retrospective replay")
@@ -295,7 +299,7 @@ def contract_problems(manifest, split, coverage, candidates, lock, queries, exec
     return p
 
 
-def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, execution=None):
+def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, execution=None, candidates_sha256=None):
     """Accounting after the contracts hold. Returns the report dict; raises Refused (a SystemExit) on a stale lock or a contract failure."""
     stale = []
     if not isinstance(lock, dict): raise Refused("contract problems, nothing measured:\n  query-lock: <root>: not an object")
@@ -303,7 +307,7 @@ def evaluate(manifest, split, coverage, candidates, lock, queries_sha, queries, 
     if lock.get("manifest_sha256") != sha_obj(manifest): stale.append("manifest hash differs from the lock")
     if lock.get("split_sha256") != sha_obj(split): stale.append("split hash differs from the lock")
     if stale: raise Refused("stale inputs against the query lock: " + "; ".join(stale))
-    cp = contract_problems(manifest, split, coverage, candidates, lock, queries, execution)
+    cp = contract_problems(manifest, split, coverage, candidates, lock, queries, execution, candidates_sha256)
     if cp: raise Refused(f"contract problems, nothing measured ({len(cp)}):\n  " + "\n  ".join(cp[:40]))
     enabled_sources = sources_from_queries(queries)          # the configured profile, never an unconstrained argument
     win = lock["run_window"]
@@ -448,12 +452,19 @@ def _cands(queries, found_dois, evaluation_id="eval-fixture-001"):
     return {"schema_version": "1.1", "harvester": "tools/harvest.py 0.2", "run_id": "fx-run-0001", "registry_commit": FX_COMMIT, "query_version": "fixture", "query_sha256": sha_obj(queries),
             "requested_window": {"from": "2026-08-01", "to": "2026-09-05", "type": "publication date, inclusive"}, "started_at": FX_STARTED, "finished_at": FX_FINISHED, "status": "complete",
             "evaluation_id": evaluation_id, "candidates": [{"id": d, "doi": d, "pmid": None, "openalex": None, "title": f"Title doi:{d}", "routes": ["names:europepmc:isi"]} for d in found_dois], "new_instrument_candidates": [],
-            "read_boundary": {"enforced": True, "allowed_paths": [], "files_opened": [], "files_refused": [], "note": "the discovery run opened no file; gold lists, manifests and splits are read only by the evaluator, in a separate process"}}
+            "read_boundary": {"enforced": True, "interval": "the harvest() call only: after the query configuration was loaded and the modules imported, before the artefact envelope was assembled and written",
+                              "api_coverage": ["builtins.open", "io.open", "io.FileIO", "_io.FileIO", "os.open", "pathlib.Path.read_text", "pathlib.Path.read_bytes"], "allowed_paths": [], "files_attempted": [], "files_refused": [], "files_opened": [],
+                              "note": "no read attempt was observed on the monitored APIs during the monitored interval; the attestation covers that interval and those APIs only, and gold lists, manifests and splits belong to the evaluator's separate process"}}
 
 
-def _exec():
+def cand_bytes(cand): return (json.dumps(cand, indent=1) + "\n").encode("utf-8")
+
+
+def _exec(cand=None):
+    """The execution receipt; its artefact hash is the SHA-256 of the candidates file bytes it produced."""
+    arts = [{"name": "candidates", "sha256": sha(cand_bytes(cand))}] if cand is not None else []
     return {"schema_version": "1.0", "run_id": "fx-run-0001", "mode": "github_action", "head_sha": FX_COMMIT, "started_at": FX_STARTED, "finished_at": FX_FINISHED, "run_url": "https://github.com/example/repo/actions/runs/1",
-            "dependencies": [{"path": k, "sha256": v} for k, v in FX_TOOLS.items()] + [{"path": ".github/workflows/harvest.yml", "sha256": "5" * 64}], "captured_at": "2026-09-05T07:00:00Z", "captured_by": "fixture"}
+            "dependencies": [{"path": k, "sha256": v} for k, v in FX_TOOLS.items()] + [{"path": ".github/workflows/harvest.yml", "sha256": "5" * 64}], "artifacts": arts, "captured_at": "2026-09-05T07:00:00Z", "captured_by": "fixture"}
 
 
 def _setup(n=10, n_found=7, seeds=()):
@@ -490,7 +501,7 @@ def _relock(lock, manifest=None, split=None, queries=None):
 def synthetic_fixtures():
     """The public synthetic fixture set: 33 works, four holdout works of interest, three retrieved; one execution record."""
     m, s, c, cand, lock, q = _setup(4, 3)
-    return {"manifest.synthetic.json": m, "split.synthetic.json": s, "coverage.synthetic.json": c, "candidates.synthetic.json": cand, "query-lock.synthetic.json": lock, "queries.synthetic.json": q, "execution-record.synthetic.json": _exec()}
+    return {"manifest.synthetic.json": m, "split.synthetic.json": s, "coverage.synthetic.json": c, "candidates.synthetic.json": cand, "query-lock.synthetic.json": lock, "queries.synthetic.json": q, "execution-record.synthetic.json": _exec(cand)}
 
 
 def write_fixtures(d):
@@ -500,8 +511,10 @@ def write_fixtures(d):
     (d / "queries.synthetic.json").write_text(json.dumps(fx["queries.synthetic.json"], indent=1) + "\n", encoding="utf-8")
     qsha = sha((d / "queries.synthetic.json").read_bytes())
     fx["query-lock.synthetic.json"]["query_sha256"] = qsha; fx["candidates.synthetic.json"]["query_sha256"] = qsha
+    fx["execution-record.synthetic.json"] = _exec(fx["candidates.synthetic.json"])          # the receipt hashes the candidates bytes as written
     for name, obj in fx.items():
         if name != "queries.synthetic.json": (d / name).write_text(json.dumps(obj, indent=1) + "\n", encoding="utf-8")
+    assert sha((d / "candidates.synthetic.json").read_bytes()) == fx["execution-record.synthetic.json"]["artifacts"][0]["sha256"]
     return sorted(fx)
 
 
@@ -509,9 +522,9 @@ def self_test():
     failures = 0
     def t(label, ok, detail=""):
         nonlocal failures; print(("ok  " if ok else "FAIL"), label, "" if ok else detail); failures += not ok
-    def run(m, s, c, cand, lock, q, ex="default"): return evaluate(m, s, c, cand, lock, lock["query_sha256"], q, _exec() if ex == "default" else ex)
-    def refused(m, s, c, cand, lock, q, ex="default"):
-        try: evaluate(m, s, c, cand, lock, lock["query_sha256"], q, _exec() if ex == "default" else ex); return None
+    def run(m, s, c, cand, lock, q, ex="default", csha="default"): return evaluate(m, s, c, cand, lock, lock["query_sha256"], q, _exec(cand) if ex == "default" else ex, sha(cand_bytes(cand)) if csha == "default" else csha)
+    def refused(m, s, c, cand, lock, q, ex="default", csha="default"):
+        try: evaluate(m, s, c, cand, lock, lock["query_sha256"], q, _exec(cand) if ex == "default" else ex, sha(cand_bytes(cand)) if csha == "default" else csha); return None
         except SystemExit as e: return str(e)
     def comp_of(split, wid): return next(x for x in split["components"] if wid in x["work_ids"])
     def rebuild(split): return _split([{"component_id": x["component_id"], "work_ids": x["work_ids"]} for x in split["components"]], excluded=[(e["work_id"], e["category"], e["detail"]) for e in split["excluded"]], dispositions=split["unknown_overlap_dispositions"])
@@ -542,7 +555,7 @@ def self_test():
     m, s, c, cand, lock, q = _setup(0, 0); r = run(m, s, c, cand, lock, q)
     t("an all-zero denominator yields metric null and state not_evaluated, never 100%", r["work_level_recall"] is None and r["work_level_recall_state"] == "not_evaluated" and r["instruments"]["isi"]["recall"] is None)
     m, s, c, cand, lock, q = _setup(); lock["query_sha256"] = "f" * 64
-    try: evaluate(m, s, c, cand, lock, sha_obj(q), q, _exec()); t("a stale query hash stops the run", False)
+    try: evaluate(m, s, c, cand, lock, sha_obj(q), q, _exec(cand), sha(cand_bytes(cand))); t("a stale query hash stops the run", False)
     except SystemExit as e: t("a stale query hash stops the run", "query file hash" in str(e))
     m, s, c, cand, lock, q = _setup(); m["rows"][0]["unresolved"] = ["x"]; t("a stale manifest hash stops the run", "manifest hash" in (refused(m, s, c, cand, lock, q) or ""))
     m, s, c, cand, lock, q = _setup(10, 3); c = {"schema_version": "1.0", "rows": [{**row, "status": "failed"} for row in c["rows"]]}; r = run(m, s, c, cand, lock, q)
@@ -596,8 +609,12 @@ def self_test():
     m, s, c, cand, lock, q = _setup(); cand["evaluation_id"] = "eval-other"; t("candidates carrying another evaluation id are refused", "carry evaluation id" in (refused(m, s, c, cand, lock, q) or ""))
     m, s, c, cand, lock, q = _setup(); t("an unseen-holdout claim without an execution record is refused", "independently captured execution record" in (refused(m, s, c, cand, lock, q, ex=None) or ""))
     m, s, c, cand, lock, q = _setup(); del cand["read_boundary"]; t("an unseen-holdout claim without the harvester's enforced read boundary is refused", "enforced read boundary" in (refused(m, s, c, cand, lock, q) or ""))
-    m, s, c, cand, lock, q = _setup(); cand["read_boundary"]["files_opened"] = ["/private/eval/manifest.json"]; t("a discovery run that opened any file (a manifest here) is refused", "opened" in (refused(m, s, c, cand, lock, q) or ""))
-    m, s, c, cand, lock, q = _setup(); cand["read_boundary"]["files_refused"] = ["/private/eval/split.json"]; t("a discovery run that attempted a refused read is refused", "attempted to read" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); cand["read_boundary"]["files_opened"] = ["/private/eval/manifest.json"]; cand["read_boundary"]["files_attempted"] = ["/private/eval/manifest.json"]; t("a discovery run that opened any file (a manifest here) is refused", "attempted reads" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); cand["read_boundary"]["files_refused"] = ["/private/eval/split.json"]; cand["read_boundary"]["files_attempted"] = ["/private/eval/split.json"]; t("a discovery run that attempted a refused read is refused", "attempted reads" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); cand["read_boundary"]["allowed_paths"] = ["/tmp/synthetic-gold.json"]; t("a non-empty read allowlist is refused (the present contract is no file at all)", "allowlist must be empty" in (refused(m, s, c, cand, lock, q) or ""))
+    m, s, c, cand, lock, q = _setup(); t("an unseen-holdout claim whose candidates bytes are not among the receipt's artefacts is refused (the attestation cannot authenticate itself)", "not among the artefacts" in (refused(m, s, c, cand, lock, q, csha="f" * 64) or ""))
+    m, s, c, cand, lock, q = _setup(); t("an unseen-holdout claim with no candidates hash supplied is refused", "no hash was supplied" in (refused(m, s, c, cand, lock, q, csha=None) or ""))
+    m, s, c, cand, lock, q = _setup(); ex = _exec(cand); ex["artifacts"] = []; t("an execution receipt that records no artefact cannot bind the candidates (refused)", "not among the artefacts" in (refused(m, s, c, cand, lock, q, ex=ex) or ""))
     m, s, c, cand, lock, q = _setup(); lock["claim"] = "retrospective_replay"; del cand["read_boundary"]; r = run(m, s, c, cand, lock, q, ex=None); t("a retrospective replay of an older artefact without a read-boundary block still evaluates (labelled)", r["claim"] == "retrospective_replay")
     m, s, c, cand, lock, q = _setup(); lock["locked_at"] = "2026-09-05T06:30:00Z"; ex = _exec(); msg = refused(m, s, c, cand, lock, q, ex=ex) or ""
     t("discovery that started at or before the lock time cannot support an unseen-holdout claim (candidates and execution record both checked)", "is not after" in msg and "at or before the lock time" in msg, msg[:300])
@@ -696,7 +713,9 @@ def main():
     try: qbytes = Path(a.queries).read_bytes()
     except OSError as e: sys.exit(f"queries: {a.queries} cannot be read ({e.strerror})")
     execution = load(a.execution_record, "execution-record") if a.execution_record else None
-    rep = evaluate(load(a.manifest, "manifest"), load(a.split, "split"), load(a.coverage, "coverage"), load(a.candidates, "candidates"), load(a.query_lock, "query-lock"), sha(qbytes), load(a.queries, "queries"), execution)
+    try: cbytes = Path(a.candidates).read_bytes()
+    except OSError as e: sys.exit(f"candidates: {a.candidates} cannot be read ({e.strerror})")
+    rep = evaluate(load(a.manifest, "manifest"), load(a.split, "split"), load(a.coverage, "coverage"), load(a.candidates, "candidates"), load(a.query_lock, "query-lock"), sha(qbytes), load(a.queries, "queries"), execution, sha(cbytes))
     Path(a.out).write_text(json.dumps(rep, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"report written to {a.out}: E={rep['denominators']['E_eligible_holdout_works']} F={rep['denominators']['F_found']} recall={rep['work_level_recall']} ({rep['state']}; {rep['claim']})")
 

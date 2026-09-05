@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://openworkplacehealth.org/evidence/evaluation-candidates.schema.json",
  "title": "OWHS harvester artefact as read by the evaluator",
- "description": "The candidates file tools/harvest.py writes. The fields the evaluator reads are required and typed here; the envelope's channel, warning and count detail is governed by the harvester's own self-test and left open. Candidate items carry the harvester's route tags route:source:instrument; new-instrument candidates are a separate list without route tags. The read_boundary block, written by the harvester, records that the discovery run opened no file; the evaluator requires it for an unseen-holdout claim.",
+ "description": "The candidates file tools/harvest.py writes. The fields the evaluator reads are required and typed here; the envelope's channel, warning and count detail is governed by the harvester's own self-test and left open. Candidate items carry the harvester's route tags route:source:instrument; new-instrument candidates are a separate list without route tags. The read_boundary block, written by the harvester, attests the monitored interval and API coverage of its read guard and records attempted, refused and opened paths; the evaluator requires it, with an empty allowlist and no attempt, for an unseen-holdout claim, and binds the artefact's bytes to the execution receipt.",
  "type": "object",
  "required": [
   "schema_version",
@@ -156,14 +156,28 @@
    "additionalProperties": false,
    "required": [
     "enforced",
+    "interval",
+    "api_coverage",
     "allowed_paths",
-    "files_opened",
+    "files_attempted",
     "files_refused",
+    "files_opened",
     "note"
    ],
    "properties": {
     "enforced": {
      "type": "boolean"
+    },
+    "interval": {
+     "type": "string",
+     "minLength": 1
+    },
+    "api_coverage": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "type": "string"
+     }
     },
     "allowed_paths": {
      "type": "array",
@@ -171,13 +185,19 @@
       "type": "string"
      }
     },
-    "files_opened": {
+    "files_attempted": {
      "type": "array",
      "items": {
       "type": "string"
      }
     },
     "files_refused": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "files_opened": {
      "type": "array",
      "items": {
       "type": "string"

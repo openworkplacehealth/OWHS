@@ -48,36 +48,53 @@ SCHEMA_VERSION = "1.1"          # 1.1 adds cycle, expected_channels, channels_no
 
 # ---------- read boundary ----------
 
+READ_BOUNDARY_APIS = ["builtins.open", "io.open", "io.FileIO", "_io.FileIO", "os.open", "pathlib.Path.read_text", "pathlib.Path.read_bytes"]
+READ_BOUNDARY_INTERVAL = "the harvest() call only: after the query configuration was loaded and the modules imported, before the artefact envelope was assembled and written"
+
+
 class ReadBoundary:
-    """The discovery run reads no file. While active, builtins.open, io.open, os.open, Path.read_text and Path.read_bytes raise for
-    any path outside the allowed set (empty for a harvest: the configuration is passed in, the indexes are queried over the network),
-    and every attempted path is recorded. The artefact carries the record, so an evaluator can see that gold, manifests and splits
-    were never opened by the process that produced the candidates. A guard for this script and its tests, not a sandbox."""
+    """A read guard for the discovery run. While active, the standard Python file-open surface listed in READ_BOUNDARY_APIS
+    (builtins.open, io.open, io.FileIO and _io.FileIO by a guarded subclass, os.open, Path.read_text, Path.read_bytes) raises for any
+    path outside the allowed set, which is empty for a harvest (the configuration is already in memory and the indexes are queried
+    over the network), and every attempted path is recorded as attempted and, when refused, as refused. The record states the
+    monitored interval and API coverage; it is an attestation about that interval and those APIs, not a claim about every read in the
+    process's lifetime, and not a sandbox against code that holds a reference bound before the guard. The artefact carries the
+    record, and an execution receipt that hashes the artefact binds it to the run that produced the candidates."""
     def __init__(self, allowed=()):
-        self.allowed = {Path(a).resolve() for a in allowed}; self.opened = []; self.refused = []
+        self.allowed = {Path(a).resolve() for a in allowed}; self.attempted = []; self.refused = []; self.succeeded = []
     def _check(self, target):
         try: p = Path(target).resolve()
         except Exception: p = Path(str(target))
-        self.opened.append(str(p))
+        self.attempted.append(str(p))
         if p not in self.allowed:
             self.refused.append(str(p)); raise RuntimeError(f"file read during the discovery run refused: {target}")
+        self.succeeded.append(str(p))
     def __enter__(self):
-        import builtins, io
+        import builtins, io, _io
         g = self
-        self._orig = (builtins.open, io.open, os.open, Path.read_text, Path.read_bytes)
+        self._orig = (builtins.open, io.open, os.open, Path.read_text, Path.read_bytes, io.FileIO, _io.FileIO)
+        orig_fileio = _io.FileIO
         def g_open(file, mode="r", *a, **k): g._check(file); return g._orig[0](file, mode, *a, **k)
         def g_io(file, mode="r", *a, **k): g._check(file); return g._orig[1](file, mode, *a, **k)
         def g_os(path, flags, *a, **k): g._check(path); return g._orig[2](path, flags, *a, **k)
         def g_rt(self_, *a, **k): g._check(self_); return g._orig[3](self_, *a, **k)
         def g_rb(self_, *a, **k): g._check(self_); return g._orig[4](self_, *a, **k)
+        class GuardedFileIO(orig_fileio):
+            def __init__(self_, file, mode="r", *a, **k):
+                if not isinstance(file, int): g._check(file)          # an integer is an already-open descriptor, which os.open guarded
+                super().__init__(file, mode, *a, **k)
         builtins.open, io.open, os.open, Path.read_text, Path.read_bytes = g_open, g_io, g_os, g_rt, g_rb
+        io.FileIO = GuardedFileIO; _io.FileIO = GuardedFileIO
         return self
     def __exit__(self, *a):
-        import builtins, io
-        builtins.open, io.open, os.open, Path.read_text, Path.read_bytes = self._orig
+        import builtins, io, _io
+        builtins.open, io.open, os.open, Path.read_text, Path.read_bytes, io.FileIO, _io.FileIO = self._orig
     def record(self):
-        return {"enforced": True, "allowed_paths": sorted(str(a) for a in self.allowed), "files_opened": sorted(set(self.opened)), "files_refused": sorted(set(self.refused)),
-                "note": "the discovery run opened no file; gold lists, manifests and splits are read only by the evaluator, in a separate process"}
+        clean = not self.attempted
+        return {"enforced": True, "interval": READ_BOUNDARY_INTERVAL, "api_coverage": list(READ_BOUNDARY_APIS), "allowed_paths": sorted(str(a) for a in self.allowed),
+                "files_attempted": sorted(set(self.attempted)), "files_refused": sorted(set(self.refused)), "files_opened": sorted(set(self.succeeded)),
+                "note": ("no read attempt was observed on the monitored APIs during the monitored interval" if clean else "read attempts were observed on the monitored APIs during the monitored interval; see files_attempted, files_refused and files_opened")
+                        + "; the attestation covers that interval and those APIs only, and gold lists, manifests and splits belong to the evaluator's separate process"}
 
 
 # ---------- http ----------
@@ -416,17 +433,23 @@ def self_test():
     try:
         with ReadBoundary() as g:
             _items, _new, _chs, _low, _warn = harvest(cfg, cfg["records"], "2026-01-01", "2026-01-31", verify=False, now="t")
-        assert g.record()["files_opened"] == [] and g.record()["files_refused"] == [], f"the stubbed discovery run opened files: {g.record()}"
-        import tempfile
+        assert g.record()["files_attempted"] == [] and g.record()["files_refused"] == [] and g.record()["files_opened"] == [], f"the stubbed discovery run attempted reads: {g.record()}"
+        assert g.record()["interval"] == READ_BOUNDARY_INTERVAL and g.record()["api_coverage"] == READ_BOUNDARY_APIS
+        import tempfile, io as _io_mod, _io as _cio
         with tempfile.TemporaryDirectory() as tmp:
-            gold = Path(tmp) / "manifest.json"; Path(tmp).joinpath("manifest.json").write_text("{}")
-            refused = False
-            try:
-                with ReadBoundary() as g2:
-                    json.loads(gold.read_text())
-            except RuntimeError: refused = True
-            assert refused and g2.record()["files_refused"] == [str(gold.resolve())], "a read of a gold-like path inside the boundary must be refused and recorded"
-            assert gold.read_text() == "{}", "the guard is lifted after the block"
+            gold = Path(tmp) / "manifest.json"; gold.write_text("{}")
+            import builtins as _b
+            for name, read in (("builtins.open", lambda: _b.open(gold).read()), ("io.open", lambda: _io_mod.open(gold).read()), ("io.FileIO", lambda: _io_mod.FileIO(gold, "r").read()), ("_io.FileIO", lambda: _cio.FileIO(gold, "r").read()),
+                               ("os.open", lambda: os.open(gold, os.O_RDONLY)), ("Path.read_text", lambda: gold.read_text()), ("Path.read_bytes", lambda: gold.read_bytes())):
+                refused = False
+                try:
+                    with ReadBoundary() as g2: read()
+                except RuntimeError: refused = True
+                rec = g2.record()
+                assert refused and rec["files_refused"] == [str(gold.resolve())] and rec["files_opened"] == [] and "read attempts were observed" in rec["note"], f"{name}: a read of a gold-like path inside the boundary must be refused and recorded ({rec})"
+            assert gold.read_text() == "{}" and _io_mod.FileIO(gold, "r").read() == b"{}", "the guard is lifted after the block"
+            with ReadBoundary(allowed=[gold]) as g3: gold.read_text()
+            assert g3.record()["files_opened"] == [str(gold.resolve())] and g3.record()["files_refused"] == [], "an allowed read is recorded as opened, not refused"
     finally:
         get = real_get
     from cycle import expected_channels, channels_not_complete

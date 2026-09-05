@@ -24,6 +24,12 @@
    "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
   }
  ],
+ "artifacts": [
+  {
+   "name": "candidates",
+   "sha256": "8eb8b9a8d0bd14e16e997ed3a81f80adacaa655fa44ca16a1292def11545a642"
+  }
+ ],
  "captured_at": "2026-09-05T07:00:00Z",
  "captured_by": "fixture"
 }

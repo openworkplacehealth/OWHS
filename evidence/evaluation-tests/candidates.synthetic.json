@@ -49,9 +49,20 @@
  "new_instrument_candidates": [],
  "read_boundary": {
   "enforced": true,
+  "interval": "the harvest() call only: after the query configuration was loaded and the modules imported, before the artefact envelope was assembled and written",
+  "api_coverage": [
+   "builtins.open",
+   "io.open",
+   "io.FileIO",
+   "_io.FileIO",
+   "os.open",
+   "pathlib.Path.read_text",
+   "pathlib.Path.read_bytes"
+  ],
   "allowed_paths": [],
-  "files_opened": [],
+  "files_attempted": [],
   "files_refused": [],
-  "note": "the discovery run opened no file; gold lists, manifests and splits are read only by the evaluator, in a separate process"
+  "files_opened": [],
+  "note": "no read attempt was observed on the monitored APIs during the monitored interval; the attestation covers that interval and those APIs only, and gold lists, manifests and splits belong to the evaluator's separate process"
  }
 }
