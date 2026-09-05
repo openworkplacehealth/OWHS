@@ -6,3 +6,6 @@
 # for a format and accepts any value for it, which is why tools/validate.py refuses to
 # run rather than report a pass it cannot stand behind.
 jsonschema[format]>=4.18
+
+# The specification page renderer. Pinned exactly: the CI check compares its output byte for byte.
+markdown==3.10.3
