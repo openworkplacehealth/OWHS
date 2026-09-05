@@ -1,0 +1,17 @@
+# How to read the evidence
+<!-- meta: the evidence catalogue, and what a rating does and does not say -->
+<!-- description: How to read the OWHS instrument registry: what a rating, a citation and a conformance check do and do not establish. -->
+
+The Open Workplace Health Standard is an open specification and an evidence catalogue for workplace health measurement. Its purpose is to make definitions, sources and limitations easier to inspect. Publication is an invitation to scrutiny, not evidence that the standard itself has been independently validated.
+
+The registry was developed with AI assistance. Its ratings remain provisional pending independent human review. A citation makes a claim traceable; it does not, by itself, show that the full paper was read, that the result was extracted correctly or that the finding applies to a particular workplace. Read each rating alongside its sources, rationale and limitations. See the [methods](https://openworkplacehealth.org/methods.html) and [published review notices](https://github.com/openworkplacehealth/OWHS/issues/33).
+
+Evidence applies to a particular instrument form, language, population, setting and purpose. A result for a clinical sample, a translated version or a short form should not automatically be transferred to another use. A favourable result and confidence in that result are separate judgements. These distinctions inform the review method; they do not mean that every existing record has already been reassessed. The [COSMIN methodology](https://cosmin.nl/wp-content/uploads/COSMIN-manual-V2_final.pdf) explains these distinctions in measurement reviews.
+
+A high rating for one property is not a general recommendation to deploy an instrument. Reliability does not establish every aspect of validity. A screening cut-off is not a population norm, and changing two scores to a common numerical range does not make them equivalent measures. Missing or limited evidence means that confidence is restricted; it does not necessarily mean that an instrument performs poorly.
+
+Associations with sickness absence, disability pension or turnover need careful interpretation. Check the exact outcome, how it was obtained, the follow-up period and the population studied. In [Roelen and colleagues' study](https://www.sjweh.fi/show_abstract.php?abstract_id=3428&fullText=1), disability-pension receipt was self-reported by male construction workers. A study of prediction does not show that administering a questionnaire improves health or reduces absence. Those claims require evidence about an intervention and its outcomes.
+
+Technical conformance answers a narrower question: whether data meet the rules that a particular validator actually checks. It does not establish scientific validity, permission to use an instrument or the anonymity of a release. Minimum group sizes are only one part of disclosure control. Recipients and information available from other sources also matter; see the [ICO's guidance on effective anonymisation](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/data-sharing/anonymisation/how-do-we-ensure-anonymisation-is-effective/).
+
+Corrections should be visible and traceable. Published review notices identify disputed claims while formal corrections are considered; a notice does not itself change a grade. Readers can help by identifying an exact claim, providing its primary source and explaining the affected instrument, population or use. Independent review and further validation remain work to be done.

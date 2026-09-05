@@ -25,3 +25,5 @@ jobs:
       - run: pip install -r requirements.txt
       - name: validation report is current and every fixture matches its name
         run: python tools/build_validation_report.py --check
+      - name: document pages are rendered from docs/ and their local links resolve
+        run: python tools/build_doc_page.py --check

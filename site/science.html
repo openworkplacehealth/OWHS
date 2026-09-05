@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://openworkplacehealth.org/science.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/science.html">
+<meta property="og:title" content="How to read the evidence · OWHS">
+<meta property="og:description" content="How to read the OWHS instrument registry: what a rating, a citation and a conformance check do and do not establish.">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>How to read the evidence · OWHS</title>
+<meta name="description" content="How to read the OWHS instrument registry: what a rating, a citation and a conformance check do and do not establish.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:17px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2,h3{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(28px,4.5vw,40px);font-weight:700;letter-spacing:-0.02em;margin-bottom:10px}
+h2{font-size:22px;font-weight:700;margin:40px 0 12px}
+h3{font-size:17px;font-weight:600;margin:24px 0 6px}
+p{margin:14px 0;max-width:760px}
+ul,ol{margin:14px 0 14px 22px}
+li{margin:7px 0}
+header{border-bottom:1px solid var(--line);padding:18px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:34px}
+article{padding:56px 0 30px}
+.quote{background:var(--wash);border-left:4px solid var(--accent);padding:22px 26px;margin:26px 0}
+.quote p{font-size:17px;color:var(--ink);font-weight:500;margin:0 0 8px}
+.quote p:last-child{margin-bottom:0}
+.callout{background:var(--accent-soft);border-radius:8px;padding:20px 24px;margin:24px 0}
+.callout p{margin:8px 0}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:var(--wash);color:var(--ink);font-weight:600}
+.mono{font-family:var(--mono);font-size:13.5px}
+footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted)}
+</style>
+<!-- analytics --><script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_UBxs6DIFwK73c1QzudH8AWR6HHZtNAkqhpbz3lCcPfg',{api_host:'https://eu.i.posthog.com',ui_host:'https://eu.posthog.com',defaults:'2026-05-30',cookieless_mode:'always',person_profiles:'never',autocapture:false,capture_pageview:true,capture_pageleave:true,disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});</script><!-- /analytics -->
+</head>
+<body>
+
+<header><div class="nav">
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="why.html">The case</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="standard.html">Inside the standard</a>
+    <a href="question-bank/index.html">Question bank</a>
+    <a href="instrument-registry/index.html">Instrument registry</a>
+    <a href="methods.html">How we grade</a>
+    <a href="governance.html">Governance</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="search.html">Search</a>
+  </nav>
+</div></header>
+
+<article><div class="wrap">
+  <h1>How to read the evidence</h1>
+  <p class="meta">the evidence catalogue, and what a rating does and does not say</p>
+<p>The Open Workplace Health Standard is an open specification and an evidence catalogue for workplace health measurement. Its purpose is to make definitions, sources and limitations easier to inspect. Publication is an invitation to scrutiny, not evidence that the standard itself has been independently validated.</p>
+<p>The registry was developed with AI assistance. Its ratings remain provisional pending independent human review. A citation makes a claim traceable; it does not, by itself, show that the full paper was read, that the result was extracted correctly or that the finding applies to a particular workplace. Read each rating alongside its sources, rationale and limitations. See the <a href="https://openworkplacehealth.org/methods.html">methods</a> and <a href="https://github.com/openworkplacehealth/OWHS/issues/33">published review notices</a>.</p>
+<p>Evidence applies to a particular instrument form, language, population, setting and purpose. A result for a clinical sample, a translated version or a short form should not automatically be transferred to another use. A favourable result and confidence in that result are separate judgements. These distinctions inform the review method; they do not mean that every existing record has already been reassessed. The <a href="https://cosmin.nl/wp-content/uploads/COSMIN-manual-V2_final.pdf">COSMIN methodology</a> explains these distinctions in measurement reviews.</p>
+<p>A high rating for one property is not a general recommendation to deploy an instrument. Reliability does not establish every aspect of validity. A screening cut-off is not a population norm, and changing two scores to a common numerical range does not make them equivalent measures. Missing or limited evidence means that confidence is restricted; it does not necessarily mean that an instrument performs poorly.</p>
+<p>Associations with sickness absence, disability pension or turnover need careful interpretation. Check the exact outcome, how it was obtained, the follow-up period and the population studied. In <a href="https://www.sjweh.fi/show_abstract.php?abstract_id=3428&amp;fullText=1">Roelen and colleagues' study</a>, disability-pension receipt was self-reported by male construction workers. A study of prediction does not show that administering a questionnaire improves health or reduces absence. Those claims require evidence about an intervention and its outcomes.</p>
+<p>Technical conformance answers a narrower question: whether data meet the rules that a particular validator actually checks. It does not establish scientific validity, permission to use an instrument or the anonymity of a release. Minimum group sizes are only one part of disclosure control. Recipients and information available from other sources also matter; see the <a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/data-sharing/anonymisation/how-do-we-ensure-anonymisation-is-effective/">ICO's guidance on effective anonymisation</a>.</p>
+<p>Corrections should be visible and traceable. Published review notices identify disputed claims while formal corrections are considered; a notice does not itself change a grade. Readers can help by identifying an exact claim, providing its primary source and explaining the affected instrument, population or use. Independent review and further validation remain work to be done.</p>
+</div></article>
+
+<footer><div class="wrap">
+  <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). The specification and registry are CC-BY 4.0.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+</div></footer>
+</body>
+</html>
