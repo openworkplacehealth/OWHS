@@ -351,6 +351,26 @@ def catalogue_schemas():
     return out
 
 
+# ---- the supplied entity-graph envelope: a bundle, not a seventeenth entity type ----
+BUNDLES = ROOT / "schemas" / "bundles"
+GRAPH_ARRAYS = {"units": "OrgUnit", "workers": "WorkerPseudonym", "absences": "AbsenceEpisode", "rtwOutcomes": "ReturnToWorkOutcome", "ohEpisodes": "OHEpisode", "adjustments": "ReasonableAdjustment",
+                "entitlements": "BenefitEntitlement", "utilisations": "BenefitUtilisation", "disabilityParticipations": "DisabilityParticipation", "contexts": "MeasurementContext",
+                "observations": "WellbeingObservation", "administrations": "InstrumentAdministration", "reports": "AggregateReport"}
+
+
+def entity_graph_envelope(schemas):
+    """schemas/bundles/EntityGraph-v0.2.json: a closed envelope of organisation groups (one Organisation plus all thirteen entity arrays),
+    global benchmark releases and crosswalks, referencing the sixteen v0.2 entity schemas by $id. Resolved from the local inventory only."""
+    def ref(n): return {"$ref": schemas[n]["$id"]}
+    def arr(item): return {"type": "array", "items": item}
+    def obj(props): return {"type": "object", "additionalProperties": False, "properties": props, "required": list(props)}
+    group = obj({"organisation": ref("Organisation"), **{k: arr(ref(n)) for k, n in GRAPH_ARRAYS.items()}})
+    return {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://openworkplacehealth.org/schemas/bundles/EntityGraph-v0.2.json",
+            "title": "OWHS supplied entity graph v0.2",
+            "description": "Producer-side supplied-record validation envelope. Not a complete roster, release envelope, empirical comparison or Level 2/3 certificate.",
+            **obj({"schema_version": {"const": "0.2"}, "comparisonAsOfDate": {"type": "string", "format": "date"}, "organisations": arr(group), "benchmarks": arr(ref("BenchmarkRelease")), "crosswalks": arr(ref("Crosswalk"))})}
+
+
 def build():
     out = {}
     for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]:
@@ -371,7 +391,9 @@ def build():
                      "0.1": {"status": "archived", "entities": {n: {"file": f"schemas/v0.1/{n}.json", "entry_point": f"schemas/{n}.json", "$id": f"https://openworkplacehealth.org/schemas/v0.1/{n}.json"} for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]},
                              "codelists": {"absence-reason": "0.1.0 (six codes), resolved through codelists/_registry.json versions to codelists/archive/absence-reason@0.1.0.json"}},
                      "0.2": {"status": "current", "extension": "ext, keyed by profile namespace; see profiles/", "entities": {n: {"file": f"schemas/v0.2/{n}.json", "$id": out[n]["$id"]} for n in out},
-                             "codelists": {"absence-reason": f"{codelist('absence-reason')[0]} (eleven codes); crosswalk codelists/mappings/absence-reason-ons-2025-v1.json"}}}}
+                             "codelists": {"absence-reason": f"{codelist('absence-reason')[0]} (eleven codes); crosswalk codelists/mappings/absence-reason-ons-2025-v1.json"},
+                             "bundle_envelopes": {"EntityGraph": {"file": "schemas/bundles/EntityGraph-v0.2.json", "$id": "https://openworkplacehealth.org/schemas/bundles/EntityGraph-v0.2.json",
+                                                                 "note": "a supplied-record envelope checked by tools/check_entity_graph.py; not an entity type and not counted as one"}}}}}
     return out, catalogue
 
 
@@ -379,6 +401,7 @@ def main():
     out, catalogue = build()
     files = {V2 / f"{n}.json": json.dumps(s, indent=2, ensure_ascii=False) + "\n" for n, s in out.items()}
     files[V1 / "catalogue.json"] = json.dumps(catalogue, indent=2, ensure_ascii=False) + "\n"
+    files[BUNDLES / "EntityGraph-v0.2.json"] = json.dumps(entity_graph_envelope(out), indent=2, ensure_ascii=False) + "\n"
     for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]:      # the archived v0.1 set: byte-identical copies of the entry points
         files[V1_ARCHIVE / f"{n}.json"] = (V1 / f"{n}.json").read_text(encoding="utf-8")
     if "--check" in sys.argv:
@@ -386,10 +409,10 @@ def main():
         if stale:
             sys.exit("schemas/v0.2 do not match a fresh build; run tools/build_schemas_v0_2.py\n" + "".join(f"  differs: {s}\n" for s in stale))
         print(f"up to date: {len(files)} schema files match their source"); return
-    V2.mkdir(parents=True, exist_ok=True); V1_ARCHIVE.mkdir(parents=True, exist_ok=True)
+    V2.mkdir(parents=True, exist_ok=True); V1_ARCHIVE.mkdir(parents=True, exist_ok=True); BUNDLES.mkdir(parents=True, exist_ok=True)
     for p, t in files.items():
         p.write_text(t, encoding="utf-8")
-    print(f"wrote {len(out)} v0.2 schemas, schemas/catalogue.json and the archived v0.1 copies")
+    print(f"wrote {len(out)} v0.2 schemas, the entity-graph envelope, schemas/catalogue.json and the archived v0.1 copies")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,1068 @@
+{
+ "note": "Synthetic graph cases; each names the diagnostic codes (rule or schema keyword) and JSON pointers the checker must raise. Not real workforce data.",
+ "cases": [
+  {
+   "case": "sixteen-shapes-valid-reference-graph",
+   "file": "cases/sixteen-shapes-valid-reference-graph.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "empty-explicit-input",
+   "file": "cases/empty-explicit-input.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": []
+  },
+  {
+   "case": "missing-array",
+   "file": "cases/missing-array.json",
+   "expected_codes": [
+    "schema:required"
+   ],
+   "expected_errors": [
+    [
+     "schema:required",
+     "organisations/0"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "wrong-group-org",
+   "file": "cases/wrong-group-org.json",
+   "expected_codes": [
+    "G01"
+   ],
+   "expected_errors": [
+    [
+     "G01",
+     "organisations/0/workers/0"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-org-even-identical",
+   "file": "cases/duplicate-org-even-identical.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-units",
+   "file": "cases/duplicate-units.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/units/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-workers",
+   "file": "cases/duplicate-workers.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/workers/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-absences",
+   "file": "cases/duplicate-absences.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/absences/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-rtwOutcomes",
+   "file": "cases/duplicate-rtwOutcomes.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/rtwOutcomes/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-ohEpisodes",
+   "file": "cases/duplicate-ohEpisodes.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/ohEpisodes/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-adjustments",
+   "file": "cases/duplicate-adjustments.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/adjustments/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-entitlements",
+   "file": "cases/duplicate-entitlements.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/entitlements/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-utilisations",
+   "file": "cases/duplicate-utilisations.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/utilisations/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-disabilityParticipations",
+   "file": "cases/duplicate-disabilityParticipations.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/disabilityParticipations/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-contexts",
+   "file": "cases/duplicate-contexts.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/contexts/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-observations",
+   "file": "cases/duplicate-observations.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/observations/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-administrations",
+   "file": "cases/duplicate-administrations.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/administrations/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-reports",
+   "file": "cases/duplicate-reports.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "organisations/0/reports/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "duplicate-benchmark-release",
+   "file": "cases/duplicate-benchmark-release.json",
+   "expected_codes": [
+    "G02"
+   ],
+   "expected_errors": [
+    [
+     "G02",
+     "benchmarks/1"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "benchmark-other-version-allowed",
+   "file": "cases/benchmark-other-version-allowed.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-units-parentUnitId",
+   "file": "cases/missing-units-parentUnitId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/units/0/parentUnitId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-workers-unitId",
+   "file": "cases/missing-workers-unitId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/workers/0/unitId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-reports-unitId",
+   "file": "cases/missing-reports-unitId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/reports/0/unitId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-utilisations-entitlementId",
+   "file": "cases/missing-utilisations-entitlementId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/utilisations/0/entitlementId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-absences-pseudonymId",
+   "file": "cases/missing-absences-pseudonymId.json",
+   "expected_codes": [
+    "G03",
+    "G04",
+    "G04"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/absences/0/pseudonymId"
+    ],
+    [
+     "G04",
+     "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
+    ],
+    [
+     "G04",
+     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-rtwOutcomes-pseudonymId",
+   "file": "cases/missing-rtwOutcomes-pseudonymId.json",
+   "expected_codes": [
+    "G03",
+    "G04"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/rtwOutcomes/0/pseudonymId"
+    ],
+    [
+     "G04",
+     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-ohEpisodes-pseudonymId",
+   "file": "cases/missing-ohEpisodes-pseudonymId.json",
+   "expected_codes": [
+    "G03",
+    "G04",
+    "G04"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/ohEpisodes/0/pseudonymId"
+    ],
+    [
+     "G04",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
+    ],
+    [
+     "G04",
+     "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-adjustments-pseudonymId",
+   "file": "cases/missing-adjustments-pseudonymId.json",
+   "expected_codes": [
+    "G03",
+    "G04"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/adjustments/0/pseudonymId"
+    ],
+    [
+     "G04",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-observations-pseudonymId",
+   "file": "cases/missing-observations-pseudonymId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/observations/0/pseudonymId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-administrations-pseudonymId",
+   "file": "cases/missing-administrations-pseudonymId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/administrations/0/pseudonymId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-observations-contextId",
+   "file": "cases/missing-observations-contextId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/observations/0/contextId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-administrations-contextId",
+   "file": "cases/missing-administrations-contextId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/administrations/0/contextId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-reports-contextId",
+   "file": "cases/missing-reports-contextId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/reports/0/contextId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-rtwOutcomes-absenceEpisodeId",
+   "file": "cases/missing-rtwOutcomes-absenceEpisodeId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-ohEpisodes-linkedAbsenceEpisodeId",
+   "file": "cases/missing-ohEpisodes-linkedAbsenceEpisodeId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "missing-adjustments-sourceOhEpisodeId",
+   "file": "cases/missing-adjustments-sourceOhEpisodeId.json",
+   "expected_codes": [
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "resolved-different-worker-rtwOutcomes",
+   "file": "cases/resolved-different-worker-rtwOutcomes.json",
+   "expected_codes": [
+    "G04"
+   ],
+   "expected_errors": [
+    [
+     "G04",
+     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "resolved-different-worker-ohEpisodes",
+   "file": "cases/resolved-different-worker-ohEpisodes.json",
+   "expected_codes": [
+    "G04",
+    "G04"
+   ],
+   "expected_errors": [
+    [
+     "G04",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
+    ],
+    [
+     "G04",
+     "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "resolved-different-worker-adjustments",
+   "file": "cases/resolved-different-worker-adjustments.json",
+   "expected_codes": [
+    "G04"
+   ],
+   "expected_errors": [
+    [
+     "G04",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "same-ids-different-organisations",
+   "file": "cases/same-ids-different-organisations.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ],
+    [
+     "comparison_not_established",
+     "organisations/1/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "worker-present-only-in-other-org",
+   "file": "cases/worker-present-only-in-other-org.json",
+   "expected_codes": [
+    "G03",
+    "G03",
+    "G03",
+    "G03",
+    "G03",
+    "G03"
+   ],
+   "expected_errors": [
+    [
+     "G03",
+     "organisations/0/absences/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "organisations/0/adjustments/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "organisations/0/administrations/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "organisations/0/observations/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "organisations/0/ohEpisodes/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "organisations/0/rtwOutcomes/0/pseudonymId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ],
+    [
+     "comparison_not_established",
+     "organisations/1/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "two-unit-cycle",
+   "file": "cases/two-unit-cycle.json",
+   "expected_codes": [
+    "G05"
+   ],
+   "expected_errors": [
+    [
+     "G05",
+     "organisations/0/units"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "deep-hierarchy-without-python-recursion",
+   "file": "cases/deep-hierarchy-without-python-recursion.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "direct-unit-self-loop",
+   "file": "cases/direct-unit-self-loop.json",
+   "expected_codes": [
+    "C18"
+   ],
+   "expected_errors": [
+    [
+     "C18",
+     "organisations/0/units/0"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "return-before-absence-start",
+   "file": "cases/return-before-absence-start.json",
+   "expected_codes": [
+    "G06"
+   ],
+   "expected_errors": [
+    [
+     "G06",
+     "organisations/0/rtwOutcomes/0/rtwDate"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "return-on-absence-start",
+   "file": "cases/return-on-absence-start.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "phased-return-before-recorded-absence-end",
+   "file": "cases/phased-return-before-recorded-absence-end.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "benchmark-release-missing",
+   "file": "cases/benchmark-release-missing.json",
+   "expected_codes": [
+    "G07"
+   ],
+   "expected_errors": [
+    [
+     "G07",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "benchmark-wrong-version",
+   "file": "cases/benchmark-wrong-version.json",
+   "expected_codes": [
+    "G07"
+   ],
+   "expected_errors": [
+    [
+     "G07",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "benchmark-metric-different",
+   "file": "cases/benchmark-metric-different.json",
+   "expected_codes": [
+    "G08"
+   ],
+   "expected_errors": [
+    [
+     "G08",
+     "organisations/0/reports/0/benchmarkRef/metricCode"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "leave-one-out-same-org",
+   "file": "cases/leave-one-out-same-org.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "leave-one-out-wrong-org",
+   "file": "cases/leave-one-out-wrong-org.json",
+   "expected_codes": [
+    "G09"
+   ],
+   "expected_errors": [
+    [
+     "G09",
+     "organisations/0/reports/0/benchmarkRef/excludedOrgId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "valid-from-inclusive",
+   "file": "cases/valid-from-inclusive.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "valid-to-inclusive",
+   "file": "cases/valid-to-inclusive.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "before-declared-release-validity",
+   "file": "cases/before-declared-release-validity.json",
+   "expected_codes": [
+    "G10"
+   ],
+   "expected_errors": [
+    [
+     "G10",
+     "organisations/0/reports/0/benchmarkRef/comparisonAsOfDate"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "after-declared-release-validity",
+   "file": "cases/after-declared-release-validity.json",
+   "expected_codes": [
+    "G10"
+   ],
+   "expected_errors": [
+    [
+     "G10",
+     "organisations/0/reports/0/benchmarkRef/comparisonAsOfDate"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "unreferenced-old-release-allowed",
+   "file": "cases/unreferenced-old-release-allowed.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "different-crosswalk-target-same-version-allowed",
+   "file": "cases/different-crosswalk-target-same-version-allowed.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "duplicate-crosswalk-does-not-invent-an-id",
+   "file": "cases/duplicate-crosswalk-does-not-invent-an-id.json",
+   "expected_codes": [],
+   "expected_errors": [],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
+  },
+  {
+   "case": "wrong-procedural-report-rate",
+   "file": "cases/wrong-procedural-report-rate.json",
+   "expected_codes": [
+    "C9"
+   ],
+   "expected_errors": [
+    [
+     "C9",
+     "organisations/0/reports/0"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "malformed-context-no-join-crash",
+   "file": "cases/malformed-context-no-join-crash.json",
+   "expected_codes": [
+    "schema:type"
+   ],
+   "expected_errors": [
+    [
+     "schema:type",
+     "organisations/0/contexts/0/scoringDescriptor"
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "root-null",
+   "file": "cases/root-null.json",
+   "expected_codes": [
+    "schema:type"
+   ],
+   "expected_errors": [
+    [
+     "schema:type",
+     ""
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "root-list",
+   "file": "cases/root-list.json",
+   "expected_codes": [
+    "schema:type"
+   ],
+   "expected_errors": [
+    [
+     "schema:type",
+     ""
+    ]
+   ],
+   "expected_reviews": []
+  },
+  {
+   "case": "root-scalar",
+   "file": "cases/root-scalar.json",
+   "expected_codes": [
+    "schema:type"
+   ],
+   "expected_errors": [
+    [
+     "schema:type",
+     ""
+    ]
+   ],
+   "expected_reviews": []
+  }
+ ]
+}

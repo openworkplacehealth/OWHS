@@ -95,6 +95,13 @@
       },
       "codelists": {
         "absence-reason": "0.2.0 (eleven codes); crosswalk codelists/mappings/absence-reason-ons-2025-v1.json"
+      },
+      "bundle_envelopes": {
+        "EntityGraph": {
+          "file": "schemas/bundles/EntityGraph-v0.2.json",
+          "$id": "https://openworkplacehealth.org/schemas/bundles/EntityGraph-v0.2.json",
+          "note": "a supplied-record envelope checked by tools/check_entity_graph.py; not an entity type and not counted as one"
+        }
       }
     }
   }
