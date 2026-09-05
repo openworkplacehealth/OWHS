@@ -52,3 +52,7 @@ dataset's corrections log. The generator and the gate enforce shape, never judge
 The migration scripts that produced each dataset version from the one before are being prepared for
 publication. Their comments are being reviewed so that the published copies describe the changes
 without internal working notes.
+
+## Dataset files are public projections
+
+The dataset files here from v0.3.0 onward are public projections (projection 1.0) of the released scientific versions: each carries a `public_projection` block stating that private stewardship metadata (one record-level field, null in every released version, and the policy object describing it) is omitted and that one historical changelog clause naming it carries a neutral marker; scientific identity, citations, evidence and property blocks are unchanged, and the dataset version numbers are the scientific versions. v0.1 to v0.2.2 never carried the field and are unchanged.

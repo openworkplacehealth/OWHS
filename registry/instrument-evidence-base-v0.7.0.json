@@ -431,7 +431,6 @@
     "ons-4-anxiety"
    ],
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -2228,7 +2227,6 @@
    ],
    "record_notes": "[Upgraded from v0.1 to v0.2 structure in pass two; criterion field split, licence re-verified 2026-07-12.] Overall confidence in the WHO-5 as a well-being measure is High for structural validity, internal consistency, convergent validity and breadth of populations/languages; Moderate for measurement invariance (adults yes, cross-country five-item form contested); Low for test-retest reliability and for responsiveness with a defined minimal important change; and effectively Absent for criterion validity against organisational outcomes and for workplace norms. Schema stress-test notes: (1) The schema's single 'criterion_validity' field forced two very different evidence states into one cell, namely strong criterion evidence against depression versus no located evidence against organisational outcomes (absence, turnover, diagnosed conditions). I reported both explicitly and graded to the audience's actual need, but a registry might benefit from separating clinical-criterion from organisational-criterion validity. (2) The WHO-5 versus WHO-4 question sits awkwardly: the WHO-4 is a proposed reduced form, not a separate instrument, and evidence about item 1 belongs partly under structural validity, partly under invariance, and partly under criticisms; I have cross-referenced rather than duplicated. (3) The clinical-origin caveat required by the brief cuts across identity, criterion validity and criticisms; I have stated it in each place rather than confining it to one field. (4) Licensing 'free to use' is well supported in the secondary literature but I did not retrieve a formal WHO licence document this session; the claim rests on peer-reviewed statements, so I have qualified it accordingly. (5) No UK data of any kind (validation, norms, workplace) surfaced; under rubric 1.1 that is a fact recorded in the populations cell, not a downgrade; the indirect flags on this record rest on population type (clinical and student samples where the working-adult evidence is missing).",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -2908,7 +2906,6 @@
    ],
    "record_notes": "[Upgraded from v0.1 to v0.2 structure in pass two; criterion field split, licence re-verified 2026-07-12.] The schema separates measurement properties cleanly, but WEMWBS forces two honesty caveats the fields do not naturally hold. (1) Almost all high-quality evidence is from general-population, student, youth and clinical/primary-care samples, not workplaces; convergent, invariance and responsiveness grades would drop a level if the strict need is working-adult evidence, because working samples are under-represented. I have graded on the overall evidence and flagged the workplace/occupational gap in each field rather than inflating or hiding it. (2) The 14-item and 7-item versions genuinely differ in their psychometrics (SWEMWBS is the Rasch interval scale; WEMWBS is essentially but not strictly unidimensional), so several fields had to carry two verdicts in one box. Test-retest is the weakest property: the well-known ICC 0.83 is a single 14-item, one-week, student estimate, with no replicated SWEMWBS or workplace value located, so change-score use at the individual level rests on responsiveness/MIC evidence rather than on retest stability. The word 'clinical' appears only in reference to the primary-care/CMD samples where SWEMWBS sensitivity to change was tested (Shah 2021); that is a statement about where evidence was earned, and workplace deployment is a different context with no equivalent criterion evidence located. Overall confidence in the record is High for structural validity, internal consistency and UK general-population norms; Moderate for invariance and responsiveness; Low for criterion validity and test-retest, chiefly because of the absence of workplace-specific and replicated stability data. Licensing is 'free' only in a qualified sense: registration is mandatory, and commercial and some organisational uses are chargeable under the Warwick licence tiers.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -3290,7 +3287,6 @@
    ],
    "record_notes": "[Upgraded from v0.1 to v0.2 structure in pass two; criterion field split, licence re-verified 2026-07-12.] Framing: the Indicator Tool is a work-stressor EXPOSURE measure of perceived psychosocial working conditions, not a wellbeing outcome; the schema's outcome-oriented property fields (criterion validity, responsiveness/MIC) were completed with that in mind and criterion evidence is reported as associations with separate outcome measures. Version ambiguity: the literature retrieved this session consistently describes and validates the 35-item seven-subscale form; I did not locate a psychometric validation of an official 25-item HSE short form, so the item_count and version fields report the 35-item form and flag the 25-item form as referenced but unverified in this pass. Two properties are genuinely ABSENT in the retrieved evidence and should not be read as oversights: test-retest reliability (no temporal-stability study for the standard tool was found; the only ICC comes from a restructured Iranian version and its interpretation as test-retest is unclear) and responsiveness/MIC (longitudinal use exists but no formal statistics). Measurement invariance is graded Low because cross-national and public/private evidence reaches at most metric level and scalar invariance is not clearly demonstrated; the Edwards 2012 abstract was not retrievable in full, so the exact invariance level from that paper is stated conservatively. Licence terms are inferred from the tool's HSE Crown-copyright provenance rather than a cited licence document. Coefficients: all alpha/omega/ICC/correlation values quoted come from abstracts or (for Edwards 2008) the full text retrieved this session. Overall confidence in the record is moderate: internal consistency is well established (High), structural, convergent and criterion validity are Moderate with real conflicts reported, while invariance is Low and test-retest and responsiveness are Absent.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -3806,7 +3802,6 @@
    ],
    "record_notes": "[Upgraded from v0.1 to v0.2 structure in pass two; criterion field split, licence re-verified 2026-07-12.] Overall confidence: the general PERMA-Profiler is moderately well studied, but the Workplace PERMA-Profiler specifically rests on a thin, geographically narrow occupational evidence base (chiefly Japanese, Korean, Chinese and Polish workers) with generally marginal confirmatory fit. Internal consistency is the one property that grades High; structural validity, criterion validity, test-retest and invariance all grade Low, and responsiveness/MIC is Absent. No UK validation, UK occupational norms or UK benchmark data were located. Schema stress-test notes: (1) The schema's single identity block does not cleanly separate the general PERMA-Profiler from the Workplace PERMA-Profiler, which have materially different evidence depth; the record repeatedly distinguishes them in prose but a structured field pairing each property to 'general form' versus 'workplace form' would record the asymmetry more honestly. (2) Test-retest was hard to record faithfully because several studies report ICCs that mix retest stability with internal consistency; the coefficients cited (for example 0.75 to 0.96, Watanabe 2018) should not be read as clean retest values. (3) The word 'clinical' is deliberately not applied to any workplace deployment here; where clinical screeners appear as validation comparators they are outcome measures, not the deployment context. (4) A dedicated COSMIN systematic review of the Workplace PERMA-Profiler was not located in this pass, so grades are synthesised from individual validation studies rather than an aggregated quality appraisal. (5) One candidate source (Persian older-adults validation, Payoun 2020) was excluded because no resolvable DOI was found; the Flourish Index paper surfaced by keyword overlap was excluded as it does not measure the PERMA-Profiler. The licence status is reported from the developers' distribution practice rather than a citable licence document, which the schema's licence_status field would ideally flag as evidence-grade metadata rather than a settled fact.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -4269,7 +4264,6 @@
    ],
    "record_notes": "[Upgraded from v0.1 to v0.2 structure in pass two; criterion field split, licence re-verified 2026-07-12.] Overall confidence: internal consistency is High; structural validity, convergent/discriminant validity and measurement invariance are Moderate but each carries a genuine, cited contradiction rather than clean support; criterion validity is Low; test-retest is Low with the absence itself a finding; responsiveness/MIC is Very low (effectively absent). Points the schema made hard to record honestly: (1) The one-factor versus three-factor debate is not a defect to be resolved to a single 'confidence' but a standing feature of the evidence; the 'structural_validity' field forces a single grade onto directly contradictory findings, so 'Moderate' here means 'extensively studied but unresolved', not 'moderately good'. (2) 'constructs_claimed' presents three subscales, yet a substantial strand of evidence argues the subscales are not empirically separable and only the total should be used; the field cannot easily flag that the claimed structure is itself contested. (3) Several strong stability and invariance findings pertain to the 17-item UWES, not the 9-item form; the schema does not distinguish evidence transferred from the parent instrument from evidence earned by the UWES-9 directly, and I have flagged this inline where it applies. (4) Test-retest and MIC are near-absent for the 9-item form specifically despite the instrument's popularity, which is a more important finding than a coefficient would have been. (5) UK-specific norms were not located as a representative benchmark; the 'Productive Ward' study is UK/Ireland health-service context but is a study sample, not a norm, and the only reference norms are the authors' international test manual. (6) Per the registry rule on 'clinical': the UWES-9 has been deployed in patient-rehabilitation samples (for example haematological malignancy patients), but it is a work-engagement instrument, not a clinical screener, and none of its validation was earned in a diagnostic setting; workplace deployment should be read as a non-clinical context throughout.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -4923,7 +4917,6 @@
    ],
    "record_notes": "[Upgraded from v0.1 to v0.2 structure in pass two; criterion field split, licence re-verified 2026-07-12.] Overall confidence: the PHQ-9 is the confidence-grading high-water mark. Structural validity, diagnostic criterion validity and internal consistency are High, anchored on the Levis/Thombs individual participant data programme and a reliability-generalisation meta-analysis; responsiveness and the somatic-confounding and cut-point critiques are well evidenced. The genuinely weaker or absent cells are test-retest (present but from few studies, none occupational), measurement invariance (scattered, no occupational coverage, weak over-time evidence), criterion validity against organisational outcomes (absent), and workplace-specific psychometrics (absent). Schema stress-test notes: (1) The single 'criterion_validity' field conflates two very different evidence bases, diagnostic criterion validity (High) versus criterion validity against organisational outcomes (Absent). I graded it as split and said so in the findings, but a schema that forced one grade would misrepresent the instrument; the field should ideally be divided. (2) 'confidence' is a single scalar per property, yet for several properties the honest grade differs by sub-question (e.g. invariance is scalar-level across age but untested across occupation). I encoded the dominant grade and qualified it in the justification. (3) The clinical-origin versus workplace-deployment gap is the most important caveat for this registry and does not have a dedicated field; I carried it in criticisms_controversies and flagged it in constructs_claimed and criterion_validity, but it risks being lost if a reader scans only the property grades. (4) Licence status is factually clear (public domain, Pfizer-released) but I could not attach a DOI-bearing primary source to the licensing act itself, only to the original validation paper; I flagged this rather than attach a non-resolvable citation. (5) 'Absent' was used strictly for organisational criterion validity and workplace psychometrics; test-retest was deliberately NOT graded Absent because evidence exists, only sparsely, which the scale's wording ('barely-studied') made a close call between Low and Moderate.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -5653,7 +5646,6 @@
    ],
    "record_notes": "Overall confidence: GAD-7 has a deep, high-quality evidence base for internal consistency (High), diagnostic accuracy against clinical interview (High, though the best synthesis shows modest pooled sensitivity at cut-off 10 with high heterogeneity), a predominantly unidimensional structure (High but with a genuinely contested two-factor alternative), and cross-group measurement invariance by sex and age (High). That evidence was earned overwhelmingly in clinical, primary-care and general-population samples, making it indirect for working adults; UK general-population and IAPT data exist and are recorded as fact. The honest gaps that most matter for a workplace registry: organisational criterion validity against objective work outcomes is Absent (the nearest evidence uses the derivative GAD-2 and self-reported outcomes); dedicated short-interval test-retest studies are sparse and mixed (Low), with the original ICC of 0.83 available only second-hand without interval or n; longitudinal invariance is contested, which bears directly on using the scale to track change; and a working-population minimal important change was not located this session. Licence verified on 2026-07-12 from the body text of the steward's currently distributed GAD-7 English PDF (phqscreeners.com footer) and the LOINC mirror of the steward entry, not from the founding paper: free to use, Pfizer copyright retained, no permission required, which is a no-permission-required grant rather than a formal open or Creative Commons licence. Direct HTML fetches of phqscreeners.com returned HTTP 403, so confirmation rests on the steward's own distributed PDF footer and the LOINC mirror. Schema v0.2 recorded these honestly; the main tension was that most invariance/structure evidence is shared with the PHQ-9 in joint studies, which I have tagged canonical for the GAD-7 factor specifically where the analysis modelled the GAD-7 items separately.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -6430,7 +6422,6 @@
    ],
    "record_notes": "Overall confidence: the K10 is a strong screener for the likely presence of common mental disorders against a diagnostic reference standard (High, well-established, principally Australian, US and Canadian samples), with high internal consistency (High, well-established) and extensive norms (High, but none specific to working adults). Its factor structure is genuinely contested (recorded as contested, not averaged), and three properties are honestly Absent or thin: test-retest reliability (no coefficient located this session), responsiveness/MIC (none located), and organisational criterion validity (no work-outcome validation exists; the workplace literature uses the K10/K6 as an exposure or prevalence measure, not as a validated work-outcome screen). Every graded property is indirect by population: the evidence was earned in non-workplace, general-population, student, clinical or military samples, and the instrument is clinical/epidemiological in origin, making any workplace deployment off-label (see deployment_context_caveat). Licence verified against the Harvard Medical School NCS steward page this session (2026-07-12): free to use, no permission or fee required, cite the source; no named open-content licence code is asserted by the steward. A few supporting sources are named in prose but not separately DOI-listed where they duplicate an already-cited finding (Arabic validation Easton 2017 doi:10.1186/s12955-017-0783-9; Brazilian rating-scale-model adaptation, Peixoto 2021 doi:10.1186/s41155-021-00186-9; Japanese workplace social-support cohort using K6 doi:10.1097/JOM.0000000000002675); these resolve but were retrieved as context rather than as primary graded evidence. Schema v0.2 friction: the criterion split worked well and made the organisational Absent finding explicit; the single evidence_form tag per property is a simplification where evidence is genuinely mixed (canonical K10 plus K6 short-form and parent-item evidence), flagged as 'mixed' where that applies.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -6960,7 +6951,6 @@
    ],
    "record_notes": "Overall confidence: the GHQ-12 is among the best-evidenced distress screeners for internal structure (High, though contested historically) and criterion validity against diagnostic interviews (High), with high internal consistency (High). It is materially weaker on the properties this registry cares about for a working-adult audience: test-retest stability rests on a single small student-age study (Low/thin), measurement invariance across occupation is untested, responsiveness and minimal important change are not formally established (Very low), and organisational criterion validity against work outcomes is Absent. Most cells are flagged indirect because the evidence is overwhelmingly non-workplace or clinical/primary-care in origin (structural validity, internal consistency and the populations cell are direct on general-population evidence), and the instrument's clinical-screener heritage and short-term state focus are flagged in the deployment caveat. Licence verified this session against GL Assessment and GL Education current pages and the Mapi Research Trust listing: it is a proprietary, paid, permission-required product, an important contrast to the free tools in the registry. Schema v0.2 made honest recording straightforward here; the main friction was that UK working-adult norms and the definitive user-guide psychometrics sit behind a paywalled commercial manual that could not be inspected this session, so those are flagged rather than asserted.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -7581,7 +7571,6 @@
    ],
    "record_notes": "Overall confidence: Moderate for structural and convergent/discriminant validity, High for internal consistency and for the breadth of populations/norms, but Very low to Absent for test-retest, measurement invariance, responsiveness/MIC and organisational criterion validity. COPSOQ III should be recorded as a well-established psychosocial-exposure instrument whose cross-sectional and internal-consistency credentials are strong but whose longitudinal and predictive properties remain genuinely under-evidenced, a gap the developers themselves acknowledge. The record is deliberately framed like an exposure measure (comparable to the HSE Management Standards Indicator Tool) rather than a wellbeing outcome. Two honesty points the v0.2 schema still made awkward. (1) The instrument is a family of dimension scales, so most single record-level grades summarise a heterogeneous per-dimension reality; subgrades capture the most important splits (multi-item versus two-item scales; established versus newly introduced dimensions), but a fully faithful record would grade each dimension separately, which the single-record structure cannot hold. (2) Much of the reliability and invariance evidence is parent-form (original COPSOQ or COPSOQ-II); evidence_form is tagged 'mixed' or 'parent' throughout so this is not read as canonical COPSOQ III evidence, and the recurring theme is that COPSOQ III inherits confidence from its lineage while its own longitudinal evidence base is still thin. Licence: the questionnaire is released under Creative Commons CC BY-NC-ND 4.0, verified 2026-07-12 by fetching and reading the full text of the COPSOQ International Network's current 'Licence, Guidelines & Questionnaire' page and the guidelines PDF linked from it, not from founding papers. The lead's 'free for non-commercial with registration' pointer was an oversimplification in a different direction than a simple registration model: the licence is CC BY-NC-ND (non-commercial, no-derivatives) but the network's own page explicitly permits commercial use provided no fee is charged for the questionnaire itself (fees for assessment, advice, analysis and training are allowed), requires prior contact with the national COPSOQ team before a new translation or adaptation, and prohibits distributing modified material as 'COPSOQ'. The guidelines PDF adds a carve-out that the Work Engagement items (WE_T, WE1 to WE3) may be used commercially only under separate agreement with Triple i (3ihc.nl), because they derive from the Schaufeli et al. Utrecht Work Engagement short scale. No UK COPSOQ III validation was located; the closest English-language validation and norms are Australian ([Rahimi 2025](https://doi.org/10.1186/s12889-025-21845-x)). Under rubric 1.0 all grades were flagged indirect for that reason; under rubric 1.1 the working-sample evidence is direct and the absence of a UK validation is a fact in the populations cell (correction C-0004).",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -8129,7 +8118,6 @@
    ],
    "record_notes": "Overall confidence: internal consistency well-established (High) but subscale-uneven; structural validity Moderate and genuinely contested on the personal accomplishment factor; organisational criterion validity Moderate; reference-standard criterion validity Very low because no diagnostic gold standard exists; test-retest thin (Low) with only item-level Iranian ICCs retrievable. The v0.2 schema made two things hard to record honestly: (1) canonical test-retest lives in the Mind Garden manual behind the paid licence and could not be verified this session, so I recorded only the openly retrievable coefficient rather than the manual's claim; (2) evidence_form is genuinely 'mixed' because the MBI-GS9 short form and the several localised forms are pooled in the reliability meta-analyses.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -8475,7 +8463,6 @@
    ],
    "record_notes": "Overall confidence: internal consistency High and well-established; organisational criterion validity Moderate and a relative strength (prospective self-reported sickness absence, PUMA/Borritz), with the caveat that the absence outcome was self-reported rather than register-based; structural validity Moderate; measurement invariance Low with scalar invariance unestablished; reference-standard criterion validity Absent; test-retest Absent (no coefficient located, recorded as the finding). The v0.2 schema handled this record well; the honesty-critical points are the genuinely Absent test-retest and reference-standard fields, the self-reported (not register-based) nature of the absence outcome, and the licence field, where the steward provides a free download without an explicit named open licence, which I recorded precisely rather than upgrading to 'public domain' or 'CC' on the basis of the founding paper.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -8963,7 +8950,6 @@
    ],
    "record_notes": "Overall confidence: internal consistency Moderate-to-High (exhaustion strong, disengagement weaker); structural validity Moderate but genuinely contested on wording-method effects and factor separability; convergent validity Moderate; measurement invariance Low; reference-standard criterion validity Absent/untested; organisational criterion validity Absent (an important, honestly-recorded gap); responsiveness Absent; test-retest thin (Low) with no cleanly extractable coefficient. The v0.2 schema made two things hard: (1) the canonical English validation and its test-retest coefficient sit behind a paywall, so I recorded the property as reported-but-not-numerically-verifiable rather than inventing a value; (2) much invariance and reliability evidence is on reduced/short OLBI forms, so evidence_form is 'mixed' and the canonical 16-item instrument is less directly evidenced than the pooled figures imply.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -9687,7 +9673,6 @@
    ],
    "record_notes": "Overall confidence: organisational criterion validity is High and well-established (large prospective occupational cohorts predicting disability pension and sickness absence); structural validity is Moderate but contested (two-factor preferred over the historical sum score); internal consistency and test-retest are Moderate; measurement invariance and full-scale responsiveness/MIC are genuine gaps (Absent). Under rubric 1.0 every grade was flagged indirect because no UK validation or norms were located; under rubric 1.1 the occupational-cohort evidence is direct and the absence of UK norms is a fact in the populations cell (correction C-0004). Schema v0.2 handled this instrument well; the one hard case was internal consistency, which is a partly-formative composite where alpha is reported in the literature but is of limited interpretive value, noted in the findings and status rather than forced into a misleading grade. Licence could not be verified against a primary steward page this session because FIOH (ttl.fi) and BAuA (baua.de) returned server-side 403 blocks and the reachable WAI-Netzwerk portal does not state questionnaire terms; per rule 7 the licence is recorded as not verified this session rather than asserted from literature.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -10106,7 +10091,6 @@
    ],
    "record_notes": "Overall confidence: as a single-item proxy the WAS has well-established organisational predictive validity (Moderate, consistently weaker than the full WAI) and Moderate but contested convergence with its parent instrument; test-retest is Low/contested (good ICCs only in small clinical subgroups, moderate in general workers); responsiveness is Low and confined to clinical samples. Scale-level properties (internal consistency, structural validity, measurement invariance) are correctly Not-applicable rather than Absent per rule 4. Under rubric 1.0 every applicable grade was flagged indirect because no UK validation or norms were located; under rubric 1.1 the occupational-cohort evidence is direct and only the cells resting on clinical rehabilitation samples (test-retest, responsiveness) stay indirect (correction C-0004). The schema v0.2 single-item handling worked cleanly; the one nuance recorded honestly is that one retest coefficient (van Schaaijk) is a derivative general single-item work-ability appraisal rather than the exact WAI-1 wording, tagged as derivative evidence_form in the structured test-retest sub-object. Licence could not be verified against a primary steward page this session because FIOH (ttl.fi) and BAuA (baua.de) returned server-side 403 blocks and the reachable WAI-Netzwerk portal does not state questionnaire terms; per rule 7 the licence is recorded as not verified this session rather than asserted from literature.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": [
     {
      "type": "short-form-of",
@@ -10492,7 +10476,6 @@
    ],
    "record_notes": "Overall confidence: convergent validity and responsiveness are well-established (High) and are the instrument's genuine strengths; test-retest reliability is thin and Low; internal consistency is Low and only partially applicable; structural validity and measurement invariance are largely category mismatches for a derived-index instrument and are Not-applicable/Absent; criterion validity against a diagnostic reference standard is Absent by construct, and criterion validity against objective organisational work outcomes is Absent and thin, which is the most important honest gap for a workplace registry. The evidence base is broad but clinical: nearly all coefficients come from disease cohorts (RA, Crohn's, axSpA, psoriasis, migraine, lupus) in trial settings, so population indirectness for a general working-adult audience is flagged throughout. Nine DOIs, all verified to resolve via Crossref this session. LICENCE HONESTY: schema rule 7 could not be fully satisfied because the steward's current licence page (reillyassociates.net) returned HTTP 403 on direct fetch and web search surfaced only page titles; the stated terms reflect the steward's known distribution model, corroborated by the Mapi/ePROVIDE listing, but were not read from the live steward page this session, so licence_verified_date is recorded as not verified this session. No founding paper or review was used as a licence source.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -10862,7 +10845,6 @@
    ],
    "record_notes": "Overall confidence: IPAQ-SF is a heavily studied self-report physical-activity behaviour measure with well-established but only weak-to-moderate criterion validity against accelerometry (typically rho ~0.30, range 0.09 to 0.39) and a well-documented overestimation bias, and reasonable same-week test-retest repeatability. It is not a wellbeing instrument; for the OWHS purpose it is a workplace-adjacent behaviour measure. Two absences are important and honestly recorded: criterion validity against organisational/work outcomes is untested (Absent), and formal measurement invariance is untested (Very low). Internal consistency and single-factor structural validity are largely category mismatches for a formative index and are marked Not-applicable / Very low accordingly rather than treated as ordinary evidence gaps. Nearly all evidence is population-indirect for working adults (general population, adolescents, students, clinical groups; no occupational norms located), so most grades carry an indirect flag. Licence verified 2026-07-12 against the steward's current website (open access, no permissions required, CC BY 4.0), not a founding paper. What v0.2 still made hard: the formative-index nature of IPAQ-SF means several reflective-scale fields (structural validity, internal consistency) are awkward to grade; I used Not-applicable and Very low with explicit notes rather than forcing a misleading grade.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -11489,7 +11471,6 @@
    ],
    "record_notes": "Overall confidence: the ISI is a well-established, heavily validated insomnia screener and outcome measure with high internal consistency, strong criterion validity against diagnostic reference standards, good-to-excellent test-retest reliability, and established (if version-dependent) responsiveness and minimal important change. It is downgraded here for two reasons that bite for this registry: (1) population indirectness, essentially all evidence comes from clinical, primary-care, student, cancer, caregiver, perinatal or community samples, with no working-adult validation, normative data, or occupational invariance located; and (2) a genuinely contested factor structure. Organisational criterion validity (against absence, turnover, performance) is Absent/untested, which is the honest and important finding for a workplace deployment. The clinical origin means workplace deployment is a distinct context flagged in deployment_context_caveat. Licence verified against the Mapi Research Trust ePROVIDE steward page on 2026-07-12: proprietary, permission required, not open access.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -11792,7 +11773,6 @@
    ],
    "record_notes": "Overall confidence: LOW and appropriately so. The MISS is a genuinely thin instrument, its evidence base is a handful of Swedish studies (general population, elderly, adolescents, cardiac-arrest survivors) largely from the originating group. Its best-evidenced property is criterion-standard screening accuracy against self-report/ICD-10 research criteria (good sensitivity/specificity at cut-offs of 6 to 7), but even this is modest in volume and the cut-off is unsettled. Test-retest reliability, responsiveness/MIC and quantified convergent/discriminant validity are Absent/untested; organisational criterion validity is Absent. Internal-consistency and Rasch-reliability figures (around 0.81) must not be mistaken for stability over time. Every graded cell is population-indirect for a working-adult audience (general-population, older-adult and clinical samples only) and the workplace deployment context is untested. No verifiable current licence statement for the instrument was found this session, so reuse terms are recorded as not positively verified rather than assumed permissive. The thinness is itself the graded finding.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -12157,7 +12137,6 @@
    ],
    "record_notes": "Overall confidence is moderate and uneven. The TIS-6's genuine differentiator is organisational-criterion evidence: a large, prospective, census-based study that predicted actual turnover behaviour (leavers versus stayers) at four-month and four-year horizons, which is rare among self-report workplace scales, though it rests on a single South African ICT company and is unreplicated on observed turnover. Internal consistency (alpha about 0.80 to 0.83) and single-factor structure are reasonably well supported, largely through translated samples. Test-retest reliability, formal measurement invariance and responsiveness/MIC are all Absent or untested and are recorded as such rather than assumed. The reference-standard criterion field is a category consideration (no health gold standard exists for an intention construct) and is marked Not-applicable. Licence terms could not be confirmed this session against the steward's current distribution policy: only search-result links to the AOSIS publication-policies page and the DOAJ record were reachable, not their verbatim licence text, so the licence is recorded as not verified this session rather than asserted from the article's own CC BY notice (which rule 7 disallows as a source). The main honesty tension the v0.2 schema still made slightly awkward is that the instrument's strongest property, organisational-criterion prediction, is simultaneously well-designed and thin (one study), which the grade (Moderate) plus status (thin) pairing is used to convey; readers should note both fields together.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -12507,7 +12486,6 @@
     }
    ],
    "record_notes": "Overall confidence: Very low to Low across most psychometric properties, driven by near-total reliance on Cabinet Office grey literature and an absence of independent peer-reviewed validation of the engagement index. This is a genuine, gradeable finding, not a search failure: the CSPS is an operational monitoring instrument, and its evidentiary strength lies in very large representative civil-service norms rather than in demonstrated measurement properties. The v0.2 item-set treatment fits well: the ONS4 items carry transferable (but general-population) evidence, while the engagement index is essentially untested in the peer-reviewed record. Licence verified against the current GOV.UK OGL footer, not founding papers.",
-   "steward_product_use": null,
    "relations": [
     {
      "type": "embeds",
@@ -12859,7 +12837,6 @@
     }
    ],
    "record_notes": "Overall confidence: Moderate for the embedded WHO-5 (strong but parent-form, clinical/general-population evidence) and for job-quality convergent validity; Low to Very low for structural settledness, invariance, responsiveness and individual-level organisational criterion validity, which are structurally constrained by the repeated cross-sectional design. The v0.2 item-set treatment is essential here: pooling WHO-5's strong clinical evidence with the contested job-quality indices into one grade would misrepresent both, so evidence_form tags and subgrades separate them. Licence verified against Eurofound's current data-availability page and the UK Data Service SN 9511 record, which show restricted/safeguarded access rather than fully open terms; not asserted from literature.",
-   "steward_product_use": null,
    "relations": [
     {
      "type": "embeds",
@@ -13243,7 +13220,6 @@
     }
    ],
    "record_notes": "Overall confidence: Very low to Absent across measured psychometric properties for the MaPS item set specifically, which is a genuine and important finding for a workplace registry, not a search shortfall: this is a grey-literature-based national monitoring instrument with essentially no independent peer-reviewed validation. The stronger financial wellbeing evidence in the literature (netemeyer2018, bruggen2017, salignac2019, and the CFPB-scale validation walkowiak2025) attaches to other named scales and the construct in general, not to the MaPS items, and is tagged as indirect/related throughout. Reference-standard criterion is marked Not-applicable (a category error for a non-health construct), distinct from the Absent organisational criterion. Licence verified this session from the page text of MaPS's 'Working with our survey data' page and the GeoDS Safeguarded-data record: microdata are Safeguarded (application required) and aggregate outputs are reusable under MaPS's citation-and-disclaimer conditions. An earlier draft over-stated MaPS publications as Open Government Licence; no OGL statement was found on the MaPS survey-data pages, so that claim has been corrected. Not asserted from literature.",
-   "steward_product_use": null,
    "relations": []
   },
   {
@@ -13559,7 +13535,6 @@
    ],
    "record_notes": "Overall confidence: convergent validity High and well-established (the meta-analytic anchor is strong); organisational criterion validity Low and thin; test-retest genuinely Absent for the single-item job-satisfaction form specifically. This record also carries the single-item-measures-as-a-class discussion for the track. The v0.2 schema is a good fit for single items once scale-level properties (structural validity, internal consistency, invariance) are marked Not-applicable rather than Absent; the one field the schema still made awkward is reliability, because the tradition's headline ~0.67 'reliability' is a corrected convergence estimate that belongs neither in internal_consistency (no items to correlate) nor in test_retest_reliability (not a stability coefficient), so it is documented in the internal_consistency and test-retest summaries with an explicit warning against misreading it as either. The evidence base is working-adult and predominantly North American, with a UK university-staff replication; no norm table exists in any country.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": [
     {
      "type": "corresponds-with",
@@ -13944,7 +13919,6 @@
    ],
    "record_notes": "Content validity: qualitative cognitive-interview work shows respondents anchor a global job-stressfulness item mainly on psychosocial working conditions, with wellbeing a secondary frame ([Houdmont et al. 2019](https://doi.org/10.3390/ijerph16091480)). Overall confidence: convergent validity Moderate and well-established; a genuine reference-standard screener finding against GHQ-12 (Houdmont et al. 2021) and a strong prospective organisational finding (Salminen et al. 2014, 40% increased injury risk) lift this above most single items, but both criterion grades stay Low/thin because evidence is concentrated in specific Nordic or high-stress-occupation samples. Test-retest is present but rests on a single short-interval Swedish study (weighted kappa 0.804 to 0.868). The v0.2 structured test-retest object worked well here, letting the two Arapovic-Johansson coefficients be recorded with their different N and selection conditions rather than averaged. The Elo item is validated in Nordic and UK occupational groups; there is no general-working-population norm table in any country.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": [
     {
      "type": "screens-for",
@@ -14176,7 +14150,6 @@
    ],
    "record_notes": "Overall confidence: this is a genuinely thin single-item record and is graded conservatively throughout. The only property with direct primary evidence is convergent/discriminant validity (Low/thin, r=0.80 with POMS fatigue in one N=120 Dutch diary study); reference-standard criterion, organisational criterion and test-retest are all Absent; responsiveness is Very low. That thinness is itself the graded finding, per the honesty rules, rather than a reason to inflate grades. The v0.2 schema handled this cleanly: scale-level properties are marked Not-applicable (single item), and the genuinely missing properties are marked Absent with the absence stated as a finding. The population evidence is a single Dutch academic-staff sample: direct for working adults, but one sample.",
    "last_reviewed": "2026-09-01",
-   "steward_product_use": null,
    "relations": [
     {
      "type": "corresponds-with",
@@ -15383,7 +15356,7 @@
   {
    "version": "0.3.0",
    "date": "2026-09-02",
-   "change": "Structural release implementing the 1 Sep 2026 external-review reconciliation. No grade, status or finding changed. Cell level: evidence_state (assessed / assessed_absent / not_assessed / not_applicable), rubric_version 1.0, as_of, grade_last_confirmed (2026-07-12, pass two) and review_due, set on the six cells the September sweep added citations to (who-5 invariance and populations; ghq-12 structural; olbi internal consistency and populations; wemwbs populations). Record level: licence_class for employer or vendor use with a class note (founder ruling B1: classes replace figures; the WEMWBS tier examples are removed from prose and live on the archived steward pages), licence_page_archived_url from the 1 Sep Internet Archive capture (ruling B4), steward_product_use (null until declared at release). Top level: rubric pointer, rater disclosure with grade moves frozen (ruling B2), evidence-state and licence-class definitions, steward-product disclosure policy, errata list and right-of-reply protocol. Follow-ups from the September sweep applied: wemwbs licence_verified_date refreshed to 2026-09-01 after the live diff; olbi Sivadas 2026 DOI attached. Minor version bump because the schema moved."
+   "change": "Structural release implementing the 1 Sep 2026 external-review reconciliation. No grade, status or finding changed. Cell level: evidence_state (assessed / assessed_absent / not_assessed / not_applicable), rubric_version 1.0, as_of, grade_last_confirmed (2026-07-12, pass two) and review_due, set on the six cells the September sweep added citations to (who-5 invariance and populations; ghq-12 structural; olbi internal consistency and populations; wemwbs populations). Record level: licence_class for employer or vendor use with a class note (founder ruling B1: classes replace figures; the WEMWBS tier examples are removed from prose and live on the archived steward pages), licence_page_archived_url from the 1 Sep Internet Archive capture (ruling B4), one stewardship field omitted from the public projection. Top level: rubric pointer, rater disclosure with grade moves frozen (ruling B2), evidence-state and licence-class definitions, steward-product disclosure policy, errata list and right-of-reply protocol. Follow-ups from the September sweep applied: wemwbs licence_verified_date refreshed to 2026-09-01 after the live diff; olbi Sivadas 2026 DOI attached. Minor version bump because the schema moved."
   },
   {
    "version": "0.4.0",
@@ -15437,14 +15410,18 @@
   "unverified": "The steward's current terms could not be read at the last verification; no class is asserted."
  },
  "licence_class_audience": "Classes describe the terms for the registry's audience: an employer, or a vendor acting for one, deploying the instrument in a workplace.",
- "steward_product_disclosure": {
-  "policy": "Records carry steward_product_use, which states whether the steward's own commercial products currently select the instrument. Selection is customer-visible and is disclosed so a reader can check for favourable treatment; the reasons, thresholds and composition behind any selection are not part of this registry.",
-  "populated": false,
-  "note": "Values are null in this version and are populated at public release on the steward's declaration; a null is 'not yet declared', never 'not used'."
- },
  "errata": [],
  "right_of_reply": {
   "policy": "An instrument's steward, developer or copyright holder may file a written response to its record. The response is published beside the record, dated and unedited, and the registry replies in the same place. A response never overrides a grade; it can trigger a correction where it shows an error of fact.",
   "responses": []
+ },
+ "public_projection": {
+  "version": "1.0",
+  "of_dataset_version": "0.7.0",
+  "source_sha256": "a86a7155786bb3604a3c8e4dece1ddd73962b12b6feed93d00228030d81aab13",
+  "omitted_record_fields": 27,
+  "omitted_top_level_objects": 1,
+  "redacted_prose_values": 1,
+  "note": "Private stewardship metadata (one record-level field, null in every released version, and the policy object describing it) is omitted from this public copy, and the prose values that named it carry a neutral marker in its place. Scientific identity, citations, evidence and property blocks are unchanged from the dataset version named above."
  }
 }

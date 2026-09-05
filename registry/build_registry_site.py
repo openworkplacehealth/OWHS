@@ -642,11 +642,6 @@ def record_page(rec):
         if ident.get(k): body.append(f'<p><b>{lbl}:</b> {md(ident[k])}</p>')
     body.append("</div>")
     body.append(licence_block(rec))
-    if "steward_product_use" in rec:
-        spu = rec["steward_product_use"]
-        txt = ("not yet declared" if spu is None else ("yes" if spu else "no"))
-        body.append(f'<p class="meta">Used by the steward\'s own products: {txt}. '
-                    'The steward discloses this so a reader can check for favourable treatment; the reasons behind any selection are not part of this registry.</p>')
     if rec.get("constructs_claimed"):
         body.append(f'<h2>Constructs claimed</h2><p class="findings">{md(rec["constructs_claimed"])}</p>')
     bl = bank_links_for(rid)
