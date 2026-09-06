@@ -59,7 +59,9 @@ version and envelope hash. `tools/check_entity_graph.py` checks a supplied bundl
 ten named cross-record rules and reports every finding at a JSON pointer;
 `docs/entity-graph-validation-v0.2.md` says what it does and does not establish. The v0.2 draft is
 composed by `tools/build_spec_v0_2.py` from the schemas, the code-list registry and the v0.1 text, and
-CI refuses a draft that no longer matches its sources.
+CI refuses a draft that no longer matches its sources. Three code lists are added for the new entity
+types, `benefit-layer`, `hse-management-domain` and `release-category`, each at version 0.1.0, so the
+registry holds 27 lists where it held 24; no existing list or version changes.
 
 ### Stated: privacy classes are carried, never invented
 
