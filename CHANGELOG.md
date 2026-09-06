@@ -7,6 +7,37 @@ behind it, the entry says so plainly rather than describing the fix as an improv
 Registry grade corrections are not here. They have their own numbered log at
 `site/instrument-registry/corrections.html`, and grades remain frozen.
 
+## 6 September 2026
+
+### Added: version 0.2 of the schemas and the specification draft
+
+Sixteen entity types have executable schemas under `schemas/v0.2/`; v0.1 had three. The three v0.1
+entry points stay at `schemas/<Entity>.json`, with archived copies under `schemas/v0.1/`. The
+specification's field tables are generated from the schemas, so a row exists because a schema
+declares the field, and the conformance section lists the same C1 to C18 rules that section 6 does.
+The `ext` mechanism is implemented: namespace syntax, object shape and the recursive named-key
+restrictions are checked without a profile, and a supplied profile is validated and reported with its
+version and envelope hash. `tools/check_entity_graph.py` checks a supplied bundle of records against
+ten named cross-record rules and reports every finding at a JSON pointer;
+`docs/entity-graph-validation-v0.2.md` says what it does and does not establish. The v0.2 draft is
+composed by `tools/build_spec_v0_2.py` from the schemas, the code-list registry and the v0.1 text, and
+CI refuses a draft that no longer matches its sources.
+
+### Stated: privacy classes are carried, never invented
+
+The v0.2 field tables carry the v0.1 privacy class for every field that existed in v0.1. A nested
+field without its own class shows its nearest assigned parent's class and says that it is inherited.
+A field with no assignment reads "not separately assigned; entity restrictions apply". No field is
+given a class by default, and the generator's self-test refuses a nested field under an
+`individual-never` parent that reads `open`.
+
+### Corrected: statements carried from v0.1 that were no longer true of the draft
+
+The carried text said the extension mechanism was not implemented, that aggregates' floors were not
+checked, that extension sub-keys were validated only when a profile was loaded, and it kept a
+two-row conformance table. Each of those is now composed from the validators' behaviour, and the
+generator refuses to carry the v0.1-only sentences into the v0.2 draft.
+
 ## 4 September 2026
 
 ### Corrected: the error map named a rule no schema contains
