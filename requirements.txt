@@ -6,3 +6,6 @@
 # for a format and accepts any value for it, which is why tools/validate.py refuses to
 # run rather than report a pass it cannot stand behind.
 jsonschema[format]>=4.18
+
+# The registry site generator writes a printable PDF of the grade matrix.
+reportlab>=4
