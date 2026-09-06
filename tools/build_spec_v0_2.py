@@ -263,18 +263,47 @@ def self_test():
             f = Path(tmp) / ex; f.write_text(json.dumps(inst), encoding="utf-8")
             r = subprocess.run([sys.executable, "-B", str(ROOT / "tools" / "validate.py"), str(V2 / f"{ent_}.json"), str(f)], capture_output=True, text=True)
             t(f"opaque-reference control: {ent_} with pseudonymId 'employee-123' is VALID through the real validator (the retained schema's own pattern), as the pseudonym bullet states", r.returncode == 0 and "VALID" in r.stdout, (r.returncode, r.stdout[-120:], r.stderr[-120:]))
+    pub = publish(text)
+    t("the publication copy carries none of the excluded terms and unlinks the directory references", not any(term in pub for term in NEVER_PUBLISHED) and "](schemas/v0.2/)" not in pub and "](examples/v0.2/)" not in pub and "](codelists/)" not in pub)
+    links = re.findall(r"\]\(((?!https?://|#|mailto:)[^)\s]+)\)", pub)
+    missing = sorted({l for l in links if not (ROOT / "site" / "spec" / l.split("#")[0]).exists()})
+    t("every relative link kept in the publication copy resolves to a file under site/spec/", not missing, missing[:8])
     print(f"{'all' if not failures else failures} specification generator checks {'passed' if not failures else 'FAILED'}")
     return 1 if failures else 0
+
+
+# canonical -> publication copy for site/spec/: the same discipline as the v0.1 renderer (each rule applies exactly once; excluded
+# material never survives). Directory links are unlinked because the site serves files, not directory listings.
+PUBLISH_RULES = [
+    ("The full table is in [`domain_routing_v0.1.csv`](codelists/domain_routing_v0.1.csv); the reasoning", "The full routing table is not included in this release; the reasoning"),
+    ("The Mermaid source is [`erd.mmd`](erd.mmd)", "The Mermaid source is [`owhs_erd_v0.1.mmd`](diagrams/owhs_erd_v0.1.mmd)"),
+    ("![OWHS v0.1 entity-relationship diagram](../site/owhs-erd-v0.1.svg)", "![OWHS v0.1 entity-relationship diagram](../owhs-erd-v0.1.svg)"),
+    ("Files: [codelists/](codelists/).", "Files: every list is in the download bundle (`owhs-v0.2-bundle.zip`) under `codelists/`."),
+    ("Schemas: [`schemas/v0.2/`](schemas/v0.2/) (sixteen entity types)", "Schemas: `schemas/v0.2/` (sixteen entity types, in the bundle and under this page's `schemas/` directory)"),
+    ("Examples: [`examples/v0.2/`](examples/v0.2/).", "Examples: `examples/v0.2/` (in the bundle and under this page's `examples/` directory)."),
+]
+NEVER_PUBLISHED = ("domain_routing_v0.1.csv", "domain-coverage-decisions", "steward_product_use")
+
+
+def publish(canonical_text):
+    """The publication copy: refuses if a rule does not apply exactly once or excluded material would survive."""
+    t = canonical_text
+    for old, new in PUBLISH_RULES:
+        if t.count(old) != 1: raise SystemExit(f"publication rule applies {t.count(old)} times, expected once: {old[:60]!r}")
+        t = t.replace(old, new)
+    for term in NEVER_PUBLISHED:
+        if term in t: raise SystemExit(f"publication copy would carry excluded material: {term!r}")
+    return t
 
 
 def main():
     if "--self-test" in sys.argv: sys.exit(self_test())
     text = compose()
-    targets = {OUT: text, SITE_OUT: text}
+    targets = {OUT: text, SITE_OUT: publish(text)}
     if "--check" in sys.argv:
         stale = [str(p.relative_to(ROOT)) for p, t in targets.items() if not p.exists() or p.read_text(encoding="utf-8") != t]
         if stale: sys.exit("the v0.2 specification does not match a fresh composition; run tools/build_spec_v0_2.py\n" + "".join(f"  differs: {s}\n" for s in stale))
-        print("up to date: spec/OWHS-v0.2-draft.md and site/spec/OWHS-v0.2-draft.md match their sources"); return
+        print("up to date: spec/OWHS-v0.2-draft.md and its publication copy site/spec/OWHS-v0.2-draft.md match their sources"); return
     for p, t in targets.items(): p.write_text(t, encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)} and {SITE_OUT.relative_to(ROOT)} ({len(text.splitlines())} lines)")
 

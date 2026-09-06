@@ -28,7 +28,7 @@ Sources
 
 ## 1. Scope and domain coverage
 
-This sweep enumerates the workplace-health data a UK SME could hold or need, beyond the entities already in the scope draft, and routes each domain to one of four homes: **core v0.1** (vendor-neutral, every broker/HRIS/OH provider recognises it), a **named profile** (real but specialised or vendor-shaped), a **reserved entity** (too central to omit, too undefined to model now), or **out of scope** for v0.1. The full table is in [`domain_routing_v0.1.csv`](codelists/domain_routing_v0.1.csv); the reasoning and the two genuinely hard calls follow.
+This sweep enumerates the workplace-health data a UK SME could hold or need, beyond the entities already in the scope draft, and routes each domain to one of four homes: **core v0.1** (vendor-neutral, every broker/HRIS/OH provider recognises it), a **named profile** (real but specialised or vendor-shaped), a **reserved entity** (too central to omit, too undefined to model now), or **out of scope** for v0.1. The full routing table is not included in this release; the reasoning and the two genuinely hard calls follow.
 
 ### 1.1 Routing summary
 
@@ -136,9 +136,9 @@ Sixteen entities in five clusters, plus two reserved names and one code-list-bac
 
 ### Entity-relationship diagram
 
-The Mermaid source is [`erd.mmd`](erd.mmd) (renders natively in GitHub/Markdown); a static render is below. Solid lines are structural references; dotted lines are the aggregation flow into `AggregateReport`; dashed outlines are reserved names.
+The Mermaid source is [`owhs_erd_v0.1.mmd`](diagrams/owhs_erd_v0.1.mmd) (renders natively in GitHub/Markdown); a static render is below. Solid lines are structural references; dotted lines are the aggregation flow into `AggregateReport`; dashed outlines are reserved names.
 
-![OWHS v0.1 entity-relationship diagram](../site/owhs-erd-v0.1.svg)
+![OWHS v0.1 entity-relationship diagram](../owhs-erd-v0.1.svg)
 
 *Figure, the OWHS v0.1 entity map. White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; grey boxes are shared definitions; dashed outlines are reserved names.*
 
@@ -531,7 +531,7 @@ At least one of `hseDomain`, `iso45003Clause` and `whiuCode` is required; `iso45
 
 ## 5. Code lists
 
-Every list is a standalone JSON file with its own `version` (semver), independent of the spec version, registered in [`_registry.json`](codelists/_registry.json). Schemas pin a list as `name@version`. The registry holds 27 lists; archived versions live under `codelists/archive/` and are never edited. Files: [codelists/](codelists/).
+Every list is a standalone JSON file with its own `version` (semver), independent of the spec version, registered in [`_registry.json`](codelists/_registry.json). Schemas pin a list as `name@version`. The registry holds 27 lists; archived versions live under `codelists/archive/` and are never edited. Files: every list is in the download bundle (`owhs-v0.2-bundle.zip`) under `codelists/`.
 
 | List | Ver | Values | Anchor |
 |---|---|---|---|
@@ -571,7 +571,7 @@ These schemas retain UK SIC 2007 explicitly as an edition. ONS also publishes SI
 
 Each of the sixteen entity types in the v0.2 catalogue has an executable schema and passing and failing examples. The generated validation report identifies each entity and schema version and records its observed errors. C1-C18 are documented within-record checks implemented by the reference validator; they are not all JSON Schema keywords. ConstructDomain remains a code list. RiskAssessment and WorkplaceIncident remain reserved without executable schemas. DisabilityParticipation is an executable reserved-minimal shape with the stated disclosure limitations. The separate entity-graph envelope and G01-G10 relationship checks are documented in the supplied-entity graph guide (docs/entity-graph-validation-v0.2.md).
 
-Schemas: [`schemas/v0.2/`](schemas/v0.2/) (sixteen entity types) and [`schemas/catalogue.json`](schemas/catalogue.json); the three v0.1 entry points remain at `schemas/<Entity>.json` with byte-identical archived copies under `schemas/v0.1/`. Examples: [`examples/v0.2/`](examples/v0.2/). Report: [`examples/validation_report.json`](examples/validation_report.json).
+Schemas: `schemas/v0.2/` (sixteen entity types, in the bundle and under this page's `schemas/` directory) and [`schemas/catalogue.json`](schemas/catalogue.json); the three v0.1 entry points remain at `schemas/<Entity>.json` with byte-identical archived copies under `schemas/v0.1/`. Examples: `examples/v0.2/` (in the bundle and under this page's `examples/` directory). Report: [`examples/validation_report.json`](examples/validation_report.json).
 
 ### Privacy and boundary rules expressed in schema
 
