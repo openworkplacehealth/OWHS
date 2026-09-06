@@ -1,0 +1,8 @@
+{
+ "tab": "registry",
+ "date": "2026-09-02",
+ "shown": "2 Sep 2026",
+ "version": "v0.3.0",
+ "html": "Schema 0.3. Every graded cell now carries an evidence state (assessed, assessed_absent, not_assessed, not_applicable), the rubric version it was graded under, the date its literature was last searched, the date its grade was last confirmed by a rater, and a review-due flag. Grading <a href=\"instrument-registry/rubric.html\">rubric v1.0</a> published and linked from every cell. Licence figures replaced by a licence class for employer or vendor use, with archived copies of steward pages linked on each record. Single-rater disclosure recorded in the dataset: grades and statuses frozen from 1 Sep 2026 until two named non-employee raters join. Errata list and right-of-reply policy added. Steward-product disclosure field added, not yet populated. No grades moved. Migration script published beside the dataset.",
+ "order": 1
+}

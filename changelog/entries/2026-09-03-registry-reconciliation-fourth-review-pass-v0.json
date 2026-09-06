@@ -1,0 +1,8 @@
+{
+ "tab": "registry",
+ "date": "2026-09-03",
+ "shown": "3 Sep 2026",
+ "version": "v0.8.0",
+ "html": "Reconciliation of the fourth review pass, of v0.7.0, before first publication; the check's verdict was fit to publish and its ten findings were non-blocking, every one of them taken. <a href=\"instrument-registry/rubric.html\">Rubric v1.5</a>: a High grade on populations, languages and norms rests on at least one counted study carrying a norm, cut-off, prevalence or explicitly reported reference value, and the build tests it (every current cell holds); criterion validity is two lists, so a correlation or regression coefficient counts only against organisational outcomes; the rubric's statistic lists and the machine check are reconciled in both directions, a comma bounds a clause, and one entry's statistic is reworded with its value unchanged; section 10 gains a row for every check the build already ran. One grade moved, European Working Conditions Survey internal consistency Moderate to Low (no reliability coefficient of the record's own; the embedded WHO-5's alpha belongs to the WHO-5 record). The K10 criterion-validity judgement is rewritten, grade unchanged. All 420 DOIs resolved on the conformance date. Schema 0.7 unchanged. Correction C-0008. Fifth pass, scoped to the diff, pending before the noindex lift.",
+ "order": 1
+}
