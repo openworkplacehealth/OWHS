@@ -14,6 +14,7 @@ Two things, one project. The standard says what a workplace-health record is: en
 - https://openworkplacehealth.org/standard.html : the full entity list (16 entities), a real record, and the conformance rules on one page
 - https://openworkplacehealth.org/erd.html : the entity map
 - https://openworkplacehealth.org/spec/ : the full draft specification v0.1, readable and downloadable, with JSON Schemas, 24 versioned code lists, worked examples and a validation report
+- https://openworkplacehealth.org/science.html : how to read the evidence, what a registry rating, a citation and a conformance check do and do not establish
 - https://openworkplacehealth.org/why.html : the case for the standard
 - https://openworkplacehealth.org/design.html : design decisions and deliberately open questions
 - https://openworkplacehealth.org/governance.html : stewardship, conflict of interest, the change process, the evidence-gated move to multi-stakeholder governance
