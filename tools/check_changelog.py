@@ -51,6 +51,8 @@ def tab_counts(page_text):
         count = re.search(r'id="tab-%s"[^>]*>[^<]*<span class="count">(\d+)</span>' % name, page_text)
         if not panel or not count:
             raise ValueError(f"the {name} tab or its panel was not found")
+        if len(re.findall(r'id="tab-%s"' % name, page_text)) != 1 or len(re.findall(r'id="panel-%s"' % name, page_text)) != 1:
+            raise ValueError(f"the {name} tab or its panel appears more than once")
         out.append((name, len(re.findall(r"<tr><td", panel.group(0))), int(count.group(1))))
     return out
 
@@ -102,6 +104,7 @@ def self_test():
         ("the committed page's counts equal its rows", page, []),
         ("a row added without a count change is refused, naming the tab", page.replace('<h2 class="panel-title">Site</h2>\n  <table>\n    <tr><th>Date</th><th>What changed</th></tr>\n', '<h2 class="panel-title">Site</h2>\n  <table>\n    <tr><th>Date</th><th>What changed</th></tr>\n    <tr><td>1 Jan 2026</td><td>x</td></tr>\n', 1), ["the site tab says {} and has {} rows"]),
         ("a missing tab is refused", page.replace('id="tab-site"', 'id="tab-elsewhere"', 1), ["the site tab or its panel was not found"]),
+        ("a duplicated tab button, the shape a merge leaves behind, is refused", page.replace('  <button type="button" class="tab" role="tab" id="tab-site"', '  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">1</span></button>\n  <button type="button" class="tab" role="tab" id="tab-site"', 1), ["the site tab or its panel appears more than once"]),
     ]
     for label, text, want in count_cases:
         got = count_problems(text)
