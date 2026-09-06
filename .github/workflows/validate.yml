@@ -60,3 +60,15 @@ jobs:
         run: python tools/check_measurement.py --self-test
       - name: code-list versions resolve, archives are intact, the absence-reason crosswalk is complete
         run: python tools/check_codelist_mappings.py --self-test
+      - name: workflow files parse strictly
+        run: python tools/check_workflows.py
+      - name: cycle definition and verifier contract
+        run: python tools/cycle.py --self-test
+      - name: harvester pure functions and expected channel set
+        run: python tools/harvest.py --self-test
+      - name: retraction watcher coverage accounting
+        run: python tools/watch_retractions.py --self-test
+      - name: retrieval evaluator accounting
+        run: python tools/measure_recall.py --self-test
+      - name: screening proposal allowlist gate
+        run: python tools/check_proposal_allowlist.py --self-test
