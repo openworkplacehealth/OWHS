@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "html": "The <a href=\"spec/\">/spec/</a> downloads now carry the version 0.2 first-set schemas, the schema catalogue, the version 0.2 examples and bundle, and the code-list mappings beside the version 0.1 files, which stay at their paths byte for byte; the published version 0.1 release archive is unchanged and checked."
+}

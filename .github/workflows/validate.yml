@@ -52,6 +52,14 @@ jobs:
         run: python tools/build_search_index.py --check
       - name: search-index generator behaves as documented
         run: python tools/build_search_index.py --self-test
+      - name: v0.2 schemas match their generator
+        run: python tools/build_schemas_v0_2.py --check
+      - name: extension mechanism and profile validation behave as documented
+        run: python tools/check_profiles.py --self-test
+      - name: bundle join checks behave as documented
+        run: python tools/check_measurement.py --self-test
+      - name: code-list versions resolve, archives are intact, the absence-reason crosswalk is complete
+        run: python tools/check_codelist_mappings.py --self-test
       - name: workflow files parse strictly
         run: python tools/check_workflows.py
       - name: cycle definition and verifier contract
