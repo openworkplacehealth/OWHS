@@ -270,12 +270,12 @@ ul,ol{max-width:760px}
   <span class="k">"startDate"</span>: "2026-03-02",
   <span class="k">"endDate"</span>: "2026-03-13",
   <span class="k">"workingDaysLost"</span>: 9,                          <span class="c">// ONS 7.5-hour day unit</span>
-  <span class="k">"fitNoteProvided"</span>: true,
-  <span class="k">"workRelated"</span>: false,
+  <span class="k">"fitNoteFlag"</span>: true,
+  <span class="k">"workRelatedFlag"</span>: false,
   <span class="k">"sourceProvenance"</span>: { <span class="k">"sourceType"</span>: "hris" }
 }</pre>
 
-  <p>And this is what the reference validator says if you try to sneak a name into the same record:</p>
+  <p>And this is what the reference validator says about the same record with a name added, a raw employee identifier as its pseudonym, a free-text reason and no provenance:</p>
 
 <pre><span class="c">[additionalProperties] &lt;root&gt;: Additional properties are not allowed ('name' was unexpected)</span>
 <span class="c">[required] &lt;root&gt;: 'sourceProvenance' is a required property</span>

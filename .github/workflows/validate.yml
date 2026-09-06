@@ -27,3 +27,7 @@ jobs:
         run: python tools/build_validation_report.py --check
       - name: registry pages are generated from the committed dataset, rubric and generator
         run: python registry/build_registry_site.py --check
+      - name: the worked record on the standard page validates and its shown output is the validator's
+        run: python tools/check_site_examples.py
+      - name: site-example check behaves as documented
+        run: python tools/check_site_examples.py --self-test
