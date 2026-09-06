@@ -24,7 +24,7 @@ OWHS is an independent, open proposal for what standardised workplace-health dat
 
 ## The privacy profile, in one paragraph
 
-No direct identifiers anywhere, ever (enforced in schema). No employer-visible value below an aggregation floor of five people, ten for severe-distress measures. Individual instrument results are never employer-visible, by definition. Safeguarding-category signals are excluded from employer-visible outputs at any group size. Every aggregate carries its completion rate and suppression metadata, so consumers can see what is not being said. A conformant producer refuses to emit a violating payload rather than merely hiding it.
+OWHS prohibits direct identifiers in its payloads. The current schemas reject undeclared properties, but identifiers inside permitted string values remain a producer obligation. Employer-visible aggregates have a floor of five respondents, or ten for severe-distress measures. The narrowly defined `individual-employer` fields are exempt from these floors where an independent legal basis permits disclosure. Individual instrument results are not employer-visible, and safeguarding-category signals are excluded from employer-visible output at every group size. Aggregates must carry completion and suppression metadata. These are conformance requirements: the reference validator currently implements Level 1 structural checks, including formats and named date-order rules, and does not verify Level 2 or Level 3.
 
 ## Status
 
