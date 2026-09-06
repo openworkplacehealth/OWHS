@@ -34,6 +34,8 @@ jobs:
         run: python tools/build_validation_report.py --check
       - name: registry pages are generated from the committed dataset, rubric and generator
         run: python registry/build_registry_site.py --check
+      - name: registry page generator keeps a cited URL whole when it contains parentheses
+        run: python registry/build_registry_site.py --self-test
       - name: a change to a published surface carries a changelog entry
         if: github.event_name == 'pull_request'
         run: |
