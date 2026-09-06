@@ -1,6 +1,6 @@
 # OWHS: the Open Workplace Health Standard
 
-**v0.1 · early open specification · published for public review**
+**v0.2 draft · early open specification · published for public review**
 
 An open data standard for workplace health: sickness absence, return to work, occupational health, wellbeing measurement and benefit provision, defined once, in plain language and machine-readable schemas, private by design, free for anyone to implement. Built first for the UK, and for the millions of businesses everywhere that will never have a data team.
 
@@ -13,7 +13,7 @@ OWHS is an independent, open proposal for what standardised workplace-health dat
 
 | Path | Contents |
 |---|---|
-| `spec/` | The v0.1 specification draft: entity catalogue, per-field tables with privacy classes, profile mechanism, pseudonymisation design, conformance levels, and an honesty pass listing every disputable decision. Plus the ERD and the domain-coverage decision table. |
+| `spec/` | The v0.2 specification draft (`OWHS-v0.2-draft.md`, composed from the sixteen schemas, the code-list registry and the v0.1 text by `tools/build_spec_v0_2.py`) and the v0.1 draft it supersedes: entity catalogue, per-field tables with privacy classes, profile mechanism, pseudonymisation design, conformance levels, and an honesty pass listing every disputable decision. Plus the ERD source. |
 | `schemas/` | Versioned JSON Schemas (Draft 2020-12): sixteen v0.2 entity types and the three preserved v0.1 entity types; see the catalogue for exact identifiers, examples and validation scope. They reject undeclared properties and implement the documented structural constraints. They cannot detect identifiers or clinical content embedded in permitted string values, and do not implement all privacy-profile requirements. |
 | `examples/` | A valid and a deliberately invalid instance per schema, with the validation report showing exactly which conformance errors the invalid ones raise. |
 | `codelists/` | 24 independently versioned code lists (ONS absence reasons, fit-note adjustment categories, HSE-anchored construct domains, the provisional safeguarding-category list, and more) plus the registry. The registry names the file for every released version of a list; superseded versions are kept byte-for-byte under `codelists/archive/`. `absence-reason@0.2.0` carries the ten ONS 2025 reason categories and the separate non-disclosure response, with the crosswalk from the six-code v0.1.0 list under `codelists/mappings/`; the v0.1 schema stays pinned to 0.1.0. |

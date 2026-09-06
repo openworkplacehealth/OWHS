@@ -74,6 +74,17 @@ PSEUDONYM_BULLET = ("- **Pseudonym shape:** WorkerPseudonym, ReasonableAdjustmen
 P1_BULLET = ("- **Direct-identifier ban (P1):** Core schema validation checks declared property names, the documented recursive named-key restrictions in extensions, and each entity's identifier syntax. It cannot detect identifiers or sensitive meaning hidden in permitted values or aliases; a structural pass does not establish P1 compliance.")
 NOT_ESTABLISHED_BULLET = ("- *What the validators do not establish:* the validators enforce their pinned inline values and the declared structural aggregation and suppression conditions. They do not establish that an external terminology is current, that the submitted counts are true, or that an output is safe to disclose. "
                           "Code-list and generator gates verify only their documented version and consistency contracts.")
+HONESTY_6 = ("6. **Closed core objects.** Rejecting undeclared properties prevents extra identifier fields in the sixteen v0.2 core schemas, but cannot detect "
+             "identifiers inside allowed string values. The `ext` mechanism is implemented in v0.2 (section 7): its namespace syntax, object shape and recursive "
+             "named-key restrictions are checked without a profile, and an explicitly supplied profile adds its own constraints. An extension implementation must "
+             "preserve the producer's P1 obligation and define its validation boundary explicitly.")
+RESERVED_NOTE = "Reserved, no fields in v0.1 or v0.2"
+FIGURE_CAPTION = ("*Figure, the OWHS entity map as drawn for v0.1. Version 0.2 adds no entity and removes none; the field-level references are in the section 4 tables. "
+                  "White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; "
+                  "grey boxes are shared definitions; dashed outlines are reserved names.*")
+# statements true of v0.1 that the carried text must not make about v0.2
+NEVER_CARRIED = ("not yet implemented by the three schemas", "additionalProperties:false` everywhere", "Worked JSON Schemas", "only three", "Reserved, no fields in v0.1 |")
+
 SECTION7_MECHANISM = ("Every core permits the generic `ext` object. Its namespace syntax, object shape and recursive named-key restrictions are checked without a profile. An explicitly supplied matching profile adds its own constraints and is reported with its version and envelope hash. "
                       "Unchecked extension namespaces are reported as having profile semantics not checked. A core pass does not establish that an omitted profile's semantics hold.")
 
@@ -199,6 +210,11 @@ def compose():
     contents = ["## Contents", "", "1. Scope and domain coverage (carried from v0.1)", "2. Entity catalogue", "3. The privacy profile (normative)", "4. Field tables, entity by entity (generated from the schemas)", "5. Code lists", "6. JSON Schemas and validation", "7. The profile mechanism", "8. Identifiers and pseudonymisation", "9. Conformance levels", "10. The honesty pass", "Sources", ""]
     s1 = secs["1. Scope and domain coverage"]
     s2 = secs["2. Entity catalogue"].replace("Sixteen entities in five clusters, plus two reserved names and one code-list-backed shared entity.", "Sixteen entities in five clusters, plus two reserved names and one code-list-backed shared entity; in v0.2 every one of the sixteen has an executable schema (section 6).")
+    s2, n2r = re.subn(r"Reserved, no fields in v0\.1 \|", RESERVED_NOTE + " |", s2)
+    assert n2r == 2, "the two reserved-name rows were not found"
+    s2, n2f = re.subn(r"\*Figure, the OWHS v0\.1 entity map\..*?reserved names\.\*", FIGURE_CAPTION, s2, count=1, flags=re.S)
+    assert n2f == 1, "the figure caption was not found"
+    s2 = s2.replace("![OWHS v0.1 entity-relationship diagram]", "![OWHS entity-relationship diagram, drawn for v0.1 and unchanged in v0.2]")
     s3 = secs["3. The privacy profile (normative)"]
     # the v0.1 bullet's account of what the schemas enforce is replaced by the v0.2 statement (sixteen executable schemas; closed cores; recursive named-key rule in extensions)
     s3, n_sub = re.subn(r"What is enforced in schema \(§2d\):.*?No schema keyword detects it\.", P1_NEW, s3, count=1, flags=re.S)
@@ -226,6 +242,9 @@ def compose():
     s9 = s9.replace("The reference validator implements Level 1 today (proven in §2d), including the format assertion and the named cross-field rules.", "The reference validator implements Level 1 today, including the format assertion and the named within-record rules C1 to C18 (section 6).")
     s9 = s9.rstrip() + "\n\n" + SECTION9_ADD + "\n\n---\n\n"
     s10 = secs["10. The honesty pass: disputable decisions and open questions"]
+    # item 6 of the disputed decisions is version-bound: v0.1 said the ext mechanism was not implemented; v0.2 implements it
+    s10, n10 = re.subn(r"^6\. \*\*.*?(?=\n\n7\. \*\*)", HONESTY_6, s10, count=1, flags=re.S | re.M)
+    assert n10 == 1, "item 6 of the honesty pass was not found"
     src = secs["Sources (primary)"]
     body = head + "\n".join(contents) + "\n" + s1 + s2 + s3 + "\n".join(field_tables()) + "\n---\n\n" + "\n".join(codelist_table()) + "\n---\n\n" + "\n".join(s6) + "\n---\n\n" + s7 + s8 + s9 + s10 + src
     body = body.replace("\n\n\n\n", "\n\n\n")
@@ -265,6 +284,7 @@ def self_test():
     t("the five-column BenchmarkRelease and Crosswalk tables (no code-list column) import their explicit classes from their own header", explicit.get(("BenchmarkRelease", "validFrom")) == "open" and explicit.get(("BenchmarkRelease", "validTo")) == "open" and explicit.get(("BenchmarkRelease", "benchmarkId")) == "open" and explicit.get(("Crosswalk", "constructCode")) is not None and got.get(("BenchmarkRelease", "validFrom")) == "open" and got.get(("BenchmarkRelease", "leaveOneOut")) == "open", ({k: v for k, v in explicit.items() if k[0] in ("BenchmarkRelease", "Crosswalk")}, got.get(("BenchmarkRelease", "validFrom"))))
     t("every explicit class the v0.1 tables state for a field the v0.2 schema still declares is carried (none lost to a layout difference)", all(got.get(k) == v for k, v in explicit.items() if k in got) and len([k for k in explicit if k in got]) >= 100, len([k for k in explicit if k in got]))
     t("the composed prose carries the exact pseudonym, P1, not-established and profile-mechanism statements and the privacy note", all(x in text for x in (PSEUDONYM_BULLET, P1_BULLET, NOT_ESTABLISHED_BULLET, SECTION7_MECHANISM, PRIVACY_NOTE)) and "whose sub-keys are only validated when the matching profile schema is loaded" not in text and "Not yet checked" not in text)
+    t("the honesty pass states that v0.2 implements the ext mechanism, the reserved rows and figure caption name v0.2, and no v0.1-only statement is carried", HONESTY_6 in text and text.count(RESERVED_NOTE) == 2 and FIGURE_CAPTION in text and not any(x in text for x in NEVER_CARRIED), [x for x in NEVER_CARRIED if x in text])
     t("section 9 Level 1 carries the same generated C1 to C18 table as section 6", text.count("| C18 | `OrgUnit` |") == 2 and text.count("| C1 | `AbsenceEpisode` |") == 2)
     # the two opaque-reference controls: the retained observation and administration schemas accept an opaque WorkerPseudonym reference
     with tempfile.TemporaryDirectory() as tmp:
@@ -287,7 +307,7 @@ def self_test():
 PUBLISH_RULES = [
     ("The full table is in [`domain_routing_v0.1.csv`](codelists/domain_routing_v0.1.csv); the reasoning", "The full routing table is not included in this release; the reasoning"),
     ("The Mermaid source is [`erd.mmd`](erd.mmd)", "The Mermaid source is [`owhs_erd_v0.1.mmd`](diagrams/owhs_erd_v0.1.mmd)"),
-    ("![OWHS v0.1 entity-relationship diagram](../site/owhs-erd-v0.1.svg)", "![OWHS v0.1 entity-relationship diagram](../owhs-erd-v0.1.svg)"),
+    ("![OWHS entity-relationship diagram, drawn for v0.1 and unchanged in v0.2](../site/owhs-erd-v0.1.svg)", "![OWHS entity-relationship diagram, drawn for v0.1 and unchanged in v0.2](../owhs-erd-v0.1.svg)"),
     ("Files: [codelists/](codelists/).", "Files: every list is in the download bundle (`owhs-v0.2-bundle.zip`) under `codelists/`."),
     ("Schemas: [`schemas/v0.2/`](schemas/v0.2/) (sixteen entity types)", "Schemas: `schemas/v0.2/` (sixteen entity types, in the bundle and under this page's `schemas/` directory)"),
     ("Examples: [`examples/v0.2/`](examples/v0.2/).", "Examples: `examples/v0.2/` (in the bundle and under this page's `examples/` directory)."),

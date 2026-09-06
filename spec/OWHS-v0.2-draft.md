@@ -131,16 +131,16 @@ Sixteen entities in five clusters, plus two reserved names and one code-list-bac
 | Entity | Purpose | Status |
 |---|---|---|
 | `ConstructDomain` | The single health-domain vocabulary used by **both** measurement (what a survey measures) and services (what a benefit targets). | Code-list-backed shared entity |
-| `RiskAssessment` | Reserved name for HSE-MS/ISO-45003/DSE assessment events. | Reserved, no fields in v0.1 |
-| `WorkplaceIncident` | Reserved name for accident/RIDDOR records. | Reserved, no fields in v0.1 |
+| `RiskAssessment` | Reserved name for HSE-MS/ISO-45003/DSE assessment events. | Reserved, no fields in v0.1 or v0.2 |
+| `WorkplaceIncident` | Reserved name for accident/RIDDOR records. | Reserved, no fields in v0.1 or v0.2 |
 
 ### Entity-relationship diagram
 
 The Mermaid source is [`erd.mmd`](erd.mmd) (renders natively in GitHub/Markdown); a static render is below. Solid lines are structural references; dotted lines are the aggregation flow into `AggregateReport`; dashed outlines are reserved names.
 
-![OWHS v0.1 entity-relationship diagram](../site/owhs-erd-v0.1.svg)
+![OWHS entity-relationship diagram, drawn for v0.1 and unchanged in v0.2](../site/owhs-erd-v0.1.svg)
 
-*Figure, the OWHS v0.1 entity map. White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; grey boxes are shared definitions; dashed outlines are reserved names.*
+*Figure, the OWHS entity map as drawn for v0.1. Version 0.2 adds no entity and removes none; the field-level references are in the section 4 tables. White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; grey boxes are shared definitions; dashed outlines are reserved names.*
 
 ## 3. The privacy profile (normative)
 
@@ -818,7 +818,7 @@ Three registers, none smoothed over: decisions reasonable standards authors woul
 
 5. **Adopting the ONS six-category reason taxonomy as the core enum.** ONS designed it for a *population survey*, not an employer episode record; its "minor illness" / "other" buckets are coarse for management use, and "other" explicitly mixes COVID-19, accidents and diabetes [1]. Anchoring to it buys comparability at the cost of analytic resolution, and some authors would prefer a richer employer taxonomy that *rolls up* to ONS.
 
-6. **Closed core objects.** Rejecting undeclared properties prevents extra identifier fields in the implemented core schemas, but cannot detect identifiers inside allowed string values. The specified `ext` mechanism is not yet implemented by the three schemas. Any extension implementation must preserve the producer's P1 obligation and define its validation boundary explicitly.
+6. **Closed core objects.** Rejecting undeclared properties prevents extra identifier fields in the sixteen v0.2 core schemas, but cannot detect identifiers inside allowed string values. The `ext` mechanism is implemented in v0.2 (section 7): its namespace syntax, object shape and recursive named-key restrictions are checked without a profile, and an explicitly supplied profile adds its own constraints. An extension implementation must preserve the producer's P1 obligation and define its validation boundary explicitly.
 
 7. **Modelling `ill-health-exit` as an RTW *value* rather than its own entity.** Compresses a significant, sensitive event (medical capability dismissal / ill-health retirement) into an enum on an outcome record. Defensible for SME simplicity; disputable because it under-models an event with distinct legal and pension dimensions.
 
