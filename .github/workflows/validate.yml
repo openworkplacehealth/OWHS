@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -27,5 +29,14 @@ jobs:
         run: python tools/build_validation_report.py --check
       - name: registry pages are generated from the committed dataset, rubric and generator
         run: python registry/build_registry_site.py --check
+      - name: a change to a published surface carries a changelog entry
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags origin ${{ github.base_ref }}
+          python tools/check_changelog.py --base origin/${{ github.base_ref }}
+      - name: each changelog tab's count equals its number of rows
+        run: python tools/check_changelog.py --counts
+      - name: changelog rule behaves as documented
+        run: python tools/check_changelog.py --self-test
       - name: specification page is rendered from its markdown
         run: python tools/build_spec_page.py --check
