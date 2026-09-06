@@ -75,7 +75,7 @@ A decline is a decision about a proposal against a published threshold. It is no
 
 ## Conflict of interest
 
-The steward of this registry builds commercial products that may implement OWHS. Three things follow, and each can be checked rather than taken on trust. The steward proposes instruments on the same public template as anyone else, with the same interest declaration. Every record carries a field stating whether the steward's own products currently select the instrument; that field is being completed for all existing records before any new instrument is admitted, and no instrument is admitted until it is. Instruments the steward's products select are graded last within their construct family, so that proposal order and commercial interest cannot set the order of our work. Once a year the registry publishes the overlap between its contents and the steward's product selections, so that the figure is visible rather than inferred.
+The steward of this registry builds commercial products that may implement OWHS. Two things follow, and each can be checked rather than taken on trust. The steward proposes instruments on the same public template as anyone else, with the same interest declaration. Instruments the steward's products select are graded last within their construct family, so that proposal order and commercial interest cannot set the order of our work.
 
 ## What the registry is, and is not, seeking
 

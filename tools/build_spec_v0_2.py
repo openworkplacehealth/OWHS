@@ -60,7 +60,8 @@ AFTER_TABLE = {
  "ReasonableAdjustment": "Omit `endDate` when no end date is recorded; null is not a date. An omitted end date does not by itself show that the adjustment is in place; `status` is the separate record of that.",
 }
 # anchors for fields the v0.2 schemas add or redefine; every other anchor is carried from the v0.1 table for the same field
-ANCHOR_NEW = {"sizeBandReferenceDate": "OWHS v0.2 design choice: the date the band relates to", "sicVersion": "UK SIC 2007 retained as an edition; ONS also publishes SIC 2026", "headcountReferenceDate": "OWHS v0.2 design choice",
+ANCHOR_NEW = {"sizeBand": "Employee-count bands informed by DBT business population statistics; not a Companies Act company-size classification",
+              "sizeBandReferenceDate": "OWHS v0.2 design choice: the date the band relates to", "sicVersion": "UK SIC 2007 retained as an edition; ONS also publishes SIC 2026", "headcountReferenceDate": "OWHS v0.2 design choice",
               "periodStart": "OWHS v0.2 design choice: inclusive reporting dates", "periodEnd": "OWHS v0.2 design choice: inclusive reporting dates", "releaseVersion": "OWHS v0.2 design choice", "dataPeriodStart": "OWHS v0.2 design choice",
               "dataPeriodEnd": "OWHS v0.2 design choice", "measure": "OWHS v0.2 design choice: one metric and scoring rule per release", "population": "OWHS v0.2 design choice", "samplingMethod": "OWHS v0.2 design choice",
               "knownLimitations": "OWHS v0.2 design choice", "releaseCategory": "OWHS P2/P4 declared category", "excludedOrgId": "OWHS v0.2 design choice: required iff leaveOneOut", "sourceRef": "OWHS v0.2 design choice",
@@ -142,7 +143,11 @@ def rows_for(name, schema, meta):
             mi = re.search(r"codelist:([a-z0-9-]+@[0-9.]+)", s["items"].get("$comment", "") or "")
             if mi: code = f"codelist:{mi.group(1)}"
         explicit = meta.get((name, p)) if depth == 0 else None          # the v0.1 tables classify top-level fields of the seven carried entities; nothing else is an explicit class
-        if explicit: priv, anchor = explicit
+        if explicit:
+            priv, anchor = explicit
+            # A v0.1 anchor is carried unless v0.2 redefines it. org-size-band 0.1.1 states in its own
+            # anchor that it is not a Companies Act classification, so the v0.1 wording must not survive.
+            if p in ANCHOR_NEW and depth == 0: anchor = ANCHOR_NEW[p]
         else:
             anchor = ANCHOR_NEW.get(p, "")
             if depth and parent_priv and not parent_priv.startswith(("inherited", UNASSIGNED)): priv = f"inherited: {parent_priv} (from `{prefix.rstrip('.').rstrip('[]')}`)"

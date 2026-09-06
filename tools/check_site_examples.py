@@ -22,7 +22,7 @@ import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PAGE = ROOT / "site" / "standard.html"
-SCHEMA = ROOT / "schemas" / "AbsenceEpisode.json"
+SCHEMA = ROOT / "schemas" / "v0.2" / "AbsenceEpisode.json"
 VALIDATOR = ROOT / "tools" / "validate.py"
 
 
