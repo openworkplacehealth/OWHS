@@ -51,7 +51,7 @@ class Fragment(HTMLParser):
     attributes or styles, no raw-text or control elements, and the visible text is what remains outside any tag that hides its content."""
 
     def __init__(self):
-        super().__init__(convert_charrefs=True)
+        super().__init__(convert_charrefs=False)   # references arrive through their own callbacks, so raw data is checked before decoding
         self.stack = []
         self.problems = []
         self.text = []
@@ -77,7 +77,21 @@ class Fragment(HTMLParser):
         self.stack.pop()
 
     def handle_data(self, data):
+        if "<" in data or ">" in data:
+            self.problems.append("a bare < or > in the text; write &lt; or &gt;")
         self.text.append(data)
+
+    def handle_entityref(self, name):
+        decoded = html_module.unescape(f"&{name};")
+        if decoded == f"&{name};":
+            self.problems.append(f"unknown character reference &{name};")
+        self.text.append(decoded)
+
+    def handle_charref(self, name):
+        try:
+            self.text.append(chr(int(name[1:], 16)) if name.lower().startswith("x") else chr(int(name)))
+        except (ValueError, OverflowError):
+            self.problems.append(f"invalid numeric character reference &#{name};")
 
     def handle_comment(self, data):
         self.problems.append("comments are not allowed in a row")
@@ -100,8 +114,6 @@ def fragment_problems(fragment):
     found = list(parser.problems)
     if parser.stack:
         found.append(f"unclosed tag(s): {', '.join('<' + t + '>' for t in parser.stack)}")
-    if "<" in "".join(parser.text) or ">" in "".join(parser.text):
-        found.append("a bare < or > in the text; write &lt; or &gt;")
     if not re.sub(r"\s+", " ", "".join(parser.text)).strip():
         found.append("no visible text")
     return found
@@ -258,9 +270,14 @@ def self_test():
         es, fs = load_entries(d)
         t("a folder of valid entries loads", not fs, fs)
         put("2026-09-06-link.json", {**base, "html": "a <a href=\"https://example.org/x\">link</a>, a <span class=\"mono\">code</span> span, <em>emphasis</em>, <strong>strength</strong> and an entity &amp; here"})
+        put("2026-09-06-lt.json", {**base, "html": "Require n &lt; 5."})
+        put("2026-09-06-code.json", {**base, "html": "The <code>&lt;AggregateReport&gt;</code> example changed."})
+        put("2026-09-06-numeric.json", {**base, "html": "Floors of five &#38; ten; n &#x3C; 5."})
         es2, fs2 = load_entries(d)
-        t("a harmless inline link or span stays valid", not fs2, fs2)
-        (d / "2026-09-06-link.json").unlink()
+        t("a harmless inline link or span stays valid, and escaped comparison or code text (&lt; &gt; &amp; and numeric references) is valid text, not markup", not fs2, fs2)
+        t("visible text decodes the references", visible_text("Require n &lt; 5.") == "Require n < 5." and visible_text("<code>&lt;AggregateReport&gt;</code>") == "<AggregateReport>")
+        for name in ("2026-09-06-link.json", "2026-09-06-lt.json", "2026-09-06-code.json", "2026-09-06-numeric.json"):
+            (d / name).unlink()
         site = [e["html"] for _, e in ordered(es, "site")]
         t("newest date first; within a date the higher order first, then filename order", site == ["placed first", "one", "two", "older"], site)
         fresh = render(page, es)
@@ -291,6 +308,8 @@ def self_test():
             "a self-closing element": {**base, "html": "a<br/>b"},
             "tags out of order": {**base, "html": "<a href=\"x.html\"><span>a</a></span>"},
             "a comment": {**base, "html": "a<!-- b -->c"},
+            "a raw angle bracket in text": {**base, "html": "n < 5"},
+            "an unknown entity": {**base, "html": "a &nosuch; b"},
             "an impossible calendar date": {**base, "date": "2026-99-99"},
             "an impossible month": {**base, "date": "2026-13"},
             "no visible text": {**base, "html": "<span></span>"},

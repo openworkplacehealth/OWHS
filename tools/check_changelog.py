@@ -14,9 +14,10 @@ Published surfaces fall into three categories, each with its changelog:
                  profiles/ and the conformance checkers        added to CHANGELOG.md under a dated section
                  (validate, measurement, profiles, mappings)
   README.md                                                    a new entry added to CHANGELOG.md under a dated section
-A CHANGELOG.md entry is a "### " heading with words, added under a "## <day> <Month> <year>" section (a new section,
-or an existing one), with at least one added line of body text beneath it. A bare date, a generic heading, blank
-lines or re-spacing record nothing.
+A CHANGELOG.md entry is a "### " heading with words under a "## <day> <Month> <year>" section that is a real calendar
+date (a new section or an existing one), with at least one line of body text beneath it before the next heading. An
+entry ends at any "## " heading; an undated or impossible section carries no date; headings compare with their
+whitespace normalised. A bare date, a generic heading, a heading without a body, blank lines or re-spacing record nothing.
 An entry is a file ADDED under changelog/entries/ in the change, valid as tools/build_changelog.py
 loads it, in the tab its category names. Editing, deleting or re-spacing an old entry, or adding
 blank lines to CHANGELOG.md, does not record a new change. The gate reads the base and head objects
@@ -111,22 +112,44 @@ def added_valid_entry_tabs(repo, base, head="HEAD"):
     return tabs, invalid
 
 
-DATED_SECTION = re.compile(r"^## \d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}\s*$")
-ENTRY_HEADING = re.compile(r"^### \S.*\S")
+MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+DATED_SECTION = re.compile(r"^## (\d{1,2}) (" + "|".join(MONTHS) + r") (\d{4})\s*$")
+SECTION_HEADING = re.compile(r"^## \S")
+ENTRY_HEADING = re.compile(r"^### \S")
+
+
+def dated_section(line):
+    """The normalised date of a '## <day> <Month> <year>' heading when it is a real calendar date, else None."""
+    m = DATED_SECTION.match(line.strip())
+    if not m:
+        return None
+    try:
+        import datetime
+        d = datetime.date(int(m.group(3)), MONTHS.index(m.group(2)) + 1, int(m.group(1)))
+    except ValueError:
+        return None
+    return d.isoformat()
+
+
+def normalise_heading(line):
+    return re.sub(r"\s+", " ", line.strip())
 
 
 def log_entries(text):
-    """(section date, entry heading, body lines) for every entry heading in a CHANGELOG.md text, in order; headings outside a dated section have date None."""
+    """(section date, entry heading, body lines) for every '### ' entry heading in a CHANGELOG.md text, in order. An entry ends at the next
+    entry heading or at any '## ' section heading; a section heading is never body text. An undated or impossible section resets the date
+    to None, so entries beneath it carry no dated context. Headings are whitespace-normalised so re-spacing does not create a new identity."""
     out, date, heading, body = [], None, None, []
     for line in text.splitlines():
-        if DATED_SECTION.match(line.strip()):
+        stripped = line.strip()
+        if SECTION_HEADING.match(stripped) and not ENTRY_HEADING.match(stripped):
             if heading:
                 out.append((date, heading, body))
-            date, heading, body = line.strip(), None, []
-        elif ENTRY_HEADING.match(line.strip()):
+            date, heading, body = dated_section(stripped), None, []
+        elif ENTRY_HEADING.match(stripped):
             if heading:
                 out.append((date, heading, body))
-            heading, body = line.strip(), []
+            heading, body = normalise_heading(stripped), []
         elif heading is not None:
             body.append(line)
     if heading:
@@ -145,10 +168,10 @@ def repository_log_added(repo, base, head="HEAD"):
         head_text = git(repo, "show", f"{head}:CHANGELOG.md")
     except SystemExit:
         return False
-    old = {(d, h, tuple(ln.strip() for ln in b if ln.strip())) for d, h, b in log_entries(base_text)}
+    old_ids = {(d, h) for d, h, _ in log_entries(base_text)}
     for date, heading, body in log_entries(head_text):
-        body_lines = tuple(ln.strip() for ln in body if ln.strip())
-        if date is not None and body_lines and (date, heading, body_lines) not in old and (date, heading) not in {(d, h) for d, h, _ in old}:
+        body_lines = tuple(re.sub(r"\s+", " ", ln.strip()) for ln in body if ln.strip())
+        if date is not None and body_lines and (date, heading) not in old_ids:
             return True
     return False
 
@@ -332,6 +355,10 @@ def self_test():
         scenario("a schema change whose repository log gains a bare date with nothing beneath fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n## 6 September 2026\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
         scenario("a schema change whose repository log gains an entry heading with no body fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: OrgUnit\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
         scenario("a schema change with a genuine additional entry under the existing same-day section passes", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n### Changed: OrgUnit again\n\nmore text\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, True)
+        scenario("a schema change whose repository log gains an undated section with an entry beneath it fails (date context resets)", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n## Undated notes\n\n### Changed: OrgUnit\n\ntext\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
+        scenario("a schema change whose repository log gains an impossible date section fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n## 32 September 2026\n\n### Changed: OrgUnit\n\ntext\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
+        scenario("a schema change whose repository log only re-spaces an old entry heading fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log.replace("### Added: a first entry", "### Added: a first  entry"), "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
+        scenario("a schema change whose new entry heading is followed only by a section heading fails (a heading is not body)", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n### Changed: OrgUnit\n\n## Undated notes\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
         scenario("a schema change whose repository log only re-spaces an old entry fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log.replace("text\n", "text\n\n\n"), "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
         (root / "tools" / "check_measurement.py").write_text("print('m1')\n", encoding="utf-8"); (root / "tools" / "check_profiles.py").write_text("print('p1')\n", encoding="utf-8")
         run("add", "-A"); run("commit", "-q", "-m", "checkers"); base = run("rev-parse", "HEAD").stdout.strip()
