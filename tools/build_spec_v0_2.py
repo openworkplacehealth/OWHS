@@ -94,10 +94,16 @@ def v1_field_meta():
     text = V1.read_text(encoding="utf-8"); sec = text[text.index("## 4. Field tables"):text.index("## 5. Code lists")]
     meta = {}
     for m in re.finditer(r"^### (\w+)(.*?)\n(.*?)(?=^### |\Z)", sec, re.M | re.S):
+        cols = None
         for line in m.group(3).splitlines():
-            if line.startswith("| `"):
+            if line.startswith("| Field"): cols = [c.strip() for c in line.strip().strip("|").split("|")]        # the table's own header decides the column positions
+            if line.startswith("| `") and cols and "Privacy" in cols:
                 cells = [c.strip() for c in line.strip().strip("|").split("|")]
-                if len(cells) >= 6: meta[(m.group(1), cells[0].strip("`"))] = (cells[4], cells[5])
+                pi, ai = cols.index("Privacy"), cols.index("Anchor")
+                if len(cells) > max(pi, ai):
+                    # a combined source row (`a` / `b`) states one class for two named properties; both keep it
+                    for field in [f.strip().strip("`") for f in cells[0].split("/")]:
+                        if field: meta[(m.group(1), field)] = (cells[pi], cells[ai])
     return meta
 
 
@@ -254,6 +260,10 @@ def self_test():
         elif ln.startswith("| `"):
             cells_ = [c.strip() for c in ln.strip().strip("|").split("|")]; got[(ent, cells_[0].strip("`"))] = cells_[4]
     t("every explicit v0.1 class is carried unchanged into the v0.2 table", all(got.get(k) == v for k, v in explicit.items() if k in got), [(k, explicit[k], got.get(k)) for k in explicit if k in got and got[k] != explicit[k]][:5])
+    t("the combined v0.1 row `periodStart` / `periodEnd` on BenefitUtilisation yields two explicit open classes, both carried", explicit.get(("BenefitUtilisation", "periodStart")) == "open" and explicit.get(("BenefitUtilisation", "periodEnd")) == "open" and got.get(("BenefitUtilisation", "periodStart")) == "open" and got.get(("BenefitUtilisation", "periodEnd")) == "open", (explicit.get(("BenefitUtilisation", "periodStart")), got.get(("BenefitUtilisation", "periodStart")), got.get(("BenefitUtilisation", "periodEnd"))))
+    t("no combined-row key survives the importer", not any("/" in f for _, f in meta))
+    t("the five-column BenchmarkRelease and Crosswalk tables (no code-list column) import their explicit classes from their own header", explicit.get(("BenchmarkRelease", "validFrom")) == "open" and explicit.get(("BenchmarkRelease", "validTo")) == "open" and explicit.get(("BenchmarkRelease", "benchmarkId")) == "open" and explicit.get(("Crosswalk", "constructCode")) is not None and got.get(("BenchmarkRelease", "validFrom")) == "open" and got.get(("BenchmarkRelease", "leaveOneOut")) == "open", ({k: v for k, v in explicit.items() if k[0] in ("BenchmarkRelease", "Crosswalk")}, got.get(("BenchmarkRelease", "validFrom"))))
+    t("every explicit class the v0.1 tables state for a field the v0.2 schema still declares is carried (none lost to a layout difference)", all(got.get(k) == v for k, v in explicit.items() if k in got) and len([k for k in explicit if k in got]) >= 100, len([k for k in explicit if k in got]))
     t("the composed prose carries the exact pseudonym, P1, not-established and profile-mechanism statements and the privacy note", all(x in text for x in (PSEUDONYM_BULLET, P1_BULLET, NOT_ESTABLISHED_BULLET, SECTION7_MECHANISM, PRIVACY_NOTE)) and "whose sub-keys are only validated when the matching profile schema is loaded" not in text and "Not yet checked" not in text)
     t("section 9 Level 1 carries the same generated C1 to C18 table as section 6", text.count("| C18 | `OrgUnit` |") == 2 and text.count("| C1 | `AbsenceEpisode` |") == 2)
     # the two opaque-reference controls: the retained observation and administration schemas accept an opaque WorkerPseudonym reference

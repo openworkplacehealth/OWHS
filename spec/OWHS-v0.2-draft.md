@@ -411,8 +411,8 @@ Producer-held aggregate event counts. This is not an employer-output record: use
 | `utilisationId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
 | `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 | `entitlementId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
-| `periodStart` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
-| `periodEnd` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
+| `periodStart` | date | yes |  | open | OWHS v0.2 design choice |
+| `periodEnd` | date | yes |  | open | OWHS v0.2 design choice |
 | `usageCount` | integer | yes |  | aggregate-only | counts only, **never individual claims** |
 | `claimCount` | integer | no |  | aggregate-only | Claim events, never an individual claim record. Repeated claims may exceed n. |
 | `n` | integer | yes |  | open | distinct people represented across the recorded service-use and claim events in this period; not the whole eligible workforce and not automatically the denominator for either event category separately; a released metric requires its own distinct-person count and completion metadata in AggregateReport |
@@ -476,26 +476,26 @@ One versioned comparison distribution for one declared metric, scoring rule, pop
 
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
-| `benchmarkId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `benchmarkId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
 | `releaseVersion` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
-| `composition` | object | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
-| `composition.orgCount` | integer | yes |  | not separately assigned; entity restrictions apply |  |
-| `composition.sectors` | array of patterned strings | yes |  | not separately assigned; entity restrictions apply |  |
-| `composition.sicVersion` | const `2007` | yes |  | not separately assigned; entity restrictions apply | UK SIC 2007 retained as an edition; ONS also publishes SIC 2026 |
-| `composition.sizeBands` | array of string codes | yes | codelist:org-size-band@0.1.1 | not separately assigned; entity restrictions apply |  |
-| `composition.sampleSizes` | object | yes |  | not separately assigned; entity restrictions apply |  |
-| `composition.sampleSizes.people` | integer | yes |  | not separately assigned; entity restrictions apply |  |
-| `composition.sampleSizes.observations` | integer | no |  | not separately assigned; entity restrictions apply |  |
-| `percentiles` | object | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
-| `percentiles.method` | string | yes |  | not separately assigned; entity restrictions apply | Published quantile algorithm, weighting and handling of ties/missing values. No universal quantile algorithm is presumed. |
-| `percentiles.values` | array of object | yes |  | not separately assigned; entity restrictions apply |  |
-| `percentiles.values[].probability` | number | yes |  | not separately assigned; entity restrictions apply |  |
-| `percentiles.values[].value` | number | yes |  | not separately assigned; entity restrictions apply |  |
-| `leaveOneOut` | boolean | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `composition` | object | yes |  | open | composition disclosure |
+| `composition.orgCount` | integer | yes |  | inherited: open (from `composition`) |  |
+| `composition.sectors` | array of patterned strings | yes |  | inherited: open (from `composition`) |  |
+| `composition.sicVersion` | const `2007` | yes |  | inherited: open (from `composition`) | UK SIC 2007 retained as an edition; ONS also publishes SIC 2026 |
+| `composition.sizeBands` | array of string codes | yes | codelist:org-size-band@0.1.1 | inherited: open (from `composition`) |  |
+| `composition.sampleSizes` | object | yes |  | inherited: open (from `composition`) |  |
+| `composition.sampleSizes.people` | integer | yes |  | inherited: open (from `composition`) |  |
+| `composition.sampleSizes.observations` | integer | no |  | inherited: open (from `composition`) |  |
+| `percentiles` | object | yes |  | open | OWHS v0.2 design choice |
+| `percentiles.method` | string | yes |  | inherited: open (from `percentiles`) | Published quantile algorithm, weighting and handling of ties/missing values. No universal quantile algorithm is presumed. |
+| `percentiles.values` | array of object | yes |  | inherited: open (from `percentiles`) |  |
+| `percentiles.values[].probability` | number | yes |  | inherited: open (from `percentiles`) |  |
+| `percentiles.values[].value` | number | yes |  | inherited: open (from `percentiles`) |  |
+| `leaveOneOut` | boolean | yes |  | open | self-comparison honesty |
 | `excludedOrgId` | string (pattern) | no |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: required iff leaveOneOut |
-| `validFrom` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
-| `validTo` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
-| `source` | string | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `validFrom` | date | yes |  | open | validity window |
+| `validTo` | date | yes |  | open | validity window |
+| `source` | string | yes |  | open | OWHS v0.2 design choice |
 | `dataPeriodStart` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 | `dataPeriodEnd` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 | `measure` | object | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: one metric and scoring rule per release |
@@ -517,12 +517,12 @@ Versioned, sourced mapping assertions. At least one target is required; construc
 
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
-| `constructCode` | string (code) | yes | codelist:construct-domain@0.1.0 | not separately assigned; entity restrictions apply | codelist:construct-domain@0.1.0 |
-| `hseDomain` | string (code) | no | codelist:hse-management-domain@0.1.0 | not separately assigned; entity restrictions apply | codelist:hse-management-domain@0.1.0 |
-| `iso45003Clause` | string (pattern) | no |  | not separately assigned; entity restrictions apply | Clause-number syntax only. Clause existence, version and mapping meaning are not checked. No ISO text is reproduced. |
+| `constructCode` | string (code) | yes | codelist:construct-domain@0.1.0 | open | codelist:construct-domain |
+| `hseDomain` | string (code) | no | codelist:hse-management-domain@0.1.0 | open | **HSE MS six domains** [19] |
+| `iso45003Clause` | string (pattern) | no |  | open | ISO 45003 hazard taxonomy |
 | `iso45003Edition` | string (pattern) | no |  | not separately assigned; entity restrictions apply | ISO 45003 edition being mapped; ISO text is referenced, not reproduced |
-| `whiuCode` | string (pattern) | no |  | not separately assigned; entity restrictions apply | Reserved namespace syntax only. No WHIU terminology or endorsement is inferred. |
-| `crosswalkVersion` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `whiuCode` | string (pattern) | no |  | open | reserved `whiu:` |
+| `crosswalkVersion` | string (pattern) | yes |  | open | versioned independently of the spec |
 | `sourceRef` | string | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 
 At least one of `hseDomain`, `iso45003Clause` and `whiuCode` is required; `iso45003Clause` and `iso45003Edition` require one another. Clause syntax is not clause existence or mapping validity; WHIU syntax is not resolved terminology.
