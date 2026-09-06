@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The changelog page is generated from one file per entry, so two changes never collide.
+"""The changelog page is generated from one file per entry, with tab counts computed from those entries.
 
 Usage:
   python tools/build_changelog.py            render the three tabs of site/changelog.html from changelog/entries/*.json
@@ -11,10 +11,13 @@ the month is known), shown (the date as printed), html (the row text, links allo
 specification tabs a version. An optional order places entries that share a date: higher first. The page's
 head, navigation, footer and stamped lines are not touched; only the rows and the tab counts are rewritten.
 """
+import datetime
+import html as html_module
 import json
 import pathlib
 import re
 import sys
+from html.parser import HTMLParser
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ENTRIES = ROOT / "changelog" / "entries"
@@ -22,6 +25,108 @@ PAGE = ROOT / "site" / "changelog.html"
 TABS = ("registry", "specification", "site")
 VERSIONED = ("registry", "specification")
 DASHES = "\u2014\u2013"  # em and en dashes are not site copy
+
+
+def valid_date(text):
+    """A real calendar date as YYYY-MM-DD, or a real month as YYYY-MM."""
+    if not isinstance(text, str):
+        return False
+    try:
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            datetime.date.fromisoformat(text)
+            return True
+        if re.fullmatch(r"\d{4}-\d{2}", text):
+            datetime.date.fromisoformat(text + "-01")
+            return True
+    except ValueError:
+        return False
+    return False
+
+
+ALLOWED = {"a": {"href"}, "span": {"class"}, "code": set(), "em": set(), "strong": set(), "b": set(), "i": set()}
+
+
+class Fragment(HTMLParser):
+    """Parses one row fragment against a small inline allowlist: allowed tags and attributes only, properly nested and closed, no hiding
+    attributes or styles, no raw-text or control elements, and the visible text is what remains outside any tag that hides its content."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=False)   # references arrive through their own callbacks, so raw data is checked before decoding
+        self.stack = []
+        self.problems = []
+        self.text = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in ALLOWED:
+            self.problems.append(f"tag <{tag}> is not an allowed inline tag ({', '.join(sorted(ALLOWED))})")
+            return
+        for name, value in attrs:
+            if name not in ALLOWED[tag]:
+                self.problems.append(f"attribute {name} is not allowed on <{tag}>")
+            elif name == "href" and (value is None or not re.match(r"^(https?://|/|[A-Za-z0-9_./#-]+$)", value.strip()) or value.strip().lower().startswith("javascript:")):
+                self.problems.append("href must be an http(s) or relative link")
+        self.stack.append(tag)
+
+    def handle_startendtag(self, tag, attrs):
+        self.problems.append(f"self-closing <{tag}/> is not an allowed inline element")
+
+    def handle_endtag(self, tag):
+        if not self.stack or self.stack[-1] != tag:
+            self.problems.append(f"</{tag}> closes nothing that is open, or closes out of order")
+            return
+        self.stack.pop()
+
+    def handle_data(self, data):
+        if "<" in data or ">" in data:
+            self.problems.append("a bare < or > in the text; write &lt; or &gt;")
+        self.text.append(data)
+
+    def handle_entityref(self, name):
+        decoded = html_module.unescape(f"&{name};")
+        if decoded == f"&{name};":
+            self.problems.append(f"unknown character reference &{name};")
+        self.text.append(decoded)
+
+    def handle_charref(self, name):
+        try:
+            self.text.append(chr(int(name[1:], 16)) if name.lower().startswith("x") else chr(int(name)))
+        except (ValueError, OverflowError):
+            self.problems.append(f"invalid numeric character reference &#{name};")
+
+    def handle_comment(self, data):
+        self.problems.append("comments are not allowed in a row")
+
+    def handle_decl(self, decl):
+        self.problems.append("declarations are not allowed in a row")
+
+    def handle_pi(self, data):
+        self.problems.append("processing instructions are not allowed in a row")
+
+
+def fragment_problems(fragment):
+    """Problems with one row fragment, or an empty list when it is a valid inline fragment with visible text."""
+    parser = Fragment()
+    try:
+        parser.feed(fragment)
+        parser.close()
+    except Exception as e:  # the standard parser is lenient; anything it cannot take is a problem by name
+        return [f"the fragment could not be parsed: {e}"]
+    found = list(parser.problems)
+    if parser.stack:
+        found.append(f"unclosed tag(s): {', '.join('<' + t + '>' for t in parser.stack)}")
+    if not re.sub(r"\s+", " ", "".join(parser.text)).strip():
+        found.append("no visible text")
+    return found
+
+
+def visible_text(fragment):
+    """The text a reader sees after the fragment has been parsed as an allowed inline fragment; empty when it is not one."""
+    if fragment_problems(fragment):
+        return ""
+    parser = Fragment()
+    parser.feed(fragment)
+    parser.close()
+    return re.sub(r"\s+", " ", "".join(parser.text)).strip()
 
 
 def load_entries(folder):
@@ -48,8 +153,8 @@ def load_entries(folder):
                 found.append(f"{p.name}: {k} is missing or empty")
         if e.get("tab") not in TABS:
             found.append(f"{p.name}: tab must be one of {', '.join(TABS)}")
-        if isinstance(e.get("date"), str) and not re.fullmatch(r"\d{4}-\d{2}(-\d{2})?", e["date"]):
-            found.append(f"{p.name}: date must be YYYY-MM-DD or YYYY-MM")
+        if isinstance(e.get("date"), str) and not valid_date(e["date"]):
+            found.append(f"{p.name}: date must be a real calendar date as YYYY-MM-DD, or a real month as YYYY-MM")
         if e.get("tab") in VERSIONED and (not isinstance(e.get("version"), str) or not e["version"].strip()):
             found.append(f"{p.name}: a {e.get('tab')} entry needs a version")
         if e.get("tab") == "site" and "version" in e:
@@ -58,8 +163,15 @@ def load_entries(folder):
             found.append(f"{p.name}: order must be an integer")
         for k in ("html", "shown", "version"):
             v = e.get(k)
-            if isinstance(v, str) and (any(d in v for d in DASHES) or "</td>" in v or "<tr" in v or "\n" in v):
-                found.append(f"{p.name}: {k} must be one line of row text without dashes of the em or en kind and without table markup")
+            if isinstance(v, str) and (any(d in v for d in DASHES) or "\n" in v):
+                found.append(f"{p.name}: {k} must be one line without dashes of the em or en kind")
+        for k in ("shown", "version"):
+            v = e.get(k)
+            if isinstance(v, str) and "<" in v:
+                found.append(f"{p.name}: {k} carries markup; only html may")
+        if isinstance(e.get("html"), str):
+            for problem in fragment_problems(e["html"]):
+                found.append(f"{p.name}: html: {problem}")
         if not found or all(not f.startswith(p.name) for f in found):
             entries.append((p.name, e))
     return entries, found
@@ -157,6 +269,15 @@ def self_test():
         put("2026-09-01-reg.json", {"tab": "registry", "date": "2026-09-01", "shown": "1 Sep 2026", "version": "v0.8.0", "html": "registry row"})
         es, fs = load_entries(d)
         t("a folder of valid entries loads", not fs, fs)
+        put("2026-09-06-link.json", {**base, "html": "a <a href=\"https://example.org/x\">link</a>, a <span class=\"mono\">code</span> span, <em>emphasis</em>, <strong>strength</strong> and an entity &amp; here"})
+        put("2026-09-06-lt.json", {**base, "html": "Require n &lt; 5."})
+        put("2026-09-06-code.json", {**base, "html": "The <code>&lt;AggregateReport&gt;</code> example changed."})
+        put("2026-09-06-numeric.json", {**base, "html": "Floors of five &#38; ten; n &#x3C; 5."})
+        es2, fs2 = load_entries(d)
+        t("a harmless inline link or span stays valid, and escaped comparison or code text (&lt; &gt; &amp; and numeric references) is valid text, not markup", not fs2, fs2)
+        t("visible text decodes the references", visible_text("Require n &lt; 5.") == "Require n < 5." and visible_text("<code>&lt;AggregateReport&gt;</code>") == "<AggregateReport>")
+        for name in ("2026-09-06-link.json", "2026-09-06-lt.json", "2026-09-06-code.json", "2026-09-06-numeric.json"):
+            (d / name).unlink()
         site = [e["html"] for _, e in ordered(es, "site")]
         t("newest date first; within a date the higher order first, then filename order", site == ["placed first", "one", "two", "older"], site)
         fresh = render(page, es)
@@ -175,6 +296,24 @@ def self_test():
             "registry without version": {"tab": "registry", "date": "2026-09-01", "shown": "1 Sep 2026", "html": "x"},
             "em dash in the row": {**base, "html": "a \u2014 b"},
             "table markup in the row": {**base, "html": "a</td><td>b"},
+            "upper-case row markup in the row": {**base, "html": "A</TD></TR><TR><TD>6 Sep 2026</TD><TD>B"},
+            "a section boundary in the row": {**base, "html": "a</section><section>b"},
+            "a hidden span": {**base, "html": "<span hidden>not visible</span>"},
+            "hidden text beside visible text": {**base, "html": "shown <span hidden>and hidden</span>"},
+            "an unclosed anchor": {**base, "html": "<a href=\"x.html\">visible"},
+            "a textarea (raw-text element)": {**base, "html": "<textarea>visible"},
+            "a style attribute": {**base, "html": "<span style=\"display:none\">x</span> y"},
+            "a javascript link": {**base, "html": "<a href=\"javascript:alert(1)\">x</a>"},
+            "an event handler": {**base, "html": "<a href=\"x.html\" onclick=\"y()\">x</a>"},
+            "a self-closing element": {**base, "html": "a<br/>b"},
+            "tags out of order": {**base, "html": "<a href=\"x.html\"><span>a</a></span>"},
+            "a comment": {**base, "html": "a<!-- b -->c"},
+            "a raw angle bracket in text": {**base, "html": "n < 5"},
+            "an unknown entity": {**base, "html": "a &nosuch; b"},
+            "an impossible calendar date": {**base, "date": "2026-99-99"},
+            "an impossible month": {**base, "date": "2026-13"},
+            "no visible text": {**base, "html": "<span></span>"},
+            "only an entity of whitespace": {**base, "html": "&nbsp;"},
             "unknown key": {**base, "author": "x"},
             "order as a string": {**base, "order": "1"},
             "not an object": "[1, 2]",
