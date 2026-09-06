@@ -9,6 +9,13 @@ Registry grade corrections are not here. They have their own numbered log at
 
 ## 6 September 2026
 
+### Fixed: the published specification page had drifted from its source
+
+`site/spec/index.html` was rendered once and then edited by hand alongside the markdown. The page
+lacked the closed-vocabulary rule, the corrected error map and the newest code-list rows that
+`spec/OWHS-v0.1-draft.md` carried. `tools/build_spec_page.py` now renders the page from the markdown
+as one chain, and `--check` fails when either generated file differs from what the source produces,
+so the two cannot drift again.
 ### Added: version 0.2 schemas, first set
 
 `schemas/v0.2/` holds the three v0.1 entities with an optional `ext` object keyed by profile

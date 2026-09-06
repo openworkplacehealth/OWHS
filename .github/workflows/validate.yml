@@ -42,6 +42,8 @@ jobs:
         run: python tools/check_site_examples.py
       - name: site-example check behaves as documented
         run: python tools/check_site_examples.py --self-test
+      - name: specification page is rendered from its markdown
+        run: python tools/build_spec_page.py --check
       - name: v0.2 schemas match their generator
         run: python tools/build_schemas_v0_2.py --check
       - name: extension mechanism and profile validation behave as documented
