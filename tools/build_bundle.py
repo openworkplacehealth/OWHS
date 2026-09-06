@@ -11,6 +11,7 @@ FILES = {  # archive path -> source path
     "spec/OWHS-v0.1-draft.md": ROOT / "site" / "spec" / "OWHS-v0.1-draft.md",           # archive
     "spec/erd.mmd": ROOT / "spec" / "erd.mmd",
     "owhs-erd-v0.1.svg": ROOT / "site" / "owhs-erd-v0.1.svg",
+    "owhs-erd-current.svg": ROOT / "site" / "owhs-erd-current.svg",
     "README.md": ROOT / "README.md", "GOVERNANCE.md": ROOT / "GOVERNANCE.md", "DECISIONS.md": ROOT / "DECISIONS.md",
     "LICENSE": ROOT / "LICENSE", "LICENSE-DOCS.md": ROOT / "LICENSE-DOCS.md", "NOTICE": ROOT / "NOTICE", "tools/validate.py": ROOT / "tools" / "validate.py",
 }

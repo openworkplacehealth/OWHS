@@ -31,6 +31,17 @@ A field with no assignment reads "not separately assigned; entity restrictions a
 given a class by default, and the generator's self-test refuses a nested field under an
 `individual-never` parent that reads `open`.
 
+### Corrected: two carried statements about disclosure
+
+The `ReasonableAdjustment.endDate` table anchor carried from v0.1 said "standing adjustment if null"; the
+schema forbids null and the paragraph below the table already said that an absent end date does not
+establish that the adjustment is in place. The anchor now reads: omit when no end date is recorded; null
+is invalid; use status for adjustment state. The `AggregateReport` description opened by calling the report
+the only way individual-level results leave an organisation, which contradicted the specification's
+expressly classified `individual-employer` fields; its first sentence now names employer-visible aggregate
+results and their suppression declarations. No validation keyword, privacy class, floor, consent gate or
+legal-basis condition changed; the schema with every description removed is byte-identical in behaviour.
+
 ### Corrected: statements carried from v0.1 that were no longer true of the draft
 
 The carried text said the extension mechanism was not implemented, that aggregates' floors were not

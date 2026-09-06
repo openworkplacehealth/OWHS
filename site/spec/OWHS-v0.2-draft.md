@@ -138,7 +138,7 @@ Sixteen entities in five clusters, plus two reserved names and one code-list-bac
 
 The Mermaid source is [`owhs_erd_v0.1.mmd`](diagrams/owhs_erd_v0.1.mmd) (renders natively in GitHub/Markdown); a static render is below. Solid lines are structural references; dotted lines are the aggregation flow into `AggregateReport`; dashed outlines are reserved names.
 
-![OWHS entity-relationship diagram, drawn for v0.1 and unchanged in v0.2](../owhs-erd-v0.1.svg)
+![OWHS entity-relationship diagram, drawn for v0.1 and unchanged in v0.2](../owhs-erd-current.svg)
 
 *Figure, the OWHS entity map as drawn for v0.1. Version 0.2 adds no entity and removes none; the field-level references are in the section 4 tables. White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; grey boxes are shared definitions; dashed outlines are reserved names.*
 
@@ -277,7 +277,7 @@ Management-facing adjustment record, with sensitive disability flag restricted t
 | `adjustmentCategory` | string (code) | yes | codelist:adjustment-category@0.1.0 | individual-employer | **Equality Act 2010 s.20** duty; superset of fit-note categories |
 | `status` | string (code) | yes | codelist:adjustment-status@0.1.0 | aggregate-only | proposed / in-place / declined / ended |
 | `startDate` | date | no |  | individual-employer | OWHS v0.2 design choice |
-| `endDate` | date | no |  | individual-employer | standing adjustment if null |
+| `endDate` | date | no |  | individual-employer | Omit when no end date is recorded; null is invalid. Use status for adjustment state. |
 | `sourceOhEpisodeId` | string (pattern) | no |  | individual-employer | → OHEpisode (if OH-recommended) |
 | `disabilityRelated` | boolean | no |  | individual-never | whether tied to a disability, sensitive; aggregate via DisabilityParticipation only |
 
@@ -437,7 +437,7 @@ The executable schema validates this reserved-minimal record's structure and rep
 
 ### AggregateReport
 
-The only way individual-level results leave an organisation. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).
+Employer-visible aggregate results and their suppression declarations. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).
 
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|

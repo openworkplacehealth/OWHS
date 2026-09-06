@@ -117,7 +117,7 @@ ul,ol{max-width:760px}
     <tr><td>MeasurementContext</td><td>What makes scores comparable: producing system, scoring approach, window, known limitations.</td></tr>
     <tr><td>BenefitEntitlement</td><td>What support a workforce has: statutory (SSP semantics) and commercial (the UK market's own product vocabulary), with access routes and health-domain tags shared with measurement.</td></tr>
     <tr><td>BenefitUtilisation</td><td>Whether provision gets used: aggregate counts per service per period. Individual usage is never employer-visible.</td></tr>
-    <tr><td>AggregateReport</td><td>The only way results leave an organisation: level, n, value with interval, completion rate, and suppression metadata recording what was withheld and why.</td></tr>
+    <tr><td>AggregateReport</td><td>Employer-visible aggregate results: level, n, value with interval, completion rate, and suppression metadata recording what was withheld and why.</td></tr>
     <tr><td>BenchmarkRelease</td><td>A published comparison set with composition disclosed: contributing organisations, sectors, size bands, sample sizes, validity window.</td></tr>
     <tr><td>Crosswalk</td><td>Versioned mappings from every construct to the HSE Management Standards, ISO 45003, and the reserved namespace for the Workplace Health Intelligence Unit.</td></tr>
     <tr><td>DisabilityParticipation <span class="pill res">reserved</span></td><td>The WHIU's third measure, held deliberately minimal until national definitions exist.</td></tr>
@@ -220,7 +220,7 @@ ul,ol{max-width:760px}
 <text x="581" y="275" text-anchor="middle" font-size="9.5" fill="#5c646c">Equality Act s.20 adjustment</text></g>
 <g><rect x="734" y="240" width="170" height="46" rx="6" fill="#0b6e5f" stroke="#0b6e5f" stroke-width="1.2"/>
 <text x="819" y="260" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#ffffff">AggregateReport</text>
-<text x="819" y="275" text-anchor="middle" font-size="9.5" fill="#cfe5e0">the only way results leave</text></g>
+<text x="819" y="275" text-anchor="middle" font-size="9.5" fill="#cfe5e0">aggregate results for release</text></g>
 <g><rect x="20" y="340" width="170" height="46" rx="6" fill="#ffffff" stroke="#33393f" stroke-width="1.4"/>
 <text x="105" y="360" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#101418">DisabilityParticipation</text>
 <text x="105" y="375" text-anchor="middle" font-size="9.5" fill="#5c646c">org level, banded, n at least 10</text></g>
@@ -249,14 +249,14 @@ ul,ol{max-width:760px}
 <!-- /erd -->
     <div class="legend">
       <span><i class="o"></i>organisation level</span>
-      <span><i class="s"></i>individual level, pseudonymous, never employer-visible</span>
-      <span><i></i>the only output that leaves</span>
+      <span><i class="s"></i>individual records; field-level disclosure rules apply</span>
+      <span><i></i>aggregate reporting output</span>
       <span><i class="d"></i>shared definitions</span>
       <span><i class="r"></i>reserved, no fields yet</span>
     </div>
+    <p class="small">Individual instrument results are never employer-visible. Only the expressly classified individual-employer fields may be disclosed at individual grain under the specification's independent-legal-basis condition. The diagram does not grant permission to disclose a record.</p>
   </div>
-  <p class="small">Solid lines are structural references. Dotted lines are the aggregation flow: individual-level
-  records leave an organisation only through the suppression-aware AggregateReport. Dashed outlines are reserved
+  <p class="small">Solid lines are structural references. Dotted lines are the aggregation flow. Aggregate-only field values reach an employer through a report that satisfies the privacy profile. The expressly classified individual-employer fields have a separate, narrow disclosure condition; individual instrument results remain prohibited from employer-visible output. Dashed outlines are reserved
   names, listed since v0.1 and not yet built. <a href="erd.html">Open the map on its own page</a>.</p>
 
   <h2>A real record</h2>

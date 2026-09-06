@@ -177,7 +177,7 @@ def measurement_schemas():
     })
     ar = dict(common, **{
         "$id": BASE + "AggregateReport.json", "title": "OWHS AggregateReport v0.2",
-        "description": "The only way individual-level results leave an organisation. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).",
+        "description": "Employer-visible aggregate results and their suppression declarations. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).",
         "type": "object", "additionalProperties": False,
         "required": ["reportId", "orgId", "level", "periodStart", "periodEnd", "n", "headcount", "eligibleN", "completionRate", "metricCode", "measureKind", "releaseCategory", "suppressed", "contextId"],
         "properties": {
