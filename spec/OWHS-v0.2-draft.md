@@ -147,7 +147,7 @@ The Mermaid source is [`erd.mmd`](erd.mmd) (renders natively in GitHub/Markdown)
 Restated here because §2b field tables reference it on every row. The scope draft's P1 to P5 stand; this draft adds the fourth visibility class made necessary by occupational health and adjustments (§1.2).
 
 - **P1, no direct identifiers** in an OWHS payload; pseudonymous IDs and banded demographics only. All sixteen v0.2 entity types have executable schemas. Closed core objects reject undeclared property names, while extension objects apply the documented recursive named-key restriction. These rules cannot detect identifiers or sensitive meaning hidden in permitted values or aliases. Metadata is not automatically non-personal, and a structural pass is not a privacy-profile assessment. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.
-- **P2, aggregation floors:** n≥5 for any employer-visible value; **n≥10** for severe-distress measures. A conformant producer **refuses to emit**, not merely hides.
+- **P2, aggregation floors:** employer-visible aggregates require n≥5, or n≥10 for severe-distress measures. Below the applicable floor a conformant producer emits suppression metadata instead of the value; it refuses to emit, not merely hides. The enumerated `individual-employer` fields are exempt under the independent-legal-basis condition below.
 - **P3, visibility is a field-level property** with four classes: `open` / `aggregate-only` / `individual-employer` / `individual-never`. All instrument results are `individual-never` by definition.
 - **P4, safeguarding-category signals** (bullying, harassment, discrimination, crisis) are excluded from employer-visible outputs entirely, **at any n**.
 - **P5, completeness travels:** every aggregate carries its completion rate and suppression metadata.
@@ -781,7 +781,7 @@ Level 1, plus every coded field resolves to a **current** code-list version.
 
 ### Level 3, +Privacy profile
 Level 2, plus the normative privacy MUSTs, the level that makes a payload *safe to emit*.
-- **Aggregation floor:** any employer-visible value is delivered only through an `AggregateReport` with `n ≥ 5`; `aboveThresholdFlag`/severe-distress measures require `n ≥ 10`. Below floor ⇒ the producer MUST set `suppressed:true` with a `suppressionReason`, not emit the value.
+- **Aggregation floor:** employer-visible aggregates are delivered through an `AggregateReport` with n≥5, or n≥10 for severe-distress measures. Below the applicable floor the producer MUST emit `suppressed:true` with a `suppressionReason` and omit the value. The `individual-employer` fields enumerated in section 3 are exempt from aggregation floors only under that section's independent-legal-basis condition.
 - **Safeguarding exclusion (P4):** any record with `safeguardingCategory:true` (or a safeguarding-tagged construct) is absent from every employer-visible output at any n.
 - **Visibility classes (P3):** no `individual-never` field value appears at individual grain in any output; `individual-employer` fields appear only where the declared legal basis is present.
 - **Completeness travels (P5):** every `AggregateReport` carries `completionRate`, `suppressed`, and (where applicable) `suppressionReason`.
@@ -818,7 +818,7 @@ Three registers, none smoothed over: decisions reasonable standards authors woul
 
 5. **Adopting the ONS six-category reason taxonomy as the core enum.** ONS designed it for a *population survey*, not an employer episode record; its "minor illness" / "other" buckets are coarse for management use, and "other" explicitly mixes COVID-19, accidents and diabetes [1]. Anchoring to it buys comparability at the cost of analytic resolution, and some authors would prefer a richer employer taxonomy that *rolls up* to ONS.
 
-6. **`additionalProperties:false` everywhere.** Strict closure guarantees the identifier ban but makes the schema brittle to legitimate extension; producers must route everything non-core through `ext`, which some integrators will find heavy-handed versus an open-world model with a denylist.
+6. **Closed core objects.** Rejecting undeclared properties prevents extra identifier fields in the implemented core schemas, but cannot detect identifiers inside allowed string values. The specified `ext` mechanism is not yet implemented by the three schemas. Any extension implementation must preserve the producer's P1 obligation and define its validation boundary explicitly.
 
 7. **Modelling `ill-health-exit` as an RTW *value* rather than its own entity.** Compresses a significant, sensitive event (medical capability dismissal / ill-health retirement) into an enum on an outcome record. Defensible for SME simplicity; disputable because it under-models an event with distinct legal and pension dimensions.
 
