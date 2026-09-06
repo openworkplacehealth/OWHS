@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/WorkerPseudonym.json",
+  "title": "OWHS WorkerPseudonym v0.2",
+  "description": "Organisation-scoped pseudonym with optional banded demographics. Syntax does not prove HMAC generation, salt custody, anonymity or permission to disclose demographics.",
+  "type": "object",
+  "properties": {
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^owhs:pseudo:[0-9a-f]{16,64}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "unitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "ageBand": {
+      "type": "string",
+      "enum": [
+        "16-24",
+        "25-34",
+        "35-49",
+        "50-64",
+        "65+"
+      ],
+      "$comment": "codelist:age-band@0.1.0"
+    },
+    "tenureBand": {
+      "type": "string",
+      "enum": [
+        "<1y",
+        "1-2y",
+        "3-5y",
+        "6-10y",
+        "10y+"
+      ],
+      "$comment": "codelist:tenure-band@0.1.0"
+    },
+    "workPattern": {
+      "type": "string",
+      "enum": [
+        "full-time",
+        "part-time"
+      ],
+      "$comment": "codelist:work-pattern@0.1.0"
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "pseudonymId",
+    "orgId"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

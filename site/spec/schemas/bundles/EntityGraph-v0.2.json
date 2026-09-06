@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/bundles/EntityGraph-v0.2.json",
+  "title": "OWHS supplied entity graph v0.2",
+  "description": "Producer-side supplied-record validation envelope. Not a complete roster, release envelope, empirical comparison or Level 2/3 certificate.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.2"
+    },
+    "comparisonAsOfDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "organisations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "organisation": {
+            "$ref": "https://openworkplacehealth.org/schemas/v0.2/Organisation.json"
+          },
+          "units": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/OrgUnit.json"
+            }
+          },
+          "workers": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/WorkerPseudonym.json"
+            }
+          },
+          "absences": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/AbsenceEpisode.json"
+            }
+          },
+          "rtwOutcomes": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/ReturnToWorkOutcome.json"
+            }
+          },
+          "ohEpisodes": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/OHEpisode.json"
+            }
+          },
+          "adjustments": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/ReasonableAdjustment.json"
+            }
+          },
+          "entitlements": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/BenefitEntitlement.json"
+            }
+          },
+          "utilisations": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/BenefitUtilisation.json"
+            }
+          },
+          "disabilityParticipations": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/DisabilityParticipation.json"
+            }
+          },
+          "contexts": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/MeasurementContext.json"
+            }
+          },
+          "observations": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/WellbeingObservation.json"
+            }
+          },
+          "administrations": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/InstrumentAdministration.json"
+            }
+          },
+          "reports": {
+            "type": "array",
+            "items": {
+              "$ref": "https://openworkplacehealth.org/schemas/v0.2/AggregateReport.json"
+            }
+          }
+        },
+        "required": [
+          "organisation",
+          "units",
+          "workers",
+          "absences",
+          "rtwOutcomes",
+          "ohEpisodes",
+          "adjustments",
+          "entitlements",
+          "utilisations",
+          "disabilityParticipations",
+          "contexts",
+          "observations",
+          "administrations",
+          "reports"
+        ]
+      }
+    },
+    "benchmarks": {
+      "type": "array",
+      "items": {
+        "$ref": "https://openworkplacehealth.org/schemas/v0.2/BenchmarkRelease.json"
+      }
+    },
+    "crosswalks": {
+      "type": "array",
+      "items": {
+        "$ref": "https://openworkplacehealth.org/schemas/v0.2/Crosswalk.json"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "comparisonAsOfDate",
+    "organisations",
+    "benchmarks",
+    "crosswalks"
+  ]
+}

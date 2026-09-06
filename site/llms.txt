@@ -1,6 +1,6 @@
 # Open Workplace Health Standard (OWHS)
 
-> An open data standard and a permanent open catalogue for workplace health. Status: early open specification (v0.1), open to review. OWHS was created by Zak Fenton and is currently stewarded by Alltoogether. Its specification, schemas and supporting materials are published under permissive licences and are open to inspect, use, challenge and improve. If OWHS earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.
+> An open data standard and a permanent open catalogue for workplace health. Status: early open specification (v0.2 draft), open to review. OWHS was created by Zak Fenton and is currently stewarded by Alltoogether. Its specification, schemas and supporting materials are published under permissive licences and are open to inspect, use, challenge and improve. If OWHS earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.
 
 Conflict of interest: Alltoogether develops commercial products that may implement OWHS. The standard does not require use of any Alltoogether product, and the project publishes its contribution, decision and change processes openly.
 
@@ -13,7 +13,8 @@ Two things, one project. The standard says what a workplace-health record is: en
 - https://openworkplacehealth.org/how-it-works.html : explainer, the standard on one page: what it is, how a record moves through it without identifying anyone, how the evidence is kept current
 - https://openworkplacehealth.org/standard.html : the full entity list (16 entities), a real record, and the conformance rules on one page
 - https://openworkplacehealth.org/erd.html : the entity map
-- https://openworkplacehealth.org/spec/ : the full draft specification v0.1, readable and downloadable, with JSON Schemas, 24 versioned code lists, worked examples and a validation report
+- https://openworkplacehealth.org/spec/ : the full draft specification v0.2, readable and downloadable, with the v0.1 draft kept at /spec/OWHS-v0.1-draft.html, with JSON Schemas, 27 versioned code lists, worked examples and a validation report
+- https://openworkplacehealth.org/entity-graph-validation.html : the optional checker for a supplied bundle of v0.2 records, what it checks and what a pass does not establish
 - https://openworkplacehealth.org/science.html : how to read the evidence, what a registry rating, a citation and a conformance check do and do not establish
 - https://openworkplacehealth.org/why.html : the case for the standard
 - https://openworkplacehealth.org/design.html : design decisions and deliberately open questions

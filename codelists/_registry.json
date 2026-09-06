@@ -244,6 +244,36 @@
       "versions": {
         "0.1.0": "work-pattern.json"
       }
+    },
+    {
+      "name": "benefit-layer",
+      "version": "0.1.0",
+      "file": "benefit-layer.json",
+      "values": 2,
+      "anchor": "OWHS benefit-layer distinction, specification section 4; a data-model convention.",
+      "versions": {
+        "0.1.0": "benefit-layer.json"
+      }
+    },
+    {
+      "name": "hse-management-domain",
+      "version": "0.1.0",
+      "file": "hse-management-domain.json",
+      "values": 6,
+      "anchor": "HSE Management Standards, six areas of work design. OWHS codes identify domains; a mapping is not a compliance certificate.",
+      "versions": {
+        "0.1.0": "hse-management-domain.json"
+      }
+    },
+    {
+      "name": "release-category",
+      "version": "0.1.0",
+      "file": "release-category.json",
+      "values": 3,
+      "anchor": "OWHS P2/P4 and the existing v0.2 AggregateReport declarations. A producer-declared classification, not an inferred clinical diagnosis.",
+      "versions": {
+        "0.1.0": "release-category.json"
+      }
     }
   ],
   "mappings": [

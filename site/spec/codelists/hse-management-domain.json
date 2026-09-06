@@ -1,0 +1,31 @@
+{
+  "codelist": "hse-management-domain",
+  "version": "0.1.0",
+  "anchor": "HSE Management Standards, six areas of work design. OWHS codes identify domains; a mapping is not a compliance certificate.",
+  "sources": [
+    {
+      "url": "https://www.hse.gov.uk/stress/standards/",
+      "location": "What are the Management Standards?, six linked domains"
+    }
+  ],
+  "values": [
+    {
+      "code": "demands"
+    },
+    {
+      "code": "control"
+    },
+    {
+      "code": "support"
+    },
+    {
+      "code": "relationships"
+    },
+    {
+      "code": "role"
+    },
+    {
+      "code": "change"
+    }
+  ]
+}

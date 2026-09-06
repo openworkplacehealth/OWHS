@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/ReasonableAdjustment.json",
+  "title": "OWHS ReasonableAdjustment v0.2",
+  "description": "Management-facing adjustment record, with sensitive disability flag restricted to the producer. Omitted endDate means no end date is recorded; null is not a date. A recorded category does not decide any legal duty or lawful disclosure.",
+  "type": "object",
+  "properties": {
+    "adjustmentId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^owhs:pseudo:[0-9a-f]{16,64}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "adjustmentCategory": {
+      "type": "string",
+      "enum": [
+        "phased-return",
+        "altered-hours",
+        "amended-duties",
+        "workplace-adaptations",
+        "equipment",
+        "remote-hybrid",
+        "absence-policy-flex",
+        "additional-support",
+        "other"
+      ],
+      "$comment": "codelist:adjustment-category@0.1.0"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "in-place",
+        "declined",
+        "ended"
+      ],
+      "$comment": "codelist:adjustment-status@0.1.0"
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "sourceOhEpisodeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "disabilityRelated": {
+      "type": "boolean"
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "adjustmentId",
+    "orgId",
+    "pseudonymId",
+    "adjustmentCategory",
+    "status"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

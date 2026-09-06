@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
-"""Draw the v0.1 entity map as one hand-laid SVG and place it everywhere the site shows it.
+"""Draw the entity map as one hand-laid SVG, in two labellings, and place each where the site shows it.
 
 Source of truth for the relationships is spec/erd.mmd; this file lays those relationships out
 on a fixed grid in the house figure style (the same frame, marks and colours as the figures on
-how-it-works.html) so the map reads on one screen instead of a sideways scroll.
+how-it-works.html) so the map reads on one screen instead of a sideways scroll. The geometry
+and relationships are the same in both labellings; only the title and three subtitles differ.
 
-Writes  site/owhs-erd-v0.1.svg          the standalone file (spec page image, bundle)
-and splices the same drawing between <!-- erd --> ... <!-- /erd --> markers in
+Writes  site/owhs-erd-v0.1.svg          the archived v0.1 drawing (the v0.1 specification page and archive)
+        site/owhs-erd-current.svg       the current drawing (the v0.2 specification page and bundle)
+and splices the current drawing between <!-- erd --> ... <!-- /erd --> markers in
         site/erd.html                   the full-size page
         site/standard.html              the entity-map figure
+
+  python tools/build_erd.py            write every output (a second run makes no change)
+  python tools/build_erd.py --check    regenerate in memory and fail on any difference, a missing marker pair or a duplicated one
 Run from anywhere; paths are relative to the repository root.
 """
 import os
 import re
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SITE = os.path.join(ROOT, "site")
+SITE = os.environ.get("OWHS_SITE_DIR", os.path.join(ROOT, "site"))    # overridable so the self-test can run against temporary copies
 
 # House colours, written out because the SVG also renders as a plain <img>.
 INK, BODY, MUTED, LINE = "#101418", "#33393f", "#5c646c", "#e3e6e9"
@@ -42,7 +48,7 @@ BOXES = [
     ("WorkerPseudonym",          0, 1, "person", "opaque, per employer, banded"),
     ("AbsenceEpisode",           1, 1, "person", "one sickness absence"),
     ("ReturnToWorkOutcome",      2, 1, "person", "what happened after"),
-    ("WorkplaceIncident",        0, 2, "reserved", "reserved, no fields in v0.1"),
+    ("WorkplaceIncident",        0, 2, "reserved", "reserved, no fields in v0.1"),   # subtitle is relabelled per version, see LABELS
     ("OHEpisode",                1, 2, "person", "referral to fitness opinion"),
     ("ReasonableAdjustment",     2, 2, "person", "Equality Act s.20 adjustment"),
     ("AggregateReport",          3, 2, "output", "the only way results leave"),
@@ -55,6 +61,15 @@ BOXES = [
     ("ConstructDomain",          2, 4, "shared", "one health-domain vocabulary"),
     ("MeasurementContext",       3, 4, "shared", "what makes scores comparable"),
 ]
+
+# The two labellings. The archived drawing is the v0.1 release figure and never changes; the current drawing carries the
+# neutral labels the current pages use. Everything else about the two drawings is identical.
+LABELS = {
+    "v0.1": {"title": "OWHS v0.1 entity map", "reserved": "reserved, no fields in v0.1", "AggregateReport": "the only way results leave"},
+    "current": {"title": "OWHS entity map, drawn for v0.1 and unchanged in v0.2", "reserved": "reserved, no fields yet", "AggregateReport": "aggregate results for release"},
+}
+OUTPUTS = {"v0.1": "owhs-erd-v0.1.svg", "current": "owhs-erd-current.svg"}
+PAGES = ("erd.html", "standard.html")   # the current drawing is spliced into these
 
 STYLE = {
     "org":      dict(fill=PAPER,       stroke=BODY,       dash="",    name=INK,   sub=MUTED,   sw=1.4),
@@ -169,11 +184,12 @@ edge(pts((C["RiskAssessment"], R["RiskAssessment"]["b"]), (C["RiskAssessment"], 
      label="reserved", at=(C["Crosswalk"], LANE_RES - 5))
 
 
-def svg(inline=False):
+def svg(version="current", inline=False):
+    labels = LABELS[version]
     o = []
     o.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VIEW_W} {VIEW_H}" role="img" '
              f'aria-labelledby="erd-title erd-desc" font-family="{SANS}">')
-    o.append('<title id="erd-title">OWHS v0.1 entity map</title>')
+    o.append(f'<title id="erd-title">{labels["title"]}</title>')
     o.append('<desc id="erd-desc">Nineteen boxes on a grid: organisation-level entities across the top, '
              'the worker pseudonym and its individual-level records in the middle, the shared definitions along '
              'the bottom, the aggregate report and benchmark release on the right, and two reserved names. '
@@ -209,6 +225,10 @@ def svg(inline=False):
         o.append(f'<text x="{x}" y="{y}"{tr} font-family="{MONO}" font-size="9.5" fill="{colour}" text-anchor="{anchor}" '
                  f'paint-order="stroke" stroke="{PAPER}" stroke-width="4" stroke-linejoin="round">{label}</text>')
     for name, c, r, cls, sub in BOXES:
+        if cls == "reserved":
+            sub = labels["reserved"]
+        elif name in labels:
+            sub = labels[name]
         s = STYLE[cls]
         b = G[name]
         dash = f' stroke-dasharray="{s["dash"]}"' if s["dash"] else ""
@@ -221,25 +241,106 @@ def svg(inline=False):
     return "\n".join(o)
 
 
-def splice(path, drawing):
-    t = open(path, encoding="utf-8").read()
-    new, n = re.subn(r"<!-- erd -->.*?<!-- /erd -->", lambda m: "<!-- erd -->\n" + drawing + "\n<!-- /erd -->", t, count=1, flags=re.S)
+MARK_OPEN, MARK_CLOSE = "<!-- erd -->", "<!-- /erd -->"
+
+
+def spliced(text, drawing, path):
+    """The page text with the drawing between its one ordered marker pair; a missing, duplicated or reversed marker is refused, never chosen silently."""
+    opens, closes = text.count(MARK_OPEN), text.count(MARK_CLOSE)
+    if opens != 1 or closes != 1:
+        raise SystemExit(f"PROBLEM {path}: expected one erd marker pair, found {opens} opening and {closes} closing markers")
+    if text.index(MARK_OPEN) > text.index(MARK_CLOSE):
+        raise SystemExit(f"PROBLEM {path}: the closing erd marker precedes the opening one; nothing was written")
+    new, n = re.subn(re.escape(MARK_OPEN) + r".*?" + re.escape(MARK_CLOSE), lambda m: MARK_OPEN + "\n" + drawing + "\n" + MARK_CLOSE, text, count=1, flags=re.S)
     if n != 1:
-        raise SystemExit(f"no erd markers in {path}")
-    if new != t:
-        open(path, "w", encoding="utf-8").write(new)
-    return new != t
+        raise SystemExit(f"PROBLEM {path}: the erd marker pair did not match as one complete span; nothing was written")
+    return new
+
+
+def standalone(version):
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + svg(version) + "\n"
+
+
+def expected_outputs():
+    """Every output as fresh generation would write it: (path, text)."""
+    out = [(os.path.join(SITE, name), standalone(version)) for version, name in OUTPUTS.items()]
+    current = svg("current")
+    for page in PAGES:
+        p = os.path.join(SITE, page)
+        out.append((p, spliced(open(p, encoding="utf-8").read(), current, p)))
+    return out
+
+
+def check():
+    problems = []
+    for path, text in expected_outputs():
+        rel = os.path.relpath(path, ROOT)
+        if not os.path.exists(path):
+            problems.append(f"{rel} is missing")
+        elif open(path, encoding="utf-8").read() != text:
+            problems.append(f"{rel} differs from fresh generation")
+    if problems:
+        print("PROBLEM " + "; ".join(problems) + "; run python tools/build_erd.py")
+        return 1
+    print(f"up to date: {', '.join(OUTPUTS.values())} and the spliced drawing on {', '.join(PAGES)} match fresh generation; "
+          f"{len(BOXES)} boxes, {sum(1 for e in EDGES if e[0])} edges, one marker pair per page")
+    return 0
+
+
+def self_test():
+    """The marker contract against temporary copies: reversed, missing and duplicated markers are refused with the copy unchanged; a good copy regenerates and checks."""
+    import hashlib
+    import shutil
+    import subprocess
+    import tempfile
+    failures = 0
+    me = os.path.abspath(__file__)
+    real_site = os.path.join(ROOT, "site")
+    with tempfile.TemporaryDirectory() as tmp:
+        site = os.path.join(tmp, "site")
+        os.makedirs(site)
+        for name in list(OUTPUTS.values()) + list(PAGES):
+            shutil.copy(os.path.join(real_site, name), os.path.join(site, name))
+        env = dict(os.environ, OWHS_SITE_DIR=site)
+        good = open(os.path.join(site, "erd.html"), encoding="utf-8").read()
+        variants = {
+            "reversed markers": good.replace(MARK_OPEN, "\x00").replace(MARK_CLOSE, MARK_OPEN).replace("\x00", MARK_CLOSE),
+            "missing closing marker": good.replace(MARK_CLOSE, "", 1),
+            "duplicated opening marker": good.replace(MARK_OPEN, MARK_OPEN + "\n" + MARK_OPEN, 1),
+        }
+        for label, text in variants.items():
+            for mode in ("--check", "write"):
+                open(os.path.join(site, "erd.html"), "w", encoding="utf-8").write(text)
+                before = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                args = [sys.executable, "-B", me] + ([mode] if mode == "--check" else [])
+                r = subprocess.run(args, capture_output=True, text=True, env=env)
+                after = hashlib.sha256(open(os.path.join(site, "erd.html"), "rb").read()).hexdigest()
+                ok = r.returncode != 0 and "PROBLEM" in (r.stdout + r.stderr) and before == after
+                failures += not ok
+                print(("ok  " if ok else "FAIL"), f"{label}: {mode} refuses by name and leaves the page unchanged", "" if ok else (r.stdout + r.stderr)[-200:])
+        open(os.path.join(site, "erd.html"), "w", encoding="utf-8").write(good)
+        r = subprocess.run([sys.executable, "-B", me, "--check"], capture_output=True, text=True, env=env)
+        ok = r.returncode == 0
+        failures += not ok
+        print(("ok  " if ok else "FAIL"), "an unchanged copy passes --check", "" if ok else r.stdout[-200:])
+        r = subprocess.run([sys.executable, "-B", me], capture_output=True, text=True, env=env)
+        r2 = subprocess.run([sys.executable, "-B", me], capture_output=True, text=True, env=env)
+        ok = r.returncode == 0 and r2.returncode == 0 and "written" not in r2.stdout
+        failures += not ok
+        print(("ok  " if ok else "FAIL"), "a second writer run makes no change", "" if ok else r2.stdout[-200:])
+    print(f"self-test: {'all' if not failures else failures} {'checks passed' if not failures else 'checks FAILED'}")
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":
-    drawing = svg()
-    standalone = '<?xml version="1.0" encoding="UTF-8"?>\n' + drawing + "\n"
-    out = os.path.join(SITE, "owhs-erd-v0.1.svg")
-    changed = open(out, encoding="utf-8").read() != standalone if os.path.exists(out) else True
-    if changed:
-        open(out, "w", encoding="utf-8").write(standalone)
-    print(f"owhs-erd-v0.1.svg {'written' if changed else 'unchanged'}; "
-          f"{len(BOXES)} boxes, {sum(1 for e in EDGES if e[0])} edges")
-    for page in ("erd.html", "standard.html"):
-        p = os.path.join(SITE, page)
-        print(f"{page}: {'updated' if splice(p, drawing) else 'unchanged'}")
+    if "--self-test" in sys.argv[1:]:
+        sys.exit(self_test())
+    if "--check" in sys.argv[1:]:
+        sys.exit(check())
+    for path, text in expected_outputs():
+        rel = os.path.relpath(path, ROOT)
+        changed = open(path, encoding="utf-8").read() != text if os.path.exists(path) else True
+        if changed:
+            open(path, "w", encoding="utf-8").write(text)
+        print(f"{rel}: {'written' if changed else 'unchanged'}")
+    print(f"{len(BOXES)} boxes, {sum(1 for e in EDGES if e[0])} edges")

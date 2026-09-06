@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/Organisation.json",
+  "title": "OWHS Organisation v0.2",
+  "description": "Organisation scope and declared employee-count band. Not a statutory company-size determination, identity verification or disclosure assessment.",
+  "type": "object",
+  "properties": {
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "companiesHouseNumber": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Optional recorded registration reference. Format, existence and company identity are not verified."
+    },
+    "sicCode": {
+      "type": "string",
+      "pattern": "^[0-9]{5}$",
+      "minLength": 5,
+      "maxLength": 5,
+      "$comment": "UK SIC 2007 subclass syntax only. Membership, currentness and Companies House filing eligibility are not checked."
+    },
+    "sicVersion": {
+      "type": "string",
+      "const": "2007"
+    },
+    "sizeBand": {
+      "type": "string",
+      "enum": [
+        "micro",
+        "small",
+        "medium",
+        "large"
+      ],
+      "$comment": "codelist:org-size-band@0.1.1"
+    },
+    "sizeBandReferenceDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date to which the employee-count band relates. Unknown headcount must not be coded as zero."
+    },
+    "country": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "minLength": 2,
+      "maxLength": 2,
+      "$comment": "ISO 3166-1 alpha-2 syntax only. Membership and geopolitical status are not checked."
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "orgId",
+    "sizeBand",
+    "sizeBandReferenceDate",
+    "country"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "dependentRequired": {
+        "sicCode": [
+          "sicVersion"
+        ],
+        "sicVersion": [
+          "sicCode"
+        ]
+      }
+    }
+  ]
+}

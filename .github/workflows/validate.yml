@@ -5,9 +5,14 @@ name: validate
 # committed one, so a stale examples/validation_report.json cannot merge. It also fails
 # if any fixture stops matching the verdict its filename claims.
 #
-# Level 2 and Level 3 are specified and not implemented; nothing here tests them. In
-# particular nothing checks that an inline enum still matches the code list its $comment
-# pins, which the closed-vocabulary rule in specification section 5 states plainly.
+# Level 2 and Level 3 are specified and not implemented as conformance checks; no step
+# here certifies either. The steps below verify their own documented contracts only: the
+# v0.2 schemas match their generator, which writes each inline enum from the code list its
+# $comment pins at generation time; code-list versions resolve and archived copies are
+# intact; profiles, bundles and the sixteen entity types behave as documented through the
+# real validator; the specification matches its sources; the entity-graph checker's own
+# suite passes. None of this establishes that a coded value is current in an external
+# terminology, that submitted counts are true, or that an output is safe to disclose.
 
 on:
   push:
@@ -76,3 +81,21 @@ jobs:
         run: python tools/check_proposal_allowlist.py --self-test
       - name: document pages are rendered from docs/ and their local links resolve
         run: python tools/build_doc_page.py --check
+      - name: the nine remaining entity types (schemas, fixtures and named rules through the real validator)
+        run: python tools/check_remaining_entities.py --self-test
+      - name: the entity map drawings and the pages they are spliced into match fresh generation
+        run: python tools/build_erd.py --check
+      - name: the entity map's marker contract refuses reversed, missing and duplicated markers
+        run: python tools/build_erd.py --self-test
+      - name: the current v0.2 download and the site's schema, example and code-list mirrors are a fresh build of their sources
+        run: python tools/build_bundle.py --check
+      - name: bundle builder check refuses a stale member, a missing, extra, duplicate or misordered member, a mismatched or orphan mirror file
+        run: python tools/build_bundle.py --self-test
+      - name: the v0.1 release archive is the published one, byte for byte
+        run: python tools/check_v01_archive.py
+      - name: the v0.2 specification matches its sources
+        run: python tools/build_spec_v0_2.py --check
+      - name: specification generator (no invented privacy class, inheritance never widens, opaque-reference controls, exact limit statements)
+        run: python tools/build_spec_v0_2.py --self-test
+      - name: entity-graph checker (envelope, G01 to G10, retained measurement checks, profiles, strict input) through its own command line
+        run: python tools/check_entity_graph.py --self-test

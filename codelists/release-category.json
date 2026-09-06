@@ -1,0 +1,17 @@
+{
+  "codelist": "release-category",
+  "version": "0.1.0",
+  "anchor": "OWHS P2/P4 and the existing v0.2 AggregateReport declarations. A producer-declared classification, not an inferred clinical diagnosis.",
+  "sources": [],
+  "values": [
+    {
+      "code": "ordinary"
+    },
+    {
+      "code": "severe-distress"
+    },
+    {
+      "code": "safeguarding"
+    }
+  ]
+}

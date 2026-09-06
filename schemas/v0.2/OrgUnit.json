@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/OrgUnit.json",
+  "title": "OWHS OrgUnit v0.2",
+  "description": "Organisation-scoped unit and declared headcount band. No zero band exists in the pinned vocabulary; unknown or zero is not 1-4. References and hierarchy need supplied-bundle checks.",
+  "type": "object",
+  "properties": {
+    "unitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "parentUnitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "headcountBand": {
+      "type": "string",
+      "enum": [
+        "1-4",
+        "5-9",
+        "10-19",
+        "20-49",
+        "50-99",
+        "100-249",
+        "250+"
+      ],
+      "$comment": "codelist:headcount-band@0.1.0"
+    },
+    "headcountReferenceDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "unitId",
+    "orgId",
+    "headcountBand",
+    "headcountReferenceDate"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

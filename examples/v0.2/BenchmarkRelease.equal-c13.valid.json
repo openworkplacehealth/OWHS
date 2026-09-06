@@ -1,0 +1,48 @@
+{
+  "benchmarkId": "benchmark-demo",
+  "releaseVersion": "1",
+  "composition": {
+    "orgCount": 3,
+    "sectors": [],
+    "sicVersion": "2007",
+    "sizeBands": [
+      "small"
+    ],
+    "sampleSizes": {
+      "people": 30,
+      "observations": 90
+    }
+  },
+  "percentiles": {
+    "method": "Synthetic nearest-rank illustration; equal person weights, no missing values.",
+    "values": [
+      {
+        "probability": 0.25,
+        "value": 2
+      },
+      {
+        "probability": 0.5,
+        "value": 3
+      },
+      {
+        "probability": 0.75,
+        "value": 4
+      }
+    ]
+  },
+  "leaveOneOut": false,
+  "validFrom": "2026-09-01",
+  "validTo": "2026-09-01",
+  "source": "Synthetic example; no observed workforce data.",
+  "dataPeriodStart": "2026-08-01",
+  "dataPeriodEnd": "2026-08-31",
+  "measure": {
+    "metricCode": "synthetic-score",
+    "scoreUnit": "synthetic points",
+    "scoringDescriptorRef": "synthetic-method-v1"
+  },
+  "population": "Synthetic contributing organisations and workers.",
+  "samplingMethod": "Constructed example, not a sample survey.",
+  "knownLimitations": "Illustration only. Sector composition was not specified. No empirical percentile or population inference.",
+  "releaseCategory": "ordinary"
+}

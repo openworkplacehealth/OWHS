@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The entity map · OWHS</title>
-<meta name="description" content="The Open Workplace Health Standard v0.1 data model as one picture: the organisation, the pseudonymous worker and their records, the shared definitions, and the aggregate report that is the only way results leave.">
+<meta name="description" content="The Open Workplace Health Standard data model: organisation and management records, shared measurement definitions and aggregate reporting. The specification states the disclosure rules for each field.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://openworkplacehealth.org/erd.html">
 <!-- auto -->
@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Open Workplace Health Standard">
 <meta property="og:url" content="https://openworkplacehealth.org/erd.html">
 <meta property="og:title" content="The entity map · OWHS">
-<meta property="og:description" content="The Open Workplace Health Standard v0.1 data model as one picture: the organisation, the pseudonymous worker and their records, the shared definitions, and the aggregate report that is the only way results leave.">
+<meta property="og:description" content="The Open Workplace Health Standard data model: organisation and management records, shared measurement definitions and aggregate reporting. The specification states the disclosure rules for each field.">
 <meta name="twitter:card" content="summary">
 <!-- /auto -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -82,17 +82,17 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 
 <article><div class="wrap wide">
   <h1>The entity map</h1>
-  <p class="meta">spec v0.1 · nineteen names on one page · drawn from the specification's data model</p>
+  <p class="meta">spec v0.2 draft · nineteen names on one page · drawn from the specification's data model</p>
 
   <p>The data model as one picture. Read it left to right: the organisation and what it provides, the
   pseudonymous worker and every record that hangs off that pseudonym, the shared definitions those records
-  point at, and on the right the aggregate report, which is the only way any of it leaves.</p>
+  point at, and on the right the report used for employer-visible aggregate results.</p>
 
   <div class="fig">
-    <div class="cap"><span><b>figure</b> · the entity map, OWHS v0.1</span><span>seventeen entities · two reserved names</span></div>
+    <div class="cap"><span><b>figure</b> · the entity map, drawn for v0.1 and unchanged in v0.2</span><span>seventeen entities · two reserved names</span></div>
 <!-- erd -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="erd-title erd-desc" font-family="Inter, system-ui, -apple-system, sans-serif">
-<title id="erd-title">OWHS v0.1 entity map</title>
+<title id="erd-title">OWHS entity map, drawn for v0.1 and unchanged in v0.2</title>
 <desc id="erd-desc">Nineteen boxes on a grid: organisation-level entities across the top, the worker pseudonym and its individual-level records in the middle, the shared definitions along the bottom, the aggregate report and benchmark release on the right, and two reserved names. Solid lines are structural references, dotted lines are the aggregation flow into the report, dashed lines mark reserved names.</desc>
 <defs><marker id="erd-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6fb0a4"/></marker><marker id="erd-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0b6e5f"/></marker></defs>
 <rect x="0" y="0" width="960" height="540" fill="#ffffff"/>
@@ -169,7 +169,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 <text x="581" y="175" text-anchor="middle" font-size="9.5" fill="#5c646c">what happened after</text></g>
 <g><rect x="20" y="240" width="170" height="46" rx="6" fill="none" stroke="#9aa3ab" stroke-width="1.2" stroke-dasharray="5 4"/>
 <text x="105" y="260" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#5c646c">WorkplaceIncident</text>
-<text x="105" y="275" text-anchor="middle" font-size="9.5" fill="#5c646c">reserved, no fields in v0.1</text></g>
+<text x="105" y="275" text-anchor="middle" font-size="9.5" fill="#5c646c">reserved, no fields yet</text></g>
 <g><rect x="258" y="240" width="170" height="46" rx="6" fill="#e6f2f0" stroke="#6fb0a4" stroke-width="1.2"/>
 <text x="343" y="260" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#101418">OHEpisode</text>
 <text x="343" y="275" text-anchor="middle" font-size="9.5" fill="#5c646c">referral to fitness opinion</text></g>
@@ -178,7 +178,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 <text x="581" y="275" text-anchor="middle" font-size="9.5" fill="#5c646c">Equality Act s.20 adjustment</text></g>
 <g><rect x="734" y="240" width="170" height="46" rx="6" fill="#0b6e5f" stroke="#0b6e5f" stroke-width="1.2"/>
 <text x="819" y="260" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#ffffff">AggregateReport</text>
-<text x="819" y="275" text-anchor="middle" font-size="9.5" fill="#cfe5e0">the only way results leave</text></g>
+<text x="819" y="275" text-anchor="middle" font-size="9.5" fill="#cfe5e0">aggregate results for release</text></g>
 <g><rect x="20" y="340" width="170" height="46" rx="6" fill="#ffffff" stroke="#33393f" stroke-width="1.4"/>
 <text x="105" y="360" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#101418">DisabilityParticipation</text>
 <text x="105" y="375" text-anchor="middle" font-size="9.5" fill="#5c646c">org level, banded, n at least 10</text></g>
@@ -193,7 +193,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 <text x="819" y="375" text-anchor="middle" font-size="9.5" fill="#cfe5e0">comparison set, composition shown</text></g>
 <g><rect x="20" y="440" width="170" height="46" rx="6" fill="none" stroke="#9aa3ab" stroke-width="1.2" stroke-dasharray="5 4"/>
 <text x="105" y="460" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#5c646c">RiskAssessment</text>
-<text x="105" y="475" text-anchor="middle" font-size="9.5" fill="#5c646c">reserved, no fields in v0.1</text></g>
+<text x="105" y="475" text-anchor="middle" font-size="9.5" fill="#5c646c">reserved, no fields yet</text></g>
 <g><rect x="258" y="440" width="170" height="46" rx="6" fill="#f6f7f8" stroke="#b9c0c6" stroke-width="1.2"/>
 <text x="343" y="460" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#101418">Crosswalk</text>
 <text x="343" y="475" text-anchor="middle" font-size="9.5" fill="#5c646c">to HSE MS, ISO 45003, whiu:</text></g>
@@ -207,13 +207,14 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 <!-- /erd -->
     <div class="legend">
       <span><i class="o"></i>organisation level</span>
-      <span><i class="s"></i>individual level, pseudonymous, never employer-visible</span>
-      <span><i></i>the only output that leaves</span>
+      <span><i class="s"></i>individual records; field-level disclosure rules apply</span>
+      <span><i></i>aggregate reporting output</span>
       <span><i class="d"></i>shared definitions</span>
-      <span><i class="r"></i>reserved, no fields in v0.1</span>
+      <span><i class="r"></i>reserved, no fields yet</span>
       <span><span class="ln"></span>structural reference</span>
       <span><span class="ln agg"></span>aggregation flow</span>
     </div>
+    <p class="small">Individual instrument results are never employer-visible. Only the expressly classified individual-employer fields may be disclosed at individual grain under the specification's independent-legal-basis condition. The diagram does not grant permission to disclose a record.</p>
   </div>
 
   <div class="three">

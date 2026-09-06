@@ -4,7 +4,7 @@
     python tools/check_codelist_mappings.py --self-test
     OWHS_ONS_WORKBOOK=/path/to/sicknessabsence2025.xlsx python tools/check_codelist_mappings.py --self-test
 
-What is checked: the registry lists exactly 24 code lists and resolves every pinned version to a file; archived
+What is checked: the registry lists exactly 27 code lists and resolves every pinned version to a file; archived
 files are byte-identical to the pinned originals and no command here writes a code list; absence-reason@0.2.0
 carries the eleven ONS rows once each with no Total row, keeps the four previously omitted categories distinct,
 and maps neither non-disclosure nor missing data to Other; no legacy Other is upgraded by default; the v0.1
@@ -89,7 +89,7 @@ def main():
 
     before = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in CL.rglob("*.json")}
     reg = load(CL / "_registry.json")
-    check("registry lists exactly 24 code lists", len(reg["lists"]) == 24, str(len(reg["lists"])))
+    check("registry lists exactly 27 code lists", len(reg["lists"]) == 27, str(len(reg["lists"])))
     check("the crosswalk is registered as a mapping, not a 25th list", any(m["id"] == "absence-reason-ons-2025" for m in reg.get("mappings", [])) and not any(l["name"] == "absence-reason-ons-2025" for l in reg["lists"]))
     unresolved = [(l["name"], v) for l in reg["lists"] for v, f in l.get("versions", {}).items() if not (CL / f).exists()]
     check("every registered version resolves to an existing file", not unresolved, str(unresolved))
