@@ -7,15 +7,20 @@
                                                files byte for byte; nothing is written, so a stale checkout cannot repair itself
     python tools/build_bundle.py --self-test   the controls below in a temporary copy of the tree
 
+Arguments are validated before anything runs: an unrecognised option, an extra positional argument or two modes at once exit 2
+with nothing written; only the documented no-argument build writes. A declared source directory that is missing is a required-
+source failure: --check names it and the stale files still under its publication path, and the build refuses rather than
+emptying the mirror.
+
 The bundle holds both specification versions as published under site/spec/ (v0.2 current, v0.1 archive, each labelled by its
 file name), the ERD, the versioned schemas and catalogue, examples, code lists, validator and checkers, licences, notice,
 governance, decisions and README. The earlier owhs-v0.1-bundle.zip is the published release archive and is never touched here
 (tools/check_v01_archive.py holds its identity). The domain routing table is not part of the release and is never included.
 File order is deterministic. ZIP timestamps and compression metadata are not content: a metadata-only regeneration with the same
 ordered members and bytes passes the check."""
-import hashlib, pathlib, shutil, sys, tempfile, warnings, zipfile
+import hashlib, os, pathlib, shutil, subprocess, sys, tempfile, warnings, zipfile
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(os.environ["OWHS_BUNDLE_ROOT"]) if os.environ.get("OWHS_BUNDLE_ROOT") else pathlib.Path(__file__).resolve().parents[1]   # the override exists for the self-test's command-line cases on a temporary tree
 SUBDIRS = {"schemas": ("v0.1", "v0.2", "bundles"), "examples": ("v0.2", "bundles/v0.2", "bundles/v0.2/cases"), "codelists": ("archive", "mappings")}   # versioned sets, the graph envelope, fixtures, archived lists and the crosswalk
 TOOLS = ("check_profiles.py", "check_measurement.py", "check_codelist_mappings.py", "check_remaining_entities.py", "check_entity_graph.py")
 
@@ -47,7 +52,9 @@ def files(root):
 
 
 def mirror_pairs(root):
-    """(destination, source) for every JSON file a managed mirror path must hold; managed directories are the three mirrors' tops and their listed subdirectories."""
+    """(destination, source) for every JSON file a managed mirror path must hold, and the managed publication directories.
+    The managed set is declared by SUBDIRS and does not depend on whether a source directory currently exists: a source
+    directory that has gone leaves its publication path managed with no expected files, so anything still there is stale."""
     pairs, managed = [], []
     for d, subs in SUBDIRS.items():
         dest = root / "site" / "spec" / d
@@ -55,15 +62,23 @@ def mirror_pairs(root):
         for p in sorted((root / d).glob("*.json")):
             pairs.append((dest / p.name, p))
         for sub in subs:
-            if (root / d / sub).is_dir():
-                managed.append(dest / sub)
-                for p in sorted((root / d / sub).glob("*.json")):
-                    pairs.append((dest / sub / p.name, p))
+            managed.append(dest / sub)
+            for p in sorted((root / d / sub).glob("*.json")):
+                pairs.append((dest / sub / p.name, p))
     return pairs, managed
+
+
+def missing_sources(root):
+    """Declared source directories that do not exist. The builder treats absence as a required-source failure rather than
+    silently publishing an empty mirror; --check reports it and the build refuses."""
+    return [f"{d}/{sub}" for d, subs in SUBDIRS.items() for sub in subs if not (root / d / sub).is_dir()] + [d for d in SUBDIRS if not (root / d).is_dir()]
 
 
 def build(root):
     out = root / "site" / "spec" / "owhs-v0.2-bundle.zip"
+    gone = missing_sources(root)
+    if gone:
+        raise SystemExit(f"refusing to build: declared source director{'y' if len(gone) == 1 else 'ies'} missing: {gone}; a publication path is never emptied by a build because its source vanished")
     F = files(root)
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         for arc, src in sorted(F.items()):
@@ -86,7 +101,7 @@ def build(root):
 
 def check(root):
     """Read-only. Returns a list of problems; empty means the bundle and mirrors are a fresh build of the current sources."""
-    problems = []
+    problems = [f"declared source directory missing: {g}" for g in missing_sources(root)]
     out = root / "site" / "spec" / "owhs-v0.2-bundle.zip"
     F = files(root)
     expected = [arc for arc, _ in sorted(F.items())]
@@ -193,8 +208,23 @@ def self_test():
         unmanaged = root / "site" / "spec" / "notes.json"; unmanaged.write_text("{}")
         t("an unmanaged path beside the mirrors is left alone", not check(root), check(root)[:2]); unmanaged.unlink()
         t("the check never refreshed the mirrors: the mismatch above was reported, not repaired", mirror.read_bytes() == mb)
-        h2 = _tree_hash(root); build(root)
-        t("a second normal build keeps the same logical content and managed mirror", not check(root) and _tree_hash(root / "site" / "spec" / "schemas") == _tree_hash(root / "site" / "spec" / "schemas") and check(root) == [], check(root)[:2])
+        def logical(o):
+            with zipfile.ZipFile(o) as z: return [(n, hashlib.sha256(z.read(n)).hexdigest()) for n in z.namelist()]
+        members_before = logical(out); mirrors_before = {m: _tree_hash(m) for m in mirror_pairs(root)[1]}
+        build(root)
+        t("a second normal build keeps the same ordered members and bytes and the same managed mirrors (metadata may differ)", logical(out) == members_before and {m: _tree_hash(m) for m in mirror_pairs(root)[1]} == mirrors_before and not check(root), check(root)[:2])
+        # a deleted source subdirectory must not drop its publication path from the managed set
+        moved = pathlib.Path(tmp) / "moved-archive"; shutil.move(root / "codelists" / "archive", moved)
+        p = check(root); t("a deleted source subdirectory: its stale mirror files are refused and the missing source is named", any("declared source directory missing: codelists/archive" in x for x in p) and any("orphan" in x and "codelists/archive" in x for x in p), p[:3])
+        r = subprocess.run([sys.executable, "-B", str(ROOT / "tools" / "build_bundle.py")], capture_output=True, text=True, cwd=root, env={**os.environ, "OWHS_BUNDLE_ROOT": str(root)})
+        t("a deleted source subdirectory: the build refuses rather than emptying the publication path", r.returncode != 0 and "refusing to build" in (r.stdout + r.stderr) and (root / "site" / "spec" / "codelists" / "archive").is_dir() and any((root / "site" / "spec" / "codelists" / "archive").glob("*.json")), (r.returncode, (r.stdout + r.stderr)[-200:]))
+        shutil.move(moved, root / "codelists" / "archive"); t("the source restored: the check passes again", not check(root), check(root)[:2])
+        # command-line contract, through the real script on the temporary tree
+        readme.write_bytes(original + b"\nedited again\n"); stale_zip = out.read_bytes()
+        for label, args in (("a misspelled --cehck", ["--cehck"]), ("an extra positional argument", ["--check", "site"]), ("conflicting modes", ["--check", "--self-test"])):
+            r = subprocess.run([sys.executable, "-B", str(ROOT / "tools" / "build_bundle.py"), *args], capture_output=True, text=True, env={**os.environ, "OWHS_BUNDLE_ROOT": str(root)})
+            t(f"command line: {label} exits 2 and writes nothing (the stale bundle is untouched)", r.returncode == 2 and "nothing was written" in r.stdout and out.read_bytes() == stale_zip, (r.returncode, r.stdout[-160:]))
+        readme.write_bytes(original)
         t("the v0.1 release archive is byte-identical throughout", (root / "site" / "spec" / "owhs-v0.1-bundle.zip").read_bytes() == before_archive)
         with zipfile.ZipFile(out) as z:
             t("both spec markdown members come from the publication copies under site/spec/", z.read("spec/OWHS-v0.2-draft.md") == (root / "site" / "spec" / "OWHS-v0.2-draft.md").read_bytes() and z.read("spec/OWHS-v0.1-draft.md") == (root / "site" / "spec" / "OWHS-v0.1-draft.md").read_bytes())
@@ -202,7 +232,17 @@ def self_test():
     return 1 if failures else 0
 
 
+MODES = {"--check", "--self-test"}
+
+
 def main(argv):
+    unknown = [a for a in argv if a not in MODES]
+    if unknown:
+        print(f"unrecognised argument(s) {unknown}; documented modes are no argument (build), --check and --self-test; nothing was written")
+        return 2
+    if len(set(argv)) > 1:
+        print(f"conflicting modes {sorted(set(argv))}; give one mode; nothing was written")
+        return 2
     if "--self-test" in argv:
         return self_test()
     if "--check" in argv:
