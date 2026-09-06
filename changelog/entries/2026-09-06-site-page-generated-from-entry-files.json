@@ -2,5 +2,5 @@
  "tab": "site",
  "date": "2026-09-06",
  "shown": "6 Sep 2026",
- "html": "This page is now generated from one file per entry in the <a href=\"https://github.com/openworkplacehealth/OWHS/tree/main/changelog/entries\">repository</a>, with the tab counts computed, so two changes recorded on the same day no longer collide when they are combined. A check refuses a page that is not a fresh render of its entries, and a published change must add an entry file rather than edit this page by hand."
+ "html": "This page is generated from one file per entry in the <a href=\"https://github.com/openworkplacehealth/OWHS/tree/main/changelog/entries\">repository</a>, with the tab counts computed. Separate entry files preserve each change's source; the generated page may need to be regenerated when branches are combined. A check refuses a page that is not a fresh render of its entries, and a published change must add an entry file in its category's tab rather than edit this page by hand; specification, schema, code-list, example and validator changes also need a dated entry in the repository changelog."
 }

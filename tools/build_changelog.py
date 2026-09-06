@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The changelog page is generated from one file per entry, so two changes never collide.
+"""The changelog page is generated from one file per entry, with tab counts computed from those entries.
 
 Usage:
   python tools/build_changelog.py            render the three tabs of site/changelog.html from changelog/entries/*.json
@@ -11,6 +11,8 @@ the month is known), shown (the date as printed), html (the row text, links allo
 specification tabs a version. An optional order places entries that share a date: higher first. The page's
 head, navigation, footer and stamped lines are not touched; only the rows and the tab counts are rewritten.
 """
+import datetime
+import html as html_module
 import json
 import pathlib
 import re
@@ -22,6 +24,30 @@ PAGE = ROOT / "site" / "changelog.html"
 TABS = ("registry", "specification", "site")
 VERSIONED = ("registry", "specification")
 DASHES = "\u2014\u2013"  # em and en dashes are not site copy
+
+
+STRUCTURAL_TAG = re.compile(r"</?\s*(table|thead|tbody|tfoot|tr|td|th|section|article|div|script|style|button|form|input)\b", re.I)
+
+
+def valid_date(text):
+    """A real calendar date as YYYY-MM-DD, or a real month as YYYY-MM."""
+    if not isinstance(text, str):
+        return False
+    try:
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            datetime.date.fromisoformat(text)
+            return True
+        if re.fullmatch(r"\d{4}-\d{2}", text):
+            datetime.date.fromisoformat(text + "-01")
+            return True
+    except ValueError:
+        return False
+    return False
+
+
+def visible_text(fragment):
+    """The text a reader sees: tags removed, entities decoded, whitespace collapsed."""
+    return re.sub(r"\s+", " ", html_module.unescape(re.sub(r"<[^>]*>", "", fragment))).strip()
 
 
 def load_entries(folder):
@@ -48,8 +74,8 @@ def load_entries(folder):
                 found.append(f"{p.name}: {k} is missing or empty")
         if e.get("tab") not in TABS:
             found.append(f"{p.name}: tab must be one of {', '.join(TABS)}")
-        if isinstance(e.get("date"), str) and not re.fullmatch(r"\d{4}-\d{2}(-\d{2})?", e["date"]):
-            found.append(f"{p.name}: date must be YYYY-MM-DD or YYYY-MM")
+        if isinstance(e.get("date"), str) and not valid_date(e["date"]):
+            found.append(f"{p.name}: date must be a real calendar date as YYYY-MM-DD, or a real month as YYYY-MM")
         if e.get("tab") in VERSIONED and (not isinstance(e.get("version"), str) or not e["version"].strip()):
             found.append(f"{p.name}: a {e.get('tab')} entry needs a version")
         if e.get("tab") == "site" and "version" in e:
@@ -58,8 +84,10 @@ def load_entries(folder):
             found.append(f"{p.name}: order must be an integer")
         for k in ("html", "shown", "version"):
             v = e.get(k)
-            if isinstance(v, str) and (any(d in v for d in DASHES) or "</td>" in v or "<tr" in v or "\n" in v):
-                found.append(f"{p.name}: {k} must be one line of row text without dashes of the em or en kind and without table markup")
+            if isinstance(v, str) and (any(d in v for d in DASHES) or "\n" in v or STRUCTURAL_TAG.search(v)):
+                found.append(f"{p.name}: {k} must be one line of row text without dashes of the em or en kind and without table, row, cell, section or script markup in any letter case")
+        if isinstance(e.get("html"), str) and not visible_text(e["html"]):
+            found.append(f"{p.name}: html has no visible text")
         if not found or all(not f.startswith(p.name) for f in found):
             entries.append((p.name, e))
     return entries, found
@@ -157,6 +185,10 @@ def self_test():
         put("2026-09-01-reg.json", {"tab": "registry", "date": "2026-09-01", "shown": "1 Sep 2026", "version": "v0.8.0", "html": "registry row"})
         es, fs = load_entries(d)
         t("a folder of valid entries loads", not fs, fs)
+        put("2026-09-06-link.json", {**base, "html": "a <a href=\"x.html\">link</a> and a <span class=\"mono\">code</span> span"})
+        es2, fs2 = load_entries(d)
+        t("a harmless inline link or span stays valid", not fs2, fs2)
+        (d / "2026-09-06-link.json").unlink()
         site = [e["html"] for _, e in ordered(es, "site")]
         t("newest date first; within a date the higher order first, then filename order", site == ["placed first", "one", "two", "older"], site)
         fresh = render(page, es)
@@ -175,6 +207,12 @@ def self_test():
             "registry without version": {"tab": "registry", "date": "2026-09-01", "shown": "1 Sep 2026", "html": "x"},
             "em dash in the row": {**base, "html": "a \u2014 b"},
             "table markup in the row": {**base, "html": "a</td><td>b"},
+            "upper-case row markup in the row": {**base, "html": "A</TD></TR><TR><TD>6 Sep 2026</TD><TD>B"},
+            "a section boundary in the row": {**base, "html": "a</section><section>b"},
+            "an impossible calendar date": {**base, "date": "2026-99-99"},
+            "an impossible month": {**base, "date": "2026-13"},
+            "no visible text": {**base, "html": "<span></span>"},
+            "only an entity of whitespace": {**base, "html": "&nbsp;"},
             "unknown key": {**base, "author": "x"},
             "order as a string": {**base, "order": "1"},
             "not an object": "[1, 2]",
