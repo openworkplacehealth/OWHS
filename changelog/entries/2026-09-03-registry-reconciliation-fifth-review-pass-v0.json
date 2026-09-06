@@ -1,0 +1,8 @@
+{
+ "tab": "registry",
+ "date": "2026-09-03",
+ "shown": "3 Sep 2026",
+ "version": "v0.9.0",
+ "html": "Reconciliation of the fifth review pass, of v0.8.0 and scoped to the changes 1.5 made, before first publication; the check's verdict was fit to publish with one grade to move first, and its three findings and two notes were all taken. <a href=\"instrument-registry/rubric.html\">Rubric v1.6</a>: the norm rule is read as written, so a High grade on populations, languages and norms rests on a study that states a norm, cut-off, prevalence or reference value and not on a word that matches the test; section 10 says that precondition evidence sits only on a High cell or a High <span class=\"mono\">previous</span> block. One grade moved, COPSOQ III populations, languages and norms High to Moderate (the entry that met the rule names a shared-variance figure in the Czech screening version; the study that carries norms in substance states no value in its abstract, and the cell returns to High when those values are read from the full text, first on the check list). European Working Conditions Survey internal consistency changes status from well-established to thin, grade unchanged at Low. The K10 criterion-validity judgement is corrected in one clause (the two developer studies are two designs, not one programme), grade unchanged. The WHO-5 populations cell notes that its one norm-bearing entry is a cut-off validated in diabetes patients and holds on its working-adult entries. One statistic gains a population clause with its value unchanged. All 420 DOIs resolved on the conformance date. Schema 0.7 unchanged. Every changed cell keeps its 1.5 values in <span class=\"mono\">previous</span>. Logged as correction C-0009.",
+ "order": 2
+}

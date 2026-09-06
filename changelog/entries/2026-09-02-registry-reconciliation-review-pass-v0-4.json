@@ -1,0 +1,8 @@
+{
+ "tab": "registry",
+ "date": "2026-09-02",
+ "shown": "2 Sep 2026",
+ "version": "v0.5.0",
+ "html": "Reconciliation of the review pass of v0.4.0, before first publication. <a href=\"instrument-registry/rubric.html\">Rubric v1.2</a>: the indirectness flag has three values (direct, general, indirect), each cell states the studies its flag rests on, a grade never moves because a flag moved, and a High grade needs at least two cited studies with a sample size and a statistic, listed on the cell. The six C-0004 grade moves are reversed and six further High cells drop to Moderate (three for want of the numbers, two for indirect evidence on a population-sensitive property, one for a mixed cell that names no second form); 49 flags change; six criterion cells that had been graded on a reference standard the construct does not have become Absent (category error); four not-applicable cells become Absent and one Absent cell becomes not-applicable. Every Absent or Not-applicable cell names its absence type and carries no flag. Schema 0.5: <span class=\"mono\">indirectness_basis</span>, <span class=\"mono\">absence_type</span>, <span class=\"mono\">high_basis</span>, a <span class=\"mono\">corresponds-with</span> relation for single items whose only published link to an instrument is a correlation, and a generated integrity block. The site build now fails on any cell that breaks these rules. All logged as correction C-0005 with the rubric 1.1 values kept on each changed cell. No fresh literature search: as-of dates unchanged.",
+ "order": 3
+}

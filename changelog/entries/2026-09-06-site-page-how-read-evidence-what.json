@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "html": "A page on <a href=\"science.html\">how to read the evidence</a>: what a registry rating, a citation and a conformance check establish and do not. It is written as <span class=\"mono\">docs/science.md</span> and rendered through a fixed page shell, with a check that refuses a page that no longer matches its source or links to a missing file. The sitemap and <span class=\"mono\">llms.txt</span> list the page."
+}

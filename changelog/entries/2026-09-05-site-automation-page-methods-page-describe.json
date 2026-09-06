@@ -1,0 +1,7 @@
+{
+ "tab": "site",
+ "date": "2026-09-05",
+ "shown": "5 Sep 2026",
+ "html": "The <a href=\"automation.html\">automation page</a> and the <a href=\"methods.html\">methods page</a> now describe the monthly sweep as it runs: an assisted session working through web search that verifies every DOI it reports and states which indexes it could query directly. Direct querying with the published strings, the monthly proposal check, the frozen-month regression test and regeneration on merge are listed as planned, not running. The sweep's instructions now forbid any grade, status or licence change outright. The README and the specification no longer say that closed objects guarantee the identifier ban or that the validator enforces the aggregation floors: closure stops an identifier occupying a field of its own, and the floors are a Level 3 obligation no tool here verifies. The specification's code-list table gains the <span class=\"mono\">safeguarding-category</span> row it lacked, and the methods page links the current rubric.",
+ "order": 2
+}

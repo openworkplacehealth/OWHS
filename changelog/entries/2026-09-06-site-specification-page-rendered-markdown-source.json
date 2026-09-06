@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "html": "The <a href=\"spec/\">specification page</a> is rendered from its markdown source by a build step, and a check refuses a page that no longer matches the source. The rendered page had been edited by hand alongside the markdown and had drifted: it lacked the closed-vocabulary rule, the corrected error map and the newest code-list rows the markdown carried. It now carries them."
+}

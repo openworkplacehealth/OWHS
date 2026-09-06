@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "html": "The <a href=\"search.html\">search index</a> is generated from the pages, the registry dataset and the question bank, and a check refuses an index that no longer matches them. The hand-built index had gone stale: it labelled the rubric v1.4 while the registry is graded under v1.6, it lacked twenty-one pages (among them How it works, the entity map, the registry's how-to-read and admission pages and every question-bank group), and it withheld the wording of forty-two question-bank items whose wording the bank has published since version 0.2.0. Withheld wording stays out of the index."
+}
