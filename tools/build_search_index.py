@@ -23,6 +23,7 @@ import json
 import pathlib
 import re
 import sys
+from html.parser import HTMLParser
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
@@ -36,6 +37,61 @@ IDX_LINE = re.compile(r"^const IDX=(\[.*?\]);$", re.M | re.S)
 
 def strip_tags(text):
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", text))).strip()
+
+
+class PageFacts(HTMLParser):
+    """Title, meta description and first paragraph of a page, read structurally: attribute order, quoting and whitespace do not matter."""
+
+    def __init__(self):
+        super().__init__()
+        self.title = None
+        self.description = None
+        self.first_paragraph = None
+        self._in_title = False
+        self._p_depth = 0
+        self._p_text = []
+        self._skip = 0
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag == "title" and self.title is None:
+            self._in_title = True
+            self._t = []
+        elif tag == "meta" and (a.get("name") or "").strip().lower() == "description" and self.description is None:
+            self.description = re.sub(r"\s+", " ", html.unescape(a.get("content") or "")).strip()
+        elif tag in ("script", "style"):
+            self._skip += 1
+        elif tag == "p" and self.first_paragraph is None:
+            self._p_depth += 1
+
+    def handle_endtag(self, tag):
+        if tag == "title" and self._in_title:
+            self._in_title = False
+            self.title = re.sub(r"\s+", " ", "".join(self._t)).strip()
+        elif tag in ("script", "style") and self._skip:
+            self._skip -= 1
+        elif tag == "p" and self._p_depth:
+            self._p_depth -= 1
+            if self._p_depth == 0 and self.first_paragraph is None:
+                text = re.sub(r"\s+", " ", "".join(self._p_text)).strip()
+                self._p_text = []
+                if text:
+                    self.first_paragraph = text
+
+    def handle_data(self, data):
+        if self._skip:
+            return
+        if self._in_title:
+            self._t.append(data)
+        elif self._p_depth:
+            self._p_text.append(data)
+
+
+def page_facts(text):
+    p = PageFacts()
+    p.feed(text)
+    p.close()
+    return p.title, p.description, p.first_paragraph
 
 
 def page_name(title):
@@ -60,16 +116,11 @@ def page_entries(site=SITE, record_ids=()):
         if f.name in SKIP_PAGES or (f.parent.name == "instrument-registry" and f.stem in record_ids):
             continue
         text = f.read_text(encoding="utf-8", errors="replace")
-        title = re.search(r"<title>(.*?)</title>", text, re.S)
-        desc = re.search(r'<meta name="description" content="([^"]*)"', text)
+        title, desc, para = page_facts(text)
         if not title:
-            continue
-        if desc and desc.group(1).strip():
-            x = strip_tags(desc.group(1))
-        else:
-            para = re.search(r"<p[^>]*>(.*?)</p>", text, re.S)
-            x = strip_tags(para.group(1)) if para else ""
-        out.append({"t": "Page", "n": page_name(strip_tags(title.group(1))), "x": x[:EXCERPT], "u": rel})
+            raise SystemExit(f"PROBLEM {rel} has no title, so it cannot be indexed; give the page a <title> or exclude it explicitly")
+        x = desc if desc else (para or "")
+        out.append({"t": "Page", "n": page_name(title), "x": x[:EXCERPT], "u": rel})
     return out
 
 
@@ -151,7 +202,33 @@ def self_test():
     t("markup, a missing target and a duplicate are each named", any("markup" in p for p in probs) and any("does not exist" in p for p in probs) and any("duplicate" in p for p in probs), probs)
     page = SEARCH.read_text(encoding="utf-8")
     t("the committed page carries exactly one IDX constant and the render replaces only it", render(page, entries).count("const IDX=") == 1 and IDX_LINE.sub("", render(page, entries)) == IDX_LINE.sub("", page))
-    print(f"{10 - failures}/10 search-index checks passed")
+    reordered = "<html><title>A · OWHS</title>\n<meta content='Actual description' name=\"description\">\n<p>Fallback</p></html>"
+    t("a meta description is found whatever its attribute order and quoting", page_facts(reordered) == ("A · OWHS", "Actual description", "Fallback"))
+    nested = "<html><head><title> Nested\n page </title><style>p{}</style></head><body><script>var x=1;</script><p>First <b>bold</b> and <a href='#'>linked</a> text.</p><p>Second</p></body></html>"
+    t("the first paragraph is read through nested tags, ignoring script and style", page_facts(nested) == ("Nested page", None, "First bold and linked text."))
+    empty_desc = "<html><title>B · OWHS</title><meta name=\"description\" content=\"  \"><p>Used</p></html>"
+    t("an empty description falls back to the first paragraph", page_facts(empty_desc)[1] == "" and (page_facts(empty_desc)[1] or page_facts(empty_desc)[2]) == "Used")
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        d = pathlib.Path(tmp)
+        (d / "ok.html").write_text("<title>Fine · OWHS</title><p>x</p>", encoding="utf-8")
+        (d / "untitled.html").write_text("<p>no title here</p>", encoding="utf-8")
+        try:
+            page_entries(d, ())
+            missing_refused = False
+        except SystemExit as e:
+            missing_refused = "untitled.html has no title" in str(e)
+        t("a page without a title is refused by name rather than silently omitted", missing_refused)
+        (d / "untitled.html").write_text("<title>   </title><p>blank title</p>", encoding="utf-8")
+        try:
+            page_entries(d, ())
+            empty_refused = False
+        except SystemExit as e:
+            empty_refused = "untitled.html has no title" in str(e)
+        t("a page with an empty title is refused by name", empty_refused)
+    committed = json.loads(IDX_LINE.search(page).group(1))
+    t("the committed index equals a fresh build (current-output equality)", committed == entries)
+    print(f"{16 - failures}/16 search-index checks passed")
     return 1 if failures else 0
 
 
