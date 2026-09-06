@@ -1,0 +1,8 @@
+{
+ "tab": "specification",
+ "date": "2026-09-04",
+ "shown": "4 Sep 2026",
+ "version": "v0.1",
+ "html": "Corrections after an external technical review, each one reproduced before it was fixed. The reference validator did not assert <span class=\"mono\">format</span>, so any string passed where a date was declared; it now asserts every format and refuses to run rather than report a pass it cannot stand behind. An <span class=\"mono\">allOf</span> member said end dates must not precede start dates and enforced no ordering; date ordering within a record is now the named rules C1 and C2 at Level 1, implemented in the validator, because JSON Schema cannot compare two fields of an instance. A direct-identifier member duplicated <span class=\"mono\">additionalProperties: false</span> and claimed to forbid identifiers \"anywhere\", which was untrue of values; the privacy profile now separates what is enforced from what is a producer obligation. <span class=\"mono\">value</span> on <span class=\"mono\">AggregateReport</span> was unconditionally required while section 9 required a producer below a floor to suppress and not emit it, so no conformant suppressed report could exist; corrected with an erratum. Level 3 now states that no tool in the repository verifies it, and why parts of it cannot be verified from a payload at all. Full detail in <a href=\"https://github.com/openworkplacehealth/OWHS/blob/main/CHANGELOG.md\">CHANGELOG.md</a>.",
+ "order": 1
+}

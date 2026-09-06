@@ -1,0 +1,7 @@
+{
+ "tab": "site",
+ "date": "2026-09-04",
+ "shown": "4 Sep 2026",
+ "html": "Privacy wording corrected across the site: pseudonymised records are stated to remain personal data under UK GDPR, the identity requirement is scoped to an OWHS payload, and the record is described as open, versioned and forkable rather than permanent.",
+ "order": 1
+}

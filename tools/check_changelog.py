@@ -10,7 +10,9 @@ Usage:
 Published surfaces are the site, the specification, the schemas, the code lists, the registry
 dataset, the examples, the docs and the README. A change that touches only tooling, tests,
 workflows or evidence artefacts needs no entry. The two changelogs are CHANGELOG.md (specification,
-schemas, validator, examples) and site/changelog.html (registry, specification and site tabs).
+schemas, validator, examples) and site/changelog.html (registry, specification and site tabs). The
+site changelog is generated from one file per entry under changelog/entries/, so an entry is a new
+file there, never a hand edit of the page; tools/build_changelog.py --check keeps the page current.
 """
 import pathlib
 import re
@@ -20,6 +22,7 @@ import sys
 PUBLISHED_PREFIXES = ("site/", "spec/", "schemas/", "codelists/", "registry/", "examples/", "docs/", "profiles/")
 PUBLISHED_FILES = ("README.md",)
 CHANGELOGS = ("CHANGELOG.md", "site/changelog.html")
+ENTRIES_PREFIX = "changelog/entries/"
 
 
 def published(path):
@@ -29,12 +32,17 @@ def published(path):
     return path in PUBLISHED_FILES or any(path.startswith(p) for p in PUBLISHED_PREFIXES)
 
 
+def carries_entry(paths):
+    """True when the change adds or edits a site changelog entry file or a line of CHANGELOG.md. The generated page alone does not count."""
+    return any(p == "CHANGELOG.md" or (p.startswith(ENTRIES_PREFIX) and p.endswith(".json")) for p in paths)
+
+
 def problems(paths):
     """The published paths that changed without a changelog entry, or an empty list."""
     changed_public = sorted(p for p in paths if published(p))
     if not changed_public:
         return []
-    if any(p in CHANGELOGS for p in paths):
+    if carries_entry(paths):
         return []
     return changed_public
 
@@ -81,12 +89,15 @@ def changed_paths(base):
 def self_test():
     cases = [
         ("a site page without an entry is refused", ["site/index.html"], ["site/index.html"]),
-        ("a site page with a site changelog row passes", ["site/index.html", "site/changelog.html"], []),
+        ("a site page with a new site changelog entry file passes", ["site/index.html", "changelog/entries/2026-09-06-site-home-copy.json", "site/changelog.html"], []),
+        ("a site page with only the generated page edited by hand is refused", ["site/index.html", "site/changelog.html"], ["site/index.html"]),
+        ("a file under changelog/entries that is not an entry does not count", ["site/index.html", "changelog/entries/README.md"], ["site/index.html"]),
         ("a schema change with a repository changelog entry passes", ["schemas/v0.2/OrgUnit.json", "CHANGELOG.md"], []),
         ("a schema change without an entry is refused", ["schemas/v0.2/OrgUnit.json", "tools/validate.py"], ["schemas/v0.2/OrgUnit.json"]),
         ("tooling, tests and workflows alone need no entry", ["tools/validate.py", ".github/workflows/validate.yml", "requirements.txt"], []),
         ("evidence artefacts alone need no entry", ["evidence/candidates/2026-09.json"], []),
         ("the changelog alone is not a change to record", ["site/changelog.html"], []),
+        ("an entry file alone is not a change to record", ["changelog/entries/2026-09-06-site-note.json", "site/changelog.html"], []),
         ("the README is a published surface", ["README.md"], ["README.md"]),
         ("a registry dataset change is a published surface", ["registry/dataset-v0.11.0.json"], ["registry/dataset-v0.11.0.json"]),
         ("a doc page source is a published surface", ["docs/science.md"], ["docs/science.md"]),
@@ -145,7 +156,7 @@ def main(argv):
     base = argv[argv.index("--base") + 1]
     missing = problems(changed_paths(base))
     if missing:
-        print("PROBLEM these published paths changed and neither CHANGELOG.md nor site/changelog.html did:")
+        print("PROBLEM these published paths changed without a changelog entry (a file under changelog/entries/ or a line of CHANGELOG.md):")
         for p in missing:
             print("  " + p)
         return 1

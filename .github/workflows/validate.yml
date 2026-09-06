@@ -38,6 +38,10 @@ jobs:
         run: python tools/check_changelog.py --counts
       - name: changelog rule behaves as documented
         run: python tools/check_changelog.py --self-test
+      - name: the changelog page is a fresh render of its entry files
+        run: python tools/build_changelog.py --check
+      - name: changelog build behaves as documented
+        run: python tools/build_changelog.py --self-test
       - name: the worked record on the standard page validates and its shown output is the validator's
         run: python tools/check_site_examples.py
       - name: site-example check behaves as documented

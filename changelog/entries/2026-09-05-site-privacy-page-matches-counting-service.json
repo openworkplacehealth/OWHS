@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-09-05",
+ "shown": "5 Sep 2026",
+ "html": "The <a href=\"privacy.html\">privacy page</a> now matches the counting service's configuration: no country is derived from a connection in the cookieless mode in use; repeated views on one day from the same address and browser count as one visitor and nothing links days; the counts are held in the same analytics project as the steward's website; the analytics project has a twelve-month retention setting whose automatic deletion is not currently enforced, and the page no longer says the data is deleted."
+}
