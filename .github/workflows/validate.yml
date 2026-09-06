@@ -85,6 +85,10 @@ jobs:
         run: python tools/build_erd.py --check
       - name: the entity map's marker contract refuses reversed, missing and duplicated markers
         run: python tools/build_erd.py --self-test
+      - name: the current v0.2 download and the site's schema, example and code-list mirrors are a fresh build of their sources
+        run: python tools/build_bundle.py --check
+      - name: bundle builder check refuses a stale member, a missing, extra, duplicate or misordered member, a mismatched or orphan mirror file
+        run: python tools/build_bundle.py --self-test
       - name: the v0.1 release archive is the published one, byte for byte
         run: python tools/check_v01_archive.py
       - name: the v0.2 specification matches its sources
