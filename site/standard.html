@@ -97,7 +97,7 @@ ul,ol{max-width:760px}
 
 <article><div class="wrap">
   <h1>Inside the standard</h1>
-  <p class="meta">OWHS v0.1 · the shape of it, on one page · <a href="spec/index.html">full specification</a> readable and downloadable</p>
+  <p class="meta">OWHS v0.2 draft · the shape of it, on one page · <a href="spec/index.html">full specification</a> readable and downloadable</p>
 
   <p>This page is for the reader who wants to see the actual shape of the thing: the entities, a real record, and the rules that make a record valid. It summarises a specification that runs to full per-field tables, versioned code lists, worked JSON Schemas with passing and failing examples, and a reference validator, all <a href="spec/index.html">readable and downloadable here</a> ahead of the public repository.</p>
 
@@ -121,7 +121,7 @@ ul,ol{max-width:760px}
     <tr><td>BenchmarkRelease</td><td>A published comparison set with composition disclosed: contributing organisations, sectors, size bands, sample sizes, validity window.</td></tr>
     <tr><td>Crosswalk</td><td>Versioned mappings from every construct to the HSE Management Standards, ISO 45003, and the reserved namespace for the Workplace Health Intelligence Unit.</td></tr>
     <tr><td>DisabilityParticipation <span class="pill res">reserved</span></td><td>The WHIU's third measure, held deliberately minimal until national definitions exist.</td></tr>
-    <tr><td>RiskAssessment / WorkplaceIncident <span class="pill res">reserved</span></td><td>Reserved shapes for psychosocial risk assessments and RIDDOR-adjacent incident records, not built in v0.1.</td></tr>
+    <tr><td>RiskAssessment / WorkplaceIncident <span class="pill res">reserved</span></td><td>Reserved shapes for psychosocial risk assessments and RIDDOR-adjacent incident records, not built in v0.1 or v0.2.</td></tr>
   </table>
 
   <p class="small">Statutory health surveillance, sector screening and vendor-specific machinery live in named profiles that extend the core without touching it. The full catalogue, field tables and code lists are in the specification.</p>
@@ -131,10 +131,10 @@ ul,ol{max-width:760px}
   <p>The same model as a picture: how the seventeen entities relate, which flows aggregate, and where the
   reserved shapes sit. Drawn from the specification's data model.</p>
   <div class="fig">
-    <div class="cap"><span><b>figure</b> · the entity map, OWHS v0.1</span><span><a href="erd.html">open full size</a></span></div>
+    <div class="cap"><span><b>figure</b> · the entity map, drawn for v0.1 and unchanged in v0.2</span><span><a href="erd.html">open full size</a></span></div>
 <!-- erd -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="erd-title erd-desc" font-family="Inter, system-ui, -apple-system, sans-serif">
-<title id="erd-title">OWHS v0.1 entity map</title>
+<title id="erd-title">OWHS entity map, drawn for v0.1 and unchanged in v0.2</title>
 <desc id="erd-desc">Nineteen boxes on a grid: organisation-level entities across the top, the worker pseudonym and its individual-level records in the middle, the shared definitions along the bottom, the aggregate report and benchmark release on the right, and two reserved names. Solid lines are structural references, dotted lines are the aggregation flow into the report, dashed lines mark reserved names.</desc>
 <defs><marker id="erd-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6fb0a4"/></marker><marker id="erd-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0b6e5f"/></marker></defs>
 <rect x="0" y="0" width="960" height="540" fill="#ffffff"/>
@@ -211,7 +211,7 @@ ul,ol{max-width:760px}
 <text x="581" y="175" text-anchor="middle" font-size="9.5" fill="#5c646c">what happened after</text></g>
 <g><rect x="20" y="240" width="170" height="46" rx="6" fill="none" stroke="#9aa3ab" stroke-width="1.2" stroke-dasharray="5 4"/>
 <text x="105" y="260" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#5c646c">WorkplaceIncident</text>
-<text x="105" y="275" text-anchor="middle" font-size="9.5" fill="#5c646c">reserved, no fields in v0.1</text></g>
+<text x="105" y="275" text-anchor="middle" font-size="9.5" fill="#5c646c">reserved, no fields yet</text></g>
 <g><rect x="258" y="240" width="170" height="46" rx="6" fill="#e6f2f0" stroke="#6fb0a4" stroke-width="1.2"/>
 <text x="343" y="260" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#101418">OHEpisode</text>
 <text x="343" y="275" text-anchor="middle" font-size="9.5" fill="#5c646c">referral to fitness opinion</text></g>
@@ -235,7 +235,7 @@ ul,ol{max-width:760px}
 <text x="819" y="375" text-anchor="middle" font-size="9.5" fill="#cfe5e0">comparison set, composition shown</text></g>
 <g><rect x="20" y="440" width="170" height="46" rx="6" fill="none" stroke="#9aa3ab" stroke-width="1.2" stroke-dasharray="5 4"/>
 <text x="105" y="460" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#5c646c">RiskAssessment</text>
-<text x="105" y="475" text-anchor="middle" font-size="9.5" fill="#5c646c">reserved, no fields in v0.1</text></g>
+<text x="105" y="475" text-anchor="middle" font-size="9.5" fill="#5c646c">reserved, no fields yet</text></g>
 <g><rect x="258" y="440" width="170" height="46" rx="6" fill="#f6f7f8" stroke="#b9c0c6" stroke-width="1.2"/>
 <text x="343" y="460" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="10.5" font-weight="500" fill="#101418">Crosswalk</text>
 <text x="343" y="475" text-anchor="middle" font-size="9.5" fill="#5c646c">to HSE MS, ISO 45003, whiu:</text></g>
@@ -252,12 +252,12 @@ ul,ol{max-width:760px}
       <span><i class="s"></i>individual level, pseudonymous, never employer-visible</span>
       <span><i></i>the only output that leaves</span>
       <span><i class="d"></i>shared definitions</span>
-      <span><i class="r"></i>reserved, no fields in v0.1</span>
+      <span><i class="r"></i>reserved, no fields yet</span>
     </div>
   </div>
   <p class="small">Solid lines are structural references. Dotted lines are the aggregation flow: individual-level
   records leave an organisation only through the suppression-aware AggregateReport. Dashed outlines are reserved
-  names, listed in v0.1 but not yet built. <a href="erd.html">Open the map on its own page</a>.</p>
+  names, listed since v0.1 and not yet built. <a href="erd.html">Open the map on its own page</a>.</p>
 
   <h2>A real record</h2>
 
