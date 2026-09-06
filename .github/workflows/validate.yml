@@ -65,6 +65,8 @@ jobs:
         run: python tools/check_measurement.py --self-test
       - name: code-list versions resolve, archives are intact, the absence-reason crosswalk is complete
         run: python tools/check_codelist_mappings.py --self-test
+      - name: document pages are rendered from docs/ and their local links resolve
+        run: python tools/build_doc_page.py --check
       - name: the nine remaining entity types (schemas, fixtures and named rules through the real validator)
         run: python tools/check_remaining_entities.py --self-test
       - name: the entity map drawings and the pages they are spliced into match fresh generation

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://openworkplacehealth.org/</loc><lastmod>2026-09-03</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/how-it-works.html</loc><lastmod>2026-09-03</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/standard.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/how-it-works.html</loc><lastmod>2026-09-06</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/standard.html</loc><lastmod>2026-09-06</lastmod></url>
   <url><loc>https://openworkplacehealth.org/why.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/design.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/governance.html</loc><lastmod>2026-09-03</lastmod></url>
@@ -10,11 +10,12 @@
   <url><loc>https://openworkplacehealth.org/legal.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/methods.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/contribute.html</loc><lastmod>2026-09-03</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/changelog.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/changelog.html</loc><lastmod>2026-09-06</lastmod></url>
   <url><loc>https://openworkplacehealth.org/automation.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/search.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/erd.html</loc><lastmod>2026-09-03</lastmod></url>
-  <url><loc>https://openworkplacehealth.org/spec/index.html</loc><lastmod>2026-09-03</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/spec/index.html</loc><lastmod>2026-09-06</lastmod></url>
+  <url><loc>https://openworkplacehealth.org/spec/OWHS-v0.1-draft.html</loc><lastmod>2026-09-06</lastmod></url>
   <url><loc>https://openworkplacehealth.org/question-bank/index.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/index.html</loc><lastmod>2026-09-03</lastmod></url>
   <url><loc>https://openworkplacehealth.org/instrument-registry/how-to-read.html</loc><lastmod>2026-09-03</lastmod></url>
