@@ -44,6 +44,8 @@ jobs:
         run: python tools/check_remaining_entities.py --self-test
       - name: the entity map drawings and the pages they are spliced into match fresh generation
         run: python tools/build_erd.py --check
+      - name: the entity map's marker contract refuses reversed, missing and duplicated markers
+        run: python tools/build_erd.py --self-test
       - name: the v0.1 release archive is the published one, byte for byte
         run: python tools/check_v01_archive.py
       - name: the v0.2 specification matches its sources

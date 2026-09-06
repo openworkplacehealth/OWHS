@@ -21,7 +21,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SITE = os.path.join(ROOT, "site")
+SITE = os.environ.get("OWHS_SITE_DIR", os.path.join(ROOT, "site"))    # overridable so the self-test can run against temporary copies
 
 # House colours, written out because the SVG also renders as a plain <img>.
 INK, BODY, MUTED, LINE = "#101418", "#33393f", "#5c646c", "#e3e6e9"
@@ -245,11 +245,16 @@ MARK_OPEN, MARK_CLOSE = "<!-- erd -->", "<!-- /erd -->"
 
 
 def spliced(text, drawing, path):
-    """The page text with the drawing between its one marker pair; a missing or duplicated marker is refused, never chosen silently."""
+    """The page text with the drawing between its one ordered marker pair; a missing, duplicated or reversed marker is refused, never chosen silently."""
     opens, closes = text.count(MARK_OPEN), text.count(MARK_CLOSE)
     if opens != 1 or closes != 1:
         raise SystemExit(f"PROBLEM {path}: expected one erd marker pair, found {opens} opening and {closes} closing markers")
-    return re.sub(re.escape(MARK_OPEN) + r".*?" + re.escape(MARK_CLOSE), lambda m: MARK_OPEN + "\n" + drawing + "\n" + MARK_CLOSE, text, count=1, flags=re.S)
+    if text.index(MARK_OPEN) > text.index(MARK_CLOSE):
+        raise SystemExit(f"PROBLEM {path}: the closing erd marker precedes the opening one; nothing was written")
+    new, n = re.subn(re.escape(MARK_OPEN) + r".*?" + re.escape(MARK_CLOSE), lambda m: MARK_OPEN + "\n" + drawing + "\n" + MARK_CLOSE, text, count=1, flags=re.S)
+    if n != 1:
+        raise SystemExit(f"PROBLEM {path}: the erd marker pair did not match as one complete span; nothing was written")
+    return new
 
 
 def standalone(version):
@@ -282,7 +287,54 @@ def check():
     return 0
 
 
+def self_test():
+    """The marker contract against temporary copies: reversed, missing and duplicated markers are refused with the copy unchanged; a good copy regenerates and checks."""
+    import hashlib
+    import shutil
+    import subprocess
+    import tempfile
+    failures = 0
+    me = os.path.abspath(__file__)
+    real_site = os.path.join(ROOT, "site")
+    with tempfile.TemporaryDirectory() as tmp:
+        site = os.path.join(tmp, "site")
+        os.makedirs(site)
+        for name in list(OUTPUTS.values()) + list(PAGES):
+            shutil.copy(os.path.join(real_site, name), os.path.join(site, name))
+        env = dict(os.environ, OWHS_SITE_DIR=site)
+        good = open(os.path.join(site, "erd.html"), encoding="utf-8").read()
+        variants = {
+            "reversed markers": good.replace(MARK_OPEN, "\x00").replace(MARK_CLOSE, MARK_OPEN).replace("\x00", MARK_CLOSE),
+            "missing closing marker": good.replace(MARK_CLOSE, "", 1),
+            "duplicated opening marker": good.replace(MARK_OPEN, MARK_OPEN + "\n" + MARK_OPEN, 1),
+        }
+        for label, text in variants.items():
+            for mode in ("--check", "write"):
+                open(os.path.join(site, "erd.html"), "w", encoding="utf-8").write(text)
+                before = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                args = [sys.executable, "-B", me] + ([mode] if mode == "--check" else [])
+                r = subprocess.run(args, capture_output=True, text=True, env=env)
+                after = hashlib.sha256(open(os.path.join(site, "erd.html"), "rb").read()).hexdigest()
+                ok = r.returncode != 0 and "PROBLEM" in (r.stdout + r.stderr) and before == after
+                failures += not ok
+                print(("ok  " if ok else "FAIL"), f"{label}: {mode} refuses by name and leaves the page unchanged", "" if ok else (r.stdout + r.stderr)[-200:])
+        open(os.path.join(site, "erd.html"), "w", encoding="utf-8").write(good)
+        r = subprocess.run([sys.executable, "-B", me, "--check"], capture_output=True, text=True, env=env)
+        ok = r.returncode == 0
+        failures += not ok
+        print(("ok  " if ok else "FAIL"), "an unchanged copy passes --check", "" if ok else r.stdout[-200:])
+        r = subprocess.run([sys.executable, "-B", me], capture_output=True, text=True, env=env)
+        r2 = subprocess.run([sys.executable, "-B", me], capture_output=True, text=True, env=env)
+        ok = r.returncode == 0 and r2.returncode == 0 and "written" not in r2.stdout
+        failures += not ok
+        print(("ok  " if ok else "FAIL"), "a second writer run makes no change", "" if ok else r2.stdout[-200:])
+    print(f"self-test: {'all' if not failures else failures} {'checks passed' if not failures else 'checks FAILED'}")
+    return 1 if failures else 0
+
+
 if __name__ == "__main__":
+    if "--self-test" in sys.argv[1:]:
+        sys.exit(self_test())
     if "--check" in sys.argv[1:]:
         sys.exit(check())
     for path, text in expected_outputs():
