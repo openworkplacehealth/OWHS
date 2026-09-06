@@ -83,14 +83,16 @@ not as applied or passed. An extension namespace with no supplied profile coveri
 ## The result
 
 Structured JSON on stdout, and written atomically to `--out` when given (a failed run, a tool error included, replaces any earlier
-report with its current result; no stale success survives; a destination that cannot be written is itself reported as a tool error on
-stdout and stderr, saying the earlier report was not replaced). Fields: `report_schema_version` (1.0), the input's SHA-256, the checker's
+report with its current result, invocation errors included once an unambiguous `--out` was given; no stale success survives; a
+destination that cannot be written is itself reported as a tool error on stdout and stderr, saying the earlier report was not replaced;
+an `--out` without a value invents no destination). Fields: `report_schema_version` (1.0), the input's SHA-256, the checker's
 and every schema's SHA-256 (`schema_sha256`), the shared validator's, the measurement checker's and the profile-envelope schema's SHA-256
 (`dependency_sha256`), `comparisonAsOfDate`, `state`, `entity_counts` by type and `organisation_groups`, `resolved_links` as one record
 per relation (`declared` occurrences of the scoped reference, `resolved`, `unresolved`, and a `state`: `evaluated`, `no_declared_edge`
 when no record carries the reference after the stage examined it, or `not_evaluated` with the reason when resolution was not attempted;
 these count references, not people or independent evidence), `checks_performed` and `checks_not_evaluated` (only stages that actually
-ran are listed as performed; after an identity failure the performed list ends at G01-G02), `errors` (rule or schema keyword, JSON
+ran are listed as performed; after an identity failure the performed list ends at G01-G02; when G03 to G10 ran and failed, the
+measurement checks are listed as not evaluated with the true reason: references unresolved, graph constraints failed, or both), `errors` (rule or schema keyword, JSON
 pointer, diagnostic, and for G08 to G10 `related` pointers to the report's `benchmarkRef` and the release record), `review_items` (every
 resolved comparison is `comparison_not_established`; measurement interpretation items from the retained checks),
 `external_references_not_checked` (item and instrument identities, crosswalk semantics, extension namespaces without a profile),

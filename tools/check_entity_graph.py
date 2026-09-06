@@ -390,8 +390,10 @@ def check(bundle_bytes, profiles=(), inv=None):
     rep["external_references_not_checked"]["crosswalk_semantics"] = "ISO 45003 clauses, HSE domains and reserved WHIU strings are checked as syntax only"
     if stage == "identity":     # identities or scope invalid: nothing downstream was attempted, and the report says so
         return finish("invalid", gerrs, greview, performed=["structure", "C1-C18", "profiles", "G01-G02"], not_eval=["G03-G10 (identities invalid)", "S07 measurement checks (identities invalid)"], declared=declared, resolved=resolved, stage="identity")
-    if gerrs:          # reference failures: the measurement joins would rest on unresolved records, so they are not evaluated
-        return finish("invalid", gerrs, greview, performed=["structure", "C1-C18", "profiles", "G01-G10"], not_eval=["S07 measurement checks (references unresolved)"], declared=declared, resolved=resolved, stage="complete")
+    if gerrs:          # graph constraints failed: the measurement joins would rest on records whose relationships did not hold, so they are not evaluated
+        unresolved_refs = sum(1 for e_ in gerrs if e_[0] in ("G03", "G07"))
+        reason = "S07 measurement checks (references unresolved)" if unresolved_refs == len(gerrs) else ("S07 measurement checks (graph constraints failed)" if unresolved_refs == 0 else "S07 measurement checks (references unresolved and graph constraints failed)")
+        return finish("invalid", gerrs, greview, performed=["structure", "C1-C18", "profiles", "G01-G10"], not_eval=[reason], declared=declared, resolved=resolved, stage="complete")
     merrs, mreview, mext, gate = measurement_checks(bundle)
     rep["measurement_gate"] = gate
     for k, v in mext.items(): rep["external_references_not_checked"][k] = v
@@ -417,26 +419,32 @@ def emit(rep, out):
     return {"checked_with_limits": 0, "not_evaluated": 0, "invalid": 1, "tool_error": 2}[rep["state"]]
 
 
+def tool_error(message):
+    return {"report_schema_version": REPORT_SCHEMA_VERSION, "checker": "tools/check_entity_graph.py", "state": "tool_error", "error": message, "statement": None}
+
+
 def main(argv):
     if "--self-test" in argv: return self_test()
     profiles, out, rest = [], None, list(argv)
-    while "--profile" in rest:
-        k = rest.index("--profile")
-        if k + 1 >= len(rest): print(json.dumps({"state": "tool_error", "error": "--profile needs a path"})); return 2
-        profiles.append(rest[k + 1]); del rest[k:k + 2]
+    # the output path is parsed first, so that every later named failure goes through the same output boundary and replaces a stale report;
+    # when --out itself lacks a value, no destination is invented and the error is printed only
     if "--out" in rest:
         k = rest.index("--out")
-        if k + 1 >= len(rest): print(json.dumps({"state": "tool_error", "error": "--out needs a path"})); return 2
+        if k + 1 >= len(rest) or rest[k + 1].startswith("--"): return emit(tool_error("--out needs a path; no report destination was written"), None)
         out = Path(rest[k + 1]); del rest[k:k + 2]
-    if len(rest) != 1: print(json.dumps({"state": "tool_error", "error": "usage: check_entity_graph.py BUNDLE.json [--profile P.json ...] [--out REPORT.json]"})); return 2
+    while "--profile" in rest:
+        k = rest.index("--profile")
+        if k + 1 >= len(rest) or rest[k + 1].startswith("--"): return emit(tool_error("--profile needs a path"), out)
+        profiles.append(rest[k + 1]); del rest[k:k + 2]
+    unexpected = [a for a in rest if a.startswith("--")]
+    if unexpected: return emit(tool_error(f"unexpected option(s) {unexpected}; usage: check_entity_graph.py BUNDLE.json [--profile P.json ...] [--out REPORT.json]"), out)
+    if len(rest) != 1: return emit(tool_error("usage: check_entity_graph.py BUNDLE.json [--profile P.json ...] [--out REPORT.json]" + ("; no bundle path was given" if not rest else "; exactly one bundle path is expected")), out)
     try:
         try: data = Path(rest[0]).read_bytes()
         except OSError as e: raise ToolError(f"bundle {rest[0]}: {e}")
         rep = check(data, profiles)
-    except ToolError as e:
-        rep = {"report_schema_version": REPORT_SCHEMA_VERSION, "checker": "tools/check_entity_graph.py", "state": "tool_error", "error": str(e), "statement": None}
-    except Exception as e:                       # an unexpected failure of the tool is a tool error, never a traceback standing for a verdict
-        rep = {"report_schema_version": REPORT_SCHEMA_VERSION, "checker": "tools/check_entity_graph.py", "state": "tool_error", "error": f"unexpected {type(e).__name__}: {str(e)[:200]}", "statement": None}
+    except ToolError as e: rep = tool_error(str(e))
+    except Exception as e: rep = tool_error(f"unexpected {type(e).__name__}: {str(e)[:200]}")        # never a traceback standing for a verdict
     return emit(rep, out)
 
 
@@ -607,6 +615,25 @@ def self_test():
                                          ("a shared validator that is a different file", lambda f: (f / "tools" / "validate.py").write_text("X = 1\n", encoding="utf-8"), "lacks", {})):
             rc, rep, err, written = fake_tree(mutate, **kw)
             t(f"tool error: {label} is a tool_error report (exit 2, no traceback, no pass) naming the cause, and --out is replaced with it", rc == 2 and rep is not None and rep["state"] == "tool_error" and needle in rep["error"] and "Traceback" not in err and written is not None and written["state"] == "tool_error" and "stale" not in written, (rc, rep, err[-160:], written))
+        # named invocation errors go through the same output boundary when one unambiguous --out was supplied
+        for label, args_fn, needle in (("--profile without a value", lambda bp, outp: [str(bp), "--out", str(outp), "--profile"], "--profile needs a path"),
+                                       ("an unexpected option", lambda bp, outp: [str(bp), "--out", str(outp), "--unexpected"], "unexpected option"),
+                                       ("no bundle path", lambda bp, outp: ["--out", str(outp)], "no bundle path"),
+                                       ("two bundle paths", lambda bp, outp: [str(bp), str(bp), "--out", str(outp)], "exactly one bundle path")):
+            with tempfile.TemporaryDirectory() as fake:
+                bp = Path(fake) / "b.json"; bp.write_text(json.dumps(valid), encoding="utf-8"); outp = Path(fake) / "report.json"; outp.write_text('{"state": "checked_with_limits", "stale": true}', encoding="utf-8")
+                r = subprocess.run([sys.executable, "-B", str(here), *args_fn(bp, outp)], capture_output=True, text=True)
+                written = json.loads(outp.read_text(encoding="utf-8"))
+                t(f"invocation error: {label} is a tool_error (exit 2, no traceback) that replaces the stale report under --out", r.returncode == 2 and '"tool_error"' in r.stdout and needle in r.stdout and "Traceback" not in r.stderr and written["state"] == "tool_error" and "stale" not in written, (r.returncode, r.stdout[-160:], written))
+        with tempfile.TemporaryDirectory() as fake:
+            bp = Path(fake) / "b.json"; bp.write_text(json.dumps(valid), encoding="utf-8"); outp = Path(fake) / "report.json"; outp.write_text('{"state": "checked_with_limits", "stale": true}', encoding="utf-8")
+            r = subprocess.run([sys.executable, "-B", str(here), str(bp), "--out"], capture_output=True, text=True)
+            t("invocation error: --out without a value is a tool_error printed only; no destination is invented and the existing file is untouched", r.returncode == 2 and "--out needs a path" in r.stdout and json.loads(outp.read_text(encoding="utf-8")).get("stale") is True, (r.returncode, r.stdout[-160:]))
+        for case_, want in (("resolved-different-worker-rtwOutcomes", "S07 measurement checks (graph constraints failed)"), ("two-unit-cycle", "S07 measurement checks (graph constraints failed)"), ("benchmark-metric-different", "S07 measurement checks (graph constraints failed)"), ("missing-workers-unitId", "S07 measurement checks (references unresolved)"), ("benchmark-release-missing", "S07 measurement checks (references unresolved)")):
+            rc, rep, err = cli(json.loads((EXAMPLES / by_case[case_]["file"]).read_text(encoding="utf-8")), tmpdir=tmp)
+            t(f"skip reason: {case_} reports {want!r}", rc == 1 and rep["checks_not_evaluated"] == [want], (rc, rep and rep["checks_not_evaluated"]))
+        b = copy.deepcopy(valid); b["organisations"][0]["workers"][0]["unitId"] = "u-absent"; b["organisations"][0]["units"] += [{"unitId": "u2", "orgId": "org-demo", "parentUnitId": "u3", "headcountBand": "10-19", "headcountReferenceDate": "2026-09-01"}, {"unitId": "u3", "orgId": "org-demo", "parentUnitId": "u2", "headcountBand": "10-19", "headcountReferenceDate": "2026-09-01"}]
+        rc, rep, err = cli(b, tmpdir=tmp); t("skip reason: an unresolved reference together with a failed constraint names both", rc == 1 and rep["checks_not_evaluated"] == ["S07 measurement checks (references unresolved and graph constraints failed)"], (rc, codes(rep), rep and rep["checks_not_evaluated"]))
         with tempfile.TemporaryDirectory() as fake:
             bp = Path(fake) / "b.json"; bp.write_text(json.dumps(valid), encoding="utf-8")
             r = subprocess.run([sys.executable, "-B", str(here), str(bp), "--out", str(Path(fake) / "no-such-dir" / "report.json")], capture_output=True, text=True)
