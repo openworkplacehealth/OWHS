@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Rebuild site/spec/owhs-v0.1-bundle.zip from the repository tree: the specification markdown as published
-under site/spec/, the ERD, schemas, examples, code lists, validator, licences, notice, governance, decisions and README.
-The domain routing table is not part of the release and is never included. Deterministic file order."""
+"""Rebuild site/spec/owhs-v0.2-bundle.zip from the repository tree: the specification markdown as published
+under site/spec/, the ERD, the versioned schemas (v0.1 archived, v0.2 first set), examples, code lists, validator and checkers,
+licences, notice, governance, decisions and README. site/spec/owhs-v0.1-bundle.zip is the published v0.1 release archive and is
+never rewritten by this tool. The domain routing table is not part of the release and is never included. Deterministic file order."""
 import pathlib, zipfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-OUT = ROOT / "site" / "spec" / "owhs-v0.1-bundle.zip"
+OUT = ROOT / "site" / "spec" / "owhs-v0.2-bundle.zip"
+ARCHIVE = ROOT / "site" / "spec" / "owhs-v0.1-bundle.zip"   # the published v0.1 release archive; left untouched
 FILES = {  # archive path -> source path
     "spec/OWHS-v0.1-draft.md": ROOT / "site" / "spec" / "OWHS-v0.1-draft.md",
     "spec/erd.mmd": ROOT / "spec" / "erd.mmd",
