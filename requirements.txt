@@ -10,5 +10,7 @@ jsonschema[format]>=4.18
 # The registry site generator writes a printable PDF of the grade matrix.
 reportlab>=4
 
+# The specification page renderer. Pinned exactly: the CI check compares its output byte for byte.
+markdown==3.10.3
 # Strict parsing of the workflow files in CI (duplicate keys are an error).
 pyyaml>=6
