@@ -1,0 +1,9 @@
+{
+  "adjustmentId": "adjustment-demo",
+  "orgId": "org-demo",
+  "pseudonymId": "owhs:pseudo:0123456789abcdef0123456789abcdef",
+  "adjustmentCategory": "altered-hours",
+  "status": "in-place",
+  "startDate": "2026-09-01",
+  "endDate": "2026-09-01"
+}

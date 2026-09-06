@@ -47,6 +47,45 @@ upgraded automatically, and non-disclosure never maps to `other` or to missing d
 `AbsenceEpisode` schema keeps its six codes and its pin at 0.1.0; the v0.2 schema pins 0.2.0.
 `codelists/org-size-band.json` 0.1.1 keeps the same codes and bounds, states the inclusive bounds
 as metadata, and its anchor no longer calls them a Companies Act classification.
+### Added: version 0.2 of the schemas and the specification draft
+
+Sixteen entity types have executable schemas under `schemas/v0.2/`; v0.1 had three. The three v0.1
+entry points stay at `schemas/<Entity>.json`, with archived copies under `schemas/v0.1/`. The
+specification's field tables are generated from the schemas, so a row exists because a schema
+declares the field, and the conformance section lists the same C1 to C18 rules that section 6 does.
+The `ext` mechanism is implemented: namespace syntax, object shape and the recursive named-key
+restrictions are checked without a profile, and a supplied profile is validated and reported with its
+version and envelope hash. `tools/check_entity_graph.py` checks a supplied bundle of records against
+ten named cross-record rules and reports every finding at a JSON pointer;
+`docs/entity-graph-validation-v0.2.md` says what it does and does not establish. The v0.2 draft is
+composed by `tools/build_spec_v0_2.py` from the schemas, the code-list registry and the v0.1 text, and
+CI refuses a draft that no longer matches its sources.
+
+### Stated: privacy classes are carried, never invented
+
+The v0.2 field tables carry the v0.1 privacy class for every field that existed in v0.1. A nested
+field without its own class shows its nearest assigned parent's class and says that it is inherited.
+A field with no assignment reads "not separately assigned; entity restrictions apply". No field is
+given a class by default, and the generator's self-test refuses a nested field under an
+`individual-never` parent that reads `open`.
+
+### Corrected: two carried statements about disclosure
+
+The `ReasonableAdjustment.endDate` table anchor carried from v0.1 said "standing adjustment if null"; the
+schema forbids null and the paragraph below the table already said that an absent end date does not
+establish that the adjustment is in place. The anchor now reads: omit when no end date is recorded; null
+is invalid; use status for adjustment state. The `AggregateReport` description opened by calling the report
+the only way individual-level results leave an organisation, which contradicted the specification's
+expressly classified `individual-employer` fields; its first sentence now names employer-visible aggregate
+results and their suppression declarations. No validation keyword, privacy class, floor, consent gate or
+legal-basis condition changed; the schema with every description removed is byte-identical in behaviour.
+
+### Corrected: statements carried from v0.1 that were no longer true of the draft
+
+The carried text said the extension mechanism was not implemented, that aggregates' floors were not
+checked, that extension sub-keys were validated only when a profile was loaded, and it kept a
+two-row conformance table. Each of those is now composed from the validators' behaviour, and the
+generator refuses to carry the v0.1-only sentences into the v0.2 draft.
 
 ## 4 September 2026
 

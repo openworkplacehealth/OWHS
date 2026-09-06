@@ -1,0 +1,7 @@
+{
+  "unitId": "unit-demo",
+  "orgId": "org-demo",
+  "headcountBand": "10-19",
+  "headcountReferenceDate": "2026-09-01",
+  "parentUnitId": "other-unit"
+}

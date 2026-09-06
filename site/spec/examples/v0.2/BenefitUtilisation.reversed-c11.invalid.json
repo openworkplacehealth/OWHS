@@ -1,0 +1,10 @@
+{
+  "utilisationId": "utilisation-demo",
+  "orgId": "org-demo",
+  "entitlementId": "entitlement-demo",
+  "periodStart": "2026-09-01",
+  "periodEnd": "2026-08-31",
+  "usageCount": 30,
+  "claimCount": 2,
+  "n": 20
+}

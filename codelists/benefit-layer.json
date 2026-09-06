@@ -1,0 +1,14 @@
+{
+  "codelist": "benefit-layer",
+  "version": "0.1.0",
+  "anchor": "OWHS benefit-layer distinction, specification section 4; a data-model convention.",
+  "sources": [],
+  "values": [
+    {
+      "code": "statutory"
+    },
+    {
+      "code": "commercial"
+    }
+  ]
+}

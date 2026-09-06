@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/DisabilityParticipation.json",
+  "title": "OWHS DisabilityParticipation v0.2",
+  "description": "Reserved-minimal producer-held organisation aggregate. No disability measure or national definition is invented. The shape has no respondent denominator or suppression metadata: this schema cannot establish the n>=10 disclosure rule and does not authorise employer or benchmark release. Zero, unknown and non-disclosure must not be recoded into 1-4.",
+  "type": "object",
+  "properties": {
+    "reportId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "period": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "Human-readable period label; periodStart and periodEnd define the inclusive dates."
+    },
+    "periodStart": {
+      "type": "string",
+      "format": "date"
+    },
+    "periodEnd": {
+      "type": "string",
+      "format": "date"
+    },
+    "disabledHeadcountBand": {
+      "type": "string",
+      "enum": [
+        "1-4",
+        "5-9",
+        "10-19",
+        "20-49",
+        "50-99",
+        "100-249",
+        "250+"
+      ],
+      "$comment": "codelist:headcount-band@0.1.0"
+    },
+    "whiuMeasureCode": {
+      "type": "string",
+      "pattern": "^whiu:[a-z0-9-]+$",
+      "maxLength": 128,
+      "not": {
+        "pattern": "\\s"
+      },
+      "$comment": "Reserved namespace syntax only. No WHIU terminology or endorsement is inferred."
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "reportId",
+    "orgId",
+    "period",
+    "periodStart",
+    "periodEnd"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

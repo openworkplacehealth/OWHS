@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Write the v0.2 schemas: the three v0.1 entities with the extension mechanism, and four measurement entities.
+"""Write the v0.2 schemas: the three v0.1 entities with the extension mechanism, four measurement entities and the nine remaining
+entity types of the catalogue (Organisation, OrgUnit, WorkerPseudonym, ReasonableAdjustment, BenefitEntitlement, BenefitUtilisation,
+DisabilityParticipation, BenchmarkRelease, Crosswalk).
 
 The v0.1 schemas are not touched: the unversioned files under schemas/ remain the v0.1 entry points, and the build
 writes byte-identical copies under schemas/v0.1/ as the archived set. Version 0.2 of AbsenceEpisode pins
@@ -175,7 +177,7 @@ def measurement_schemas():
     })
     ar = dict(common, **{
         "$id": BASE + "AggregateReport.json", "title": "OWHS AggregateReport v0.2",
-        "description": "The only way individual-level results leave an organisation. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).",
+        "description": "Employer-visible aggregate results and their suppression declarations. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).",
         "type": "object", "additionalProperties": False,
         "required": ["reportId", "orgId", "level", "periodStart", "periodEnd", "n", "headcount", "eligibleN", "completionRate", "metricCode", "measureKind", "releaseCategory", "suppressed", "contextId"],
         "properties": {
@@ -215,6 +217,160 @@ def measurement_schemas():
     return {"WellbeingObservation": wo, "InstrumentAdministration": ia, "MeasurementContext": mc, "AggregateReport": ar}
 
 
+# ---- the remaining nine entity types (v0.2 catalogue completion) ----
+NEW_ENTITIES = ["Organisation", "OrgUnit", "WorkerPseudonym", "ReasonableAdjustment", "BenefitEntitlement", "BenefitUtilisation", "DisabilityParticipation", "BenchmarkRelease", "Crosswalk"]
+_ID = {"type": "string", "pattern": ID_PATTERN, "not": {"pattern": r"\s"}}
+_TEXT = {"type": "string", "minLength": 1, "maxLength": 2000}
+_DATE = {"type": "string", "format": "date"}
+_COUNT = {"type": "integer", "minimum": 0}
+_PSEUDO = {"type": "string", "pattern": "^owhs:pseudo:[0-9a-f]{16,64}$", "not": {"pattern": r"\s"}}
+_WHIU = {"type": "string", "pattern": "^whiu:[a-z0-9-]+$", "maxLength": 128, "not": {"pattern": r"\s"},
+         "$comment": "Reserved namespace syntax only. No WHIU terminology or endorsement is inferred."}
+_SIC = {"type": "string", "pattern": "^[0-9]{5}$", "minLength": 5, "maxLength": 5,
+        "$comment": "UK SIC 2007 subclass syntax only. Membership, currentness and Companies House filing eligibility are not checked."}
+_COUNTRY = {"type": "string", "pattern": "^[A-Z]{2}$", "minLength": 2, "maxLength": 2,
+            "$comment": "ISO 3166-1 alpha-2 syntax only. Membership and geopolitical status are not checked."}
+
+
+def _desc(schema, description): return {**copy.deepcopy(schema), "description": description}
+def _obj(properties, required=(), **kw): return {"type": "object", "properties": copy.deepcopy(properties), "required": list(required), "additionalProperties": False, **kw}
+def _arr(item, minimum=0, unique=False): return {"type": "array", "items": copy.deepcopy(item), "minItems": minimum, **({"uniqueItems": True} if unique else {})}
+def _cl(name):
+    v, codes = codelist(name)
+    return {"type": "string", "enum": codes, "$comment": f"codelist:{name}@{v}"}
+def _when(field, value, then, otherwise=None):
+    d = {"if": {"properties": {field: {"const": value}}, "required": [field]}, "then": then}
+    if otherwise is not None: d["else"] = otherwise
+    return d
+def _absent(*fields): return {"not": {"anyOf": [{"required": [f]} for f in fields]}}
+
+
+def _entity(name, properties, required, description, allof=()):
+    s = {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": BASE + f"{name}.json", "title": f"OWHS {name} v0.2", "description": description,
+         **_obj({**properties, "ext": ext_property()}, required), "$defs": ext_defs(IDENTIFIER_KEYS)}
+    if allof: s["allOf"] = copy.deepcopy(list(allof))
+    return s
+
+
+def catalogue_schemas():
+    """The nine entity types that had field tables and no schema: closed objects, versioned $id, the S06 extension fragment, code lists
+    pinned by name and version, and syntactic checks only where a value names an external register (SIC, country, currency, ISO clause,
+    reserved WHIU strings). Within-record rules C10 to C18 live in tools/validate.py."""
+    out = {}
+    out["Organisation"] = _entity("Organisation", {
+        "orgId": _ID,
+        "companiesHouseNumber": _desc({"type": "string", "minLength": 1, "maxLength": 128}, "Optional recorded registration reference. Format, existence and company identity are not verified."),
+        "sicCode": _SIC, "sicVersion": {"type": "string", "const": "2007"},
+        "sizeBand": _cl("org-size-band"),
+        "sizeBandReferenceDate": _desc(_DATE, "Date to which the employee-count band relates. Unknown headcount must not be coded as zero."),
+        "country": _COUNTRY,
+    }, ["orgId", "sizeBand", "sizeBandReferenceDate", "country"],
+        "Organisation scope and declared employee-count band. Not a statutory company-size determination, identity verification or disclosure assessment.",
+        [{"dependentRequired": {"sicCode": ["sicVersion"], "sicVersion": ["sicCode"]}}])
+    out["OrgUnit"] = _entity("OrgUnit", {
+        "unitId": _ID, "orgId": _ID, "parentUnitId": _ID,
+        "headcountBand": _cl("headcount-band"),
+        "headcountReferenceDate": _DATE,
+    }, ["unitId", "orgId", "headcountBand", "headcountReferenceDate"],
+        "Organisation-scoped unit and declared headcount band. No zero band exists in the pinned vocabulary; unknown or zero is not 1-4. References and hierarchy need supplied-bundle checks.")
+    out["WorkerPseudonym"] = _entity("WorkerPseudonym", {
+        "pseudonymId": _PSEUDO, "orgId": _ID, "unitId": _ID,
+        "ageBand": _cl("age-band"), "tenureBand": _cl("tenure-band"), "workPattern": _cl("work-pattern"),
+    }, ["pseudonymId", "orgId"],
+        "Organisation-scoped pseudonym with optional banded demographics. Syntax does not prove HMAC generation, salt custody, anonymity or permission to disclose demographics.")
+    out["ReasonableAdjustment"] = _entity("ReasonableAdjustment", {
+        "adjustmentId": _ID, "orgId": _ID, "pseudonymId": _PSEUDO,
+        "adjustmentCategory": _cl("adjustment-category"), "status": _cl("adjustment-status"),
+        "startDate": _DATE, "endDate": _DATE, "sourceOhEpisodeId": _ID,
+        "disabilityRelated": {"type": "boolean"},
+    }, ["adjustmentId", "orgId", "pseudonymId", "adjustmentCategory", "status"],
+        "Management-facing adjustment record, with sensitive disability flag restricted to the producer. Omitted endDate means no end date is recorded; null is not a date. A recorded category does not decide any legal duty or lawful disclosure.")
+    rate = _obj({"amount": {"type": "number", "minimum": 0},
+                 "currency": {"type": "string", "pattern": "^[A-Z]{3}$", "minLength": 3, "maxLength": 3, "$comment": "ISO 4217 code syntax only; membership is not resolved."},
+                 "basis": _desc(_TEXT, "Rate period or other calculation basis, for example per week. A variable statutory formula must be stated in description, not replaced with a fictitious fixed rate."),
+                 "description": _TEXT}, ["amount", "currency", "basis"])
+    statutory = _obj({"scheme": _ID, "eligibility": _TEXT, "waitingDays": _COUNT, "rate": rate, "durationWeeks": {"type": "number", "minimum": 0}, "sourceRef": _TEXT, "asOfDate": _DATE},
+                     ["scheme", "eligibility", "sourceRef", "asOfDate"])
+    out["BenefitEntitlement"] = _entity("BenefitEntitlement", {
+        "entitlementId": _ID, "orgId": _ID, "layer": _cl("benefit-layer"),
+        "statutory": statutory, "productCategory": _cl("benefit-product"),
+        "serviceName": _TEXT, "provider": _TEXT, "accessRoute": _cl("access-route"),
+        "eligibilityScope": _TEXT, "healthDomainTags": _arr(_cl("construct-domain"), unique=True),
+    }, ["entitlementId", "orgId", "layer"],
+        "Declared statutory scheme or commercial workforce benefit. No eligibility, rate or legal entitlement is computed. Statutory descriptions are dated and sourced; omitted optional terms are not zero.",
+        [_when("layer", "statutory", {"required": ["statutory"], **_absent("productCategory")}, {"required": ["productCategory"], **_absent("statutory")})])
+    out["BenefitUtilisation"] = _entity("BenefitUtilisation", {
+        "utilisationId": _ID, "orgId": _ID, "entitlementId": _ID,
+        "periodStart": _DATE, "periodEnd": _DATE,
+        "usageCount": _desc(_COUNT, "Service-use events in the declared period, not distinct users. Repeated use may exceed n."),
+        "claimCount": _desc(_COUNT, "Claim events, never an individual claim record. Repeated claims may exceed n."),
+        "n": _desc(_COUNT, "Distinct people represented in the counts for this service and period, not all employees eligible for the benefit."),
+    }, ["utilisationId", "orgId", "entitlementId", "periodStart", "periodEnd", "usageCount", "n"],
+        "Producer-held aggregate event counts. This is not an employer-output record: use an AggregateReport and the privacy profile for disclosure. Counts below a reporting floor can be structurally valid here. Claim contents and individual attendance are excluded.")
+    out["DisabilityParticipation"] = _entity("DisabilityParticipation", {
+        "reportId": _ID, "orgId": _ID,
+        "period": _desc(_TEXT, "Human-readable period label; periodStart and periodEnd define the inclusive dates."),
+        "periodStart": _DATE, "periodEnd": _DATE,
+        "disabledHeadcountBand": _cl("headcount-band"), "whiuMeasureCode": _WHIU,
+    }, ["reportId", "orgId", "period", "periodStart", "periodEnd"],
+        "Reserved-minimal producer-held organisation aggregate. No disability measure or national definition is invented. The shape has no respondent denominator or suppression metadata: this schema cannot establish the n>=10 disclosure rule and does not authorise employer or benchmark release. Zero, unknown and non-disclosure must not be recoded into 1-4.")
+    composition = _obj({"orgCount": {"type": "integer", "minimum": 1}, "sectors": _arr(_SIC, unique=True), "sicVersion": {"type": "string", "const": "2007"}, "sizeBands": _arr(_cl("org-size-band"), unique=True),
+                        "sampleSizes": _obj({"people": {"type": "integer", "minimum": 1}, "observations": _COUNT}, ["people"])},
+                       ["orgCount", "sectors", "sicVersion", "sizeBands", "sampleSizes"])
+    percentiles = _obj({"method": _desc(_TEXT, "Published quantile algorithm, weighting and handling of ties/missing values. No universal quantile algorithm is presumed."),
+                        "values": _arr(_obj({"probability": {"type": "number", "minimum": 0, "maximum": 1}, "value": {"type": "number"}}, ["probability", "value"]), minimum=1)},
+                       ["method", "values"])
+    measure = _obj({"metricCode": _ID, "instrumentId": _ID, "instrumentVersion": _ID, "scoreUnit": _TEXT, "scoringDescriptorRef": _TEXT},
+                   ["metricCode", "scoreUnit", "scoringDescriptorRef"], dependentRequired={"instrumentId": ["instrumentVersion"], "instrumentVersion": ["instrumentId"]})
+    out["BenchmarkRelease"] = _entity("BenchmarkRelease", {
+        "benchmarkId": _ID, "releaseVersion": _ID,
+        "composition": composition, "percentiles": percentiles,
+        "leaveOneOut": {"type": "boolean"}, "excludedOrgId": _ID,
+        "validFrom": _DATE, "validTo": _DATE, "source": _TEXT,
+        "dataPeriodStart": _DATE, "dataPeriodEnd": _DATE,
+        "measure": measure, "population": _TEXT, "samplingMethod": _TEXT,
+        "knownLimitations": _TEXT, "releaseCategory": _cl("release-category"),
+    }, ["benchmarkId", "releaseVersion", "composition", "percentiles", "leaveOneOut", "validFrom", "validTo", "source", "dataPeriodStart", "dataPeriodEnd", "measure", "population", "samplingMethod", "knownLimitations", "releaseCategory"],
+        "One versioned comparison distribution for one declared metric, scoring rule, population and data period. Sample composition and exclusion are declarations, not verified truth. Percentiles do not establish representativeness, clinical thresholds, anonymity or comparability with a different measure.",
+        [_when("leaveOneOut", True, {"required": ["excludedOrgId"]}, _absent("excludedOrgId")),
+         _when("releaseCategory", "ordinary", {"properties": {"composition": {"properties": {"sampleSizes": {"properties": {"people": {"minimum": 5}}}}}}}),
+         _when("releaseCategory", "severe-distress", {"properties": {"composition": {"properties": {"sampleSizes": {"properties": {"people": {"minimum": 10}}}}}}}),
+         _when("releaseCategory", "safeguarding", False)])
+    out["Crosswalk"] = _entity("Crosswalk", {
+        "constructCode": _cl("construct-domain"), "hseDomain": _cl("hse-management-domain"),
+        "iso45003Clause": _desc({"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)*$", "maxLength": 64, "not": {"pattern": r"\s"}},
+                                "Clause-number syntax only. Clause existence, version and mapping meaning are not checked. No ISO text is reproduced."),
+        "iso45003Edition": _desc(_ID, "Edition identifying the ISO document being mapped."),
+        "whiuCode": _WHIU, "crosswalkVersion": _ID,
+        "sourceRef": _desc(_TEXT, "Source and rationale for this mapping. A structural pass is not HSE, ISO or WHIU endorsement."),
+    }, ["constructCode", "crosswalkVersion", "sourceRef"],
+        "Versioned, sourced mapping assertions. At least one target is required; construct codes remain the shared vocabulary, not extra person-level entities.",
+        [{"anyOf": [{"required": [k]} for k in ["hseDomain", "iso45003Clause", "whiuCode"]]},
+         {"dependentRequired": {"iso45003Clause": ["iso45003Edition"], "iso45003Edition": ["iso45003Clause"]}}])
+    assert list(out) == NEW_ENTITIES
+    return out
+
+
+# ---- the supplied entity-graph envelope: a bundle, not a seventeenth entity type ----
+BUNDLES = ROOT / "schemas" / "bundles"
+GRAPH_ARRAYS = {"units": "OrgUnit", "workers": "WorkerPseudonym", "absences": "AbsenceEpisode", "rtwOutcomes": "ReturnToWorkOutcome", "ohEpisodes": "OHEpisode", "adjustments": "ReasonableAdjustment",
+                "entitlements": "BenefitEntitlement", "utilisations": "BenefitUtilisation", "disabilityParticipations": "DisabilityParticipation", "contexts": "MeasurementContext",
+                "observations": "WellbeingObservation", "administrations": "InstrumentAdministration", "reports": "AggregateReport"}
+
+
+def entity_graph_envelope(schemas):
+    """schemas/bundles/EntityGraph-v0.2.json: a closed envelope of organisation groups (one Organisation plus all thirteen entity arrays),
+    global benchmark releases and crosswalks, referencing the sixteen v0.2 entity schemas by $id. Resolved from the local inventory only."""
+    def ref(n): return {"$ref": schemas[n]["$id"]}
+    def arr(item): return {"type": "array", "items": item}
+    def obj(props): return {"type": "object", "additionalProperties": False, "properties": props, "required": list(props)}
+    group = obj({"organisation": ref("Organisation"), **{k: arr(ref(n)) for k, n in GRAPH_ARRAYS.items()}})
+    return {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://openworkplacehealth.org/schemas/bundles/EntityGraph-v0.2.json",
+            "title": "OWHS supplied entity graph v0.2",
+            "description": "Producer-side supplied-record validation envelope. Not a complete roster, release envelope, empirical comparison or Level 2/3 certificate.",
+            **obj({"schema_version": {"const": "0.2"}, "comparisonAsOfDate": {"type": "string", "format": "date"}, "organisations": arr(group), "benchmarks": arr(ref("BenchmarkRelease")), "crosswalks": arr(ref("Crosswalk"))})}
+
+
 def build():
     out = {}
     for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]:
@@ -229,12 +385,15 @@ def build():
         out[n] = with_ext(s, IDENTIFIER_KEYS + (OH_CLINICAL_KEYS if n == "OHEpisode" else []))
     for n, s in measurement_schemas().items():
         out[n] = with_ext(s, IDENTIFIER_KEYS)
+    out.update(catalogue_schemas())                # the nine remaining entity types carry the extension fragment already
     catalogue = {"note": "Versioned schema catalogue. The unversioned files under schemas/ are the v0.1 entry points and are unchanged; schemas/v0.1/ holds byte-identical copies as the archived set. A caller names the version it validates against; validation does not choose a version from an unversioned payload.",
                  "versions": {
                      "0.1": {"status": "archived", "entities": {n: {"file": f"schemas/v0.1/{n}.json", "entry_point": f"schemas/{n}.json", "$id": f"https://openworkplacehealth.org/schemas/v0.1/{n}.json"} for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]},
                              "codelists": {"absence-reason": "0.1.0 (six codes), resolved through codelists/_registry.json versions to codelists/archive/absence-reason@0.1.0.json"}},
                      "0.2": {"status": "current", "extension": "ext, keyed by profile namespace; see profiles/", "entities": {n: {"file": f"schemas/v0.2/{n}.json", "$id": out[n]["$id"]} for n in out},
-                             "codelists": {"absence-reason": f"{codelist('absence-reason')[0]} (eleven codes); crosswalk codelists/mappings/absence-reason-ons-2025-v1.json"}}}}
+                             "codelists": {"absence-reason": f"{codelist('absence-reason')[0]} (eleven codes); crosswalk codelists/mappings/absence-reason-ons-2025-v1.json"},
+                             "bundle_envelopes": {"EntityGraph": {"file": "schemas/bundles/EntityGraph-v0.2.json", "$id": "https://openworkplacehealth.org/schemas/bundles/EntityGraph-v0.2.json",
+                                                                 "note": "a supplied-record envelope checked by tools/check_entity_graph.py; not an entity type and not counted as one"}}}}}
     return out, catalogue
 
 
@@ -242,6 +401,7 @@ def main():
     out, catalogue = build()
     files = {V2 / f"{n}.json": json.dumps(s, indent=2, ensure_ascii=False) + "\n" for n, s in out.items()}
     files[V1 / "catalogue.json"] = json.dumps(catalogue, indent=2, ensure_ascii=False) + "\n"
+    files[BUNDLES / "EntityGraph-v0.2.json"] = json.dumps(entity_graph_envelope(out), indent=2, ensure_ascii=False) + "\n"
     for n in ["AbsenceEpisode", "ReturnToWorkOutcome", "OHEpisode"]:      # the archived v0.1 set: byte-identical copies of the entry points
         files[V1_ARCHIVE / f"{n}.json"] = (V1 / f"{n}.json").read_text(encoding="utf-8")
     if "--check" in sys.argv:
@@ -249,10 +409,10 @@ def main():
         if stale:
             sys.exit("schemas/v0.2 do not match a fresh build; run tools/build_schemas_v0_2.py\n" + "".join(f"  differs: {s}\n" for s in stale))
         print(f"up to date: {len(files)} schema files match their source"); return
-    V2.mkdir(parents=True, exist_ok=True); V1_ARCHIVE.mkdir(parents=True, exist_ok=True)
+    V2.mkdir(parents=True, exist_ok=True); V1_ARCHIVE.mkdir(parents=True, exist_ok=True); BUNDLES.mkdir(parents=True, exist_ok=True)
     for p, t in files.items():
         p.write_text(t, encoding="utf-8")
-    print(f"wrote {len(out)} v0.2 schemas, schemas/catalogue.json and the archived v0.1 copies")
+    print(f"wrote {len(out)} v0.2 schemas, the entity-graph envelope, schemas/catalogue.json and the archived v0.1 copies")
 
 
 if __name__ == "__main__":

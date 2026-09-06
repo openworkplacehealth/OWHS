@@ -1,0 +1,397 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/BenchmarkRelease.json",
+  "title": "OWHS BenchmarkRelease v0.2",
+  "description": "One versioned comparison distribution for one declared metric, scoring rule, population and data period. Sample composition and exclusion are declarations, not verified truth. Percentiles do not establish representativeness, clinical thresholds, anonymity or comparability with a different measure.",
+  "type": "object",
+  "properties": {
+    "benchmarkId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "composition": {
+      "type": "object",
+      "properties": {
+        "orgCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]{5}$",
+            "minLength": 5,
+            "maxLength": 5,
+            "$comment": "UK SIC 2007 subclass syntax only. Membership, currentness and Companies House filing eligibility are not checked."
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "sicVersion": {
+          "type": "string",
+          "const": "2007"
+        },
+        "sizeBands": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "micro",
+              "small",
+              "medium",
+              "large"
+            ],
+            "$comment": "codelist:org-size-band@0.1.1"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "sampleSizes": {
+          "type": "object",
+          "properties": {
+            "people": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "observations": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "people"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "orgCount",
+        "sectors",
+        "sicVersion",
+        "sizeBands",
+        "sampleSizes"
+      ],
+      "additionalProperties": false
+    },
+    "percentiles": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Published quantile algorithm, weighting and handling of ties/missing values. No universal quantile algorithm is presumed."
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "probability": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "probability",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "method",
+        "values"
+      ],
+      "additionalProperties": false
+    },
+    "leaveOneOut": {
+      "type": "boolean"
+    },
+    "excludedOrgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date"
+    },
+    "validTo": {
+      "type": "string",
+      "format": "date"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "dataPeriodStart": {
+      "type": "string",
+      "format": "date"
+    },
+    "dataPeriodEnd": {
+      "type": "string",
+      "format": "date"
+    },
+    "measure": {
+      "type": "object",
+      "properties": {
+        "metricCode": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "not": {
+            "pattern": "\\s"
+          }
+        },
+        "instrumentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "not": {
+            "pattern": "\\s"
+          }
+        },
+        "instrumentVersion": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "not": {
+            "pattern": "\\s"
+          }
+        },
+        "scoreUnit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "scoringDescriptorRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "metricCode",
+        "scoreUnit",
+        "scoringDescriptorRef"
+      ],
+      "additionalProperties": false,
+      "dependentRequired": {
+        "instrumentId": [
+          "instrumentVersion"
+        ],
+        "instrumentVersion": [
+          "instrumentId"
+        ]
+      }
+    },
+    "population": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "samplingMethod": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "knownLimitations": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "releaseCategory": {
+      "type": "string",
+      "enum": [
+        "ordinary",
+        "severe-distress",
+        "safeguarding"
+      ],
+      "$comment": "codelist:release-category@0.1.0"
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "benchmarkId",
+    "releaseVersion",
+    "composition",
+    "percentiles",
+    "leaveOneOut",
+    "validFrom",
+    "validTo",
+    "source",
+    "dataPeriodStart",
+    "dataPeriodEnd",
+    "measure",
+    "population",
+    "samplingMethod",
+    "knownLimitations",
+    "releaseCategory"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "leaveOneOut": {
+            "const": true
+          }
+        },
+        "required": [
+          "leaveOneOut"
+        ]
+      },
+      "then": {
+        "required": [
+          "excludedOrgId"
+        ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "excludedOrgId"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "releaseCategory": {
+            "const": "ordinary"
+          }
+        },
+        "required": [
+          "releaseCategory"
+        ]
+      },
+      "then": {
+        "properties": {
+          "composition": {
+            "properties": {
+              "sampleSizes": {
+                "properties": {
+                  "people": {
+                    "minimum": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "releaseCategory": {
+            "const": "severe-distress"
+          }
+        },
+        "required": [
+          "releaseCategory"
+        ]
+      },
+      "then": {
+        "properties": {
+          "composition": {
+            "properties": {
+              "sampleSizes": {
+                "properties": {
+                  "people": {
+                    "minimum": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "releaseCategory": {
+            "const": "safeguarding"
+          }
+        },
+        "required": [
+          "releaseCategory"
+        ]
+      },
+      "then": false
+    }
+  ]
+}
