@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "html": "The <a href=\"instrument-registry/isi.html\">ISI</a> and <a href=\"instrument-registry/mbi.html\">MBI</a> record pages now preserve parentheses inside two cited DOI links, so the links include the full DOI."
+}
