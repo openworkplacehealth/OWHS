@@ -1,0 +1,15 @@
+{
+  "observationId": "obs-1",
+  "pseudonymId": "p-7f3a",
+  "itemId": "item-energy",
+  "itemVersion": "2",
+  "constructCode": "mental-health",
+  "nativeValue": 4,
+  "normalisedValue": 130,
+  "occasionTs": "2026-08-12T09:15:00",
+  "safeguardingCategory": false,
+  "collectionChannel": "app",
+  "samplingDesign": {
+    "design": "rotating-subset"
+  }
+}

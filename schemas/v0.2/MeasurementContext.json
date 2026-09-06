@@ -1,0 +1,327 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/MeasurementContext.json",
+  "title": "OWHS MeasurementContext v0.2",
+  "description": "What makes scores comparable: the producing system, the scoring descriptor and its provenance, the data window it describes, and the stated limitations. Immutable: a changed descriptor is a new context.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contextId",
+    "orgId",
+    "producingSystem",
+    "scoringDescriptor",
+    "knownLimitations"
+  ],
+  "properties": {
+    "contextId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Primary identifier, unique within the organisation."
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Organisation scope."
+    },
+    "producingSystem": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "System and version that produced the scores. Identifies, does not disclose architecture."
+    },
+    "knownLimitations": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "Stated limitations. 'Not assessed' means exactly that."
+    },
+    "recallPeriod": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "The instrument's recall period where its source specifies one, for example 'preceding two weeks'. Distinct from observationWindow."
+    },
+    "scoringDescriptor": {
+      "type": "object",
+      "properties": {
+        "descriptorId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "description": "Identifier of this descriptor."
+        },
+        "descriptorVersion": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "description": "Version of this descriptor."
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Scoring method, in the producer's words."
+        },
+        "estimand": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "What the score estimates: a period mean, a modelled current state, a rolling average with its window, and so on."
+        },
+        "observationWindow": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "(Z|[+-]\\d{2}:\\d{2})$"
+            },
+            "end": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "(Z|[+-]\\d{2}:\\d{2})$"
+            }
+          },
+          "required": [
+            "start",
+            "end"
+          ],
+          "additionalProperties": false,
+          "description": "The data the descriptor represents. Not the instrument's recall period."
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Where the method is published or held."
+        },
+        "scoreUnit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Unit of the score."
+        },
+        "higherScoreMeaning": {
+          "type": "string",
+          "enum": [
+            "higher-construct",
+            "lower-construct",
+            "not-ordered"
+          ]
+        },
+        "nativeScale": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "min",
+            "max"
+          ],
+          "additionalProperties": false,
+          "description": "Bounds of the native response scale."
+        },
+        "normalisation": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "description": "Identifier of the rule or table."
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "description": "Version of the rule or table."
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Where the rule or table is published or held."
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Optional description."
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "sourceRef"
+          ],
+          "additionalProperties": false,
+          "description": "Rule that maps nativeValue to 0..100. Required by any observation carrying normalisedValue."
+        },
+        "banding": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "description": "Identifier of the rule or table."
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "description": "Version of the rule or table."
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Where the rule or table is published or held."
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Optional description."
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "sourceRef"
+          ],
+          "additionalProperties": false,
+          "description": "Banding table. Required by any administration carrying band."
+        },
+        "threshold": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "description": "Identifier of the rule or table."
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "description": "Version of the rule or table."
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Where the rule or table is published or held."
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Optional description."
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "sourceRef"
+          ],
+          "additionalProperties": false,
+          "description": "Threshold rule. Required by any administration carrying aboveThresholdFlag."
+        },
+        "missingResponseRule": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "description": "Identifier of the rule or table."
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "description": "Version of the rule or table."
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Where the rule or table is published or held."
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "description": "Optional description."
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "sourceRef"
+          ],
+          "additionalProperties": false,
+          "description": "Scoring rule for partial administrations. Required by any partial administration carrying scores."
+        }
+      },
+      "required": [
+        "descriptorId",
+        "descriptorVersion",
+        "method",
+        "estimand",
+        "observationWindow",
+        "sourceRef"
+      ],
+      "additionalProperties": false,
+      "description": "Closed object with open method identifiers: the fields are fixed, the methods they name are the producer's."
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

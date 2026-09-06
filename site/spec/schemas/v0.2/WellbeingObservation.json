@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/WellbeingObservation.json",
+  "title": "OWHS WellbeingObservation v0.2",
+  "description": "One answer to one survey item on one occasion, any vendor. Individual-never at this grain: it leaves an organisation only through an AggregateReport.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observationId",
+    "orgId",
+    "pseudonymId",
+    "contextId",
+    "itemId",
+    "itemVersion",
+    "constructCode",
+    "nativeValue",
+    "occasionTs",
+    "safeguardingCategory"
+  ],
+  "properties": {
+    "observationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Primary identifier, unique within the organisation."
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Organisation scope. Metadata remains subject to P1."
+    },
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "WorkerPseudonym reference. The same string in two organisations is not the same person."
+    },
+    "contextId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Same-organisation MeasurementContext reference; one immutable scoring and interpretation descriptor."
+    },
+    "itemId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Item identifier. No item wording is carried."
+    },
+    "itemVersion": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Version of this item and its response options."
+    },
+    "constructCode": {
+      "type": "string",
+      "enum": [
+        "demands",
+        "control",
+        "support",
+        "relationships",
+        "role",
+        "change",
+        "mental-health",
+        "physical-health",
+        "musculoskeletal",
+        "financial-wellbeing",
+        "sleep-fatigue"
+      ],
+      "$comment": "codelist:construct-domain@0.1.0",
+      "description": "Construct the item measures."
+    },
+    "nativeValue": {
+      "type": "number",
+      "description": "Observed response on the declared native scale."
+    },
+    "normalisedValue": {
+      "type": "number",
+      "description": "Arithmetic transformation of nativeValue to 0..100 under the context's declared normalisation. Not equivalence with any other item or score.",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "occasionTs": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "(Z|[+-]\\d{2}:\\d{2})$",
+      "description": "Observation occasion, with an asserted time zone."
+    },
+    "collectionChannel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "sms",
+        "app",
+        "kiosk",
+        "paper"
+      ],
+      "$comment": "codelist:collection-channel@0.1.0",
+      "description": "How the answer was collected."
+    },
+    "safeguardingCategory": {
+      "type": "boolean",
+      "description": "Explicit flag. Absence is not inferred; the field is required."
+    },
+    "samplingDesign": {
+      "type": "object",
+      "properties": {
+        "design": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "rotating-subset",
+            "adaptive"
+          ],
+          "$comment": "codelist:sampling-design@0.1.0",
+          "description": "Sampling design under which this item was offered."
+        },
+        "scheduleRef": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "description": "Schedule reference, required for rotating-subset and adaptive designs."
+        }
+      },
+      "required": [
+        "design"
+      ],
+      "additionalProperties": false,
+      "description": "Metadata only."
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "samplingDesign": {
+            "properties": {
+              "design": {
+                "enum": [
+                  "rotating-subset",
+                  "adaptive"
+                ]
+              }
+            },
+            "required": [
+              "design"
+            ]
+          }
+        },
+        "required": [
+          "samplingDesign"
+        ]
+      },
+      "then": {
+        "properties": {
+          "samplingDesign": {
+            "required": [
+              "design",
+              "scheduleRef"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

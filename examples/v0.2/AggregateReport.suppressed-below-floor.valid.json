@@ -1,0 +1,24 @@
+{
+  "reportId": "rep-1",
+  "orgId": "org-demo",
+  "level": "unit",
+  "unitId": "unit-ops",
+  "periodStart": "2026-07-01",
+  "periodEnd": "2026-09-30",
+  "n": 4,
+  "observationCount": 30,
+  "headcount": 40,
+  "eligibleN": 5,
+  "completionRate": 0.8,
+  "metricCode": "energy-mean",
+  "measureKind": "observation",
+  "releaseCategory": "ordinary",
+  "suppressed": true,
+  "contextId": "ctx-2026q3",
+  "benchmarkRef": {
+    "benchmarkId": "bench-uk-2026",
+    "releaseVersion": "2026.1",
+    "sourceRef": "https://example.org/benchmarks/2026.1"
+  },
+  "suppressionReason": "below-floor"
+}

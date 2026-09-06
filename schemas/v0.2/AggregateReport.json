@@ -1,0 +1,385 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/schemas/v0.2/AggregateReport.json",
+  "title": "OWHS AggregateReport v0.2",
+  "description": "The only way individual-level results leave an organisation. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reportId",
+    "orgId",
+    "level",
+    "periodStart",
+    "periodEnd",
+    "n",
+    "headcount",
+    "eligibleN",
+    "completionRate",
+    "metricCode",
+    "measureKind",
+    "releaseCategory",
+    "suppressed",
+    "contextId"
+  ],
+  "properties": {
+    "reportId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Primary identifier, unique within the organisation."
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Organisation scope."
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "org",
+        "unit"
+      ]
+    },
+    "unitId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "OrgUnit reference; required at unit level, forbidden at org level."
+    },
+    "periodStart": {
+      "type": "string",
+      "format": "date"
+    },
+    "periodEnd": {
+      "type": "string",
+      "format": "date",
+      "description": "Inclusive period, ordered."
+    },
+    "n": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Distinct people contributing to this metric's estimate in this window."
+    },
+    "observationCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Responses underlying the estimate; may exceed n with repeated observations."
+    },
+    "headcount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "In-scope distinct roster for the declared window."
+    },
+    "eligibleN": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Distinct people eligible or offered this metric in the window."
+    },
+    "completionRate": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1,
+      "description": "n divided by eligibleN; null only when eligibleN is 0."
+    },
+    "metricCode": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Metric identifier. Not presumed equal to a construct code."
+    },
+    "measureKind": {
+      "type": "string",
+      "enum": [
+        "observation",
+        "instrument",
+        "other"
+      ],
+      "description": "Source grain, not a reliability claim."
+    },
+    "releaseCategory": {
+      "type": "string",
+      "enum": [
+        "ordinary",
+        "severe-distress",
+        "safeguarding"
+      ],
+      "description": "Producer-declared. Misclassification is not detected by a numerical gate."
+    },
+    "value": {
+      "type": "number",
+      "description": "The estimate. Present only when not suppressed."
+    },
+    "interval": {
+      "type": "object",
+      "properties": {
+        "low": {
+          "type": "number"
+        },
+        "high": {
+          "type": "number"
+        },
+        "level": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Interval method."
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Where the method is published."
+        }
+      },
+      "required": [
+        "low",
+        "high",
+        "level",
+        "method"
+      ],
+      "additionalProperties": false
+    },
+    "suppressed": {
+      "type": "boolean"
+    },
+    "suppressionReason": {
+      "type": "string",
+      "enum": [
+        "below-floor",
+        "safeguarding",
+        "low-completion"
+      ],
+      "$comment": "codelist:suppression-reason@0.1.0",
+      "description": "Required when suppressed; forbidden otherwise."
+    },
+    "contextId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Same-organisation MeasurementContext reference."
+    },
+    "benchmarkRef": {
+      "type": "object",
+      "properties": {
+        "benchmarkId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "description": "BenchmarkRelease identifier."
+        },
+        "releaseVersion": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "description": "Immutable release version."
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Where the release is published."
+        }
+      },
+      "required": [
+        "benchmarkId",
+        "releaseVersion",
+        "sourceRef"
+      ],
+      "additionalProperties": false,
+      "description": "Reference to a comparison release. No implied score equivalence. Not resolved by the core validator."
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "unit"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "unitId"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "unitId"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "suppressed": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "suppressionReason"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "value"
+              ]
+            },
+            {
+              "required": [
+                "interval"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "value"
+        ],
+        "not": {
+          "required": [
+            "suppressionReason"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "n": {
+            "maximum": 4
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "suppressed": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "releaseCategory": {
+            "const": "severe-distress"
+          },
+          "n": {
+            "maximum": 9
+          }
+        },
+        "required": [
+          "releaseCategory"
+        ]
+      },
+      "then": {
+        "properties": {
+          "suppressed": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "releaseCategory": {
+            "const": "safeguarding"
+          }
+        },
+        "required": [
+          "releaseCategory"
+        ]
+      },
+      "then": {
+        "properties": {
+          "suppressed": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eligibleN": {
+            "const": 0
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "completionRate": {
+            "type": "null"
+          },
+          "n": {
+            "const": 0
+          },
+          "suppressed": {
+            "const": true
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

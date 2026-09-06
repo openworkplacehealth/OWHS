@@ -1,0 +1,34 @@
+{
+  "codelist": "absence-reason",
+  "version": "0.1.0",
+  "anchor": "ONS Sickness absence in the UK labour market 2025 [1]",
+  "notes": "Adopts the ONS reason taxonomy verbatim for org-rate comparability. No diagnosis granularity; SNOMED clinical-cause is a separate optional field.",
+  "values": [
+    {
+      "code": "minor-illness",
+      "label": "Minor illnesses",
+      "note": "ONS: most common category"
+    },
+    {
+      "code": "musculoskeletal",
+      "label": "Musculoskeletal problems"
+    },
+    {
+      "code": "mental-health",
+      "label": "Mental health conditions"
+    },
+    {
+      "code": "respiratory",
+      "label": "Respiratory conditions"
+    },
+    {
+      "code": "gastrointestinal",
+      "label": "Gastrointestinal problems"
+    },
+    {
+      "code": "other",
+      "label": "Other",
+      "note": "ONS 'Other' includes COVID-19, accidents, poisonings, infectious diseases, skin disorders, diabetes"
+    }
+  ]
+}
