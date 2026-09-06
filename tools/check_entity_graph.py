@@ -428,6 +428,7 @@ def main(argv):
     profiles, out, rest = [], None, list(argv)
     # the output path is parsed first, so that every later named failure goes through the same output boundary and replaces a stale report;
     # when --out itself lacks a value, no destination is invented and the error is printed only
+    if rest.count("--out") > 1: return emit(tool_error("--out given more than once; the destination is ambiguous, so no report was written anywhere"), None)
     if "--out" in rest:
         k = rest.index("--out")
         if k + 1 >= len(rest) or rest[k + 1].startswith("--"): return emit(tool_error("--out needs a path; no report destination was written"), None)
@@ -625,6 +626,12 @@ def self_test():
                 r = subprocess.run([sys.executable, "-B", str(here), *args_fn(bp, outp)], capture_output=True, text=True)
                 written = json.loads(outp.read_text(encoding="utf-8"))
                 t(f"invocation error: {label} is a tool_error (exit 2, no traceback) that replaces the stale report under --out", r.returncode == 2 and '"tool_error"' in r.stdout and needle in r.stdout and "Traceback" not in r.stderr and written["state"] == "tool_error" and "stale" not in written, (r.returncode, r.stdout[-160:], written))
+        for order in ("AB", "BA"):
+            with tempfile.TemporaryDirectory() as fake:
+                bp = Path(fake) / "b.json"; bp.write_text(json.dumps(valid), encoding="utf-8"); A = Path(fake) / "A.json"; B = Path(fake) / "B.json"; A.write_text('{"seed": "A"}', encoding="utf-8"); B.write_text('{"seed": "B"}', encoding="utf-8")
+                pair = [str(bp), "--out", str(A), "--out", str(B)] if order == "AB" else [str(bp), "--out", str(B), "--out", str(A)]
+                r = subprocess.run([sys.executable, "-B", str(here), *pair], capture_output=True, text=True)
+                t(f"invocation error: --out given twice ({order}) is a tool_error on stdout only; neither pre-seeded destination changes", r.returncode == 2 and '"tool_error"' in r.stdout and "ambiguous" in r.stdout and A.read_text(encoding="utf-8") == '{"seed": "A"}' and B.read_text(encoding="utf-8") == '{"seed": "B"}' and "Traceback" not in r.stderr, (r.returncode, r.stdout[-160:]))
         with tempfile.TemporaryDirectory() as fake:
             bp = Path(fake) / "b.json"; bp.write_text(json.dumps(valid), encoding="utf-8"); outp = Path(fake) / "report.json"; outp.write_text('{"state": "checked_with_limits", "stale": true}', encoding="utf-8")
             r = subprocess.run([sys.executable, "-B", str(here), str(bp), "--out"], capture_output=True, text=True)

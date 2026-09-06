@@ -85,7 +85,7 @@ not as applied or passed. An extension namespace with no supplied profile coveri
 Structured JSON on stdout, and written atomically to `--out` when given (a failed run, a tool error included, replaces any earlier
 report with its current result, invocation errors included once an unambiguous `--out` was given; no stale success survives; a
 destination that cannot be written is itself reported as a tool error on stdout and stderr, saying the earlier report was not replaced;
-an `--out` without a value invents no destination). Fields: `report_schema_version` (1.0), the input's SHA-256, the checker's
+an `--out` without a value, or given more than once, invents no destination and writes nothing). Fields: `report_schema_version` (1.0), the input's SHA-256, the checker's
 and every schema's SHA-256 (`schema_sha256`), the shared validator's, the measurement checker's and the profile-envelope schema's SHA-256
 (`dependency_sha256`), `comparisonAsOfDate`, `state`, `entity_counts` by type and `organisation_groups`, `resolved_links` as one record
 per relation (`declared` occurrences of the scoped reference, `resolved`, `unresolved`, and a `state`: `evaluated`, `no_declared_edge`
