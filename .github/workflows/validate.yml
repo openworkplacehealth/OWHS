@@ -5,9 +5,14 @@ name: validate
 # committed one, so a stale examples/validation_report.json cannot merge. It also fails
 # if any fixture stops matching the verdict its filename claims.
 #
-# Level 2 and Level 3 are specified and not implemented; nothing here tests them. In
-# particular nothing checks that an inline enum still matches the code list its $comment
-# pins, which the closed-vocabulary rule in specification section 5 states plainly.
+# Level 2 and Level 3 are specified and not implemented as conformance checks; no step
+# here certifies either. The steps below verify their own documented contracts only: the
+# v0.2 schemas match their generator, which writes each inline enum from the code list its
+# $comment pins at generation time; code-list versions resolve and archived copies are
+# intact; profiles, bundles and the sixteen entity types behave as documented through the
+# real validator; the specification matches its sources; the entity-graph checker's own
+# suite passes. None of this establishes that a coded value is current in an external
+# terminology, that submitted counts are true, or that an output is safe to disclose.
 
 on:
   push:
@@ -37,5 +42,7 @@ jobs:
         run: python tools/check_remaining_entities.py --self-test
       - name: the v0.2 specification matches its sources
         run: python tools/build_spec_v0_2.py --check
+      - name: specification generator (no invented privacy class, inheritance never widens, opaque-reference controls, exact limit statements)
+        run: python tools/build_spec_v0_2.py --self-test
       - name: entity-graph checker (envelope, G01 to G10, retained measurement checks, profiles, strict input) through its own command line
         run: python tools/check_entity_graph.py --self-test

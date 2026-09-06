@@ -161,7 +161,9 @@ Restated here because §2b field tables reference it on every row. The scope dra
 
 ## 4. Field tables, entity by entity
 
-Generated from the sixteen executable v0.2 schemas: a row exists because the schema declares the field, `Req` is the schema's `required`, and a code-list column names the pinned list. Privacy classes and anchors are carried from the v0.1 tables for fields that existed there; fields added or redefined in v0.2 carry the schema's description or the stated design choice. Nested objects are shown as `parent.child`; `ext` (the extension object keyed by profile namespace, section 7) is present on every entity and omitted from the rows.
+Generated from the sixteen executable v0.2 schemas: a row exists because the schema declares the field, `Req` is the schema's `required`, and a code-list column names the pinned list. Privacy classes are carried from the v0.1 tables for the fields that existed there and are not invented for any other field: a field without an explicit class reads `not separately assigned; entity restrictions apply`, and a nested field shows its nearest assigned parent's class marked as inherited. Anchors are carried from the v0.1 tables or, for fields added or redefined in v0.2, are the schema's description or the stated design choice. Nested objects are shown as `parent.child`; `ext` (the extension object keyed by profile namespace, section 7) is present on every entity and omitted from the rows.
+
+An unassigned field has no separate disclosure permission. The whole record remains subject to its entity boundary and the privacy profile. An `open` metadata field does not make a linked individual record publishable. A nested field without its own class shows its nearest assigned parent's class, marked as inherited; a nested field under an unassigned parent is itself unassigned.
 
 **Privacy classification (four classes).** `open` = may appear in any output; `aggregate-only` = employer-visible only through an `AggregateReport` clearing the n-floor; `individual-never` = never leaves the producer at individual grain in any output, even to the employer; `individual-employer` = may be held or shown about an identified pseudonym to the employer only where an independent legal basis entitles them. A class is a field-level obligation on the producer; the schema does not enforce it.
 
@@ -174,9 +176,9 @@ Organisation scope and declared employee-count band. Not a statutory company-siz
 | `orgId` | string (pattern) | yes |  | open | OWHS internal |
 | `companiesHouseNumber` | string | no |  | open | Companies House |
 | `sicCode` | string (pattern) | no |  | open | ONS SIC 2007 (sector comparability) |
-| `sicVersion` | const `2007` | no |  | open | UK SIC 2007 retained as an edition; ONS also publishes SIC 2026 |
+| `sicVersion` | const `2007` | no |  | not separately assigned; entity restrictions apply | UK SIC 2007 retained as an edition; ONS also publishes SIC 2026 |
 | `sizeBand` | string (code) | yes | codelist:org-size-band@0.1.1 | open | Companies Act 2006 micro/small/medium bands |
-| `sizeBandReferenceDate` | date | yes |  | open | OWHS v0.2 design choice: the date the band relates to |
+| `sizeBandReferenceDate` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: the date the band relates to |
 | `country` | string (pattern) | yes |  | open | UK-first; structure allows extension |
 
 `sicCode` and `sicVersion` require one another; the only permitted version is `2007`, retained as an edition (section 5).
@@ -191,7 +193,7 @@ Organisation-scoped unit and declared headcount band. No zero band exists in the
 | `orgId` | string (pattern) | yes |  | open | → Organisation |
 | `parentUnitId` | string (pattern) | no |  | open | self-join |
 | `headcountBand` | string (code) | yes | codelist:headcount-band@0.1.0 | open | banded, never exact (small-cell control) |
-| `headcountReferenceDate` | date | yes |  | open | OWHS v0.2 design choice |
+| `headcountReferenceDate` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 
 ### WorkerPseudonym (new in v0.2)
 
@@ -225,9 +227,9 @@ Reported sickness-absence episode with versioned reason-category mapping. No dir
 | `workRelatedFlag` | boolean | no |  | aggregate-only | work-relatedness (feeds RIDDOR context) |
 | `clinicalCauseCode` | string (pattern) | no |  | individual-never | **OPTIONAL**; affiliate-licence caveat, never conformance-required |
 | `sourceProvenance` | object | yes |  | open | HRIS provider / manual |
-| `sourceProvenance.sourceType` | string (code) | yes | codelist:source-type@0.1.0 | open | OWHS record provenance |
-| `sourceProvenance.sourceProvider` | string | no |  | open |  |
-| `sourceProvenance.sourceId` | string | no |  | open |  |
+| `sourceProvenance.sourceType` | string (code) | yes | codelist:source-type@0.1.0 | inherited: open (from `sourceProvenance`) | OWHS record provenance |
+| `sourceProvenance.sourceProvider` | string | no |  | inherited: open (from `sourceProvenance`) |  |
+| `sourceProvenance.sourceId` | string | no |  | inherited: open (from `sourceProvenance`) |  |
 
 ### ReturnToWorkOutcome
 
@@ -242,8 +244,8 @@ What happened after an absence, including did-not-return and ill-health-exit. No
 | `adjustmentTypes` | array of string codes | no | codelist:rtw-adjustment@0.1.0 | individual-employer | **fit-note "may be fit" categories** |
 | `rtwDate` | date | no |  | individual-employer | OWHS v0.2 design choice |
 | `sustainedAt` | array of object | no | codelist:rtw-sustained-status@0.1.0 (element status; the checkpoint weeks are advisory rtw-checkpoint@0.1.0) | aggregate-only | any 1 to 104 weeks; {4,13,26} recommended, **provisional pending `whiu:`** |
-| `sustainedAt[].checkpointWeeks` | integer | yes | codelist:rtw-checkpoint@0.1.0 | open | Founder decision 7 Jul 2026: open integer, not enum. Recommended set {4,13,26} (codelist:rtw-checkpoint@0.1.0); producers SHOULD use the recommended set for comparability. whiu: definitions expected to supersede. |
-| `sustainedAt[].status` | string (code) | yes | codelist:rtw-sustained-status@0.1.0 | open | closed vocabulary; `unknown` means the checkpoint was not followed up, which is not a relapse |
+| `sustainedAt[].checkpointWeeks` | integer | yes | codelist:rtw-checkpoint@0.1.0 | inherited: aggregate-only (from `sustainedAt`) | Founder decision 7 Jul 2026: open integer, not enum. Recommended set {4,13,26} (codelist:rtw-checkpoint@0.1.0); producers SHOULD use the recommended set for comparability. whiu: definitions expected to supersede. |
+| `sustainedAt[].status` | string (code) | yes | codelist:rtw-sustained-status@0.1.0 | inherited: aggregate-only (from `sustainedAt`) | closed vocabulary; `unknown` means the checkpoint was not followed up, which is not a relapse |
 | `whiuOutcomeCode` | string (pattern) | no |  | aggregate-only | reserved for WHIU crosswalk |
 
 ### OHEpisode
@@ -270,7 +272,7 @@ Management-facing adjustment record, with sensitive disability flag restricted t
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
 | `adjustmentId` | string (pattern) | yes |  | open | OWHS internal |
-| `orgId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
+| `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 | `pseudonymId` | string (pattern) | yes |  | individual-employer | OWHS v0.2 design choice |
 | `adjustmentCategory` | string (code) | yes | codelist:adjustment-category@0.1.0 | individual-employer | **Equality Act 2010 s.20** duty; superset of fit-note categories |
 | `status` | string (code) | yes | codelist:adjustment-status@0.1.0 | aggregate-only | proposed / in-place / declined / ended |
@@ -288,11 +290,11 @@ One answer to one survey item on one occasion, any vendor. Individual-never at t
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
 | `observationId` | string (pattern) | yes |  | open | Primary identifier, unique within the organisation. |
-| `orgId` | string (pattern) | yes |  | open | Organisation scope. Metadata remains subject to P1. |
+| `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Organisation scope. Metadata remains subject to P1. |
 | `pseudonymId` | string (pattern) | yes |  | individual-never | survey answers never individually employer-visible |
-| `contextId` | string (pattern) | yes |  |  | Same-organisation MeasurementContext reference; one immutable scoring and interpretation descriptor. |
+| `contextId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Same-organisation MeasurementContext reference; one immutable scoring and interpretation descriptor. |
 | `itemId` | string (pattern) | yes |  | individual-never | item identifier only, **never item text** (licensing) |
-| `itemVersion` | string (pattern) | yes |  |  | Version of this item and its response options. |
+| `itemVersion` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Version of this item and its response options. |
 | `constructCode` | string (code) | yes | codelist:construct-domain@0.1.0 | aggregate-only | shared construct list |
 | `nativeValue` | number | yes |  | individual-never | vendor scale |
 | `normalisedValue` | number | no |  | aggregate-only | comparability |
@@ -300,8 +302,8 @@ One answer to one survey item on one occasion, any vendor. Individual-never at t
 | `collectionChannel` | string (code) | no | codelist:collection-channel@0.1.0 | open | How the answer was collected. |
 | `safeguardingCategory` | boolean | yes |  | individual-never | if true, **excluded from all employer output at any n** (§3 P4) |
 | `samplingDesign` | object | no |  | open | complete / rotating-subset / adaptive + schedule ref |
-| `samplingDesign.design` | string (code) | yes | codelist:sampling-design@0.1.0 | open | Sampling design under which this item was offered. |
-| `samplingDesign.scheduleRef` | string (pattern) | no |  | open | Schedule reference, required for rotating-subset and adaptive designs. |
+| `samplingDesign.design` | string (code) | yes | codelist:sampling-design@0.1.0 | inherited: open (from `samplingDesign`) | Sampling design under which this item was offered. |
+| `samplingDesign.scheduleRef` | string (pattern) | no |  | inherited: open (from `samplingDesign`) | Schedule reference, required for rotating-subset and adaptive designs. |
 
 ### InstrumentAdministration
 
@@ -310,14 +312,14 @@ One completed, partial or abandoned administration of a validated instrument: sc
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
 | `administrationId` | string (pattern) | yes |  | open | Primary identifier, unique within the organisation. |
-| `orgId` | string (pattern) | yes |  | open | Organisation scope. |
+| `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Organisation scope. |
 | `pseudonymId` | string (pattern) | yes |  | individual-never | instrument results are individual-never by definition (§3 P3) |
-| `contextId` | string (pattern) | yes |  |  | Same-organisation MeasurementContext reference. |
-| `instrumentId` | string (pattern) | yes |  |  | Stable identifier of the exact instrument or form. Not its registry grade. |
+| `contextId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Same-organisation MeasurementContext reference. |
+| `instrumentId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Stable identifier of the exact instrument or form. Not its registry grade. |
 | `instrumentCitation` | string | yes |  | open | **citation + version only, never item text** |
 | `instrumentVersion` | string (pattern) | yes |  | open | Form or version, separate from any dataset version. |
-| `occasionTs` | date-time | yes |  |  | Administration occasion, with an asserted time zone. |
-| `constructCodes` | array of string codes | yes | codelist:construct-domain@0.1.0 |  | Constructs the instrument measures; a multidimensional instrument lists several without inventing one total construct. |
+| `occasionTs` | date-time | yes |  | not separately assigned; entity restrictions apply | Administration occasion, with an asserted time zone. |
+| `constructCodes` | array of string codes | yes | codelist:construct-domain@0.1.0 | not separately assigned; entity restrictions apply | Constructs the instrument measures; a multidimensional instrument lists several without inventing one total construct. |
 | `completionStatus` | string (code) | yes | codelist:completion-status@0.1.0 | open | complete, partial or abandoned. |
 | `totalScore` | number | no |  | individual-never | Total score, where the instrument defines one. |
 | `subscaleScores` | object | no |  | individual-never | Subscale identifier to finite score. |
@@ -331,44 +333,44 @@ What makes scores comparable: the producing system, the scoring descriptor and i
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
 | `contextId` | string (pattern) | yes |  | open | Primary identifier, unique within the organisation. |
-| `orgId` | string (pattern) | yes |  | open | Organisation scope. |
+| `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Organisation scope. |
 | `producingSystem` | string | yes |  | open | system + version |
 | `knownLimitations` | string | yes |  | open | Stated limitations. 'Not assessed' means exactly that. |
-| `recallPeriod` | string | no |  |  | The instrument's recall period where its source specifies one, for example 'preceding two weeks'. Distinct from observationWindow. |
+| `recallPeriod` | string | no |  | not separately assigned; entity restrictions apply | The instrument's recall period where its source specifies one, for example 'preceding two weeks'. Distinct from observationWindow. |
 | `scoringDescriptor` | object | yes |  | open | aggregation method / estimation family / window (open descriptor, no method enum) |
-| `scoringDescriptor.descriptorId` | string (pattern) | yes |  | open | Identifier of this descriptor. |
-| `scoringDescriptor.descriptorVersion` | string (pattern) | yes |  | open | Version of this descriptor. |
-| `scoringDescriptor.method` | string | yes |  | open | Scoring method, in the producer's words. |
-| `scoringDescriptor.estimand` | string | yes |  | open | What the score estimates: a period mean, a modelled current state, a rolling average with its window, and so on. |
-| `scoringDescriptor.observationWindow` | object | yes |  | open | The data the descriptor represents. Not the instrument's recall period. |
-| `scoringDescriptor.observationWindow.start` | date-time | yes |  | open |  |
-| `scoringDescriptor.observationWindow.end` | date-time | yes |  | open |  |
-| `scoringDescriptor.sourceRef` | string | yes |  | open | OWHS v0.2 design choice |
-| `scoringDescriptor.scoreUnit` | string | no |  | open | Unit of the score. |
-| `scoringDescriptor.higherScoreMeaning` | string (code) | no |  | open |  |
-| `scoringDescriptor.nativeScale` | object | no |  | open | Bounds of the native response scale. |
-| `scoringDescriptor.nativeScale.min` | number | yes |  | open |  |
-| `scoringDescriptor.nativeScale.max` | number | yes |  | open |  |
-| `scoringDescriptor.normalisation` | object | no |  | open | Rule that maps nativeValue to 0..100. Required by any observation carrying normalisedValue. |
-| `scoringDescriptor.normalisation.id` | string (pattern) | yes |  | open | Identifier of the rule or table. |
-| `scoringDescriptor.normalisation.version` | string (pattern) | yes |  | open | Version of the rule or table. |
-| `scoringDescriptor.normalisation.sourceRef` | string | yes |  | open | OWHS v0.2 design choice |
-| `scoringDescriptor.normalisation.description` | string | no |  | open | Optional description. |
-| `scoringDescriptor.banding` | object | no |  | open | Banding table. Required by any administration carrying band. |
-| `scoringDescriptor.banding.id` | string (pattern) | yes |  | open | Identifier of the rule or table. |
-| `scoringDescriptor.banding.version` | string (pattern) | yes |  | open | Version of the rule or table. |
-| `scoringDescriptor.banding.sourceRef` | string | yes |  | open | OWHS v0.2 design choice |
-| `scoringDescriptor.banding.description` | string | no |  | open | Optional description. |
-| `scoringDescriptor.threshold` | object | no |  | open | Threshold rule. Required by any administration carrying aboveThresholdFlag. |
-| `scoringDescriptor.threshold.id` | string (pattern) | yes |  | open | Identifier of the rule or table. |
-| `scoringDescriptor.threshold.version` | string (pattern) | yes |  | open | Version of the rule or table. |
-| `scoringDescriptor.threshold.sourceRef` | string | yes |  | open | OWHS v0.2 design choice |
-| `scoringDescriptor.threshold.description` | string | no |  | open | Optional description. |
-| `scoringDescriptor.missingResponseRule` | object | no |  | open | Scoring rule for partial administrations. Required by any partial administration carrying scores. |
-| `scoringDescriptor.missingResponseRule.id` | string (pattern) | yes |  | open | Identifier of the rule or table. |
-| `scoringDescriptor.missingResponseRule.version` | string (pattern) | yes |  | open | Version of the rule or table. |
-| `scoringDescriptor.missingResponseRule.sourceRef` | string | yes |  | open | OWHS v0.2 design choice |
-| `scoringDescriptor.missingResponseRule.description` | string | no |  | open | Optional description. |
+| `scoringDescriptor.descriptorId` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Identifier of this descriptor. |
+| `scoringDescriptor.descriptorVersion` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Version of this descriptor. |
+| `scoringDescriptor.method` | string | yes |  | inherited: open (from `scoringDescriptor`) | Scoring method, in the producer's words. |
+| `scoringDescriptor.estimand` | string | yes |  | inherited: open (from `scoringDescriptor`) | What the score estimates: a period mean, a modelled current state, a rolling average with its window, and so on. |
+| `scoringDescriptor.observationWindow` | object | yes |  | inherited: open (from `scoringDescriptor`) | The data the descriptor represents. Not the instrument's recall period. |
+| `scoringDescriptor.observationWindow.start` | date-time | yes |  | inherited: open (from `scoringDescriptor`) |  |
+| `scoringDescriptor.observationWindow.end` | date-time | yes |  | inherited: open (from `scoringDescriptor`) |  |
+| `scoringDescriptor.sourceRef` | string | yes |  | inherited: open (from `scoringDescriptor`) | OWHS v0.2 design choice |
+| `scoringDescriptor.scoreUnit` | string | no |  | inherited: open (from `scoringDescriptor`) | Unit of the score. |
+| `scoringDescriptor.higherScoreMeaning` | string (code) | no |  | inherited: open (from `scoringDescriptor`) |  |
+| `scoringDescriptor.nativeScale` | object | no |  | inherited: open (from `scoringDescriptor`) | Bounds of the native response scale. |
+| `scoringDescriptor.nativeScale.min` | number | yes |  | inherited: open (from `scoringDescriptor`) |  |
+| `scoringDescriptor.nativeScale.max` | number | yes |  | inherited: open (from `scoringDescriptor`) |  |
+| `scoringDescriptor.normalisation` | object | no |  | inherited: open (from `scoringDescriptor`) | Rule that maps nativeValue to 0..100. Required by any observation carrying normalisedValue. |
+| `scoringDescriptor.normalisation.id` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Identifier of the rule or table. |
+| `scoringDescriptor.normalisation.version` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Version of the rule or table. |
+| `scoringDescriptor.normalisation.sourceRef` | string | yes |  | inherited: open (from `scoringDescriptor`) | OWHS v0.2 design choice |
+| `scoringDescriptor.normalisation.description` | string | no |  | inherited: open (from `scoringDescriptor`) | Optional description. |
+| `scoringDescriptor.banding` | object | no |  | inherited: open (from `scoringDescriptor`) | Banding table. Required by any administration carrying band. |
+| `scoringDescriptor.banding.id` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Identifier of the rule or table. |
+| `scoringDescriptor.banding.version` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Version of the rule or table. |
+| `scoringDescriptor.banding.sourceRef` | string | yes |  | inherited: open (from `scoringDescriptor`) | OWHS v0.2 design choice |
+| `scoringDescriptor.banding.description` | string | no |  | inherited: open (from `scoringDescriptor`) | Optional description. |
+| `scoringDescriptor.threshold` | object | no |  | inherited: open (from `scoringDescriptor`) | Threshold rule. Required by any administration carrying aboveThresholdFlag. |
+| `scoringDescriptor.threshold.id` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Identifier of the rule or table. |
+| `scoringDescriptor.threshold.version` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Version of the rule or table. |
+| `scoringDescriptor.threshold.sourceRef` | string | yes |  | inherited: open (from `scoringDescriptor`) | OWHS v0.2 design choice |
+| `scoringDescriptor.threshold.description` | string | no |  | inherited: open (from `scoringDescriptor`) | Optional description. |
+| `scoringDescriptor.missingResponseRule` | object | no |  | inherited: open (from `scoringDescriptor`) | Scoring rule for partial administrations. Required by any partial administration carrying scores. |
+| `scoringDescriptor.missingResponseRule.id` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Identifier of the rule or table. |
+| `scoringDescriptor.missingResponseRule.version` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Version of the rule or table. |
+| `scoringDescriptor.missingResponseRule.sourceRef` | string | yes |  | inherited: open (from `scoringDescriptor`) | OWHS v0.2 design choice |
+| `scoringDescriptor.missingResponseRule.description` | string | no |  | inherited: open (from `scoringDescriptor`) | Optional description. |
 
 ### BenefitEntitlement (new in v0.2)
 
@@ -380,17 +382,17 @@ Declared statutory scheme or commercial workforce benefit. No eligibility, rate 
 | `orgId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
 | `layer` | string (code) | yes | codelist:benefit-layer@0.1.0 | open | the statutory/commercial split |
 | `statutory` | object | no |  | open | **SSP** entitlement semantics (statutory layer) |
-| `statutory.scheme` | string (pattern) | yes |  | open |  |
-| `statutory.eligibility` | string | yes |  | open |  |
-| `statutory.waitingDays` | integer | no |  | open |  |
-| `statutory.rate` | object | no |  | open |  |
-| `statutory.rate.amount` | number | yes |  | open |  |
-| `statutory.rate.currency` | string (pattern) | yes |  | open | ISO 4217 code syntax only; membership is not resolved. |
-| `statutory.rate.basis` | string | yes |  | open | Rate period or other calculation basis, for example per week. A variable statutory formula must be stated in description, not replaced with a fictitious fixed rate. |
-| `statutory.rate.description` | string | no |  | open |  |
-| `statutory.durationWeeks` | number | no |  | open |  |
-| `statutory.sourceRef` | string | yes |  | open | OWHS v0.2 design choice |
-| `statutory.asOfDate` | date | yes |  | open |  |
+| `statutory.scheme` | string (pattern) | yes |  | inherited: open (from `statutory`) |  |
+| `statutory.eligibility` | string | yes |  | inherited: open (from `statutory`) |  |
+| `statutory.waitingDays` | integer | no |  | inherited: open (from `statutory`) |  |
+| `statutory.rate` | object | no |  | inherited: open (from `statutory`) |  |
+| `statutory.rate.amount` | number | yes |  | inherited: open (from `statutory`) |  |
+| `statutory.rate.currency` | string (pattern) | yes |  | inherited: open (from `statutory`) | ISO 4217 code syntax only; membership is not resolved. |
+| `statutory.rate.basis` | string | yes |  | inherited: open (from `statutory`) | Rate period or other calculation basis, for example per week. A variable statutory formula must be stated in description, not replaced with a fictitious fixed rate. |
+| `statutory.rate.description` | string | no |  | inherited: open (from `statutory`) |  |
+| `statutory.durationWeeks` | number | no |  | inherited: open (from `statutory`) |  |
+| `statutory.sourceRef` | string | yes |  | inherited: open (from `statutory`) | OWHS v0.2 design choice |
+| `statutory.asOfDate` | date | yes |  | inherited: open (from `statutory`) |  |
 | `productCategory` | string (code) | no | codelist:benefit-product@0.1.0 | open | UK-market vocabulary (PMI/GIP/GLA/cash plan/EAP/pension) |
 | `serviceName` | string | no |  | open | commercial layer |
 | `provider` | string | no |  | open | OWHS v0.2 design choice |
@@ -407,10 +409,10 @@ Producer-held aggregate event counts. This is not an employer-output record: use
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
 | `utilisationId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
-| `orgId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
+| `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 | `entitlementId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
-| `periodStart` | date | yes |  | open | OWHS v0.2 design choice: inclusive reporting dates |
-| `periodEnd` | date | yes |  | open | OWHS v0.2 design choice: inclusive reporting dates |
+| `periodStart` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
+| `periodEnd` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
 | `usageCount` | integer | yes |  | aggregate-only | counts only, **never individual claims** |
 | `claimCount` | integer | no |  | aggregate-only | Claim events, never an individual claim record. Repeated claims may exceed n. |
 | `n` | integer | yes |  | open | distinct people represented across the recorded service-use and claim events in this period; not the whole eligible workforce and not automatically the denominator for either event category separately; a released metric requires its own distinct-person count and completion metadata in AggregateReport |
@@ -426,8 +428,8 @@ Reserved-minimal producer-held organisation aggregate. No disability measure or 
 | `reportId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
 | `orgId` | string (pattern) | yes |  | open | org level only |
 | `period` | string | yes |  | open | Human-readable period label; periodStart and periodEnd define the inclusive dates. |
-| `periodStart` | date | yes |  | open | OWHS v0.2 design choice: inclusive reporting dates |
-| `periodEnd` | date | yes |  | open | OWHS v0.2 design choice: inclusive reporting dates |
+| `periodStart` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
+| `periodEnd` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
 | `disabledHeadcountBand` | string (code) | no | codelist:headcount-band@0.1.0 | aggregate-only | **n≥10** floor; banded, minimal until `whiu:` defines the measure |
 | `whiuMeasureCode` | string (pattern) | no |  | aggregate-only | reserved |
 
@@ -440,33 +442,33 @@ The only way individual-level results leave an organisation. Structural consiste
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
 | `reportId` | string (pattern) | yes |  | open | Primary identifier, unique within the organisation. |
-| `orgId` | string (pattern) | yes |  | open | Organisation scope. |
+| `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Organisation scope. |
 | `level` | string (code) | yes |  | open | OWHS v0.2 design choice |
 | `unitId` | string (pattern) | no |  | open | OrgUnit reference; required at unit level, forbidden at org level. |
-| `periodStart` | date | yes |  | open | OWHS v0.2 design choice: inclusive reporting dates |
-| `periodEnd` | date | yes |  | open | OWHS v0.2 design choice: inclusive reporting dates |
+| `periodStart` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
+| `periodEnd` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
 | `n` | integer | yes |  | open | respondent count |
-| `observationCount` | integer | no |  |  | Responses underlying the estimate; may exceed n with repeated observations. |
+| `observationCount` | integer | no |  | not separately assigned; entity restrictions apply | Responses underlying the estimate; may exceed n with repeated observations. |
 | `headcount` | integer | yes |  | open | denominator |
-| `eligibleN` | integer | yes |  |  | Distinct people eligible or offered this metric in the window. |
+| `eligibleN` | integer | yes |  | not separately assigned; entity restrictions apply | Distinct people eligible or offered this metric in the window. |
 | `completionRate` | number/null | yes |  | open | **P5** completeness travels with the aggregate |
 | `metricCode` | string (pattern) | yes |  | open | what is reported |
-| `measureKind` | string (code) | yes |  |  | Source grain, not a reliability claim. |
-| `releaseCategory` | string (code) | yes |  | open | OWHS P2/P4 declared category |
+| `measureKind` | string (code) | yes |  | not separately assigned; entity restrictions apply | Source grain, not a reliability claim. |
+| `releaseCategory` | string (code) | yes |  | not separately assigned; entity restrictions apply | OWHS P2/P4 declared category |
 | `value` | number | no |  | open (post-floor) | the aggregate value; **required when `suppressed:false`, and MUST be absent when `suppressed:true`** |
 | `interval` | object | no |  | open | uncertainty; MUST be absent when `suppressed:true`, since an interval discloses the suppressed value to within its width |
-| `interval.low` | number | yes |  | open |  |
-| `interval.high` | number | yes |  | open |  |
-| `interval.level` | number | yes |  | open |  |
-| `interval.method` | string | yes |  | open | Interval method. |
-| `interval.sourceRef` | string | no |  | open | OWHS v0.2 design choice |
+| `interval.low` | number | yes |  | inherited: open (from `interval`) |  |
+| `interval.high` | number | yes |  | inherited: open (from `interval`) |  |
+| `interval.level` | number | yes |  | inherited: open (from `interval`) |  |
+| `interval.method` | string | yes |  | inherited: open (from `interval`) | Interval method. |
+| `interval.sourceRef` | string | no |  | inherited: open (from `interval`) | OWHS v0.2 design choice |
 | `suppressed` | boolean | yes |  | open | **P5** whether withheld |
 | `suppressionReason` | string (code) | no | codelist:suppression-reason@0.1.0 | open | below-floor / safeguarding / low-completion |
 | `contextId` | string (pattern) | yes |  | open | → MeasurementContext |
-| `benchmarkRef` | object | no |  |  | Reference to a comparison release. No implied score equivalence. Not resolved by the core validator. |
-| `benchmarkRef.benchmarkId` | string (pattern) | yes |  | open | BenchmarkRelease identifier. |
-| `benchmarkRef.releaseVersion` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
-| `benchmarkRef.sourceRef` | string | yes |  | open | OWHS v0.2 design choice |
+| `benchmarkRef` | object | no |  | not separately assigned; entity restrictions apply | Reference to a comparison release. No implied score equivalence. Not resolved by the core validator. |
+| `benchmarkRef.benchmarkId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | BenchmarkRelease identifier. |
+| `benchmarkRef.releaseVersion` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `benchmarkRef.sourceRef` | string | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 
 ### BenchmarkRelease (new in v0.2)
 
@@ -474,38 +476,38 @@ One versioned comparison distribution for one declared metric, scoring rule, pop
 
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
-| `benchmarkId` | string (pattern) | yes |  |  | OWHS v0.2 design choice |
-| `releaseVersion` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
-| `composition` | object | yes |  |  | OWHS v0.2 design choice |
-| `composition.orgCount` | integer | yes |  | open |  |
-| `composition.sectors` | array of patterned strings | yes |  | open |  |
-| `composition.sicVersion` | const `2007` | yes |  | open | UK SIC 2007 retained as an edition; ONS also publishes SIC 2026 |
-| `composition.sizeBands` | array of string codes | yes | codelist:org-size-band@0.1.1 | open |  |
-| `composition.sampleSizes` | object | yes |  | open |  |
-| `composition.sampleSizes.people` | integer | yes |  | open |  |
-| `composition.sampleSizes.observations` | integer | no |  | open |  |
-| `percentiles` | object | yes |  |  | OWHS v0.2 design choice |
-| `percentiles.method` | string | yes |  | open | Published quantile algorithm, weighting and handling of ties/missing values. No universal quantile algorithm is presumed. |
-| `percentiles.values` | array of object | yes |  | open |  |
-| `percentiles.values[].probability` | number | yes |  | open |  |
-| `percentiles.values[].value` | number | yes |  | open |  |
-| `leaveOneOut` | boolean | yes |  |  | OWHS v0.2 design choice |
-| `excludedOrgId` | string (pattern) | no |  | open | OWHS v0.2 design choice: required iff leaveOneOut |
-| `validFrom` | date | yes |  |  | OWHS v0.2 design choice |
-| `validTo` | date | yes |  |  | OWHS v0.2 design choice |
-| `source` | string | yes |  |  | OWHS v0.2 design choice |
-| `dataPeriodStart` | date | yes |  | open | OWHS v0.2 design choice |
-| `dataPeriodEnd` | date | yes |  | open | OWHS v0.2 design choice |
-| `measure` | object | yes |  | open | OWHS v0.2 design choice: one metric and scoring rule per release |
-| `measure.metricCode` | string (pattern) | yes |  | open |  |
-| `measure.instrumentId` | string (pattern) | no |  | open |  |
-| `measure.instrumentVersion` | string (pattern) | no |  | open |  |
-| `measure.scoreUnit` | string | yes |  | open |  |
-| `measure.scoringDescriptorRef` | string | yes |  | open |  |
-| `population` | string | yes |  | open | OWHS v0.2 design choice |
-| `samplingMethod` | string | yes |  | open | OWHS v0.2 design choice |
-| `knownLimitations` | string | yes |  | open | OWHS v0.2 design choice |
-| `releaseCategory` | string (code) | yes | codelist:release-category@0.1.0 | open | OWHS P2/P4 declared category |
+| `benchmarkId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `releaseVersion` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `composition` | object | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `composition.orgCount` | integer | yes |  | not separately assigned; entity restrictions apply |  |
+| `composition.sectors` | array of patterned strings | yes |  | not separately assigned; entity restrictions apply |  |
+| `composition.sicVersion` | const `2007` | yes |  | not separately assigned; entity restrictions apply | UK SIC 2007 retained as an edition; ONS also publishes SIC 2026 |
+| `composition.sizeBands` | array of string codes | yes | codelist:org-size-band@0.1.1 | not separately assigned; entity restrictions apply |  |
+| `composition.sampleSizes` | object | yes |  | not separately assigned; entity restrictions apply |  |
+| `composition.sampleSizes.people` | integer | yes |  | not separately assigned; entity restrictions apply |  |
+| `composition.sampleSizes.observations` | integer | no |  | not separately assigned; entity restrictions apply |  |
+| `percentiles` | object | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `percentiles.method` | string | yes |  | not separately assigned; entity restrictions apply | Published quantile algorithm, weighting and handling of ties/missing values. No universal quantile algorithm is presumed. |
+| `percentiles.values` | array of object | yes |  | not separately assigned; entity restrictions apply |  |
+| `percentiles.values[].probability` | number | yes |  | not separately assigned; entity restrictions apply |  |
+| `percentiles.values[].value` | number | yes |  | not separately assigned; entity restrictions apply |  |
+| `leaveOneOut` | boolean | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `excludedOrgId` | string (pattern) | no |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: required iff leaveOneOut |
+| `validFrom` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `validTo` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `source` | string | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `dataPeriodStart` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `dataPeriodEnd` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `measure` | object | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: one metric and scoring rule per release |
+| `measure.metricCode` | string (pattern) | yes |  | not separately assigned; entity restrictions apply |  |
+| `measure.instrumentId` | string (pattern) | no |  | not separately assigned; entity restrictions apply |  |
+| `measure.instrumentVersion` | string (pattern) | no |  | not separately assigned; entity restrictions apply |  |
+| `measure.scoreUnit` | string | yes |  | not separately assigned; entity restrictions apply |  |
+| `measure.scoringDescriptorRef` | string | yes |  | not separately assigned; entity restrictions apply |  |
+| `population` | string | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `samplingMethod` | string | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `knownLimitations` | string | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `releaseCategory` | string (code) | yes | codelist:release-category@0.1.0 | not separately assigned; entity restrictions apply | OWHS P2/P4 declared category |
 
 A benchmark release identifies one metric, scoring rule, population and data period. Its sample sizes, composition, exclusion and quantiles are producer declarations. The validator checks their stated structure and internal consistency; it does not reconstruct the data, verify who was excluded, establish representativeness, validate clinical cut-points or prove that a recipient's measure is comparable. A leave-one-out release names the excluded organisation. Sharing a metric identifier or a numeric range does not establish measurement equivalence. Disclosure review, including composition and repeated-release risks, remains necessary.
 
@@ -515,13 +517,13 @@ Versioned, sourced mapping assertions. At least one target is required; construc
 
 | Field | Type | Req | Code list | Privacy | Anchor or description |
 |---|---|---|---|---|---|
-| `constructCode` | string (code) | yes | codelist:construct-domain@0.1.0 |  | codelist:construct-domain@0.1.0 |
-| `hseDomain` | string (code) | no | codelist:hse-management-domain@0.1.0 |  | codelist:hse-management-domain@0.1.0 |
-| `iso45003Clause` | string (pattern) | no |  |  | Clause-number syntax only. Clause existence, version and mapping meaning are not checked. No ISO text is reproduced. |
-| `iso45003Edition` | string (pattern) | no |  | open | ISO 45003 edition being mapped; ISO text is referenced, not reproduced |
-| `whiuCode` | string (pattern) | no |  |  | Reserved namespace syntax only. No WHIU terminology or endorsement is inferred. |
-| `crosswalkVersion` | string (pattern) | yes |  |  | OWHS v0.2 design choice |
-| `sourceRef` | string | yes |  | open | OWHS v0.2 design choice |
+| `constructCode` | string (code) | yes | codelist:construct-domain@0.1.0 | not separately assigned; entity restrictions apply | codelist:construct-domain@0.1.0 |
+| `hseDomain` | string (code) | no | codelist:hse-management-domain@0.1.0 | not separately assigned; entity restrictions apply | codelist:hse-management-domain@0.1.0 |
+| `iso45003Clause` | string (pattern) | no |  | not separately assigned; entity restrictions apply | Clause-number syntax only. Clause existence, version and mapping meaning are not checked. No ISO text is reproduced. |
+| `iso45003Edition` | string (pattern) | no |  | not separately assigned; entity restrictions apply | ISO 45003 edition being mapped; ISO text is referenced, not reproduced |
+| `whiuCode` | string (pattern) | no |  | not separately assigned; entity restrictions apply | Reserved namespace syntax only. No WHIU terminology or endorsement is inferred. |
+| `crosswalkVersion` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
+| `sourceRef` | string | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 
 At least one of `hseDomain`, `iso45003Clause` and `whiuCode` is required; `iso45003Clause` and `iso45003Edition` require one another. Clause syntax is not clause existence or mapping validity; WHIU syntax is not resolved terminology.
 
@@ -573,8 +575,8 @@ Schemas: [`schemas/v0.2/`](schemas/v0.2/) (sixteen entity types) and [`schemas/c
 
 ### Privacy and boundary rules expressed in schema
 
-- **Direct-identifier ban (P1):** `additionalProperties:false` on every entity and nested object rejects `name`, `nino`, `email`, `dateOfBirth`, `address` and every other undeclared property at the root; inside `ext`, the named identifier keys (and, for `OHEpisode`, its named clinical-content keys) are refused at every depth by the extension object's property-name rule. This is a key-based check: an identifier written into a permitted string value is not detected.
-- **Pseudonym shape:** `pseudonymId` must match `^owhs:pseudo:[0-9a-f]{16,64}$` on `WorkerPseudonym`, `ReasonableAdjustment` and the measurement and absence entities that carry it; a raw employee reference is a schema error.
+- **Direct-identifier ban (P1):** Core schema validation checks declared property names, the documented recursive named-key restrictions in extensions, and each entity's identifier syntax. It cannot detect identifiers or sensitive meaning hidden in permitted values or aliases; a structural pass does not establish P1 compliance.
+- **Pseudonym shape:** WorkerPseudonym, ReasonableAdjustment and the absence, RTW and OH records require the declared `owhs:pseudo:` hexadecimal shape. The retained WellbeingObservation and InstrumentAdministration schemas accept opaque WorkerPseudonym references under their own identifier pattern. The core validator does not resolve those references or establish how any identifier was generated. Where a supplied entity graph is checked, its worker-reference rules provide the additional join.
 - **Opaque identifiers:** every new identifier field forbids whitespace explicitly and takes the shared identifier pattern.
 - **OH clinical-content boundary and consent gate; RTW semantic integrity:** unchanged from v0.1.
 - **Layer branches:** `BenefitEntitlement` requires the statutory object or the product category according to `layer` and forbids the other; `BenchmarkRelease` requires `excludedOrgId` exactly when `leaveOneOut` is true, applies declared sample floors of 5 (ordinary) and 10 (severe-distress) to `sampleSizes.people`, and admits no `safeguarding` release at all.
@@ -707,7 +709,7 @@ OWHS follows the FHIR profiling pattern: a **vendor profile constrains and exten
   "ext": { "owhs-msk": { "surveillanceWave": 3 } } }
 ```
 
-Core validators use `additionalProperties:false` on the top level but explicitly permit the `ext` object, whose sub-keys are only validated when the matching profile schema is loaded. A consumer that does not understand `owhs-msk` drops `ext.owhs-msk` and still has a conformant core record.
+Every core permits the generic `ext` object. Its namespace syntax, object shape and recursive named-key restrictions are checked without a profile. An explicitly supplied matching profile adds its own constraints and is reported with its version and envelope hash. Unchecked extension namespaces are reported as having profile semantics not checked. A core pass does not establish that an omitted profile's semantics hold. A consumer that does not understand `owhs-msk` drops `ext.owhs-msk` and still has a conformant core record.
 
 **What a profile MAY do:** add fields under its `ext` key; narrow a core field (tighten a `maxLength`, restrict an enum to a subset, make a core-optional field required *within the profile*); add profile-scoped code lists; bind a core code-list field to a profile-specific value set that is a **subset** of the core list.
 
@@ -744,16 +746,32 @@ Three cumulative levels. A producer declares the highest level it meets; a consu
 ### Level 1, Schema-valid
 Structural conformance to the Draft 2020-12 schemas.
 - Every entity instance validates against its schema (`additionalProperties:false`, required fields, types, patterns), **with every `format` asserted**. In Draft 2020-12 `format` is an annotation unless a validator is told to assert it, so a validator that does not assert it accepts any string where a date is declared. A conformance claim at this level requires the assertion.
-- The direct-identifier ban (P1) passes: `name`, `nino`, `email`, `dateOfBirth` and `address` are rejected by `additionalProperties:false` on the entity and on every nested object, and `pseudonymId` matches the pseudonym pattern.
+- Direct-identifier ban (P1): Core schema validation checks declared property names, the documented recursive named-key restrictions in extensions, and each entity's identifier syntax. It cannot detect identifiers or sensitive meaning hidden in permitted values or aliases; a structural pass does not establish P1 compliance.
 - Cross-field structural rules the schema encodes fire: OH clinical-content boundary, OH consent gate, RTW `did-not-return`-vs-adjustments rule.
 - The named cross-field rules below fire. JSON Schema compares an instance against a schema and never one field of an instance against another, so an ordering rule between two dates cannot be expressed in it. These rules are implemented in the reference validator and each has an instance in `examples/`.
 
 | Rule | Entity | Statement |
 | --- | --- | --- |
-| C1 | `AbsenceEpisode` | Where `endDate` is present it must not precede `startDate`. |
-| C2 | `OHEpisode` | Where `assessmentDate` is present it must not precede `referralDate`. |
+| C1 | `AbsenceEpisode` | endDate not before startDate |
+| C2 | `OHEpisode` | assessmentDate not before referralDate |
+| C3 | `AggregateReport` | periodEnd not before periodStart |
+| C4 | `MeasurementContext` | observationWindow ordered as UTC instants |
+| C5 | `MeasurementContext` | nativeScale min below max |
+| C6 | `AggregateReport` | interval low not above high |
+| C7 | `AggregateReport` | n <= eligibleN <= headcount |
+| C8 | `AggregateReport` | observationCount not below n |
+| C9 | `AggregateReport` | completionRate is n/eligibleN, null only when eligibleN is 0 |
+| C10 | `ReasonableAdjustment` | if both dates exist, endDate >= startDate |
+| C11 | `BenefitUtilisation` | periodEnd >= periodStart |
+| C12 | `DisabilityParticipation` | periodEnd >= periodStart |
+| C13 | `BenchmarkRelease` | validTo >= validFrom |
+| C14 | `BenchmarkRelease` | dataPeriodEnd >= dataPeriodStart |
+| C15 | `BenefitUtilisation` | n <= usageCount + claimCount (an absent claimCount contributes no recorded events); n = 0 requires both recorded event counts to be zero. Repeated events may exceed n. Declarations are compared; people are not deduplicated |
+| C16 | `BenchmarkRelease` | composition.orgCount <= sampleSizes.people; observations, when supplied, >= people. Contributing organisations and people, not invited but non-contributing units |
+| C17 | `BenchmarkRelease` | percentile probabilities strictly increase in array order and values never decrease; tied values and a single quantile are valid, duplicate probabilities are not; no quantile algorithm or sampling distribution is verified |
+| C18 | `OrgUnit` | parentUnitId, if supplied, differs from unitId; the direct self-loop only |
 
-- *Not yet checked:* whether coded values are current, whether aggregates clear the floors.
+- *What the validators do not establish:* the validators enforce their pinned inline values and the declared structural aggregation and suppression conditions. They do not establish that an external terminology is current, that the submitted counts are true, or that an output is safe to disclose. Code-list and generator gates verify only their documented version and consistency contracts.
 
 ### Level 2, +Code lists
 Level 1, plus every coded field resolves to a **current** code-list version.
@@ -769,7 +787,7 @@ Level 2, plus the normative privacy MUSTs, the level that makes a payload *safe 
 - **Completeness travels (P5):** every `AggregateReport` carries `completionRate`, `suppressed`, and (where applicable) `suppressionReason`.
 - **Refuse, don't hide:** a Level-3 producer that cannot satisfy a floor MUST refuse to emit the offending value (suppression is emitting *metadata about a withholding*, which is permitted and required; emitting the raw sub-floor value is non-conformant).
 
-The reference validator implements Level 1 today (proven in §2d), including the format assertion and the named cross-field rules. Levels 2 and 3 are specified as the checks a full validator adds, and are cross-record or payload-level rather than per-instance, which is why they are conformance levels and not schema keywords. **No tool in this repository verifies Level 2 or Level 3.**
+The reference validator implements Level 1 today, including the format assertion and the named within-record rules C1 to C18 (section 6). Levels 2 and 3 are specified as the checks a full validator adds, and are cross-record or payload-level rather than per-instance, which is why they are conformance levels and not schema keywords. **No tool in this repository verifies Level 2 or Level 3.**
 
 Three parts of Level 3 are not verifiable from payloads at all, and are audit obligations. They are stated here rather than left to be inferred, because a reader could otherwise take a Level 3 declaration to mean more than it can mean.
 

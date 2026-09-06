@@ -6,6 +6,7 @@ remains the v0.1 source and archive.
 
     python tools/build_spec_v0_2.py           # writes spec/OWHS-v0.2-draft.md and its published copy site/spec/OWHS-v0.2-draft.md
     python tools/build_spec_v0_2.py --check   # fails if either committed file differs from a fresh composition
+    python tools/build_spec_v0_2.py --self-test  # generator checks: no invented privacy class, inheritance never widens, opaque-reference controls, exact limit statements
 """
 import json, re, sys
 from pathlib import Path
@@ -65,8 +66,16 @@ ANCHOR_NEW = {"sizeBandReferenceDate": "OWHS v0.2 design choice: the date the ba
               "knownLimitations": "OWHS v0.2 design choice", "releaseCategory": "OWHS P2/P4 declared category", "excludedOrgId": "OWHS v0.2 design choice: required iff leaveOneOut", "sourceRef": "OWHS v0.2 design choice",
               "iso45003Edition": "ISO 45003 edition being mapped; ISO text is referenced, not reproduced", "statutory": "closed statutory-term object; dated and sourced; no rate or eligibility is computed",
               "n": "distinct people represented across the recorded service-use and claim events in this period; not the whole eligible workforce and not automatically the denominator for either event category separately; a released metric requires its own distinct-person count and completion metadata in AggregateReport"}
-PRIVACY_NEW = {"statutory": "open", "sizeBandReferenceDate": "open", "sicVersion": "open", "headcountReferenceDate": "open", "periodStart": "open", "periodEnd": "open", "releaseVersion": "open", "dataPeriodStart": "open",
-               "dataPeriodEnd": "open", "measure": "open", "population": "open", "samplingMethod": "open", "knownLimitations": "open", "releaseCategory": "open", "excludedOrgId": "open", "sourceRef": "open", "iso45003Edition": "open", "orgId": "open"}
+UNASSIGNED = "not separately assigned; entity restrictions apply"      # a field with no explicit class has no separate disclosure permission; no default class is invented
+PRIVACY_NOTE = ("An unassigned field has no separate disclosure permission. The whole record remains subject to its entity boundary and the privacy profile. An `open` metadata field does not make a linked individual record publishable. "
+                "A nested field without its own class shows its nearest assigned parent's class, marked as inherited; a nested field under an unassigned parent is itself unassigned.")
+PSEUDONYM_BULLET = ("- **Pseudonym shape:** WorkerPseudonym, ReasonableAdjustment and the absence, RTW and OH records require the declared `owhs:pseudo:` hexadecimal shape. The retained WellbeingObservation and InstrumentAdministration schemas accept opaque WorkerPseudonym references under their own identifier pattern. "
+                    "The core validator does not resolve those references or establish how any identifier was generated. Where a supplied entity graph is checked, its worker-reference rules provide the additional join.")
+P1_BULLET = ("- **Direct-identifier ban (P1):** Core schema validation checks declared property names, the documented recursive named-key restrictions in extensions, and each entity's identifier syntax. It cannot detect identifiers or sensitive meaning hidden in permitted values or aliases; a structural pass does not establish P1 compliance.")
+NOT_ESTABLISHED_BULLET = ("- *What the validators do not establish:* the validators enforce their pinned inline values and the declared structural aggregation and suppression conditions. They do not establish that an external terminology is current, that the submitted counts are true, or that an output is safe to disclose. "
+                          "Code-list and generator gates verify only their documented version and consistency contracts.")
+SECTION7_MECHANISM = ("Every core permits the generic `ext` object. Its namespace syntax, object shape and recursive named-key restrictions are checked without a profile. An explicitly supplied matching profile adds its own constraints and is reported with its version and envelope hash. "
+                      "Unchecked extension namespaces are reported as having profile semantics not checked. A core pass does not establish that an omitted profile's semantics hold.")
 
 
 def v1_sections():
@@ -106,7 +115,7 @@ def type_of(s):
 def rows_for(name, schema, meta):
     props, req = schema["properties"], set(schema.get("required", []))
     rows = []
-    def add(prefix, p, r, s, depth=0):
+    def add(prefix, p, r, s, depth=0, parent_priv=None):
         if p == "ext": return
         code = ""
         m = re.search(r"codelist:([a-z0-9-]+@[0-9.]+)", s.get("$comment", "") or "")
@@ -114,24 +123,31 @@ def rows_for(name, schema, meta):
         elif s.get("type") == "array" and isinstance(s.get("items"), dict):
             mi = re.search(r"codelist:([a-z0-9-]+@[0-9.]+)", s["items"].get("$comment", "") or "")
             if mi: code = f"codelist:{mi.group(1)}"
-        priv, anchor = meta.get((name, p), (PRIVACY_NEW.get(p, "open" if depth else ""), ANCHOR_NEW.get(p, "")))
-        if depth and not priv: priv = "as parent"
+        explicit = meta.get((name, p)) if depth == 0 else None          # the v0.1 tables classify top-level fields of the seven carried entities; nothing else is an explicit class
+        if explicit: priv, anchor = explicit
+        else:
+            anchor = ANCHOR_NEW.get(p, "")
+            if depth and parent_priv and not parent_priv.startswith(("inherited", UNASSIGNED)): priv = f"inherited: {parent_priv} (from `{prefix.rstrip('.').rstrip('[]')}`)"
+            elif depth and parent_priv and parent_priv.startswith("inherited"): priv = parent_priv
+            else: priv = UNASSIGNED
+        own_class = explicit[0] if explicit else priv
         if not anchor: anchor = s.get("description") or s.get("$comment") or ("OWHS v0.2 design choice" if depth == 0 else "")
         anchor = re.sub(r"^codelist:[a-z0-9-]+@[0-9.]+\s*[\u2014\u2013:-]\s*", "", anchor).replace("\u2014", ",").replace("\u2013", " to ")      # the comment's list pin is already its own column; house style has no dashes
         if name == "ReturnToWorkOutcome" and p == "sustainedAt": code = code or "codelist:rtw-sustained-status@0.1.0 (element status; the checkpoint weeks are advisory rtw-checkpoint@0.1.0)"
         if name == "BenefitUtilisation" and p == "n": anchor = ANCHOR_NEW["n"]
         rows.append(f"| `{prefix}{p}` | {type_of(s)} | {'yes' if r else 'no'} | {code} | {priv} | {anchor} |")
         if s.get("type") == "object" and "properties" in s and depth < 2:
-            for q, qs in s["properties"].items(): add(f"{prefix}{p}.", q, q in set(s.get("required", [])), qs, depth + 1)
+            for q, qs in s["properties"].items(): add(f"{prefix}{p}.", q, q in set(s.get("required", [])), qs, depth + 1, own_class)
         if s.get("type") == "array" and isinstance(s.get("items"), dict) and s["items"].get("type") == "object" and "properties" in s["items"] and depth < 2:
-            for q, qs in s["items"]["properties"].items(): add(f"{prefix}{p}[].", q, q in set(s["items"].get("required", [])), qs, depth + 1)
+            for q, qs in s["items"]["properties"].items(): add(f"{prefix}{p}[].", q, q in set(s["items"].get("required", [])), qs, depth + 1, own_class)
     for p, s in props.items(): add("", p, p in req, s)
     return rows
 
 
 def field_tables():
     meta = v1_field_meta(); L = ["## 4. Field tables, entity by entity", "",
-        "Generated from the sixteen executable v0.2 schemas: a row exists because the schema declares the field, `Req` is the schema's `required`, and a code-list column names the pinned list. Privacy classes and anchors are carried from the v0.1 tables for fields that existed there; fields added or redefined in v0.2 carry the schema's description or the stated design choice. Nested objects are shown as `parent.child`; `ext` (the extension object keyed by profile namespace, section 7) is present on every entity and omitted from the rows.", "",
+        "Generated from the sixteen executable v0.2 schemas: a row exists because the schema declares the field, `Req` is the schema's `required`, and a code-list column names the pinned list. Privacy classes are carried from the v0.1 tables for the fields that existed there and are not invented for any other field: a field without an explicit class reads `not separately assigned; entity restrictions apply`, and a nested field shows its nearest assigned parent's class marked as inherited. Anchors are carried from the v0.1 tables or, for fields added or redefined in v0.2, are the schema's description or the stated design choice. Nested objects are shown as `parent.child`; `ext` (the extension object keyed by profile namespace, section 7) is present on every entity and omitted from the rows.", "",
+        PRIVACY_NOTE, "",
         "**Privacy classification (four classes).** `open` = may appear in any output; `aggregate-only` = employer-visible only through an `AggregateReport` clearing the n-floor; `individual-never` = never leaves the producer at individual grain in any output, even to the employer; `individual-employer` = may be held or shown about an identified pseudonym to the employer only where an independent legal basis entitles them. A class is a field-level obligation on the producer; the schema does not enforce it.", ""]
     for n in ORDER:
         s = json.loads((V2 / f"{n}.json").read_text(encoding="utf-8"))
@@ -183,13 +199,26 @@ def compose():
     if not n_sub: s3, n_sub = re.subn(r"In the three executable schemas, undeclared properties are rejected on the core objects\..*?The remaining entity field tables are specifications, not executable schemas\.", P1_NEW, s3, count=1, flags=re.S)
     assert n_sub == 1 and P1_NEW in s3, "the P1 enforcement sentences to replace were not found in the v0.1 text"
     s6 = ["## 6. JSON Schemas and validation", "", SECTION6_INTRO, "", "Schemas: [`schemas/v0.2/`](schemas/v0.2/) (sixteen entity types) and [`schemas/catalogue.json`](schemas/catalogue.json); the three v0.1 entry points remain at `schemas/<Entity>.json` with byte-identical archived copies under `schemas/v0.1/`. Examples: [`examples/v0.2/`](examples/v0.2/). Report: [`examples/validation_report.json`](examples/validation_report.json).", "",
-          "### Privacy and boundary rules expressed in schema", "", "- **Direct-identifier ban (P1):** `additionalProperties:false` on every entity and nested object rejects `name`, `nino`, `email`, `dateOfBirth`, `address` and every other undeclared property at the root; inside `ext`, the named identifier keys (and, for `OHEpisode`, its named clinical-content keys) are refused at every depth by the extension object's property-name rule. This is a key-based check: an identifier written into a permitted string value is not detected.",
-          "- **Pseudonym shape:** `pseudonymId` must match `^owhs:pseudo:[0-9a-f]{16,64}$` on `WorkerPseudonym`, `ReasonableAdjustment` and the measurement and absence entities that carry it; a raw employee reference is a schema error.", "- **Opaque identifiers:** every new identifier field forbids whitespace explicitly and takes the shared identifier pattern.",
+          "### Privacy and boundary rules expressed in schema", "", P1_BULLET,
+          PSEUDONYM_BULLET, "- **Opaque identifiers:** every new identifier field forbids whitespace explicitly and takes the shared identifier pattern.",
           "- **OH clinical-content boundary and consent gate; RTW semantic integrity:** unchanged from v0.1.", "- **Layer branches:** `BenefitEntitlement` requires the statutory object or the product category according to `layer` and forbids the other; `BenchmarkRelease` requires `excludedOrgId` exactly when `leaveOneOut` is true, applies declared sample floors of 5 (ordinary) and 10 (severe-distress) to `sampleSizes.people`, and admits no `safeguarding` release at all.",
           "- **Paired fields:** `sicCode` with `sicVersion`; `iso45003Clause` with `iso45003Edition`; `instrumentId` with `instrumentVersion`.", ""] + error_map()
     s7 = secs["7. The profile mechanism"]
+    s7, n7 = re.subn(r"Core validators use `additionalProperties:false` on the top level but explicitly permit the `ext` object, whose sub-keys are only validated when the matching profile schema is loaded\. A consumer that does not understand `owhs-msk` drops `ext\.owhs-msk` and still has a conformant core record\.",
+                     SECTION7_MECHANISM + " A consumer that does not understand `owhs-msk` drops `ext.owhs-msk` and still has a conformant core record.", s7, count=1)
+    assert n7 == 1, "the section 7 mechanism paragraph to replace was not found"
     s8 = secs["8. Identifiers and pseudonymisation"]
-    s9 = secs["9. Conformance levels"].rstrip() + "\n\n" + SECTION9_ADD + "\n\n---\n\n"
+    s9 = secs["9. Conformance levels"]
+    # the within-record table and the P1 and not-yet-checked bullets are composed from current behaviour, not carried from v0.1
+    rules_table = "\n".join(["| Rule | Entity | Statement |", "| --- | --- | --- |"] + [f"| {k} | `{v[0]}` | {v[1]} |" for k, v in RULES.items()])
+    s9, n9a = re.subn(r"\| Rule \| Entity \| Statement \|\n\| --- \| --- \| --- \|\n(?:\|.*\|\n)+", rules_table + "\n", s9, count=1)
+    assert n9a == 1, "the section 9 within-record table was not found"
+    s9, n9b = re.subn(r"- The direct-identifier ban \(P1\) passes: .*?pattern\.\n", P1_BULLET.replace("- **Direct-identifier ban (P1):** ", "- Direct-identifier ban (P1): ") + "\n", s9, count=1, flags=re.S)
+    assert n9b == 1, "the section 9 P1 bullet was not found"
+    s9, n9c = re.subn(r"- \*Not yet checked:\* whether coded values are current, whether aggregates clear the floors\.", NOT_ESTABLISHED_BULLET, s9, count=1)
+    assert n9c == 1, "the section 9 not-yet-checked bullet was not found"
+    s9 = s9.replace("The reference validator implements Level 1 today (proven in §2d), including the format assertion and the named cross-field rules.", "The reference validator implements Level 1 today, including the format assertion and the named within-record rules C1 to C18 (section 6).")
+    s9 = s9.rstrip() + "\n\n" + SECTION9_ADD + "\n\n---\n\n"
     s10 = secs["10. The honesty pass: disputable decisions and open questions"]
     src = secs["Sources (primary)"]
     body = head + "\n".join(contents) + "\n" + s1 + s2 + s3 + "\n".join(field_tables()) + "\n---\n\n" + "\n".join(codelist_table()) + "\n---\n\n" + "\n".join(s6) + "\n---\n\n" + s7 + s8 + s9 + s10 + src
@@ -197,7 +226,49 @@ def compose():
     return body.rstrip() + "\n"
 
 
+def self_test():
+    """Generator checks: no privacy class is invented, inheritance never widens, the opaque-reference controls hold, the composed prose states its limits."""
+    import copy, subprocess, tempfile
+    failures = 0
+    def t(label, ok, detail=""):
+        nonlocal failures; print(("ok  " if ok else "FAIL"), label, "" if ok else str(detail)[:300]); failures += not ok
+    meta = v1_field_meta()
+    # a synthetic nested field beneath an individual-never parent inherits individual-never and can never read open
+    synthetic = {"properties": {"clinicalCauseCode": {"type": "object", "properties": {"leaf": {"type": "string"}, "deeper": {"type": "object", "properties": {"leaf2": {"type": "integer"}}}}}}}
+    rows = rows_for("AbsenceEpisode", synthetic, meta)
+    cells = {r.split("|")[1].strip().strip("`"): r.split("|")[5].strip() for r in rows}
+    t("a nested field under an individual-never parent inherits individual-never, marked as inherited, never open by depth default", cells["clinicalCauseCode"] == "individual-never" and cells["clinicalCauseCode.leaf"].startswith("inherited: individual-never") and cells["clinicalCauseCode.deeper.leaf2"].startswith("inherited: individual-never") and "open" not in cells["clinicalCauseCode.leaf"], cells)
+    synthetic2 = {"properties": {"brandNew": {"type": "object", "properties": {"leaf": {"type": "string"}}}, "alsoNew": {"type": "string"}}}
+    cells2 = {r.split("|")[1].strip().strip("`"): r.split("|")[5].strip() for r in rows_for("BenchmarkRelease", synthetic2, meta)}
+    t("unassigned fields, top-level and nested, read the unassigned statement; never blank, never implicitly open", cells2["brandNew"] == UNASSIGNED and cells2["brandNew.leaf"] == UNASSIGNED and cells2["alsoNew"] == UNASSIGNED and all(c for c in cells2.values()), cells2)
+    text = compose(); sec = text[text.index("## 4. Field tables"):text.index("## 5. Code lists")]
+    privs = [[c.strip() for c in ln.strip().strip("|").split("|")][4] for ln in sec.splitlines() if ln.startswith("| `")]
+    v1_classes = {v[0] for v in meta.values()}                # exactly the class strings the v0.1 tables use (including qualified ones such as "open (post-floor)")
+    t("no privacy cell in the composed tables is blank, and every class is a v0.1 class string, inherited from one, or the unassigned statement", all(privs) and all(p_ in v1_classes or p_ == UNASSIGNED or (p_.startswith("inherited: ") and p_.split("inherited: ", 1)[1].split(" (from")[0] in v1_classes) for p_ in privs), sorted({p_ for p_ in privs if not (p_ in v1_classes or p_ == UNASSIGNED or p_.startswith("inherited: "))}))
+    explicit = {(e, f): v[0] for (e, f), v in meta.items()}
+    got = {}
+    ent = None
+    for ln in sec.splitlines():
+        m = re.match(r"^### (\w+)", ln)
+        if m: ent = m.group(1)
+        elif ln.startswith("| `"):
+            cells_ = [c.strip() for c in ln.strip().strip("|").split("|")]; got[(ent, cells_[0].strip("`"))] = cells_[4]
+    t("every explicit v0.1 class is carried unchanged into the v0.2 table", all(got.get(k) == v for k, v in explicit.items() if k in got), [(k, explicit[k], got.get(k)) for k in explicit if k in got and got[k] != explicit[k]][:5])
+    t("the composed prose carries the exact pseudonym, P1, not-established and profile-mechanism statements and the privacy note", all(x in text for x in (PSEUDONYM_BULLET, P1_BULLET, NOT_ESTABLISHED_BULLET, SECTION7_MECHANISM, PRIVACY_NOTE)) and "whose sub-keys are only validated when the matching profile schema is loaded" not in text and "Not yet checked" not in text)
+    t("section 9 Level 1 carries the same generated C1 to C18 table as section 6", text.count("| C18 | `OrgUnit` |") == 2 and text.count("| C1 | `AbsenceEpisode` |") == 2)
+    # the two opaque-reference controls: the retained observation and administration schemas accept an opaque WorkerPseudonym reference
+    with tempfile.TemporaryDirectory() as tmp:
+        for ent_, ex in (("WellbeingObservation", "WellbeingObservation.valid.json"), ("InstrumentAdministration", "InstrumentAdministration.valid.json")):
+            inst = json.loads((ROOT / "examples" / "v0.2" / ex).read_text(encoding="utf-8")); inst["pseudonymId"] = "employee-123"
+            f = Path(tmp) / ex; f.write_text(json.dumps(inst), encoding="utf-8")
+            r = subprocess.run([sys.executable, "-B", str(ROOT / "tools" / "validate.py"), str(V2 / f"{ent_}.json"), str(f)], capture_output=True, text=True)
+            t(f"opaque-reference control: {ent_} with pseudonymId 'employee-123' is VALID through the real validator (the retained schema's own pattern), as the pseudonym bullet states", r.returncode == 0 and "VALID" in r.stdout, (r.returncode, r.stdout[-120:], r.stderr[-120:]))
+    print(f"{'all' if not failures else failures} specification generator checks {'passed' if not failures else 'FAILED'}")
+    return 1 if failures else 0
+
+
 def main():
+    if "--self-test" in sys.argv: sys.exit(self_test())
     text = compose()
     targets = {OUT: text, SITE_OUT: text}
     if "--check" in sys.argv:
