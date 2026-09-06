@@ -1,0 +1,7 @@
+{
+ "tab": "registry",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "version": "Page generator (v0.9.0 unchanged)",
+ "html": "Corrected: on the <a href=\"instrument-registry/mbi.html\">MBI</a> and <a href=\"instrument-registry/isi.html\">ISI</a> record pages, two cited DOIs that contain parentheses (<span class=\"mono\">10.1016/s0140-6736(16)31279-x</span> and <span class=\"mono\">10.1016/s1389-9457(00)00065-4</span>) were linked only as far as their first closing parenthesis, so the link did not resolve and the rest of the DOI appeared as stray text after the citation. The page generator now keeps a URL whole when it contains balanced parentheses, the two citations link to the right papers, and a check refuses a generator that cuts such a URL. No grade, status, licence class or dataset value changes; the dataset carried the full DOIs throughout."
+}
