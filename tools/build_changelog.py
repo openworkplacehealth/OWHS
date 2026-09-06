@@ -17,6 +17,7 @@ import json
 import pathlib
 import re
 import sys
+from html.parser import HTMLParser
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ENTRIES = ROOT / "changelog" / "entries"
@@ -24,9 +25,6 @@ PAGE = ROOT / "site" / "changelog.html"
 TABS = ("registry", "specification", "site")
 VERSIONED = ("registry", "specification")
 DASHES = "\u2014\u2013"  # em and en dashes are not site copy
-
-
-STRUCTURAL_TAG = re.compile(r"</?\s*(table|thead|tbody|tfoot|tr|td|th|section|article|div|script|style|button|form|input)\b", re.I)
 
 
 def valid_date(text):
@@ -45,9 +43,78 @@ def valid_date(text):
     return False
 
 
+ALLOWED = {"a": {"href"}, "span": {"class"}, "code": set(), "em": set(), "strong": set(), "b": set(), "i": set()}
+
+
+class Fragment(HTMLParser):
+    """Parses one row fragment against a small inline allowlist: allowed tags and attributes only, properly nested and closed, no hiding
+    attributes or styles, no raw-text or control elements, and the visible text is what remains outside any tag that hides its content."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.stack = []
+        self.problems = []
+        self.text = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in ALLOWED:
+            self.problems.append(f"tag <{tag}> is not an allowed inline tag ({', '.join(sorted(ALLOWED))})")
+            return
+        for name, value in attrs:
+            if name not in ALLOWED[tag]:
+                self.problems.append(f"attribute {name} is not allowed on <{tag}>")
+            elif name == "href" and (value is None or not re.match(r"^(https?://|/|[A-Za-z0-9_./#-]+$)", value.strip()) or value.strip().lower().startswith("javascript:")):
+                self.problems.append("href must be an http(s) or relative link")
+        self.stack.append(tag)
+
+    def handle_startendtag(self, tag, attrs):
+        self.problems.append(f"self-closing <{tag}/> is not an allowed inline element")
+
+    def handle_endtag(self, tag):
+        if not self.stack or self.stack[-1] != tag:
+            self.problems.append(f"</{tag}> closes nothing that is open, or closes out of order")
+            return
+        self.stack.pop()
+
+    def handle_data(self, data):
+        self.text.append(data)
+
+    def handle_comment(self, data):
+        self.problems.append("comments are not allowed in a row")
+
+    def handle_decl(self, decl):
+        self.problems.append("declarations are not allowed in a row")
+
+    def handle_pi(self, data):
+        self.problems.append("processing instructions are not allowed in a row")
+
+
+def fragment_problems(fragment):
+    """Problems with one row fragment, or an empty list when it is a valid inline fragment with visible text."""
+    parser = Fragment()
+    try:
+        parser.feed(fragment)
+        parser.close()
+    except Exception as e:  # the standard parser is lenient; anything it cannot take is a problem by name
+        return [f"the fragment could not be parsed: {e}"]
+    found = list(parser.problems)
+    if parser.stack:
+        found.append(f"unclosed tag(s): {', '.join('<' + t + '>' for t in parser.stack)}")
+    if "<" in "".join(parser.text) or ">" in "".join(parser.text):
+        found.append("a bare < or > in the text; write &lt; or &gt;")
+    if not re.sub(r"\s+", " ", "".join(parser.text)).strip():
+        found.append("no visible text")
+    return found
+
+
 def visible_text(fragment):
-    """The text a reader sees: tags removed, entities decoded, whitespace collapsed."""
-    return re.sub(r"\s+", " ", html_module.unescape(re.sub(r"<[^>]*>", "", fragment))).strip()
+    """The text a reader sees after the fragment has been parsed as an allowed inline fragment; empty when it is not one."""
+    if fragment_problems(fragment):
+        return ""
+    parser = Fragment()
+    parser.feed(fragment)
+    parser.close()
+    return re.sub(r"\s+", " ", "".join(parser.text)).strip()
 
 
 def load_entries(folder):
@@ -84,10 +151,15 @@ def load_entries(folder):
             found.append(f"{p.name}: order must be an integer")
         for k in ("html", "shown", "version"):
             v = e.get(k)
-            if isinstance(v, str) and (any(d in v for d in DASHES) or "\n" in v or STRUCTURAL_TAG.search(v)):
-                found.append(f"{p.name}: {k} must be one line of row text without dashes of the em or en kind and without table, row, cell, section or script markup in any letter case")
-        if isinstance(e.get("html"), str) and not visible_text(e["html"]):
-            found.append(f"{p.name}: html has no visible text")
+            if isinstance(v, str) and (any(d in v for d in DASHES) or "\n" in v):
+                found.append(f"{p.name}: {k} must be one line without dashes of the em or en kind")
+        for k in ("shown", "version"):
+            v = e.get(k)
+            if isinstance(v, str) and "<" in v:
+                found.append(f"{p.name}: {k} carries markup; only html may")
+        if isinstance(e.get("html"), str):
+            for problem in fragment_problems(e["html"]):
+                found.append(f"{p.name}: html: {problem}")
         if not found or all(not f.startswith(p.name) for f in found):
             entries.append((p.name, e))
     return entries, found
@@ -185,7 +257,7 @@ def self_test():
         put("2026-09-01-reg.json", {"tab": "registry", "date": "2026-09-01", "shown": "1 Sep 2026", "version": "v0.8.0", "html": "registry row"})
         es, fs = load_entries(d)
         t("a folder of valid entries loads", not fs, fs)
-        put("2026-09-06-link.json", {**base, "html": "a <a href=\"x.html\">link</a> and a <span class=\"mono\">code</span> span"})
+        put("2026-09-06-link.json", {**base, "html": "a <a href=\"https://example.org/x\">link</a>, a <span class=\"mono\">code</span> span, <em>emphasis</em>, <strong>strength</strong> and an entity &amp; here"})
         es2, fs2 = load_entries(d)
         t("a harmless inline link or span stays valid", not fs2, fs2)
         (d / "2026-09-06-link.json").unlink()
@@ -209,6 +281,16 @@ def self_test():
             "table markup in the row": {**base, "html": "a</td><td>b"},
             "upper-case row markup in the row": {**base, "html": "A</TD></TR><TR><TD>6 Sep 2026</TD><TD>B"},
             "a section boundary in the row": {**base, "html": "a</section><section>b"},
+            "a hidden span": {**base, "html": "<span hidden>not visible</span>"},
+            "hidden text beside visible text": {**base, "html": "shown <span hidden>and hidden</span>"},
+            "an unclosed anchor": {**base, "html": "<a href=\"x.html\">visible"},
+            "a textarea (raw-text element)": {**base, "html": "<textarea>visible"},
+            "a style attribute": {**base, "html": "<span style=\"display:none\">x</span> y"},
+            "a javascript link": {**base, "html": "<a href=\"javascript:alert(1)\">x</a>"},
+            "an event handler": {**base, "html": "<a href=\"x.html\" onclick=\"y()\">x</a>"},
+            "a self-closing element": {**base, "html": "a<br/>b"},
+            "tags out of order": {**base, "html": "<a href=\"x.html\"><span>a</a></span>"},
+            "a comment": {**base, "html": "a<!-- b -->c"},
             "an impossible calendar date": {**base, "date": "2026-99-99"},
             "an impossible month": {**base, "date": "2026-13"},
             "no visible text": {**base, "html": "<span></span>"},

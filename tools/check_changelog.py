@@ -10,9 +10,13 @@ Usage:
 Published surfaces fall into three categories, each with its changelog:
   site           site/ and docs/ (the rendered pages)          a new site-tab entry file
   registry       registry/                                     a new registry-tab entry file
-  specification  spec/, schemas/, codelists/, examples/,       a new specification-tab entry file AND a new dated
-                 profiles/ and the reference validator         section or entry heading added to CHANGELOG.md
-  README.md                                                    a new dated section or entry heading added to CHANGELOG.md
+  specification  spec/, schemas/, codelists/, examples/,       a new specification-tab entry file AND a new entry
+                 profiles/ and the conformance checkers        added to CHANGELOG.md under a dated section
+                 (validate, measurement, profiles, mappings)
+  README.md                                                    a new entry added to CHANGELOG.md under a dated section
+A CHANGELOG.md entry is a "### " heading with words, added under a "## <day> <Month> <year>" section (a new section,
+or an existing one), with at least one added line of body text beneath it. A bare date, a generic heading, blank
+lines or re-spacing record nothing.
 An entry is a file ADDED under changelog/entries/ in the change, valid as tools/build_changelog.py
 loads it, in the tab its category names. Editing, deleting or re-spacing an old entry, or adding
 blank lines to CHANGELOG.md, does not record a new change. The gate reads the base and head objects
@@ -29,7 +33,7 @@ import tempfile
 from html.parser import HTMLParser
 
 CATEGORY_PREFIXES = {"site": ("site/", "docs/"), "registry": ("registry/",), "specification": ("spec/", "schemas/", "codelists/", "examples/", "profiles/")}
-CATEGORY_FILES = {"specification": ("tools/validate.py",), "readme": ("README.md",)}
+CATEGORY_FILES = {"specification": ("tools/validate.py", "tools/check_measurement.py", "tools/check_profiles.py", "tools/check_codelist_mappings.py"), "readme": ("README.md",)}
 NEEDS_TAB = {"site": "site", "registry": "registry", "specification": "specification"}
 NEEDS_REPOSITORY_LOG = ("specification", "readme")
 PUBLISHED_PREFIXES = tuple(p for ps in CATEGORY_PREFIXES.values() for p in ps)
@@ -107,14 +111,45 @@ def added_valid_entry_tabs(repo, base, head="HEAD"):
     return tabs, invalid
 
 
+DATED_SECTION = re.compile(r"^## \d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}\s*$")
+ENTRY_HEADING = re.compile(r"^### \S.*\S")
+
+
+def log_entries(text):
+    """(section date, entry heading, body lines) for every entry heading in a CHANGELOG.md text, in order; headings outside a dated section have date None."""
+    out, date, heading, body = [], None, None, []
+    for line in text.splitlines():
+        if DATED_SECTION.match(line.strip()):
+            if heading:
+                out.append((date, heading, body))
+            date, heading, body = line.strip(), None, []
+        elif ENTRY_HEADING.match(line.strip()):
+            if heading:
+                out.append((date, heading, body))
+            heading, body = line.strip(), []
+        elif heading is not None:
+            body.append(line)
+    if heading:
+        out.append((date, heading, body))
+    return out
+
+
 def repository_log_added(repo, base, head="HEAD"):
-    """True when the diff of CHANGELOG.md adds a dated section heading or an entry heading with text; blank lines and whitespace do not count."""
-    diff = git(repo, "diff", f"{base}...{head}", "--", "CHANGELOG.md")
-    for line in diff.splitlines():
-        if line.startswith("+") and not line.startswith("+++"):
-            text = line[1:].strip()
-            if re.match(r"^##+ \S", text):
-                return True
+    """True when CHANGELOG.md at head carries an entry that base does not: a ### heading with words under a dated section, with at least one
+    non-blank body line. A bare date heading, a generic heading without a body, blank lines or re-spacing of old entries do not count."""
+    try:
+        base_text = git(repo, "show", f"{base}:CHANGELOG.md")
+    except SystemExit:
+        base_text = ""
+    try:
+        head_text = git(repo, "show", f"{head}:CHANGELOG.md")
+    except SystemExit:
+        return False
+    old = {(d, h, tuple(ln.strip() for ln in b if ln.strip())) for d, h, b in log_entries(base_text)}
+    for date, heading, body in log_entries(head_text):
+        body_lines = tuple(ln.strip() for ln in body if ln.strip())
+        if date is not None and body_lines and (date, heading, body_lines) not in old and (date, heading) not in {(d, h) for d, h, _ in old}:
+            return True
     return False
 
 
@@ -195,6 +230,7 @@ def self_test():
         ("a schema change with only the repository log is refused", (["schemas/v0.2/OrgUnit.json", "CHANGELOG.md"], set(), True), ["schemas/v0.2/OrgUnit.json: needs a new specification-tab entry file under changelog/entries/"]),
         ("a schema change with only a site-tab entry is refused twice over", (["schemas/v0.2/OrgUnit.json", "changelog/entries/2026-09-06-site-x.json"], {"site"}, False), ["schemas/v0.2/OrgUnit.json: needs a new specification-tab entry file under changelog/entries/", "schemas/v0.2/OrgUnit.json: needs a new dated section or entry heading in CHANGELOG.md"]),
         ("the reference validator is a published surface needing both logs", (["tools/validate.py"], set(), False), ["tools/validate.py: needs a new specification-tab entry file under changelog/entries/", "tools/validate.py: needs a new dated section or entry heading in CHANGELOG.md"]),
+        ("the measurement and profile checkers are conformance surfaces needing both logs", (["tools/check_measurement.py", "tools/check_profiles.py"], set(), False), ["tools/check_measurement.py: needs a new specification-tab entry file under changelog/entries/", "tools/check_measurement.py: needs a new dated section or entry heading in CHANGELOG.md", "tools/check_profiles.py: needs a new specification-tab entry file under changelog/entries/", "tools/check_profiles.py: needs a new dated section or entry heading in CHANGELOG.md"]),
         ("other tooling, tests and workflows alone need no entry", (["tools/build_search_index.py", ".github/workflows/validate.yml", "requirements.txt"], set(), False), []),
         ("evidence artefacts alone need no entry", (["evidence/candidates/2026-09.json"], set(), False), []),
         ("the changelog alone is not a change to record", (["site/changelog.html"], set(), False), []),
@@ -292,6 +328,16 @@ def self_test():
         scenario("a schema change with only a site-tab entry fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "changelog/entries/2026-09-06-site-x.json": entry}, False, "CHANGELOG.md")
         scenario("a schema change with both logs passes", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: OrgUnit\n\ntext\n", "changelog/entries/2026-09-06-specification-orgunit.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "OrgUnit changed."})}, True)
         scenario("a validator change with no entry fails", {"tools/validate.py": "print('v2')\n"}, False, "tools/validate.py")
+        scenario("a schema change whose repository log gains only a generic heading fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n## Not a dated entry\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
+        scenario("a schema change whose repository log gains a bare date with nothing beneath fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n## 6 September 2026\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
+        scenario("a schema change whose repository log gains an entry heading with no body fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: OrgUnit\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
+        scenario("a schema change with a genuine additional entry under the existing same-day section passes", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n### Changed: OrgUnit again\n\nmore text\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, True)
+        scenario("a schema change whose repository log only re-spaces an old entry fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log.replace("text\n", "text\n\n\n"), "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
+        (root / "tools" / "check_measurement.py").write_text("print('m1')\n", encoding="utf-8"); (root / "tools" / "check_profiles.py").write_text("print('p1')\n", encoding="utf-8")
+        run("add", "-A"); run("commit", "-q", "-m", "checkers"); base = run("rev-parse", "HEAD").stdout.strip()
+        scenario("a measurement-checker change with no entry fails", {"tools/check_measurement.py": "print('m2')\n"}, False, "tools/check_measurement.py")
+        scenario("a profile-checker change with no entry fails", {"tools/check_profiles.py": "print('p2')\n"}, False, "tools/check_profiles.py")
+        scenario("a measurement-checker change with both logs passes", {"tools/check_measurement.py": "print('m2')\n", "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: measurement checker\n\ntext\n", "changelog/entries/2026-09-06-specification-measurement.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.2", "html": "Measurement checker changed."})}, True)
         scenario("a validator change with both logs passes", {"tools/validate.py": "print('v2')\n", "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: validator\n\ntext\n", "changelog/entries/2026-09-06-specification-validator.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "Validator changed."})}, True)
         scenario("a registry change with a new registry-tab entry passes", {"registry/dataset.json": "{}\n", "changelog/entries/2026-09-06-registry-dataset.json": json.dumps({"tab": "registry", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.9.1", "html": "Dataset changed."})}, True)
         scenario("a README change with a repository-log heading passes", {"README.md": "# OWHS\n\nmore\n", "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: README\n\ntext\n"}, True)
