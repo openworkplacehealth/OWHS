@@ -1,0 +1,7 @@
+{
+ "tab": "site",
+ "date": "2026-09-04",
+ "shown": "4 Sep 2026",
+ "html": "The copies of the schemas and examples served from <span class=\"mono\">/spec/</span> brought back into step with the repository, so a reader downloading from the site gets the same files as the repository. The publish step now refreshes them rather than leaving two copies to be kept in step by hand.",
+ "order": 2
+}

@@ -1,0 +1,8 @@
+{
+ "tab": "specification",
+ "date": "2026-09-04",
+ "shown": "4 Sep 2026",
+ "version": "v0.1",
+ "html": "Closed-vocabulary rule added to section 5: a fixed set of values is bound to a registered code list, and the correspondence between an inline enum and the list its <span class=\"mono\">$comment</span> pins is a Level 2 obligation no tool here checks. <span class=\"mono\">rtw-sustained-status@0.1.0</span> created for the one field that lacked a list, values unchanged. Error map corrected: the <span class=\"mono\">AbsenceEpisode</span> invalid instance raises four errors, not five, and the rule the fifth named is not in any schema; rows added for the three date fixtures. The repository copy's link to its own validation report resolved to a directory that does not exist and is fixed. A declared dependency, a workflow that runs the report gate, and <span class=\"mono\">--check</span> on the generator, which previously ignored its arguments and overwrote the file it was asked to check.",
+ "order": 3
+}
