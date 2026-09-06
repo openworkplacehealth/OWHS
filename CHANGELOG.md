@@ -7,6 +7,16 @@ behind it, the entry says so plainly rather than describing the fix as an improv
 Registry grade corrections are not here. They have their own numbered log at
 `site/instrument-registry/corrections.html`, and grades remain frozen.
 
+## 6 September 2026
+
+### Fixed: the published specification page had drifted from its source
+
+`site/spec/index.html` was rendered once and then edited by hand alongside the markdown. The page
+lacked the closed-vocabulary rule, the corrected error map and the newest code-list rows that
+`spec/OWHS-v0.1-draft.md` carried. `tools/build_spec_page.py` now renders the page from the markdown
+as one chain, and `--check` fails when either generated file differs from what the source produces,
+so the two cannot drift again.
+
 ## 4 September 2026
 
 ### Corrected: the error map named a rule no schema contains
