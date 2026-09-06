@@ -27,3 +27,7 @@ jobs:
         run: python tools/build_validation_report.py --check
       - name: registry pages are generated from the committed dataset, rubric and generator
         run: python registry/build_registry_site.py --check
+      - name: the search index is generated from the pages, the registry dataset and the question bank
+        run: python tools/build_search_index.py --check
+      - name: search-index generator behaves as documented
+        run: python tools/build_search_index.py --self-test
