@@ -1,0 +1,7 @@
+{
+ "tab": "site",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "html": "The tab counts on this page said 11 registry rows and 7 site rows while the tables held 12 and 9; three rows had been added without the counts moving. The counts now equal the rows, and a check refuses a page whose counts and rows differ.",
+ "order": 1
+}

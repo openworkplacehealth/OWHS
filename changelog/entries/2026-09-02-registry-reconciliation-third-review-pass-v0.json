@@ -1,0 +1,8 @@
+{
+ "tab": "registry",
+ "date": "2026-09-02",
+ "shown": "2 Sep 2026",
+ "version": "v0.7.0",
+ "html": "Reconciliation of the third review pass, of v0.6.0, before first publication; the check found no grade demonstrably wrong. <a href=\"instrument-registry/rubric.html\">Rubric v1.4</a>: the High precondition names the statistics of each property and the build tests every cited study against its own property's list (nine studies leave the tables on four cells; every one of those cells keeps two or more and stays High); <span class=\"mono\">high_basis</span> is renamed <span class=\"mono\">precondition_evidence</span>, the studies that meet the precondition, and a cell that drops from High keeps that evidence in its history; internal consistency on item sets and derived indices is stated; a flag descriptor may name a population by the survey, trial or organisation that sampled it; a direct reason lists a working-adult sample first; the rule that borrowed evidence never grades High is now checked; every rule names its check and the unchecked ones are listed. One High grade drops to Moderate (k10 criterion validity against a reference standard, on a credible published disagreement, the rater's judgement written on the cell), two internal-consistency cells become Not-applicable (wpai, fcs-maps), two population tags and two evidence forms are corrected. All 420 DOIs resolved. Schema 0.7: eight-field <span class=\"mono\">previous</span> blocks. Logged as correction C-0007 with the rubric 1.3 values kept on each changed cell. No fresh literature search: as-of dates unchanged.",
+ "order": 5
+}

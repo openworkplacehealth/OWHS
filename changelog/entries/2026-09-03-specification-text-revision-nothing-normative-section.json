@@ -1,0 +1,7 @@
+{
+ "tab": "specification",
+ "date": "2026-09-03",
+ "shown": "3 Sep 2026",
+ "version": "v0.1",
+ "html": "Text revision, nothing normative: section 7 examples use the profiles the specification itself defines (<span class=\"mono\">owhs-msk</span>, <span class=\"mono\">owhs-ohsurveillance</span>) and the steward's own profile is described by its role rather than by name; the safeguarding-category anchor says the same. The rendered page, the markdown and the bundle are regenerated from the source."
+}

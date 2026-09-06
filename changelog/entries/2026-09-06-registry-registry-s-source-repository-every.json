@@ -1,0 +1,7 @@
+{
+ "tab": "registry",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "version": "Source (v0.9.0 unchanged)",
+ "html": "The registry's source is in the <a href=\"https://github.com/openworkplacehealth/OWHS/tree/main/registry\">repository</a>: every dataset version from v0.1 to v0.9.0, every rubric version, both admission policies, the conformance gate and the generator that builds these pages, so a reader can rebuild them from the same inputs the steward uses. A check refuses a page that no longer matches the committed dataset, rubric and generator. The dataset files and downloads from v0.3.0 are public projections of the released versions: each omits one record-level stewardship field that was null in every version and says so in its own <span class=\"mono\">public_projection</span> block. No grade, status, evidence, citation or licence class changed."
+}

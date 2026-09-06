@@ -1,0 +1,7 @@
+{
+ "tab": "site",
+ "date": "2026-09-04",
+ "shown": "4 Sep 2026",
+ "html": "Two pages corrected to match the specification after the validator changes. <a href=\"how-it-works.html\">How it works</a> no longer says that no direct identifier appears anywhere, and separates what the schemas enforce, which is that an identifier cannot occupy a field of its own, from what a producer is obliged to do, which is not to paste one into a permitted text field. <a href=\"standard.html\">Inside the standard</a> demonstrated validator output containing an error the validator no longer raises; it now shows the output a run produces.",
+ "order": 3
+}

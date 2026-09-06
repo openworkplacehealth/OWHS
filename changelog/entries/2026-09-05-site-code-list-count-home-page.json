@@ -1,0 +1,7 @@
+{
+ "tab": "site",
+ "date": "2026-09-05",
+ "shown": "5 Sep 2026",
+ "html": "The code-list count on the <a href=\"index.html\">home page</a> and <a href=\"how-it-works.html\">How it works</a> reads 24, matching the registry since <span class=\"mono\">rtw-sustained-status</span> was added on 4 September; the spec page and README already carried the new figure.",
+ "order": 1
+}
