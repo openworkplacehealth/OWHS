@@ -1,5 +1,5 @@
 {
- "note": "Synthetic graph cases; each names the diagnostic codes (rule or schema keyword) and JSON pointers the checker must raise. Not real workforce data.",
+ "note": "Synthetic graph cases; each names the diagnostic codes (rule or schema keyword) and RFC 6901 JSON pointers the checker must raise. Pointers are production spellings: the root is the empty string, tokens are escaped, and each locates the offending existing value or its nearest existing parent (G01 the record's orgId, G02 the duplicated key or the duplicate release record, G08 the report's metricCode, G09 the release's excludedOrgId, G10 the root comparisonAsOfDate). observed_prototype_errors keeps the original prototype's relative locations as history; they are not the pointer oracle. Not real workforce data.",
  "cases": [
   {
    "case": "sixteen-shapes-valid-reference-graph",
@@ -9,16 +9,18 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "empty-explicit-input",
    "file": "cases/empty-explicit-input.json",
    "expected_codes": [],
    "expected_errors": [],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": []
   },
   {
    "case": "missing-array",
@@ -29,10 +31,16 @@
    "expected_errors": [
     [
      "schema:required",
-     "organisations/0"
+     "/organisations/0"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "schema:required",
+     "organisations/0"
+    ]
+   ]
   },
   {
    "case": "wrong-group-org",
@@ -43,10 +51,16 @@
    "expected_errors": [
     [
      "G01",
-     "organisations/0/workers/0"
+     "/organisations/0/workers/0/orgId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G01",
+     "organisations/0/workers/0"
+    ]
+   ]
   },
   {
    "case": "duplicate-org-even-identical",
@@ -57,10 +71,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/1"
+     "/organisations/1/organisation/orgId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-units",
@@ -71,10 +91,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/units/1"
+     "/organisations/0/units/1/unitId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/units/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-workers",
@@ -85,10 +111,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/workers/1"
+     "/organisations/0/workers/1/pseudonymId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/workers/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-absences",
@@ -99,10 +131,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/absences/1"
+     "/organisations/0/absences/1/episodeId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/absences/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-rtwOutcomes",
@@ -113,10 +151,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/rtwOutcomes/1"
+     "/organisations/0/rtwOutcomes/1/outcomeId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/rtwOutcomes/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-ohEpisodes",
@@ -127,10 +171,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/ohEpisodes/1"
+     "/organisations/0/ohEpisodes/1/ohEpisodeId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/ohEpisodes/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-adjustments",
@@ -141,10 +191,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/adjustments/1"
+     "/organisations/0/adjustments/1/adjustmentId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/adjustments/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-entitlements",
@@ -155,10 +211,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/entitlements/1"
+     "/organisations/0/entitlements/1/entitlementId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/entitlements/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-utilisations",
@@ -169,10 +231,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/utilisations/1"
+     "/organisations/0/utilisations/1/utilisationId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/utilisations/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-disabilityParticipations",
@@ -183,10 +251,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/disabilityParticipations/1"
+     "/organisations/0/disabilityParticipations/1/reportId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/disabilityParticipations/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-contexts",
@@ -197,10 +271,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/contexts/1"
+     "/organisations/0/contexts/1/contextId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/contexts/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-observations",
@@ -211,10 +291,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/observations/1"
+     "/organisations/0/observations/1/observationId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/observations/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-administrations",
@@ -225,10 +311,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/administrations/1"
+     "/organisations/0/administrations/1/administrationId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/administrations/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-reports",
@@ -239,10 +331,16 @@
    "expected_errors": [
     [
      "G02",
-     "organisations/0/reports/1"
+     "/organisations/0/reports/1/reportId"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "organisations/0/reports/1"
+    ]
+   ]
   },
   {
    "case": "duplicate-benchmark-release",
@@ -253,10 +351,16 @@
    "expected_errors": [
     [
      "G02",
-     "benchmarks/1"
+     "/benchmarks/1"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G02",
+     "benchmarks/1"
+    ]
+   ]
   },
   {
    "case": "benchmark-other-version-allowed",
@@ -266,9 +370,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "missing-units-parentUnitId",
@@ -279,13 +384,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/units/0/parentUnitId"
+     "/organisations/0/units/0/parentUnitId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/units/0/parentUnitId"
     ]
    ]
   },
@@ -298,13 +409,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/workers/0/unitId"
+     "/organisations/0/workers/0/unitId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/workers/0/unitId"
     ]
    ]
   },
@@ -317,13 +434,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/reports/0/unitId"
+     "/organisations/0/reports/0/unitId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/reports/0/unitId"
     ]
    ]
   },
@@ -336,13 +459,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/utilisations/0/entitlementId"
+     "/organisations/0/utilisations/0/entitlementId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/utilisations/0/entitlementId"
     ]
    ]
   },
@@ -357,6 +486,26 @@
    "expected_errors": [
     [
      "G03",
+     "/organisations/0/absences/0/pseudonymId"
+    ],
+    [
+     "G04",
+     "/organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
+    ],
+    [
+     "G04",
+     "/organisations/0/rtwOutcomes/0/absenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
      "organisations/0/absences/0/pseudonymId"
     ],
     [
@@ -366,12 +515,6 @@
     [
      "G04",
      "organisations/0/rtwOutcomes/0/absenceEpisodeId"
-    ]
-   ],
-   "expected_reviews": [
-    [
-     "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
     ]
    ]
   },
@@ -385,17 +528,27 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/rtwOutcomes/0/pseudonymId"
+     "/organisations/0/rtwOutcomes/0/pseudonymId"
     ],
     [
      "G04",
-     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
+     "/organisations/0/rtwOutcomes/0/absenceEpisodeId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/rtwOutcomes/0/pseudonymId"
+    ],
+    [
+     "G04",
+     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
     ]
    ]
   },
@@ -410,6 +563,26 @@
    "expected_errors": [
     [
      "G03",
+     "/organisations/0/ohEpisodes/0/pseudonymId"
+    ],
+    [
+     "G04",
+     "/organisations/0/adjustments/0/sourceOhEpisodeId"
+    ],
+    [
+     "G04",
+     "/organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
      "organisations/0/ohEpisodes/0/pseudonymId"
     ],
     [
@@ -419,12 +592,6 @@
     [
      "G04",
      "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
-    ]
-   ],
-   "expected_reviews": [
-    [
-     "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
     ]
    ]
   },
@@ -438,17 +605,27 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/adjustments/0/pseudonymId"
+     "/organisations/0/adjustments/0/pseudonymId"
     ],
     [
      "G04",
-     "organisations/0/adjustments/0/sourceOhEpisodeId"
+     "/organisations/0/adjustments/0/sourceOhEpisodeId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/adjustments/0/pseudonymId"
+    ],
+    [
+     "G04",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
     ]
    ]
   },
@@ -461,13 +638,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/observations/0/pseudonymId"
+     "/organisations/0/observations/0/pseudonymId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/observations/0/pseudonymId"
     ]
    ]
   },
@@ -480,13 +663,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/administrations/0/pseudonymId"
+     "/organisations/0/administrations/0/pseudonymId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/administrations/0/pseudonymId"
     ]
    ]
   },
@@ -499,13 +688,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/observations/0/contextId"
+     "/organisations/0/observations/0/contextId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/observations/0/contextId"
     ]
    ]
   },
@@ -518,13 +713,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/administrations/0/contextId"
+     "/organisations/0/administrations/0/contextId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/administrations/0/contextId"
     ]
    ]
   },
@@ -537,13 +738,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/reports/0/contextId"
+     "/organisations/0/reports/0/contextId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/reports/0/contextId"
     ]
    ]
   },
@@ -556,13 +763,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
+     "/organisations/0/rtwOutcomes/0/absenceEpisodeId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
     ]
    ]
   },
@@ -575,13 +788,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
+     "/organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
     ]
    ]
   },
@@ -594,13 +813,19 @@
    "expected_errors": [
     [
      "G03",
-     "organisations/0/adjustments/0/sourceOhEpisodeId"
+     "/organisations/0/adjustments/0/sourceOhEpisodeId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
     ]
    ]
   },
@@ -613,13 +838,19 @@
    "expected_errors": [
     [
      "G04",
-     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
+     "/organisations/0/rtwOutcomes/0/absenceEpisodeId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G04",
+     "organisations/0/rtwOutcomes/0/absenceEpisodeId"
     ]
    ]
   },
@@ -633,17 +864,27 @@
    "expected_errors": [
     [
      "G04",
-     "organisations/0/adjustments/0/sourceOhEpisodeId"
+     "/organisations/0/adjustments/0/sourceOhEpisodeId"
     ],
     [
      "G04",
-     "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
+     "/organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G04",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
+    ],
+    [
+     "G04",
+     "organisations/0/ohEpisodes/0/linkedAbsenceEpisodeId"
     ]
    ]
   },
@@ -656,13 +897,19 @@
    "expected_errors": [
     [
      "G04",
-     "organisations/0/adjustments/0/sourceOhEpisodeId"
+     "/organisations/0/adjustments/0/sourceOhEpisodeId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G04",
+     "organisations/0/adjustments/0/sourceOhEpisodeId"
     ]
    ]
   },
@@ -674,13 +921,14 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ],
     [
      "comparison_not_established",
-     "organisations/1/reports/0/benchmarkRef"
+     "/organisations/1/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "worker-present-only-in-other-org",
@@ -696,6 +944,42 @@
    "expected_errors": [
     [
      "G03",
+     "/organisations/0/absences/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "/organisations/0/adjustments/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "/organisations/0/administrations/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "/organisations/0/observations/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "/organisations/0/ohEpisodes/0/pseudonymId"
+    ],
+    [
+     "G03",
+     "/organisations/0/rtwOutcomes/0/pseudonymId"
+    ]
+   ],
+   "expected_reviews": [
+    [
+     "comparison_not_established",
+     "/organisations/0/reports/0/benchmarkRef"
+    ],
+    [
+     "comparison_not_established",
+     "/organisations/1/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G03",
      "organisations/0/absences/0/pseudonymId"
     ],
     [
@@ -718,16 +1002,6 @@
      "G03",
      "organisations/0/rtwOutcomes/0/pseudonymId"
     ]
-   ],
-   "expected_reviews": [
-    [
-     "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
-    ],
-    [
-     "comparison_not_established",
-     "organisations/1/reports/0/benchmarkRef"
-    ]
    ]
   },
   {
@@ -739,13 +1013,19 @@
    "expected_errors": [
     [
      "G05",
-     "organisations/0/units"
+     "/organisations/0/units"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G05",
+     "organisations/0/units"
     ]
    ]
   },
@@ -757,9 +1037,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "direct-unit-self-loop",
@@ -770,10 +1051,16 @@
    "expected_errors": [
     [
      "C18",
-     "organisations/0/units/0"
+     "/organisations/0/units/0"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "C18",
+     "organisations/0/units/0"
+    ]
+   ]
   },
   {
    "case": "return-before-absence-start",
@@ -784,13 +1071,19 @@
    "expected_errors": [
     [
      "G06",
-     "organisations/0/rtwOutcomes/0/rtwDate"
+     "/organisations/0/rtwOutcomes/0/rtwDate"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G06",
+     "organisations/0/rtwOutcomes/0/rtwDate"
     ]
    ]
   },
@@ -802,9 +1095,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "phased-return-before-recorded-absence-end",
@@ -814,9 +1108,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "benchmark-release-missing",
@@ -827,10 +1122,16 @@
    "expected_errors": [
     [
      "G07",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G07",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
   },
   {
    "case": "benchmark-wrong-version",
@@ -841,10 +1142,16 @@
    "expected_errors": [
     [
      "G07",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "G07",
+     "organisations/0/reports/0/benchmarkRef"
+    ]
+   ]
   },
   {
    "case": "benchmark-metric-different",
@@ -855,13 +1162,19 @@
    "expected_errors": [
     [
      "G08",
-     "organisations/0/reports/0/benchmarkRef/metricCode"
+     "/organisations/0/reports/0/metricCode"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G08",
+     "organisations/0/reports/0/benchmarkRef/metricCode"
     ]
    ]
   },
@@ -873,9 +1186,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "leave-one-out-wrong-org",
@@ -886,13 +1200,19 @@
    "expected_errors": [
     [
      "G09",
-     "organisations/0/reports/0/benchmarkRef/excludedOrgId"
+     "/benchmarks/0/excludedOrgId"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G09",
+     "organisations/0/reports/0/benchmarkRef/excludedOrgId"
     ]
    ]
   },
@@ -904,9 +1224,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "valid-to-inclusive",
@@ -916,9 +1237,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "before-declared-release-validity",
@@ -929,13 +1251,19 @@
    "expected_errors": [
     [
      "G10",
-     "organisations/0/reports/0/benchmarkRef/comparisonAsOfDate"
+     "/comparisonAsOfDate"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G10",
+     "organisations/0/reports/0/benchmarkRef/comparisonAsOfDate"
     ]
    ]
   },
@@ -948,13 +1276,19 @@
    "expected_errors": [
     [
      "G10",
-     "organisations/0/reports/0/benchmarkRef/comparisonAsOfDate"
+     "/comparisonAsOfDate"
     ]
    ],
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
+    ]
+   ],
+   "observed_prototype_errors": [
+    [
+     "G10",
+     "organisations/0/reports/0/benchmarkRef/comparisonAsOfDate"
     ]
    ]
   },
@@ -966,9 +1300,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "different-crosswalk-target-same-version-allowed",
@@ -978,9 +1313,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "duplicate-crosswalk-does-not-invent-an-id",
@@ -990,9 +1326,10 @@
    "expected_reviews": [
     [
      "comparison_not_established",
-     "organisations/0/reports/0/benchmarkRef"
+     "/organisations/0/reports/0/benchmarkRef"
     ]
-   ]
+   ],
+   "observed_prototype_errors": []
   },
   {
    "case": "wrong-procedural-report-rate",
@@ -1003,10 +1340,16 @@
    "expected_errors": [
     [
      "C9",
-     "organisations/0/reports/0"
+     "/organisations/0/reports/0"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "C9",
+     "organisations/0/reports/0"
+    ]
+   ]
   },
   {
    "case": "malformed-context-no-join-crash",
@@ -1017,10 +1360,16 @@
    "expected_errors": [
     [
      "schema:type",
-     "organisations/0/contexts/0/scoringDescriptor"
+     "/organisations/0/contexts/0/scoringDescriptor"
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "schema:type",
+     "organisations/0/contexts/0/scoringDescriptor"
+    ]
+   ]
   },
   {
    "case": "root-null",
@@ -1034,7 +1383,13 @@
      ""
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "schema:type",
+     ""
+    ]
+   ]
   },
   {
    "case": "root-list",
@@ -1048,7 +1403,13 @@
      ""
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "schema:type",
+     ""
+    ]
+   ]
   },
   {
    "case": "root-scalar",
@@ -1062,7 +1423,13 @@
      ""
     ]
    ],
-   "expected_reviews": []
+   "expected_reviews": [],
+   "observed_prototype_errors": [
+    [
+     "schema:type",
+     ""
+    ]
+   ]
   }
  ]
 }

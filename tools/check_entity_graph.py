@@ -70,32 +70,103 @@ def loads_strict(text):
     return json.loads(text, parse_constant=_reject_constant, parse_float=_finite_float, object_pairs_hook=_no_dupes)
 
 
+def load_config_json(path, what):
+    """A configuration file (schema, envelope, profile): unreadable or not strict JSON is a tool error naming the path."""
+    try: return loads_strict(Path(path).read_text(encoding="utf-8"))
+    except OSError as e: raise ToolError(f"{what} {path}: {e}")
+    except (UnicodeDecodeError, ValueError) as e: raise ToolError(f"{what} {path} is not strict JSON: {e}")
+
+
+def load_validator():
+    """The shared single-record validator (tools/validate.py) through an explicit error boundary; its absence or failure to import is a tool error."""
+    vp = ROOT / "tools" / "validate.py"
+    if not vp.exists(): raise ToolError("shared validator tools/validate.py is missing; the within-record rules and preflight cannot run")
+    try: import validate as v
+    except (ImportError, SyntaxError, SystemExit, Exception) as e: raise ToolError(f"shared validator tools/validate.py could not be loaded: {type(e).__name__}: {str(e)[:120]}")
+    for name in ("CROSS_FIELD_RULES", "formats_used", "refs_used", "resolve_local"):
+        if not hasattr(v, name): raise ToolError(f"shared validator tools/validate.py lacks {name}; a different file stands where the validator is expected")
+    return v, hashlib.sha256(vp.read_bytes()).hexdigest()
+
+
+def preflight_problems(V, v, checker_formats, schema, what, inventory_ids=None):
+    """The accepted S06 preflight, without exiting: meta-validity, every format asserted by this installation, and every reference
+    (used branches and unused alike) resolving locally, or, for the entity-graph envelope, to a schema in the checked local inventory.
+    Nothing is fetched. Returns a list of named problems."""
+    from urllib.parse import urldefrag, urljoin
+    p = []
+    try: V.check_schema(schema)
+    except Exception as e: p.append(f"{what} is not a valid draft 2020-12 schema: {str(e)[:120]}")
+    unenforceable = sorted(set(v.formats_used(schema)) - set(checker_formats))
+    if unenforceable: p.append(f"{what} uses formats this installation cannot assert: {', '.join(unenforceable)}; a pass would overstate what was checked")
+    base = schema.get("$id", "") if isinstance(schema, dict) and isinstance(schema.get("$id"), str) else ""
+    def in_inventory(ref):
+        target, frag = urldefrag(urljoin(base, ref))
+        if not inventory_ids or target not in inventory_ids: return False
+        if frag == "": return True
+        if frag.startswith("/"): return v.pointer_resolves(inventory_ids[target], frag)
+        return frag in set(v.anchors(inventory_ids[target]))
+    for ref in sorted(set(v.refs_used(schema))):
+        if v.resolve_local(schema, ref) or in_inventory(ref): continue
+        p.append(f"{what} carries a reference that does not resolve locally (nothing is fetched): {ref}")
+    return p
+
+
 def load_inventory():
-    """The local schema inventory: the envelope, the sixteen entity schemas and the profile envelope schema. Anything missing is a tool error."""
+    """The complete local configuration, preflighted before any record is judged: the envelope, the sixteen entity schemas and the
+    profile-envelope schema, each strict JSON, meta-valid, with only asserted formats and only local or inventory-resolvable references.
+    Anything missing, malformed or unresolvable is a tool error naming the path."""
     try:
         from jsonschema.validators import Draft202012Validator as V
         from jsonschema import FormatChecker
         from referencing import Registry, Resource
     except ImportError as e: raise ToolError(f"dependency missing: {e}")
+    v, vhash = load_validator()
+    checker_formats = set(FormatChecker().checkers)
     if not ENVELOPE.exists(): raise ToolError(f"envelope schema missing: {ENVELOPE.relative_to(ROOT)}")
-    schemas = {}
+    if not PROFILE_ENVELOPE.exists(): raise ToolError(f"profile-envelope schema missing: {PROFILE_ENVELOPE.relative_to(ROOT)}")
+    schemas, hashes = {}, {}
     for n in ALL_ENTITIES:
-        p = SCHEMA_DIR / f"{n}.json"
-        if not p.exists(): raise ToolError(f"entity schema missing: {p.relative_to(ROOT)}")
-        schemas[n] = json.loads(p.read_text(encoding="utf-8"))
-    env = json.loads(ENVELOPE.read_text(encoding="utf-8"))
-    for s in list(schemas.values()) + [env]:
-        try: V.check_schema(s)
-        except Exception as e: raise ToolError(f"schema {s.get('$id')} does not meta-validate: {str(e)[:120]}")
+        sp = SCHEMA_DIR / f"{n}.json"
+        if not sp.exists(): raise ToolError(f"entity schema missing: {sp.relative_to(ROOT)}")
+        schemas[n] = load_config_json(sp, "entity schema"); hashes[f"schemas/v0.2/{n}.json"] = hashlib.sha256(sp.read_bytes()).hexdigest()
+    env = load_config_json(ENVELOPE, "envelope schema"); hashes[str(ENVELOPE.relative_to(ROOT))] = hashlib.sha256(ENVELOPE.read_bytes()).hexdigest()
+    penv = load_config_json(PROFILE_ENVELOPE, "profile-envelope schema")
+    ids = {}
+    for n, sc in schemas.items():
+        if not isinstance(sc, dict) or not isinstance(sc.get("$id"), str): raise ToolError(f"entity schema schemas/v0.2/{n}.json has no string $id")
+        ids[sc["$id"]] = sc
+    problems = []
+    for n, sc in schemas.items(): problems += preflight_problems(V, v, checker_formats, sc, f"entity schema schemas/v0.2/{n}.json")
+    problems += preflight_problems(V, v, checker_formats, env, f"envelope schema {ENVELOPE.relative_to(ROOT)}", inventory_ids=ids)
+    problems += preflight_problems(V, v, checker_formats, penv, f"profile-envelope schema {PROFILE_ENVELOPE.relative_to(ROOT)}")
+    if problems: raise ToolError("configuration preflight failed: " + "; ".join(problems[:4]))
     def refuse(uri): raise ToolError(f"schema reference {uri!r} is not in the local inventory; network retrieval is not performed")
     reg = Registry(retrieve=refuse).with_resources([(s["$id"], Resource.from_contents(s)) for s in schemas.values()])
-    penv = json.loads(PROFILE_ENVELOPE.read_text(encoding="utf-8")) if PROFILE_ENVELOPE.exists() else None
-    hashes = {f"schemas/v0.2/{n}.json": hashlib.sha256((SCHEMA_DIR / f"{n}.json").read_bytes()).hexdigest() for n in ALL_ENTITIES}
-    hashes[str(ENVELOPE.relative_to(ROOT))] = hashlib.sha256(ENVELOPE.read_bytes()).hexdigest()
-    return {"V": V, "FormatChecker": FormatChecker, "schemas": schemas, "envelope": env, "registry": reg, "profile_envelope": penv, "hashes": hashes}
+    mp = ROOT / "tools" / "check_measurement.py"
+    deps = {"tools/validate.py": vhash, "tools/check_measurement.py": hashlib.sha256(mp.read_bytes()).hexdigest() if mp.exists() else None,
+            str(PROFILE_ENVELOPE.relative_to(ROOT)): hashlib.sha256(PROFILE_ENVELOPE.read_bytes()).hexdigest()}
+    if deps["tools/check_measurement.py"] is None: raise ToolError("measurement checker tools/check_measurement.py is missing; the retained S07 checks cannot run")
+    return {"V": V, "FormatChecker": FormatChecker, "validate": v, "checker_formats": checker_formats, "schemas": schemas, "envelope": env, "registry": reg, "profile_envelope": penv, "hashes": hashes, "dependency_hashes": deps}
 
 
-def pointer(path): return "/".join(map(str, path))
+# ---- RFC 6901 pointers: "" is the root; every token is escaped (~ to ~0, / to ~1) and locates an existing value or the nearest existing parent ----
+def esc(tok): return str(tok).replace("~", "~0").replace("/", "~1")
+def P(*parts): return "".join("/" + esc(t) for t in parts)
+def pointer(path): return P(*path)
+
+
+def resolve_pointer(doc, ptr):
+    """The value an RFC 6901 pointer locates in doc, or a sentinel when it locates nothing."""
+    node = doc
+    if ptr == "": return node
+    if not ptr.startswith("/"): return _MISSING
+    for tok in ptr[1:].split("/"):
+        tok = tok.replace("~1", "/").replace("~0", "~")
+        if isinstance(node, dict) and tok in node: node = node[tok]
+        elif isinstance(node, list) and tok.isdigit() and int(tok) < len(node): node = node[int(tok)]
+        else: return _MISSING
+    return node
+_MISSING = object()
 
 
 def structural_errors(inv, bundle):
@@ -108,16 +179,16 @@ def structural_errors(inv, bundle):
 
 def records(bundle):
     """(entity, record, pointer) for every record in a structurally valid bundle."""
-    items = [("BenchmarkRelease", x, f"benchmarks/{i}") for i, x in enumerate(bundle["benchmarks"])] + [("Crosswalk", x, f"crosswalks/{i}") for i, x in enumerate(bundle["crosswalks"])]
+    items = [("BenchmarkRelease", x, P("benchmarks", i)) for i, x in enumerate(bundle["benchmarks"])] + [("Crosswalk", x, P("crosswalks", i)) for i, x in enumerate(bundle["crosswalks"])]
     for gi, g in enumerate(bundle["organisations"]):
-        items.append(("Organisation", g["organisation"], f"organisations/{gi}/organisation"))
-        for arr, (n, pk) in ENTITIES.items(): items.extend((n, x, f"organisations/{gi}/{arr}/{i}") for i, x in enumerate(g[arr]))
+        items.append(("Organisation", g["organisation"], P("organisations", gi, "organisation")))
+        for arr, (n, pk) in ENTITIES.items(): items.extend((n, x, P("organisations", gi, arr, i)) for i, x in enumerate(g[arr]))
     return items
 
 
-def rule_errors(items):
+def rule_errors(inv, items):
     """C1 to C18 from tools/validate.py, the same functions the single-record validator runs."""
-    import validate as v
+    v = inv["validate"]
     out = []
     for n, x, loc in items:
         for code, fn in v.CROSS_FIELD_RULES.get(n, []):
@@ -127,63 +198,85 @@ def rule_errors(items):
     return out
 
 
-def profile_results(inv, profiles, items):
-    """Supplied profiles: each envelope validated first, dispatched only to records whose exact schema $id it names, run with the real
-    validator classes; errors, coverage and unused profiles. A missing, malformed or conflicting envelope is a tool error."""
-    V, FC = inv["V"], inv["FormatChecker"]
-    if not profiles: return [], {}, []
-    if inv["profile_envelope"] is None: raise ToolError("profiles supplied but profiles/profile-envelope.schema.json is missing")
-    seen, applied, errors = {}, {}, []
+def load_profiles(inv, profiles):
+    """Every supplied profile, before any record is judged: strict JSON, valid against the profile envelope, one envelope per id and
+    version, and its schema preflighted with the S06 contract (meta-valid, asserted formats, references resolving locally including
+    embedded resources, unused branches included). Returns {label: {sha256, core_schema_ids, schema, records_checked: 0}}."""
+    V, FC, v = inv["V"], inv["FormatChecker"], inv["validate"]
+    seen, applied = {}, {}
     for path in profiles:
-        try: env = loads_strict(Path(path).read_text(encoding="utf-8"))
-        except OSError as e: raise ToolError(f"profile {path}: {e}")
-        except ValueError as e: raise ToolError(f"profile {path} is not strict JSON: {e}")
+        env = load_config_json(path, "profile")
         bad = list(V(inv["profile_envelope"], format_checker=FC()).iter_errors(env))
         if bad: raise ToolError(f"profile envelope {path} is malformed: " + "; ".join(e.message[:80] for e in bad[:3]))
         key = (env["profile_id"], env["version"])
         if key in seen and seen[key] != env: raise ToolError(f"two different envelopes supplied for profile {key[0]} {key[1]}")
         seen[key] = env
-        try: V.check_schema(env["schema"])
-        except Exception as e: raise ToolError(f"profile {key[0]} {key[1]} schema does not meta-validate: {str(e)[:100]}")
-        digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
-        label = f"{key[0]}@{key[1]}"; applied[label] = {"sha256": digest, "core_schema_ids": env["core_schema_ids"], "records_checked": 0}
-        val = V(env["schema"], registry=inv["registry"], format_checker=FC())
+        problems = preflight_problems(V, v, inv["checker_formats"], env["schema"], f"profile {key[0]} {key[1]} schema")
+        if problems: raise ToolError("profile preflight failed: " + "; ".join(problems[:3]))
+        try: val = V(env["schema"], format_checker=FC()); val.check_schema(env["schema"])
+        except Exception as e: raise ToolError(f"profile {key[0]} {key[1]} schema cannot be applied: {str(e)[:100]}")
+        applied[f"{key[0]}@{key[1]}"] = {"sha256": hashlib.sha256(Path(path).read_bytes()).hexdigest(), "core_schema_ids": env["core_schema_ids"], "records_checked": 0, "_schema": env["schema"]}
+    return applied
+
+
+def profile_results(inv, applied, items):
+    """Supplied profiles dispatched only to records whose exact schema $id they name, run with the real validator classes; errors,
+    coverage and unused profiles. Pointers are the record's pointer extended by the error's own path."""
+    V, FC = inv["V"], inv["FormatChecker"]
+    errors = []
+    for label, a in applied.items():
+        val = V(a["_schema"], format_checker=FC())
         for n, x, loc in items:
-            if inv["schemas"][n]["$id"] in env["core_schema_ids"]:
-                applied[label]["records_checked"] += 1
+            if inv["schemas"][n]["$id"] in a["core_schema_ids"]:
+                a["records_checked"] += 1
                 for e in sorted(val.iter_errors(x), key=lambda e: [str(p) for p in e.path]):
-                    errors.append((f"profile:{label}", f"{loc}/{pointer(e.path)}" if e.path else loc, e.message[:200]))
-    unused = [k for k, v in applied.items() if v["records_checked"] == 0]
-    return errors, applied, unused
+                    try: loc_e = loc + pointer(e.path)
+                    except Exception: loc_e = loc
+                    errors.append((f"profile:{label}", loc_e, e.message[:200]))
+    unused = [k for k, a in applied.items() if a["records_checked"] == 0]
+    public = {k: {kk: vv for kk, vv in a.items() if kk != "_schema"} for k, a in applied.items()}
+    return errors, public, unused
+
+
+RELATIONS = [(a, f, to) for a, f, to in EDGES + LINKED] + [("reports", "benchmarkRef", "benchmarks")]
+
+
+def declared_edges(bundle):
+    """Occurrences of each scoped reference field in the supplied records (declared edges): counts of references, not of people or evidence."""
+    out = {f"{a}.{f}->{to}": 0 for a, f, to in RELATIONS}
+    for g in bundle["organisations"]:
+        for a, f, to in RELATIONS:
+            out[f"{a}.{f}->{to}"] += sum(1 for x in g[a] if f in x and x[f] is not None)
+    return out
 
 
 def graph(bundle):
-    """G01 to G10 on a structurally valid bundle whose within-record rules passed. Returns (errors, reviews, resolved edges, indexes)."""
+    """G01 to G10 on a structurally valid bundle whose within-record rules passed. Returns (errors, reviews, resolved edges, stage) where
+    stage is 'identity' when G01/G02 failed (G03 to G10 were not attempted) or 'complete'."""
     errors, review = [], []
-    resolved = {f"{a}.{f}->{to}": 0 for a, f, to in EDGES + LINKED} | {"reports.benchmarkRef->benchmarks": 0}
-    orgs, bench, maps = set(), {}, []
+    resolved = {k: 0 for k in declared_edges(bundle)}
+    orgs, bench, bench_index, maps = set(), {}, {}, []
     for i, x in enumerate(bundle["benchmarks"]):
         key = (x["benchmarkId"], x["releaseVersion"])
-        if key in bench: errors.append(("G02", f"benchmarks/{i}", f"duplicate benchmark release {key[0]!r} version {key[1]!r}"))
-        else: bench[key] = x
+        if key in bench: errors.append(("G02", P("benchmarks", i), f"duplicate benchmark release {key[0]!r} version {key[1]!r}"))
+        else: bench[key] = x; bench_index[key] = i
     for gi, g in enumerate(bundle["organisations"]):
-        org = g["organisation"]["orgId"]; loc = f"organisations/{gi}"
-        if org in orgs: errors.append(("G02", loc, f"duplicate organisation group {org!r}"))
+        org = g["organisation"]["orgId"]
+        if org in orgs: errors.append(("G02", P("organisations", gi, "organisation", "orgId"), f"duplicate organisation group {org!r}"))
         orgs.add(org); idx = {k: {} for k in ENTITIES}
         for arr, (n, pk) in ENTITIES.items():
             for i, x in enumerate(g[arr]):
-                path = f"{loc}/{arr}/{i}"
-                if "orgId" in x and x["orgId"] != org: errors.append(("G01", path, f"{n}.orgId {x['orgId']!r} is not the enclosing organisation {org!r}"))
-                if x[pk] in idx[arr]: errors.append(("G02", path, f"duplicate {n} {pk} {x[pk]!r} in organisation {org!r}"))
+                if "orgId" in x and x["orgId"] != org: errors.append(("G01", P("organisations", gi, arr, i, "orgId"), f"{n}.orgId {x['orgId']!r} is not the enclosing organisation {org!r}"))
+                if x[pk] in idx[arr]: errors.append(("G02", P("organisations", gi, arr, i, pk), f"duplicate {n} {pk} {x[pk]!r} in organisation {org!r}"))
                 else: idx[arr][x[pk]] = x
         maps.append(idx)
-    if errors: return errors, review, resolved, maps            # never select an ambiguous owner, even when its content is equal
+    if errors: return errors, review, resolved, "identity"            # never select an ambiguous owner, even when its content is equal
     for gi, (g, idx) in enumerate(zip(bundle["organisations"], maps)):
-        org = g["organisation"]["orgId"]; loc = f"organisations/{gi}"
+        org = g["organisation"]["orgId"]
         def target(arr, x, field, to, i):
             if field not in x: return None
             found = idx[to].get(x[field])
-            if found is None: errors.append(("G03", f"{loc}/{arr}/{i}/{field}", f"{field} {x[field]!r} does not resolve to a {ENTITIES[to][0]} in organisation {org!r}"))
+            if found is None: errors.append(("G03", P("organisations", gi, arr, i, field), f"{field} {x[field]!r} does not resolve to a {ENTITIES[to][0]} in organisation {org!r}"))
             else: resolved[f"{arr}.{field}->{to}"] += 1
             return found
         for arr, field, to in EDGES:
@@ -191,8 +284,8 @@ def graph(bundle):
         for arr, field, to in LINKED:
             for i, x in enumerate(g[arr]):
                 y = target(arr, x, field, to, i)
-                if y is not None and y["pseudonymId"] != x["pseudonymId"]: errors.append(("G04", f"{loc}/{arr}/{i}/{field}", f"the linked {ENTITIES[to][0]} belongs to another worker"))
-                if arr == "rtwOutcomes" and y is not None and "rtwDate" in x and date.fromisoformat(x["rtwDate"]) < date.fromisoformat(y["startDate"]): errors.append(("G06", f"{loc}/{arr}/{i}/rtwDate", f"rtwDate {x['rtwDate']} precedes the absence start {y['startDate']}"))
+                if y is not None and y["pseudonymId"] != x["pseudonymId"]: errors.append(("G04", P("organisations", gi, arr, i, field), f"the linked {ENTITIES[to][0]} belongs to another worker"))
+                if arr == "rtwOutcomes" and y is not None and "rtwDate" in x and date.fromisoformat(x["rtwDate"]) < date.fromisoformat(y["startDate"]): errors.append(("G06", P("organisations", gi, arr, i, "rtwDate"), f"rtwDate {x['rtwDate']} precedes the absence start {y['startDate']}"))
         done, cycles = set(), set()
         for start in sorted(idx["units"]):                                    # iterative walk over a single-parent forest; no recursion
             seen, trail, cur = {}, [], start
@@ -200,84 +293,128 @@ def graph(bundle):
                 if cur in seen: cycles.add(tuple(sorted(trail[seen[cur]:]))); break
                 seen[cur] = len(trail); trail.append(cur); cur = idx["units"][cur].get("parentUnitId")
             done.update(trail)
-        for cyc in sorted(cycles): errors.append(("G05", loc + "/units", f"unit hierarchy cycle through {list(cyc)}"))
+        for cyc in sorted(cycles): errors.append(("G05", P("organisations", gi, "units"), f"unit hierarchy cycle through {list(cyc)}"))
         when = date.fromisoformat(bundle["comparisonAsOfDate"])
         for i, x in enumerate(g["reports"]):
             br = x.get("benchmarkRef")
             if br is None: continue
-            path = f"{loc}/reports/{i}/benchmarkRef"; r = bench.get((br["benchmarkId"], br["releaseVersion"]))
-            if r is None: errors.append(("G07", path, f"no supplied release {br['benchmarkId']!r} version {br['releaseVersion']!r}; another version is never substituted")); continue
-            resolved["reports.benchmarkRef->benchmarks"] += 1
-            if r["measure"]["metricCode"] != x["metricCode"]: errors.append(("G08", path + "/metricCode", f"release metric {r['measure']['metricCode']!r} is not the report's {x['metricCode']!r}"))
-            if r["leaveOneOut"] and r["excludedOrgId"] != org: errors.append(("G09", path + "/excludedOrgId", f"leave-one-out release excludes {r['excludedOrgId']!r}, not the referencing organisation {org!r}"))
-            if not date.fromisoformat(r["validFrom"]) <= when <= date.fromisoformat(r["validTo"]): errors.append(("G10", path + "/comparisonAsOfDate", f"comparisonAsOfDate {when} is outside the release validity {r['validFrom']} to {r['validTo']}"))
-            review.append(("comparison_not_established", path, "a matching metric code is declared identity, not comparability: population, sampling, time, method, unit and score equivalence are not established"))
-    return errors, review, resolved, maps
+            ref_ptr = P("organisations", gi, "reports", i, "benchmarkRef"); key = (br["benchmarkId"], br["releaseVersion"]); r = bench.get(key)
+            if r is None: errors.append(("G07", ref_ptr, f"no supplied release {br['benchmarkId']!r} version {br['releaseVersion']!r}; another version is never substituted")); continue
+            resolved["reports.benchmarkRef->benchmarks"] += 1; rel_ptr = P("benchmarks", bench_index[key]); related = [ref_ptr, rel_ptr]
+            if r["measure"]["metricCode"] != x["metricCode"]: errors.append(("G08", P("organisations", gi, "reports", i, "metricCode"), f"release metric {r['measure']['metricCode']!r} is not the report's {x['metricCode']!r}", related))
+            if r["leaveOneOut"] and r.get("excludedOrgId") != org: errors.append(("G09", rel_ptr + ("/excludedOrgId" if "excludedOrgId" in r else ""), f"leave-one-out release excludes {r.get('excludedOrgId')!r}, not the referencing organisation {org!r}", related))
+            if not date.fromisoformat(r["validFrom"]) <= when <= date.fromisoformat(r["validTo"]): errors.append(("G10", P("comparisonAsOfDate"), f"comparisonAsOfDate {when} is outside the release validity {r['validFrom']} to {r['validTo']}", related))
+            review.append(("comparison_not_established", ref_ptr, "a matching metric code is declared identity, not comparability: population, sampling, time, method, unit and score equivalence are not established"))
+    return errors, review, resolved, "complete"
 
 
 def measurement_checks(bundle):
-    """The S07 measurement-bundle checks, unchanged, on each organisation's projection. Returns (errors, reviews, external, gate)."""
-    import check_measurement as cm
-    gate = {"tool": "tools/check_measurement.py", "sha256": hashlib.sha256((ROOT / "tools" / "check_measurement.py").read_bytes()).hexdigest(), "groups_checked": 0}
+    """The S07 measurement-bundle checks, unchanged, on each organisation's projection, through an explicit error boundary: a missing or
+    unloadable checker, a raised exception or SystemExit, or a result that is not (list, list, dict) is a tool error, never an empty result."""
+    mp = ROOT / "tools" / "check_measurement.py"
+    if not mp.exists(): raise ToolError("measurement checker tools/check_measurement.py is missing; the retained S07 checks cannot run")
+    try: import check_measurement as cm
+    except (ImportError, SyntaxError, SystemExit, Exception) as e: raise ToolError(f"measurement checker tools/check_measurement.py could not be loaded: {type(e).__name__}: {str(e)[:120]}")
+    if not callable(getattr(cm, "check", None)): raise ToolError("measurement checker tools/check_measurement.py has no check() function")
+    gate = {"tool": "tools/check_measurement.py", "sha256": hashlib.sha256(mp.read_bytes()).hexdigest(), "groups_checked": 0}
     errors, review, external = [], [], {}
     for gi, g in enumerate(bundle["organisations"]):
         proj = {"schema_version": "0.2", "contexts": g["contexts"], "observations": g["observations"], "administrations": g["administrations"], "reports": g["reports"]}
-        try: problems, rev, ext = cm.check(proj)
-        except SystemExit as e: raise ToolError(f"measurement checker failed on organisations/{gi}: {e}")
-        if not isinstance(problems, list) or not isinstance(rev, list) or not isinstance(ext, dict): raise ToolError(f"measurement checker returned a malformed result for organisations/{gi}")
+        try: result = cm.check(proj)
+        except SystemExit as e: raise ToolError(f"measurement checker exited on organisations/{gi}: {e}")
+        except Exception as e: raise ToolError(f"measurement checker raised on organisations/{gi}: {type(e).__name__}: {str(e)[:120]}")
+        if not isinstance(result, (tuple, list)) or len(result) != 3: raise ToolError(f"measurement checker returned a malformed result for organisations/{gi}: expected (problems, reviews, external)")
+        problems, rev, ext = result
+        if not isinstance(problems, list) or not isinstance(rev, list) or not isinstance(ext, dict) or not all(isinstance(x, str) for x in problems + rev): raise ToolError(f"measurement checker returned a malformed result for organisations/{gi}: problems and reviews must be lists of strings and external a dict")
         gate["groups_checked"] += 1
-        errors += [("S07", f"organisations/{gi}", p) for p in problems]
-        review += [("measurement_interpretation", f"organisations/{gi}", r) for r in rev]
+        errors += [("S07", P("organisations", gi), p_) for p_ in problems]
+        review += [("measurement_interpretation", P("organisations", gi), r_) for r_ in rev]
         for k, v in ext.items():
             if k in ("pseudonymId", "unitId", "benchmarkRef"): continue           # resolved by this checker (G03, G07) when the graph stage ran
             if v: external.setdefault(k, set()).update(v)
     return errors, review, {k: sorted(v) for k, v in external.items()}, gate
 
 
+def relation_records(declared, resolved, stage):
+    """One record per relation: declared occurrences, resolved, unresolved and the state of the resolution stage."""
+    out = {}
+    for k, d in declared.items():
+        if stage is None: out[k] = {"declared": d, "resolved": None, "unresolved": None, "state": "not_evaluated", "reason": "reference resolution was not reached"}
+        elif stage == "identity": out[k] = {"declared": d, "resolved": None, "unresolved": None, "state": "not_evaluated", "reason": "identities invalid (G01/G02); resolution not attempted"}
+        elif d == 0: out[k] = {"declared": 0, "resolved": 0, "unresolved": 0, "state": "no_declared_edge", "reason": "no record carries this reference; nothing exercised"}
+        else: out[k] = {"declared": d, "resolved": resolved.get(k, 0), "unresolved": d - resolved.get(k, 0), "state": "evaluated", "reason": None}
+    return out
+
+
 def check(bundle_bytes, profiles=(), inv=None):
     """The whole check on the raw bytes of a bundle. Returns the report dict; raises ToolError for tool problems."""
     inv = inv or load_inventory()
+    applied = load_profiles(inv, profiles)                       # the complete supplied configuration is validated before any record, and before an empty-inventory return
     rep = {"report_schema_version": REPORT_SCHEMA_VERSION, "checker": "tools/check_entity_graph.py", "checker_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-           "input_sha256": hashlib.sha256(bundle_bytes).hexdigest(), "schema_sha256": inv["hashes"], "comparisonAsOfDate": None, "state": None,
+           "input_sha256": hashlib.sha256(bundle_bytes).hexdigest(), "schema_sha256": inv["hashes"], "dependency_sha256": inv["dependency_hashes"], "comparisonAsOfDate": None, "state": None,
            "entity_counts": {}, "organisation_groups": 0, "resolved_links": {}, "checks_performed": [], "checks_not_evaluated": [], "errors": [], "review_items": [],
-           "external_references_not_checked": {}, "profiles": {"applied": {}, "unused": []}, "not_established": NOT_ESTABLISHED, "statement": None}
-    def finish(state, errors, review=(), performed=(), not_eval=()):
-        rep["state"] = state; rep["errors"] = [{"rule": c, "pointer": p, "message": m} for c, p, m in errors]; rep["review_items"] = [{"kind": c, "pointer": p, "message": m} for c, p, m in review]
+           "external_references_not_checked": {}, "profiles": {"applied": {k: {kk: vv for kk, vv in a.items() if kk != "_schema"} for k, a in applied.items()}, "unused": sorted(applied)}, "not_established": NOT_ESTABLISHED, "statement": None}
+    bundle = None
+    def finish(state, errors, review=(), performed=(), not_eval=(), declared=None, resolved=None, stage=None):
+        rep["state"] = state
+        rep["errors"] = [{"rule": e[0], "pointer": e[1], "message": e[2]} | ({"related": e[3]} if len(e) > 3 else {}) for e in errors]
+        rep["review_items"] = [{"kind": c, "pointer": p_, "message": m} for c, p_, m in review]
         rep["checks_performed"] = list(performed); rep["checks_not_evaluated"] = list(not_eval)
+        if declared is not None: rep["resolved_links"] = relation_records(declared, resolved or {}, stage)
         rep["statement"] = SUCCESS if state == "checked_with_limits" else ("no record was supplied; nothing was exercised and nothing is certified" if state == "not_evaluated" else None)
+        if bundle is not None:                                     # every pointer this checker emits must locate a value in the parsed instance
+            for e in rep["errors"] + rep["review_items"]:
+                for ptr in [e["pointer"]] + e.get("related", []):
+                    if resolve_pointer(bundle, ptr) is _MISSING: raise ToolError(f"checker defect: pointer {ptr!r} does not resolve in the supplied instance")
         return rep
     try: bundle = loads_strict(bundle_bytes.decode("utf-8"))
-    except (UnicodeDecodeError, ValueError) as e: return finish("invalid", [("input", "", f"not strict JSON: {e}")], not_eval=["structure", "C1-C18", "profiles", "G01-G10", "S07"])
+    except (UnicodeDecodeError, ValueError) as e: return finish("invalid", [("input", "", f"not strict JSON: {e}")], not_eval=["structure", "C1-C18", "profiles", "G01-G10", "S07 measurement checks"])
     struct = structural_errors(inv, bundle)
-    if struct: return finish("invalid", struct, performed=["structure"], not_eval=["C1-C18", "profiles", "G01-G10", "S07"])
+    if struct: return finish("invalid", struct, performed=["structure"], not_eval=["C1-C18", "profiles", "G01-G10", "S07 measurement checks"])
     rep["comparisonAsOfDate"] = bundle["comparisonAsOfDate"]; rep["organisation_groups"] = len(bundle["organisations"])
     items = records(bundle)
     counts = {n: 0 for n in ALL_ENTITIES}
     for n, _, _ in items: counts[n] += 1
     rep["entity_counts"] = counts; rep["entity_counts_note"] = "Crosswalk rows are declared mappings, not independent evidence; duplicate rows are repeated declarations"
-    if not items: return finish("not_evaluated", [], performed=["structure"], not_eval=["C1-C18", "profiles", "G01-G10", "S07"])
-    rules = rule_errors(items)
-    perrs, applied, unused = profile_results(inv, profiles, items)
-    rep["profiles"] = {"applied": applied, "unused": unused}
+    declared = declared_edges(bundle)
+    if not items: return finish("not_evaluated", [], performed=["structure", "profile configuration"], not_eval=["C1-C18", "profiles (no record to apply them to)", "G01-G10", "S07 measurement checks"], declared=declared, stage=None)
+    rules = rule_errors(inv, items)
+    perrs, applied_public, unused = profile_results(inv, applied, items)
+    rep["profiles"] = {"applied": applied_public, "unused": unused}
     # a namespace is checked only where a supplied profile of that id names the record's own schema; anywhere else its semantics are unchecked
-    covered = {(lbl.split("@")[0], sid) for lbl, a in applied.items() for sid in a["core_schema_ids"]}
+    covered = {(lbl.split("@")[0], sid) for lbl, a in applied_public.items() for sid in a["core_schema_ids"]}
     ext_ns = sorted({k for n, x, _ in items if isinstance(x.get("ext"), dict) for k in x["ext"] if (k, inv["schemas"][n]["$id"]) not in covered})
     if ext_ns: rep["external_references_not_checked"]["extension_namespaces_without_a_supplied_profile"] = ext_ns
-    if rules or perrs: return finish("invalid", rules + perrs, performed=["structure", "C1-C18", "profiles"], not_eval=["G01-G10", "S07"])
-    gerrs, greview, resolved, _ = graph(bundle)
-    rep["resolved_links"] = {k: (v if v else "not exercised: no declared edge") for k, v in resolved.items()}
+    if rules or perrs: return finish("invalid", rules + perrs, performed=["structure", "C1-C18", "profiles"], not_eval=["G01-G10", "S07 measurement checks"], declared=declared, stage=None)
+    gerrs, greview, resolved, stage = graph(bundle)
     rep["external_references_not_checked"]["crosswalk_semantics"] = "ISO 45003 clauses, HSE domains and reserved WHIU strings are checked as syntax only"
-    if gerrs:          # identity, scope or reference failures: the measurement joins would rest on ambiguous or unresolved records, so they are not evaluated
-        return finish("invalid", gerrs, greview, performed=["structure", "C1-C18", "profiles", "G01-G10"], not_eval=["S07 measurement checks"])
+    if stage == "identity":     # identities or scope invalid: nothing downstream was attempted, and the report says so
+        return finish("invalid", gerrs, greview, performed=["structure", "C1-C18", "profiles", "G01-G02"], not_eval=["G03-G10 (identities invalid)", "S07 measurement checks (identities invalid)"], declared=declared, resolved=resolved, stage="identity")
+    if gerrs:          # reference failures: the measurement joins would rest on unresolved records, so they are not evaluated
+        return finish("invalid", gerrs, greview, performed=["structure", "C1-C18", "profiles", "G01-G10"], not_eval=["S07 measurement checks (references unresolved)"], declared=declared, resolved=resolved, stage="complete")
     merrs, mreview, mext, gate = measurement_checks(bundle)
     rep["measurement_gate"] = gate
     for k, v in mext.items(): rep["external_references_not_checked"][k] = v
     errors = merrs; review = greview + mreview
-    return finish("invalid" if errors else "checked_with_limits", errors, review, performed=["structure", "C1-C18", "profiles", "G01-G10", "S07 measurement checks"], not_eval=[])
+    return finish("invalid" if errors else "checked_with_limits", errors, review, performed=["structure", "C1-C18", "profiles", "G01-G10", "S07 measurement checks"], not_eval=[], declared=declared, resolved=resolved, stage="complete")
 
 
 def write_atomic(path, text):
     tmp = Path(str(path) + ".tmp"); tmp.write_text(text, encoding="utf-8"); os.replace(tmp, path)
+
+
+def emit(rep, out):
+    """Print the report and, when --out is given, replace whatever stood there with it, so no earlier success survives a failed run.
+    A destination that cannot be written is itself an explicit tool error on stdout and stderr."""
+    text = json.dumps(rep, indent=1, ensure_ascii=False) + "\n"
+    if out is not None:
+        try: write_atomic(out, text)
+        except OSError as e:
+            msg = f"report could not be written to {out}: {e}; the destination may still hold an earlier report that is not this run's result"
+            rep = {"report_schema_version": REPORT_SCHEMA_VERSION, "state": "tool_error", "error": msg, "result_not_written": rep.get("state"), "statement": None}
+            print(json.dumps(rep, indent=1, ensure_ascii=False)); print(f"[tool] {msg}", file=sys.stderr); return 2
+    print(text)
+    return {"checked_with_limits": 0, "not_evaluated": 0, "invalid": 1, "tool_error": 2}[rep["state"]]
 
 
 def main(argv):
@@ -297,11 +434,10 @@ def main(argv):
         except OSError as e: raise ToolError(f"bundle {rest[0]}: {e}")
         rep = check(data, profiles)
     except ToolError as e:
-        rep = {"report_schema_version": REPORT_SCHEMA_VERSION, "state": "tool_error", "error": str(e), "statement": None}
-    text = json.dumps(rep, indent=1, ensure_ascii=False) + "\n"
-    if out is not None: write_atomic(out, text)
-    print(text)
-    return {"checked_with_limits": 0, "not_evaluated": 0, "invalid": 1, "tool_error": 2}[rep["state"]]
+        rep = {"report_schema_version": REPORT_SCHEMA_VERSION, "checker": "tools/check_entity_graph.py", "state": "tool_error", "error": str(e), "statement": None}
+    except Exception as e:                       # an unexpected failure of the tool is a tool error, never a traceback standing for a verdict
+        rep = {"report_schema_version": REPORT_SCHEMA_VERSION, "checker": "tools/check_entity_graph.py", "state": "tool_error", "error": f"unexpected {type(e).__name__}: {str(e)[:200]}", "statement": None}
+    return emit(rep, out)
 
 
 def self_test():
@@ -324,7 +460,10 @@ def self_test():
         rc, rep, err = cli(valid, tmpdir=tmp)
         t("the committed valid graph: exit 0, checked_with_limits, sixteen shapes present, no error, one comparison review item, both stages ran", rc == 0 and rep["state"] == "checked_with_limits" and all(rep["entity_counts"][n] >= 1 for n in ALL_ENTITIES) and not rep["errors"] and [r["kind"] for r in rep["review_items"]] == ["comparison_not_established"] and "S07 measurement checks" in rep["checks_performed"] and rep["measurement_gate"]["groups_checked"] == 1, (rc, rep and rep["state"], rep and rep["errors"][:2], err[-200:]))
         t("the valid graph's statement is the exact success wording and its limits are listed", rep["statement"] == SUCCESS and len(rep["not_established"]) == len(NOT_ESTABLISHED))
-        t("resolved links are counted per relation and a relation without an edge reads not exercised", rep["resolved_links"]["reports.benchmarkRef->benchmarks"] == 1 and rep["resolved_links"]["absences.pseudonymId->workers"] == 1 and any(v == "not exercised: no declared edge" for v in rep["resolved_links"].values()))
+        rl = rep["resolved_links"]
+        t("relation records: declared, resolved and unresolved counts per relation; an evaluated edge reads evaluated; a relation no record carries reads no_declared_edge, never validated", rl["reports.benchmarkRef->benchmarks"] == {"declared": 1, "resolved": 1, "unresolved": 0, "state": "evaluated", "reason": None} and rl["absences.pseudonymId->workers"]["resolved"] == 1 and rl["units.parentUnitId->units"]["state"] == "no_declared_edge", rl)
+        t("provenance carries the shared validator, measurement checker and profile-envelope hashes beside the checker, input and schema hashes", set(rep["dependency_sha256"]) == {"tools/validate.py", "tools/check_measurement.py", "profiles/profile-envelope.schema.json"} and all(len(v) == 64 for v in rep["dependency_sha256"].values()) and rep["measurement_gate"]["sha256"] == rep["dependency_sha256"]["tools/check_measurement.py"], rep["dependency_sha256"])
+        t("every emitted pointer is RFC 6901 and resolves in the instance", all((e["pointer"] == "" or e["pointer"].startswith("/")) and resolve_pointer(valid, e["pointer"]) is not _MISSING for e in rep["errors"] + rep["review_items"]))
         # the 64 prototype cases through the real command line: code multisets and pointers
         n_cases = 0
         for c in manifest:
@@ -334,8 +473,30 @@ def self_test():
             ok = rep is not None and got_codes == want_codes and "Traceback" not in err and (rc == 1 if want_codes else rc == 0)
             if ok and c["expected_errors"]: ok = pairs(rep) == sorted((e[0], e[1]) for e in c["expected_errors"])
             if ok and want_codes and any(x.startswith("schema:") or x.startswith("C") for x in want_codes): ok = "G01-G10" in rep["checks_not_evaluated"] and rep["statement"] is None
-            t(f"case {c['case']}: codes {want_codes}", ok, (rc, got_codes, pairs(rep) if rep else None, err[-160:]))
+            if ok and rep is not None and rep["state"] != "invalid" or (ok and rep and rep["errors"]):
+                parsed = bundle
+                ok = all((e["pointer"] == "" or e["pointer"].startswith("/")) and resolve_pointer(parsed, e["pointer"]) is not _MISSING and all(resolve_pointer(parsed, r) is not _MISSING for r in e.get("related", [])) for e in rep["errors"] + rep["review_items"])
+            if ok and want_codes and set(want_codes) <= {"G01", "G02"}:      # identity failed: downstream stages are reported as not evaluated, relations as not attempted
+                ok = rep["checks_performed"][-1] == "G01-G02" and any(x.startswith("G03-G10") for x in rep["checks_not_evaluated"]) and all(v["state"] == "not_evaluated" and v["resolved"] is None for v in rep["resolved_links"].values())
+            t(f"case {c['case']}: codes {want_codes}", ok, (rc, got_codes, pairs(rep) if rep else None, rep and rep["checks_performed"], err[-160:]))
         t("all sixty-four prototype cases ran", n_cases == 64, n_cases)
+        by_case = {c["case"]: c for c in manifest}
+        for case, code, want_ptr in (("benchmark-metric-different", "G08", "/organisations/0/reports/0/metricCode"), ("leave-one-out-wrong-org", "G09", "/benchmarks/0/excludedOrgId"), ("before-declared-release-validity", "G10", "/comparisonAsOfDate")):
+            rc, rep, err = cli(json.loads((EXAMPLES / by_case[case]["file"]).read_text(encoding="utf-8")), tmpdir=tmp); e = next((x for x in rep["errors"] if x["rule"] == code), None)
+            t(f"{code} points at {want_ptr} and relates the report's benchmarkRef and the release record", e is not None and e["pointer"] == want_ptr and e.get("related") == ["/organisations/0/reports/0/benchmarkRef", "/benchmarks/0"], e)
+        t("pointer tokens escape ~ and / (RFC 6901 section 3) and round-trip through resolution", P("a/b~c", 0) == "/a~1b~0c/0" and resolve_pointer({"a/b~c": [7]}, "/a~1b~0c/0") == 7 and resolve_pointer({"a": 1}, "") == {"a": 1} and resolve_pointer({"a": 1}, "/b") is _MISSING and resolve_pointer({"a": 1}, "a") is _MISSING)
+        abs_prof = {"profile_id": "owhs-test", "version": "1.0.0", "core_schema_ids": ["https://openworkplacehealth.org/schemas/v0.2/AbsenceEpisode.json"], "schema": {"properties": {"ext": {"properties": {"owhs-test": {"properties": {"a/b~c": {"type": "integer"}}}}}}}}
+        (Path(tmp) / "absprof.json").write_text(json.dumps(abs_prof), encoding="utf-8")
+        b = copy.deepcopy(valid); b["organisations"][0]["absences"][0]["ext"] = {"owhs-test": {"a/b~c": "x"}}
+        rc, rep, err = cli(b, "--profile", str(Path(tmp) / "absprof.json"), tmpdir=tmp); t("a failing profile extension property whose name contains / and ~ has an escaped pointer that resolves", rc == 1 and any(e["pointer"] == "/organisations/0/absences/0/ext/owhs-test/a~1b~0c" and e["rule"] == "profile:owhs-test@1.0.0" for e in rep["errors"]) and all(resolve_pointer(b, e["pointer"]) is not _MISSING for e in rep["errors"]), (rc, rep and rep.get("error"), rep and rep["errors"][:2]))
+        b = copy.deepcopy(valid); b["benchmarks"].append(copy.deepcopy(b["benchmarks"][0]))
+        rc, rep, err = cli(b, tmpdir=tmp); t("a duplicate benchmark key (same id and version, identical content) is G02 at the duplicate release record and the downstream stages are not evaluated", rc == 1 and pairs(rep) == [("G02", "/benchmarks/1")] and any(x.startswith("G03-G10") for x in rep["checks_not_evaluated"]) and rep["resolved_links"]["reports.benchmarkRef->benchmarks"]["state"] == "not_evaluated", (rc, pairs(rep), rep and rep["checks_not_evaluated"]))
+        b = copy.deepcopy(valid); b["benchmarks"].append({**copy.deepcopy(b["benchmarks"][0]), "releaseVersion": "9.9.9"})
+        rc, rep, err = cli(b, tmpdir=tmp); t("a second release of the same benchmark under another version is not a duplicate key", rc == 0 and not rep["errors"], (rc, codes(rep)))
+        b = copy.deepcopy(valid); b["organisations"][0]["workers"][0]["orgId"] = "org-other"
+        rc, rep, err = cli(b, tmpdir=tmp); t("after an identity failure the relations say resolution was not attempted, not no declared edge", rc == 1 and codes(rep) == ["G01"] and rep["checks_performed"] == ["structure", "C1-C18", "profiles", "G01-G02"] and rep["checks_not_evaluated"] == ["G03-G10 (identities invalid)", "S07 measurement checks (identities invalid)"] and all(v["state"] == "not_evaluated" and "not attempted" in v["reason"] for v in rep["resolved_links"].values()) and rep["resolved_links"]["reports.benchmarkRef->benchmarks"]["declared"] == 1, (rc, rep and rep["checks_not_evaluated"], rep and rep["resolved_links"]["reports.benchmarkRef->benchmarks"]))
+        b = copy.deepcopy(valid); b["organisations"][0]["workers"][0]["unitId"] = "u-absent"
+        rc, rep, err = cli(b, tmpdir=tmp); t("an unresolved edge is counted as present but unresolved, distinct from an absent edge", rc == 1 and codes(rep) == ["G03"] and rep["resolved_links"]["workers.unitId->units"] == {"declared": 1, "resolved": 0, "unresolved": 1, "state": "evaluated", "reason": None}, rep and rep["resolved_links"]["workers.unitId->units"])
         empty = {"schema_version": "0.2", "comparisonAsOfDate": "2026-09-01", "organisations": [], "benchmarks": [], "crosswalks": []}
         rc, rep, err = cli(empty, tmpdir=tmp); t("an explicitly empty inventory is not_evaluated with exit 0 and no certificate", rc == 0 and rep["state"] == "not_evaluated" and rep["statement"] != SUCCESS and "G01-G10" in rep["checks_not_evaluated"])
         # strict input: duplicate keys at depth, non-finite and overflowing numbers, roots
@@ -352,7 +513,7 @@ def self_test():
         b = copy.deepcopy(valid); b["organisations"][0]["absences"][0]["startDate"] = "0000-01-01"
         rc, rep, err = cli(b, tmpdir=tmp); t("a year-zero date is a format error", rc == 1 and codes(rep) == ["schema:format"])
         b = copy.deepcopy(valid); b["comparisonAsOfDate"] = "2026-13-40"
-        rc, rep, err = cli(b, tmpdir=tmp); t("a malformed comparison date is a format error at the root", rc == 1 and pairs(rep) == [("schema:format", "comparisonAsOfDate")])
+        rc, rep, err = cli(b, tmpdir=tmp); t("a malformed comparison date is a format error at the root", rc == 1 and pairs(rep) == [("schema:format", "/comparisonAsOfDate")])
         for name in ("organisations", "benchmarks", "crosswalks"):
             b = copy.deepcopy(valid); del b[name]; rc, rep, err = cli(b, tmpdir=tmp); t(f"missing envelope array {name} is refused", rc == 1 and codes(rep) == ["schema:required"])
         b = copy.deepcopy(valid); b["extra"] = 1; rc, rep, err = cli(b, tmpdir=tmp); t("an extra root key cannot smuggle an alternate inventory", rc == 1 and codes(rep) == ["schema:additionalProperties"])
@@ -364,9 +525,15 @@ def self_test():
         rc, rep, err = cli(b, tmpdir=tmp); t("S07: an occasion outside the context window is an S07 error", rc == 1 and "S07" in codes(rep), (rc, codes(rep), rep and rep["errors"][:1]))
         b = copy.deepcopy(valid); b["organisations"][0]["reports"][0]["periodStart"] = b["organisations"][0]["reports"][0]["periodEnd"]
         rc, rep, err = cli(b, tmpdir=tmp); t("S07: a narrower report period is a measurement review item, not an error", rc == 0 and any(r["kind"] == "measurement_interpretation" for r in rep["review_items"]), (rc, rep and rep["review_items"][:2]))
+        for name, fn, want_rc in (("no-banding", lambda g_: g_["contexts"][0]["scoringDescriptor"].pop("banding"), 1), ("no-threshold", lambda g_: g_["contexts"][0]["scoringDescriptor"].pop("threshold"), 1),
+                                  ("partial-no-rule", lambda g_: (g_["administrations"][0].update(completionStatus="partial"), g_["contexts"][0]["scoringDescriptor"].pop("missingResponseRule")), 1),
+                                  ("native-outside", lambda g_: g_["observations"][0].update(nativeValue=6), 1), ("offset-equivalent", lambda g_: g_["observations"][0].update(occasionTs="2026-07-01T01:00:00+01:00"), 0),
+                                  ("narrow-report", lambda g_: g_["reports"][0].update(periodStart="2026-08-01", periodEnd="2026-08-31"), 0)):
+            b = copy.deepcopy(valid); fn(b["organisations"][0]); rc, rep, err = cli(b, tmpdir=tmp)
+            t(f"S07 retained through the graph checker: {name} exits {want_rc}" + (" as S07" if want_rc else ""), rc == want_rc and (("S07" in codes(rep)) if want_rc else not rep["errors"]) and "Traceback" not in err, (rc, codes(rep), err[-120:]))
         # profiles through the real validator classes
         prof = ROOT / "profiles" / "owhs-example" / "0.1.0.json"
-        rc, rep, err = cli(valid, "--profile", str(prof), tmpdir=tmp); t("a supplied profile applies to every record of its declared entity: the absence without the required namespace fails it through the real validator", rc == 1 and rep["profiles"]["applied"]["owhs-example@0.1.0"]["records_checked"] == 1 and any(e["rule"] == "profile:owhs-example@0.1.0" and e["pointer"].startswith("organisations/0/absences/0") for e in rep["errors"]), (rc, rep and rep["profiles"], rep and rep["errors"][:1]))
+        rc, rep, err = cli(valid, "--profile", str(prof), tmpdir=tmp); t("a supplied profile applies to every record of its declared entity: the absence without the required namespace fails it through the real validator", rc == 1 and rep["profiles"]["applied"]["owhs-example@0.1.0"]["records_checked"] == 1 and any(e["rule"] == "profile:owhs-example@0.1.0" and e["pointer"].startswith("/organisations/0/absences/0") for e in rep["errors"]), (rc, rep and rep["profiles"], rep and rep["errors"][:1]))
         xw = json.loads(prof.read_text(encoding="utf-8")); xw["core_schema_ids"] = ["https://openworkplacehealth.org/schemas/v0.2/Crosswalk.json"]; (Path(tmp) / "xwprof.json").write_text(json.dumps(xw), encoding="utf-8")
         b = copy.deepcopy(valid); b["crosswalks"] = []
         rc, rep, err = cli(b, "--profile", str(Path(tmp) / "xwprof.json"), tmpdir=tmp); t("a valid profile that matches no supplied record is reported unused, not passed", rc == 0 and rep["profiles"]["unused"] == ["owhs-example@0.1.0"] and rep["profiles"]["applied"]["owhs-example@0.1.0"]["records_checked"] == 0, (rc, rep and rep["profiles"]))
@@ -391,15 +558,59 @@ def self_test():
         b = copy.deepcopy(valid); b["organisations"][0]["units"] += [{"unitId": "u2", "orgId": "org-demo", "parentUnitId": "u3", "headcountBand": "10-19", "headcountReferenceDate": "2026-09-01"}, {"unitId": "u3", "orgId": "org-demo", "parentUnitId": "u4", "headcountBand": "10-19", "headcountReferenceDate": "2026-09-01"}, {"unitId": "u4", "orgId": "org-demo", "parentUnitId": "u2", "headcountBand": "10-19", "headcountReferenceDate": "2026-09-01"}]
         rc, rep, err = cli(b, tmpdir=tmp); t("a three-unit cycle is G05", rc == 1 and codes(rep) == ["G05"], (rc, codes(rep)))
         b = copy.deepcopy(valid); units = [{"unitId": f"chain-{i}", "orgId": "org-demo", "headcountBand": "10-19", "headcountReferenceDate": "2026-09-01", **({"parentUnitId": f"chain-{i - 1}"} if i else {})} for i in range(1201)]
-        b["organisations"][0]["units"] += units; rc, rep, err = cli(b, tmpdir=tmp); t("a 1,201-unit acyclic chain passes without recursion", rc == 0 and rep["resolved_links"]["units.parentUnitId->units"] == 1200, (rc, codes(rep), err[-120:]))
-        # tool errors: a missing entity schema
+        b["organisations"][0]["units"] += units; rc, rep, err = cli(b, tmpdir=tmp); t("a 1,201-unit acyclic chain passes without recursion", rc == 0 and rep["resolved_links"]["units.parentUnitId->units"]["resolved"] == 1200, (rc, codes(rep), err[-120:]))
+        # supplied profile configuration is preflighted with the S06 contract before any record, unused branches included
+        sid = "https://openworkplacehealth.org/schemas/v0.2/Organisation.json"
+        def prof(schema): return {"profile_id": "owhs-test", "version": "1.0.0", "core_schema_ids": [sid], "schema": schema}
+        def with_profile(bundle, profile, *extra):
+            pf = Path(tmp) / f"p{len(list(Path(tmp).iterdir()))}.json"; pf.write_text(profile if isinstance(profile, str) else json.dumps(profile), encoding="utf-8")
+            return cli(bundle, "--profile", str(pf), *extra, tmpdir=tmp)
+        rc, rep, err = with_profile(valid, prof({"type": "object"})); t("a valid supplied profile applies to the organisation record and passes", rc == 0 and rep["profiles"]["applied"]["owhs-test@1.0.0"]["records_checked"] == 1 and not rep["profiles"]["unused"], (rc, rep and rep["profiles"]))
+        rc, rep, err = with_profile(valid, prof({"properties": {"orgId": {"format": "unimplemented-format"}}})); t("a profile declaring a format this installation cannot assert is a tool error naming the format, exit 2", rc == 2 and rep["state"] == "tool_error" and "unimplemented-format" in rep["error"], (rc, rep))
+        rc, rep, err = with_profile(valid, prof({"$ref": "https://example.invalid/never-fetch.json"})); t("a profile whose root is an external reference is a tool error, no fetch, no traceback", rc == 2 and rep["state"] == "tool_error" and "never-fetch" in rep["error"] and "Traceback" not in err, (rc, rep, err[-120:]))
+        rc, rep, err = with_profile(valid, prof({"properties": {"notSupplied": {"$ref": "https://example.invalid/never-fetch.json"}}})); t("an external reference on an unused profile branch is still a tool error (unused branches are inspected)", rc == 2 and "never-fetch" in rep["error"], (rc, rep))
+        rc, rep, err = with_profile(valid, prof({"properties": {"orgId": {"pattern": "["}}})); t("a profile with a malformed regular expression is a tool error", rc == 2 and rep["state"] == "tool_error", (rc, rep))
+        rc, rep, err = with_profile(valid, prof({"$defs": {"loc": {"type": "object"}}, "$ref": "#/$defs/loc"})); t("a profile whose reference resolves inside its own document passes preflight", rc == 0 and rep["profiles"]["applied"]["owhs-test@1.0.0"]["records_checked"] == 1, (rc, rep and rep.get("error"), rep and rep["profiles"]))
+        empty = {"schema_version": "0.2", "comparisonAsOfDate": "2026-09-01", "organisations": [], "benchmarks": [], "crosswalks": []}
+        rc, rep, err = with_profile(empty, "not json"); t("an empty inventory with a malformed profile is a tool error, not not_evaluated", rc == 2 and rep["state"] == "tool_error" and "not strict JSON" in rep["error"], (rc, rep))
+        rc, rep, err = cli(empty, "--profile", str(Path(tmp) / "missing-profile.json"), tmpdir=tmp); t("an empty inventory with a missing profile file is a tool error", rc == 2 and rep["state"] == "tool_error", (rc, rep))
+        rc, rep, err = with_profile(empty, prof({"type": "object"})); t("an empty inventory with a valid profile is not_evaluated and records the profile's id, version and hash as unused, never applied to zero rows under a passed label", rc == 0 and rep["state"] == "not_evaluated" and rep["profiles"]["unused"] == ["owhs-test@1.0.0"] and rep["profiles"]["applied"]["owhs-test@1.0.0"]["records_checked"] == 0 and len(rep["profiles"]["applied"]["owhs-test@1.0.0"]["sha256"]) == 64 and rep["statement"] != SUCCESS, (rc, rep and rep["profiles"], rep and rep["statement"]))
+        # tool errors on copied scratch trees: configuration and dependency failures are tool_error reports, never tracebacks or passes; --out is replaced
         import shutil
+        def fake_tree(mutate, *extra, profile=None):
+            with tempfile.TemporaryDirectory() as fake:
+                for sub in ("tools", "schemas", "profiles"): shutil.copytree(ROOT / sub, Path(fake) / sub)
+                mutate(Path(fake))
+                bp = Path(fake) / "b.json"; bp.write_text(json.dumps(valid), encoding="utf-8"); outp = Path(fake) / "report.json"; outp.write_text('{"state": "checked_with_limits", "stale": true}', encoding="utf-8")
+                args = [sys.executable, "-B", str(Path(fake) / "tools" / "check_entity_graph.py"), str(bp), "--out", str(outp), *extra]
+                if profile is not None: pf = Path(fake) / "prof.json"; pf.write_text(json.dumps(profile), encoding="utf-8"); args += ["--profile", str(pf)]
+                r = subprocess.run(args, capture_output=True, text=True)
+                try: rep_ = json.loads(r.stdout)
+                except ValueError: rep_ = None
+                try: written = json.loads(outp.read_text(encoding="utf-8"))
+                except ValueError: written = None
+                return r.returncode, rep_, r.stderr, written
+        def edit(path, fn):
+            d = json.loads(path.read_text(encoding="utf-8")); fn(d); path.write_text(json.dumps(d), encoding="utf-8")
+        for label, mutate, needle, kw in (("a missing entity schema", lambda f: (f / "schemas" / "v0.2" / "Crosswalk.json").unlink(), "missing", {}),
+                                         ("malformed core schema JSON", lambda f: (f / "schemas" / "v0.2" / "Organisation.json").write_text("{", encoding="utf-8"), "not strict JSON", {}),
+                                         ("malformed profile-envelope JSON", lambda f: (f / "profiles" / "profile-envelope.schema.json").write_text("{", encoding="utf-8"), "profile-envelope", {"profile": prof({"type": "object"})}),
+                                         ("a core schema using an unasserted format", lambda f: edit(f / "schemas" / "v0.2" / "Organisation.json", lambda d: d["properties"]["orgId"].update(format="unimplemented-format")), "unimplemented-format", {}),
+                                         ("a core schema carrying an unexercised external reference", lambda f: edit(f / "schemas" / "v0.2" / "Organisation.json", lambda d: d["properties"].update(unused={"$ref": "https://example.invalid/never-fetch.json"})), "never-fetch", {}),
+                                         ("a missing shared validator", lambda f: (f / "tools" / "validate.py").unlink(), "validate.py", {}),
+                                         ("a missing measurement checker", lambda f: (f / "tools" / "check_measurement.py").unlink(), "check_measurement.py", {}),
+                                         ("a measurement checker returning None", lambda f: (f / "tools" / "check_measurement.py").write_text("def check(bundle): return None\n", encoding="utf-8"), "malformed result", {}),
+                                         ("a measurement checker raising SystemExit", lambda f: (f / "tools" / "check_measurement.py").write_text("def check(bundle): raise SystemExit(2)\n", encoding="utf-8"), "exited", {}),
+                                         ("a measurement checker raising RuntimeError", lambda f: (f / "tools" / "check_measurement.py").write_text('def check(bundle): raise RuntimeError("synthetic failure")\n', encoding="utf-8"), "synthetic failure", {}),
+                                         ("a measurement checker returning the wrong arity", lambda f: (f / "tools" / "check_measurement.py").write_text("def check(bundle): return [], []\n", encoding="utf-8"), "malformed result", {}),
+                                         ("a measurement checker returning non-string problems", lambda f: (f / "tools" / "check_measurement.py").write_text("def check(bundle): return [1], [], {}\n", encoding="utf-8"), "malformed result", {}),
+                                         ("a shared validator that is a different file", lambda f: (f / "tools" / "validate.py").write_text("X = 1\n", encoding="utf-8"), "lacks", {})):
+            rc, rep, err, written = fake_tree(mutate, **kw)
+            t(f"tool error: {label} is a tool_error report (exit 2, no traceback, no pass) naming the cause, and --out is replaced with it", rc == 2 and rep is not None and rep["state"] == "tool_error" and needle in rep["error"] and "Traceback" not in err and written is not None and written["state"] == "tool_error" and "stale" not in written, (rc, rep, err[-160:], written))
         with tempfile.TemporaryDirectory() as fake:
-            shutil.copytree(ROOT / "tools", Path(fake) / "tools"); shutil.copytree(ROOT / "schemas", Path(fake) / "schemas"); shutil.copytree(ROOT / "profiles", Path(fake) / "profiles")
-            (Path(fake) / "schemas" / "v0.2" / "Crosswalk.json").unlink()
             bp = Path(fake) / "b.json"; bp.write_text(json.dumps(valid), encoding="utf-8")
-            r = subprocess.run([sys.executable, "-B", str(Path(fake) / "tools" / "check_entity_graph.py"), str(bp)], capture_output=True, text=True)
-            t("a missing entity schema is a tool error (exit 2), never a pass", r.returncode == 2 and '"tool_error"' in r.stdout and "Traceback" not in r.stderr, (r.returncode, r.stdout[-200:], r.stderr[-200:]))
+            r = subprocess.run([sys.executable, "-B", str(here), str(bp), "--out", str(Path(fake) / "no-such-dir" / "report.json")], capture_output=True, text=True)
+            t("an unwritable --out destination is an explicit tool error on stdout and stderr (exit 2) saying the report was not replaced", r.returncode == 2 and '"tool_error"' in r.stdout and "could not be written" in r.stdout and "could not be written" in r.stderr and "Traceback" not in r.stderr, (r.returncode, r.stdout[-200:], r.stderr[-200:]))
         # --out is atomic and carries the failed state
         outp = Path(tmp) / "report.json"; outp.write_text('{"state": "checked_with_limits", "stale": true}', encoding="utf-8")
         b = copy.deepcopy(valid); b["organisations"][0]["workers"][0]["orgId"] = "org-other"

@@ -36,10 +36,22 @@ repeated declarations, not independent evidence, and no uniqueness is imposed on
    listed as not evaluated and the result is invalid. Malformed JSON, wrong roots, wrong array or record types are diagnosed, never a
    traceback.
 3. Within-record rules C1 to C18 (the same functions as `tools/validate.py`) and any supplied profiles.
-4. G01 to G10, on a structurally valid bundle only. After an identity or scope failure no ambiguous index entry is selected.
+4. G01 and G02 (identity and scope). When they fail, no ambiguous index entry is selected and nothing downstream is attempted: G03 to G10
+   and the measurement checks are listed as not evaluated because identities are invalid, and every relation record says resolution was
+   not attempted. Only when identities hold do G03 to G10 run.
 5. The measurement-bundle checks of `tools/check_measurement.py`, unchanged, on each organisation's projection (`contexts`,
    `observations`, `administrations`, `reports`); they run only when G01 to G10 pass, because their joins rest on the identities and
    references those rules establish.
+
+Before any of this, the complete configuration is preflighted with the single-record validator's contract: the envelope schema, the
+sixteen entity schemas and the profile-envelope schema are read as strict JSON, must meta-validate, may use only formats this installation
+asserts, and may carry only references that resolve locally (or, for the envelope, to a schema in the checked inventory), unused branches
+included; nothing is fetched. Every supplied profile is read and preflighted the same way (its references must resolve inside its own
+document, embedded resources included) before any record is judged, and before the empty-inventory result: an empty bundle with a
+malformed or missing profile is a tool error, and an empty bundle with a valid profile is `not_evaluated` with that profile recorded as
+unused. The shared validator and the measurement checker are loaded through explicit error boundaries: a missing, unloadable or
+substituted dependency, a measurement check that raises or exits, or a measurement result that is not (list of strings, list of strings,
+dict) is a tool error, never an empty result standing for a pass.
 
 | Rule | Check |
 |---|---|
@@ -70,18 +82,30 @@ not as applied or passed. An extension namespace with no supplied profile coveri
 
 ## The result
 
-Structured JSON on stdout, and written atomically to `--out` when given (a failed run replaces any earlier report with its current
-invalid or tool-error result; no stale success survives). Fields: `report_schema_version` (1.0), the input's SHA-256, the checker's and
-every schema's SHA-256, `comparisonAsOfDate`, `state`, `entity_counts` by type and `organisation_groups`, `resolved_links` per relation
-(a relation with no declared edge reads "not exercised", never validated), `checks_performed` and `checks_not_evaluated`, `errors`
-(rule or schema keyword, JSON pointer, diagnostic), `review_items` (every resolved comparison is `comparison_not_established`;
-measurement interpretation items from the retained checks), `external_references_not_checked` (item and instrument identities,
-crosswalk semantics, extension namespaces without a profile), `profiles` (applied with counts, unused), `measurement_gate` (which gate
-ran and its hash) and `not_established`.
+Structured JSON on stdout, and written atomically to `--out` when given (a failed run, a tool error included, replaces any earlier
+report with its current result; no stale success survives; a destination that cannot be written is itself reported as a tool error on
+stdout and stderr, saying the earlier report was not replaced). Fields: `report_schema_version` (1.0), the input's SHA-256, the checker's
+and every schema's SHA-256 (`schema_sha256`), the shared validator's, the measurement checker's and the profile-envelope schema's SHA-256
+(`dependency_sha256`), `comparisonAsOfDate`, `state`, `entity_counts` by type and `organisation_groups`, `resolved_links` as one record
+per relation (`declared` occurrences of the scoped reference, `resolved`, `unresolved`, and a `state`: `evaluated`, `no_declared_edge`
+when no record carries the reference after the stage examined it, or `not_evaluated` with the reason when resolution was not attempted;
+these count references, not people or independent evidence), `checks_performed` and `checks_not_evaluated` (only stages that actually
+ran are listed as performed; after an identity failure the performed list ends at G01-G02), `errors` (rule or schema keyword, JSON
+pointer, diagnostic, and for G08 to G10 `related` pointers to the report's `benchmarkRef` and the release record), `review_items` (every
+resolved comparison is `comparison_not_established`; measurement interpretation items from the retained checks),
+`external_references_not_checked` (item and instrument identities, crosswalk semantics, extension namespaces without a profile),
+`profiles` (applied with id, version, hash and counts; unused), `measurement_gate` (which gate ran and its hash) and `not_established`.
+
+Pointers are RFC 6901 JSON pointers: the empty string is the root, every token is prefixed with `/` and escaped (`~` as `~0`, `/` as `~1`),
+and each locates the offending existing value or, when a required property is absent, its nearest existing parent. G01 points at the
+record's `orgId`; G02 at the duplicated key (or the duplicate release record); G03, G04 and G06 at the reference or date field; G05 at the
+organisation's `units`; G07 at the report's `benchmarkRef`; G08 at `/organisations/<g>/reports/<r>/metricCode`; G09 at
+`/benchmarks/<b>/excludedOrgId`; G10 at `/comparisonAsOfDate`; S07 at the organisation group, with the retained checks' own text inside
+the message. The checker refuses to emit a pointer that does not resolve in the parsed instance (a tool error naming the defect).
 
 States and exit codes: `checked_with_limits` (0), `not_evaluated` for an entirely empty inventory (0, no certificate and nothing
-exercised), `invalid` (1) and `tool_error` (2: a missing schema, profile or dependency, an unresolved schema reference, a failed gate
-process). No record content is echoed as an output dataset; a local report and its hashes can still be sensitive, and no workflow
+exercised), `invalid` (1) and `tool_error` (2: a missing, malformed or substituted schema, profile or dependency, an unasserted format or an
+unresolved reference anywhere in the configuration, a failed or malformed gate result, an unwritable report destination). No record content is echoed as an output dataset; a local report and its hashes can still be sensitive, and no workflow
 uploads real bundles or reports as public artefacts. The public self-test uses only the synthetic fixtures in `examples/bundles/v0.2/`.
 
 The success statement, verbatim:
