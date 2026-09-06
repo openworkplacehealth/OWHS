@@ -12,7 +12,8 @@ Published surfaces fall into three categories, each with its changelog:
   registry       registry/                                     a new registry-tab entry file
   specification  spec/, schemas/, codelists/, examples/,       a new specification-tab entry file AND a new entry
                  profiles/ and the conformance checkers        added to CHANGELOG.md under a dated section
-                 (validate, measurement, profiles, mappings)
+                 (validate, measurement, profiles, mappings,
+                 and the entity-graph validator once composed)
   README.md                                                    a new entry added to CHANGELOG.md under a dated section
 A CHANGELOG.md entry is a "### " heading with words under a "## <day> <Month> <year>" section that is a real calendar
 date (a new section or an existing one), with at least one line of body text beneath it before the next heading. An
@@ -34,7 +35,7 @@ import tempfile
 from html.parser import HTMLParser
 
 CATEGORY_PREFIXES = {"site": ("site/", "docs/"), "registry": ("registry/",), "specification": ("spec/", "schemas/", "codelists/", "examples/", "profiles/")}
-CATEGORY_FILES = {"specification": ("tools/validate.py", "tools/check_measurement.py", "tools/check_profiles.py", "tools/check_codelist_mappings.py"), "readme": ("README.md",)}
+CATEGORY_FILES = {"specification": ("tools/validate.py", "tools/check_measurement.py", "tools/check_profiles.py", "tools/check_codelist_mappings.py", "tools/check_entity_graph.py"), "readme": ("README.md",)}
 NEEDS_TAB = {"site": "site", "registry": "registry", "specification": "specification"}
 NEEDS_REPOSITORY_LOG = ("specification", "readme")
 PUBLISHED_PREFIXES = tuple(p for ps in CATEGORY_PREFIXES.values() for p in ps)
@@ -254,6 +255,7 @@ def self_test():
         ("a schema change with only a site-tab entry is refused twice over", (["schemas/v0.2/OrgUnit.json", "changelog/entries/2026-09-06-site-x.json"], {"site"}, False), ["schemas/v0.2/OrgUnit.json: needs a new specification-tab entry file under changelog/entries/", "schemas/v0.2/OrgUnit.json: needs a new dated section or entry heading in CHANGELOG.md"]),
         ("the reference validator is a published surface needing both logs", (["tools/validate.py"], set(), False), ["tools/validate.py: needs a new specification-tab entry file under changelog/entries/", "tools/validate.py: needs a new dated section or entry heading in CHANGELOG.md"]),
         ("the measurement and profile checkers are conformance surfaces needing both logs", (["tools/check_measurement.py", "tools/check_profiles.py"], set(), False), ["tools/check_measurement.py: needs a new specification-tab entry file under changelog/entries/", "tools/check_measurement.py: needs a new dated section or entry heading in CHANGELOG.md", "tools/check_profiles.py: needs a new specification-tab entry file under changelog/entries/", "tools/check_profiles.py: needs a new dated section or entry heading in CHANGELOG.md"]),
+        ("the entity-graph validator is a conformance surface needing both logs; its regression suite is not", (["tools/check_entity_graph.py", "tools/check_remaining_entities.py"], set(), False), ["tools/check_entity_graph.py: needs a new specification-tab entry file under changelog/entries/", "tools/check_entity_graph.py: needs a new dated section or entry heading in CHANGELOG.md"]),
         ("other tooling, tests and workflows alone need no entry", (["tools/build_search_index.py", ".github/workflows/validate.yml", "requirements.txt"], set(), False), []),
         ("evidence artefacts alone need no entry", (["evidence/candidates/2026-09.json"], set(), False), []),
         ("the changelog alone is not a change to record", (["site/changelog.html"], set(), False), []),
@@ -360,10 +362,12 @@ def self_test():
         scenario("a schema change whose repository log only re-spaces an old entry heading fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log.replace("### Added: a first entry", "### Added: a first  entry"), "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
         scenario("a schema change whose new entry heading is followed only by a section heading fails (a heading is not body)", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log + "\n### Changed: OrgUnit\n\n## Undated notes\n", "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
         scenario("a schema change whose repository log only re-spaces an old entry fails", {"schemas/OrgUnit.json": '{"changed": true}\n', "CHANGELOG.md": base_log.replace("text\n", "text\n\n\n"), "changelog/entries/2026-09-06-specification-x.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "x"})}, False, "CHANGELOG.md")
-        (root / "tools" / "check_measurement.py").write_text("print('m1')\n", encoding="utf-8"); (root / "tools" / "check_profiles.py").write_text("print('p1')\n", encoding="utf-8")
+        (root / "tools" / "check_measurement.py").write_text("print('m1')\n", encoding="utf-8"); (root / "tools" / "check_profiles.py").write_text("print('p1')\n", encoding="utf-8"); (root / "tools" / "check_entity_graph.py").write_text("print('g1')\n", encoding="utf-8")
         run("add", "-A"); run("commit", "-q", "-m", "checkers"); base = run("rev-parse", "HEAD").stdout.strip()
         scenario("a measurement-checker change with no entry fails", {"tools/check_measurement.py": "print('m2')\n"}, False, "tools/check_measurement.py")
         scenario("a profile-checker change with no entry fails", {"tools/check_profiles.py": "print('p2')\n"}, False, "tools/check_profiles.py")
+        scenario("an entity-graph validator change with no entry fails", {"tools/check_entity_graph.py": "raise SystemExit(1)\n"}, False, "tools/check_entity_graph.py")
+        scenario("an entity-graph validator change with both logs passes", {"tools/check_entity_graph.py": "print('g2')\n", "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: entity-graph validator\n\ntext\n", "changelog/entries/2026-09-06-specification-graph.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.2", "html": "Entity-graph validator changed."})}, True)
         scenario("a measurement-checker change with both logs passes", {"tools/check_measurement.py": "print('m2')\n", "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: measurement checker\n\ntext\n", "changelog/entries/2026-09-06-specification-measurement.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.2", "html": "Measurement checker changed."})}, True)
         scenario("a validator change with both logs passes", {"tools/validate.py": "print('v2')\n", "CHANGELOG.md": base_log + "\n## 6 September 2026\n\n### Changed: validator\n\ntext\n", "changelog/entries/2026-09-06-specification-validator.json": json.dumps({"tab": "specification", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.1", "html": "Validator changed."})}, True)
         scenario("a registry change with a new registry-tab entry passes", {"registry/dataset.json": "{}\n", "changelog/entries/2026-09-06-registry-dataset.json": json.dumps({"tab": "registry", "date": "2026-09-06", "shown": "6 Sep 2026", "version": "v0.9.1", "html": "Dataset changed."})}, True)
