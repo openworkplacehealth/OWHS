@@ -694,7 +694,7 @@ def build_index():
         rows += f'<tr class="{size_class(r)}"><td><a href="{esc(r["instrument_id"])}.html">{esc(r["display_name"])}</a></td>{cells}</tr>\n'
     heads = "".join(f"<th>{esc(h)}</th>" for _, h in MATRIX_COLS)
     body = f"""
-<span class="status-chip">OWHS v0.1 &middot; resource, not the normative spec &middot; {len(GRADED)} instruments graded, {len(RECORDS)} records, {len(WATCHLIST)} on the watchlist &middot; stage one of the field &middot; dataset v{esc(D["version"])}</span>
+<span class="status-chip">OWHS v0.2 draft &middot; resource, not the normative spec &middot; {len(GRADED)} instruments graded, {len(RECORDS)} records, {len(WATCHLIST)} on the watchlist &middot; stage one of the field &middot; dataset v{esc(D["version"])}</span>
 <h1>Instrument Registry</h1>
 <p class="lede">An evidence registry for the instruments used to measure workplace health and wellbeing: per-property
 grades with provenance, licence status verified against current steward terms, and a public corrections log. It is a resource
