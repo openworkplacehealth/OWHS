@@ -1,0 +1,8 @@
+{
+ "tab": "specification",
+ "date": "2026-09-04",
+ "shown": "4 Sep 2026",
+ "version": "v0.1",
+ "html": "Both RFCs opened for comment, with a window of 7 September to 17 October 2026 and an issue each as the comment thread: <a href=\"https://github.com/openworkplacehealth/OWHS/blob/main/rfcs/0001-construct-domain-v0.2.md\">RFC 0001</a>, the construct-domain code list at v0.2, five admissions, two new fields on every code and a mapping from the question bank's topic groups; and <a href=\"https://github.com/openworkplacehealth/OWHS/blob/main/rfcs/0002-subject-identifying-constructs.md\">RFC 0002</a>, whether a construct about an identified person, such as a manager rated by their team, enters the vocabulary at all, and under what rule. The aggregation floors protect respondents and do nothing for subjects, and RFC 0002 gates RFC 0001: no subject-identifying code is admitted until it is settled.",
+ "order": 2
+}

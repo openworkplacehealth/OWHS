@@ -1,0 +1,7 @@
+{
+ "tab": "site",
+ "date": "2026-09-04",
+ "shown": "4 Sep 2026",
+ "html": "This changelog split into three sections, one each for the instrument evidence registry, the specification and the site, and added to the navigation on every page. Each section is linkable directly, at <span class=\"mono\">#registry</span>, <span class=\"mono\">#specification</span> and <span class=\"mono\">#site</span>, so a single history can be cited. Without JavaScript all three render in full.",
+ "order": 4
+}

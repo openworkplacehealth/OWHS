@@ -1,0 +1,8 @@
+{
+ "tab": "registry",
+ "date": "2026-09-02",
+ "shown": "2 Sep 2026",
+ "version": "v0.6.0",
+ "html": "Reconciliation of the second review pass, of v0.5.0, before first publication. <a href=\"instrument-registry/rubric.html\">Rubric v1.3</a>: the evidence-form rule recodes a cell to the form its findings attribute instead of capping its grade, so a cell is <span class=\"mono\">mixed</span> only where the findings name two forms claim by claim; a High grade needs two cited studies with a sample size and a statistic of the property graded, and on a population-sensitive property at least one of them in a working-adult or general-population sample, with every cited study tagged by population; criterion validity against a reference standard joins the population-sensitive properties (diagnostic accuracy depends on the sample); every flag descriptor names a population. One Moderate returns to High (k10 internal consistency, capped in v0.5.0 on a coding error), five High cells drop to Moderate, four single-item invariance cells and one derived-index structure cell become Not-applicable, three flags move, 24 cells are recoded off <span class=\"mono\">mixed</span>, 29 cited studies leave the High-basis tables for want of a statistic of the property. Schema 0.6: <span class=\"mono\">population</span> on High-basis entries, two absence types, seven-field <span class=\"mono\">previous</span> blocks, structured abstract contradictions. One gate module now runs in both the migration and the site build. All logged as correction C-0006 with the rubric 1.2 values kept on each changed cell. No fresh literature search: as-of dates unchanged.",
+ "order": 4
+}

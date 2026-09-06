@@ -1,0 +1,8 @@
+{
+ "tab": "registry",
+ "date": "2026-09-02",
+ "shown": "2 Sep 2026",
+ "version": "v0.4.0",
+ "html": "Purpose reset before first publication. The registry's purpose is stated: the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing, scope the whole field by construct, the first 27 instruments stage one. <a href=\"instrument-registry/rubric.html\">Rubric v1.1</a>: indirectness is defined by population type, never by country or language; every cell re-read, 92 flags changed and 6 grades moved (all upward, all occupational instruments), logged as correction C-0004 with the rubric 1.0 values kept on each cell. Schema 0.4: every indirectness flag carries its reason; <span class=\"mono\">relations</span> on every record link single items and short forms to the multi-item instruments they were validated against, each citing its study; new <a href=\"instrument-registry/single-items.html\">single-item measures</a> page. Freeze dated from first publication. Search venues and strings published on the methods page. No fresh literature search: as-of dates unchanged.",
+ "order": 2
+}
