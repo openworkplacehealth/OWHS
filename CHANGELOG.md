@@ -7,6 +7,17 @@ behind it, the entry says so plainly rather than describing the fix as an improv
 Registry grade corrections are not here. They have their own numbered log at
 `site/instrument-registry/corrections.html`, and grades remain frozen.
 
+## 7 September 2026
+
+### Fixed: the honesty pass disputed a reason taxonomy version 0.2 no longer uses
+
+Item 5 of the honesty pass was carried from version 0.1, where the absence-reason enum had six categories.
+Version 0.2 uses eleven codes: the ten substantive categories of the 2025 ONS workbook and the separate
+non-disclosure response, and `codelists/absence-reason.json` says in its own notes that this replaces the
+incomplete six-category list. The item argued against coarse buckets the specification had already removed.
+It now states the dispute that remains, which is the anchoring of an employer episode record to categories
+designed for a population survey.
+
 ## 6 September 2026
 
 ### Fixed: the organisation size band said Companies Act, its code list says otherwise
