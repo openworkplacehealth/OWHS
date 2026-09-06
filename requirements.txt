@@ -12,3 +12,5 @@ reportlab>=4
 
 # The document and specification page renderers. Pinned exactly: the CI checks compare output byte for byte.
 markdown==3.10.3
+# Strict parsing of the workflow files in CI (duplicate keys are an error).
+pyyaml>=6

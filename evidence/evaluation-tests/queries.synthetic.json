@@ -1,0 +1,26 @@
+{
+ "version": "fixture",
+ "providers": {
+  "europepmc": {},
+  "openalex": {}
+ },
+ "property_terms": [
+  "validation"
+ ],
+ "records": [
+  {
+   "instrument_id": "isi",
+   "names": [
+    "Insomnia Severity Index"
+   ],
+   "citation_seeds": []
+  },
+  {
+   "instrument_id": "who-5",
+   "names": [
+    "WHO-5"
+   ],
+   "citation_seeds": []
+  }
+ ]
+}
