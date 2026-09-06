@@ -94,7 +94,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <div class="tabs" role="tablist" aria-label="Changelog sections">
   <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">13</span></button>
   <button type="button" class="tab" role="tab" id="tab-specification" aria-controls="panel-specification" aria-selected="false">Specification <span class="count">5</span></button>
-  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">13</span></button>
+  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">14</span></button>
 </div>
 
 <section class="panel" id="panel-registry" role="tabpanel" aria-labelledby="tab-registry" tabindex="0">
@@ -134,6 +134,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2 class="panel-title">Site</h2>
   <table>
     <tr><th>Date</th><th>What changed</th></tr>
+    <tr><td>6 Sep 2026</td><td>The <a href="search.html">search index</a> is generated from the pages, the registry dataset and the question bank, and a check refuses an index that no longer matches them. The hand-built index had gone stale: it labelled the rubric v1.4 while the registry is graded under v1.6, it lacked twenty-one pages (among them How it works, the entity map, the registry's how-to-read and admission pages and every question-bank group), and it withheld the wording of forty-two question-bank items whose wording the bank has published since version 0.2.0. Withheld wording stays out of the index.</td></tr>
     <tr><td>6 Sep 2026</td><td>The <a href="spec/">specification page</a> is rendered from its markdown source by a build step, and a check refuses a page that no longer matches the source. The rendered page had been edited by hand alongside the markdown and had drifted: it lacked the closed-vocabulary rule, the corrected error map and the newest code-list rows the markdown carried. It now carries them.</td></tr>
     <tr><td>6 Sep 2026</td><td>Corrected: the worked record on <a href="standard.html">Inside the standard</a> used two field names the schema does not declare (<span class="mono">fitNoteProvided</span> and <span class="mono">workRelated</span>; the schema's are <span class="mono">fitNoteFlag</span> and <span class="mono">workRelatedFlag</span>), so the record the page called valid was not. The record now validates, the sentence before the validator output says what the second record changes, and a check runs the page's record through the reference validator and compares the output the page shows with the validator's, so the demonstration cannot drift from the schema again.</td></tr>
     <tr><td>6 Sep 2026</td><td>The <a href="question-bank/">question bank</a>'s Civil Service People Survey source recorded a landing page as its URL while its SHA-256 identified the 2024 Benchmark Results file. The source now carries that file's URL beside the hash, re-verified against the download. Wording, counts and every other field are unchanged.</td></tr>
