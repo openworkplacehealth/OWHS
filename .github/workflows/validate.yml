@@ -44,6 +44,10 @@ jobs:
         run: python tools/check_site_examples.py --self-test
       - name: specification page is rendered from its markdown
         run: python tools/build_spec_page.py --check
+      - name: the search index is generated from the pages, the registry dataset and the question bank
+        run: python tools/build_search_index.py --check
+      - name: search-index generator behaves as documented
+        run: python tools/build_search_index.py --self-test
       - name: workflow files parse strictly
         run: python tools/check_workflows.py
       - name: cycle definition and verifier contract
