@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://openworkplacehealth.org/entity-graph-validation.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/entity-graph-validation.html">
+<meta property="og:title" content="Supplied-entity graph validation, v0.2 · OWHS">
+<meta property="og:description" content="Supplied-entity graph validation, v0.2">
+<meta name="twitter:card" content="summary">
+<!-- /auto -->
+<title>Supplied-entity graph validation, v0.2 · OWHS</title>
+<meta name="description" content="Supplied-entity graph validation, v0.2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:17px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2,h3{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(28px,4.5vw,40px);font-weight:700;letter-spacing:-0.02em;margin-bottom:10px}
+h2{font-size:22px;font-weight:700;margin:40px 0 12px}
+h3{font-size:17px;font-weight:600;margin:24px 0 6px}
+p{margin:14px 0;max-width:760px}
+ul,ol{margin:14px 0 14px 22px}
+li{margin:7px 0}
+header{border-bottom:1px solid var(--line);padding:18px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:34px}
+article{padding:56px 0 30px}
+.quote{background:var(--wash);border-left:4px solid var(--accent);padding:22px 26px;margin:26px 0}
+.quote p{font-size:17px;color:var(--ink);font-weight:500;margin:0 0 8px}
+.quote p:last-child{margin-bottom:0}
+.callout{background:var(--accent-soft);border-radius:8px;padding:20px 24px;margin:24px 0}
+.callout p{margin:8px 0}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:var(--wash);color:var(--ink);font-weight:600}
+.mono{font-family:var(--mono);font-size:13.5px}
+footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted)}
+</style>
+<!-- analytics --><script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_UBxs6DIFwK73c1QzudH8AWR6HHZtNAkqhpbz3lCcPfg',{api_host:'https://eu.i.posthog.com',ui_host:'https://eu.posthog.com',defaults:'2026-05-30',cookieless_mode:'always',person_profiles:'never',autocapture:false,capture_pageview:true,capture_pageleave:true,disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});</script><!-- /analytics -->
+</head>
+<body>
+
+<header><div class="nav">
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="why.html">The case</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="standard.html">Inside the standard</a>
+    <a href="question-bank/index.html">Question bank</a>
+    <a href="instrument-registry/index.html">Instrument registry</a>
+    <a href="methods.html">How we grade</a>
+    <a href="governance.html">Governance</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="search.html">Search</a>
+  </nav>
+</div></header>
+
+<article><div class="wrap">
+  <h1>Supplied-entity graph validation, v0.2</h1>
+  <p class="meta"></p>
+<p><code>tools/check_entity_graph.py</code> checks a producer-side bundle of v0.2 records for organisation-scoped integrity: that the records
+declared to belong together do belong together. It is an optional check on a supplied set of records. It is not a release envelope,
+not a roster, not a privacy assessment and not a conformance certificate.</p>
+<h2>The envelope</h2>
+<p><code>schemas/bundles/EntityGraph-v0.2.json</code> is a closed object with every field required:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema_version</code></td>
+<td>the constant <code>"0.2"</code></td>
+</tr>
+<tr>
+<td><code>comparisonAsOfDate</code></td>
+<td>the producer-declared calendar date at which the comparisons named by the supplied reports are intended to apply; not the system clock, a publication date or the date of the observations; historic comparisons carry their historic intended date, and comparisons intended at different dates need separate bundles</td>
+</tr>
+<tr>
+<td><code>organisations</code></td>
+<td>groups, each one <code>organisation</code> (an Organisation) plus all thirteen entity arrays: <code>units</code>, <code>workers</code>, <code>absences</code>, <code>rtwOutcomes</code>, <code>ohEpisodes</code>, <code>adjustments</code>, <code>entitlements</code>, <code>utilisations</code>, <code>disabilityParticipations</code>, <code>contexts</code>, <code>observations</code>, <code>administrations</code>, <code>reports</code></td>
+</tr>
+<tr>
+<td><code>benchmarks</code></td>
+<td>BenchmarkRelease records, global to the bundle</td>
+</tr>
+<tr>
+<td><code>crosswalks</code></td>
+<td>Crosswalk records, global to the bundle</td>
+</tr>
+</tbody>
+</table>
+<p>Empty arrays are valid; missing arrays are not. Every record validates against its exact v0.2 entity schema, resolved from the local
+schema inventory only (no URL in an instance is fetched), with formats asserted, and then against the named within-record rules C1 to
+C18. An omitted optional reference means no relationship was declared; a present empty string is a reference that must resolve and
+cannot.</p>
+<p>Identity within a bundle is (organisation, entity type, primary id): <code>orgId</code> for the organisation, <code>unitId</code>, <code>pseudonymId</code>, <code>episodeId</code>,
+<code>outcomeId</code>, <code>ohEpisodeId</code>, <code>adjustmentId</code>, <code>entitlementId</code>, <code>utilisationId</code>, <code>reportId</code> (DisabilityParticipation), <code>contextId</code>,
+<code>observationId</code>, <code>administrationId</code>, <code>reportId</code> (AggregateReport); benchmark releases are identified by the pair (<code>benchmarkId</code>,
+<code>releaseVersion</code>). Equal strings in different organisations or different entity types are different records: the same pseudonym in two
+organisations does not establish a shared person. Crosswalk has no primary id and nothing references it; exact duplicate rows are
+repeated declarations, not independent evidence, and no uniqueness is imposed on (<code>constructCode</code>, <code>crosswalkVersion</code>).</p>
+<h2>Order of checks</h2>
+<ol>
+<li>Strict JSON: duplicate object keys at any depth, <code>NaN</code>, <code>Infinity</code> and overflowing numeric literals are refused before any
+   dictionary is built. Strings containing those words are ordinary strings.</li>
+<li>Structure: the envelope and every record against its schema. A structural failure stops here; the graph and measurement stages are
+   listed as not evaluated and the result is invalid. Malformed JSON, wrong roots, wrong array or record types are diagnosed, never a
+   traceback.</li>
+<li>Within-record rules C1 to C18 (the same functions as <code>tools/validate.py</code>) and any supplied profiles.</li>
+<li>G01 and G02 (identity and scope). When they fail, no ambiguous index entry is selected and nothing downstream is attempted: G03 to G10
+   and the measurement checks are listed as not evaluated because identities are invalid, and every relation record says resolution was
+   not attempted. Only when identities hold do G03 to G10 run.</li>
+<li>The measurement-bundle checks of <code>tools/check_measurement.py</code>, unchanged, on each organisation's projection (<code>contexts</code>,
+   <code>observations</code>, <code>administrations</code>, <code>reports</code>); they run only when G01 to G10 pass, because their joins rest on the identities and
+   references those rules establish.</li>
+</ol>
+<p>Before any of this, the complete configuration is preflighted with the single-record validator's contract: the envelope schema, the
+sixteen entity schemas and the profile-envelope schema are read as strict JSON, must meta-validate, may use only formats this installation
+asserts, and may carry only references that resolve locally (or, for the envelope, to a schema in the checked inventory), unused branches
+included; nothing is fetched. Every supplied profile is read and preflighted the same way (its references must resolve inside its own
+document, embedded resources included) before any record is judged, and before the empty-inventory result: an empty bundle with a
+malformed or missing profile is a tool error, and an empty bundle with a valid profile is <code>not_evaluated</code> with that profile recorded as
+unused. The shared validator and the measurement checker are loaded through explicit error boundaries: a missing, unloadable or
+substituted dependency, a measurement check that raises or exits, or a measurement result that is not (list of strings, list of strings,
+dict) is a tool error, never an empty result standing for a pass.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G01</td>
+<td>every record carrying <code>orgId</code> equals its enclosing Organisation's <code>orgId</code>; the three older episodes (absence, return to work, OH) inherit the group scope for this checker only, and no field is injected into a source record</td>
+</tr>
+<tr>
+<td>G02</td>
+<td>unique group <code>orgId</code>, unique scoped entity keys, unique benchmark (<code>benchmarkId</code>, <code>releaseVersion</code>); duplicates are errors even when byte-identical, with no first-wins or last-wins</td>
+</tr>
+<tr>
+<td>G03</td>
+<td>every present declared intra-organisation reference resolves to exactly one supplied target in the enclosing group; a match in another group fails</td>
+</tr>
+<tr>
+<td>G04</td>
+<td>ReturnToWorkOutcome and its AbsenceEpisode, OHEpisode and its optional linked AbsenceEpisode, ReasonableAdjustment and its optional source OHEpisode share one <code>pseudonymId</code>; both records' worker references must also resolve</td>
+</tr>
+<tr>
+<td>G05</td>
+<td>OrgUnit parent links form an acyclic graph within each organisation, walked iteratively (C18 already catches the direct self-loop)</td>
+</tr>
+<tr>
+<td>G06</td>
+<td><code>rtwDate</code>, when present, is on or after the linked AbsenceEpisode's <code>startDate</code>; it is not required to follow <code>endDate</code> (phased return and a continuing episode are not rejected), and no date is inferred from the outcome label</td>
+</tr>
+<tr>
+<td>G07</td>
+<td>every report <code>benchmarkRef</code> resolves by the exact (<code>benchmarkId</code>, <code>releaseVersion</code>) pair; another version is never substituted</td>
+</tr>
+<tr>
+<td>G08</td>
+<td>the referenced release's <code>measure.metricCode</code> equals the report's <code>metricCode</code>; equal strings are declared identity only</td>
+</tr>
+<tr>
+<td>G09</td>
+<td>a referenced release with <code>leaveOneOut</code> true names the referencing organisation as <code>excludedOrgId</code>; an unreferenced release's excluded organisation need not be supplied</td>
+</tr>
+<tr>
+<td>G10</td>
+<td><code>comparisonAsOfDate</code> lies within the referenced release's <code>validFrom</code> and <code>validTo</code>, inclusive; unreferenced old releases may be carried as inventory</td>
+</tr>
+</tbody>
+</table>
+<p>G03 reference map: OrgUnit.parentUnitId and WorkerPseudonym.unitId and AggregateReport.unitId to OrgUnit.unitId; the pseudonymId of
+AbsenceEpisode, ReturnToWorkOutcome, OHEpisode, ReasonableAdjustment, WellbeingObservation and InstrumentAdministration to
+WorkerPseudonym.pseudonymId; BenefitUtilisation.entitlementId to BenefitEntitlement.entitlementId; the contextId of WellbeingObservation,
+InstrumentAdministration and AggregateReport to MeasurementContext.contextId; ReturnToWorkOutcome.absenceEpisodeId and
+OHEpisode.linkedAbsenceEpisodeId to AbsenceEpisode.episodeId; ReasonableAdjustment.sourceOhEpisodeId to OHEpisode.ohEpisodeId.</p>
+<h2>Profiles</h2>
+<p>Each <code>--profile</code> envelope is validated against <code>profiles/profile-envelope.schema.json</code> first; its id, version and SHA-256 are recorded;
+it is dispatched only to records whose exact schema <code>$id</code> it names in <code>core_schema_ids</code>, and applied with the same validator classes
+as the single-record tool, so a profile can neither override the core nor the C rules. Two different envelopes for one profile and
+version, and a missing or malformed profile file, are tool errors. A valid profile matching no supplied record is reported as unused,
+not as applied or passed. An extension namespace with no supplied profile covering that record's entity is listed as unchecked.</p>
+<h2>The result</h2>
+<p>Structured JSON on stdout, and written atomically to <code>--out</code> when given (a failed run, a tool error included, replaces any earlier
+report with its current result, invocation errors included once an unambiguous <code>--out</code> was given; no stale success survives; a
+destination that cannot be written is itself reported as a tool error on stdout and stderr, saying the earlier report was not replaced;
+an <code>--out</code> without a value, or given more than once, invents no destination and writes nothing). Fields: <code>report_schema_version</code> (1.0), the input's SHA-256, the checker's
+and every schema's SHA-256 (<code>schema_sha256</code>), the shared validator's, the measurement checker's and the profile-envelope schema's SHA-256
+(<code>dependency_sha256</code>), <code>comparisonAsOfDate</code>, <code>state</code>, <code>entity_counts</code> by type and <code>organisation_groups</code>, <code>resolved_links</code> as one record
+per relation (<code>declared</code> occurrences of the scoped reference, <code>resolved</code>, <code>unresolved</code>, and a <code>state</code>: <code>evaluated</code>, <code>no_declared_edge</code>
+when no record carries the reference after the stage examined it, or <code>not_evaluated</code> with the reason when resolution was not attempted;
+these count references, not people or independent evidence), <code>checks_performed</code> and <code>checks_not_evaluated</code> (only stages that actually
+ran are listed as performed; after an identity failure the performed list ends at G01-G02; when G03 to G10 ran and failed, the
+measurement checks are listed as not evaluated with the true reason: references unresolved, graph constraints failed, or both), <code>errors</code> (rule or schema keyword, JSON
+pointer, diagnostic, and for G08 to G10 <code>related</code> pointers to the report's <code>benchmarkRef</code> and the release record), <code>review_items</code> (every
+resolved comparison is <code>comparison_not_established</code>; measurement interpretation items from the retained checks),
+<code>external_references_not_checked</code> (item and instrument identities, crosswalk semantics, extension namespaces without a profile),
+<code>profiles</code> (applied with id, version, hash and counts; unused), <code>measurement_gate</code> (which gate ran and its hash) and <code>not_established</code>.</p>
+<p>Pointers are RFC 6901 JSON pointers: the empty string is the root, every token is prefixed with <code>/</code> and escaped (<code>~</code> as <code>~0</code>, <code>/</code> as <code>~1</code>),
+and each locates the offending existing value or, when a required property is absent, its nearest existing parent. G01 points at the
+record's <code>orgId</code>; G02 at the duplicated key (or the duplicate release record); G03, G04 and G06 at the reference or date field; G05 at the
+organisation's <code>units</code>; G07 at the report's <code>benchmarkRef</code>; G08 at <code>/organisations/&lt;g&gt;/reports/&lt;r&gt;/metricCode</code>; G09 at
+<code>/benchmarks/&lt;b&gt;/excludedOrgId</code>; G10 at <code>/comparisonAsOfDate</code>; S07 at the organisation group, with the retained checks' own text inside
+the message. The checker refuses to emit a pointer that does not resolve in the parsed instance (a tool error naming the defect).</p>
+<p>States and exit codes: <code>checked_with_limits</code> (0), <code>not_evaluated</code> for an entirely empty inventory (0, no certificate and nothing
+exercised), <code>invalid</code> (1) and <code>tool_error</code> (2: a missing, malformed or substituted schema, profile or dependency, an unasserted format or an
+unresolved reference anywhere in the configuration, a failed or malformed gate result, an unwritable report destination). No record content is echoed as an output dataset; a local report and its hashes can still be sensitive, and no workflow
+uploads real bundles or reports as public artefacts. The public self-test uses only the synthetic fixtures in <code>examples/bundles/v0.2/</code>.</p>
+<p>The success statement, verbatim:</p>
+<blockquote>
+<p>The supplied records passed the listed structure, within-record and relationship checks. Unchecked external references and
+interpretation limits are listed in the report. This result does not certify a complete workforce dataset, anonymity, lawful processing,
+safe disclosure, clinical validity, benchmark comparability or Level 2 or Level 3 conformance.</p>
+</blockquote>
+<h2>What is not established</h2>
+<p>A matching metric code is declared identity, not comparability: <code>BenchmarkRelease.measure.scoringDescriptorRef</code> is a single string and
+<code>AggregateReport</code> does not carry the instrument and version pair, so method identity with a MeasurementContext is not proved and is not
+inferred from provenance strings. Population, sampling, time transfer, method, unit and score equivalence, the truth of a declared
+leave-one-out exclusion, quantile construction, source authenticity and privacy assessment are listed as not established in every
+report. The supplied WorkerPseudonym count is not headcount, eligibleN, n or benchmark composition: the bundle is the set of references the
+checks need, not a workforce census, and a period count may legitimately exceed a small demonstrative roster. No cross-period unit
+membership, tenure history, hours conversion, recurrence, treatment effectiveness, disability denominator or lawful benefit entitlement
+is derived from these joins, and no diagnosis or OH report content is needed or accepted to satisfy them.</p>
+</div></article>
+
+<footer><div class="wrap">
+  <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). The specification and registry are CC-BY 4.0.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+</div></footer>
+</body>
+</html>

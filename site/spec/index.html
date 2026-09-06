@@ -11,11 +11,11 @@
 <meta property="og:site_name" content="Open Workplace Health Standard">
 <meta property="og:url" content="https://openworkplacehealth.org/spec/">
 <meta property="og:title" content="The draft specification · OWHS">
-<meta property="og:description" content="The OWHS v0.1 draft specification: read it in full, download the markdown, or take the complete bundle with schemas, codelists, examples and the validator.">
+<meta property="og:description" content="The OWHS v0.2 draft specification: read it in full, download the markdown, or take the complete bundle with schemas, codelists, examples and the validator.">
 <meta name="twitter:card" content="summary">
 <!-- /auto -->
 <title>The draft specification · OWHS</title>
-<meta name="description" content="The OWHS v0.1 draft specification: read it in full, download the markdown, or take the complete bundle with schemas, codelists, examples and the validator.">
+<meta name="description" content="The OWHS v0.2 draft specification: read it in full, download the markdown, or take the complete bundle with schemas, codelists, examples and the validator.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace}
@@ -98,26 +98,34 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 </aside>
 <main>
 <h1>The draft specification</h1>
-<p style="font-family:var(--mono);font-size:13px;color:var(--muted)">OWHS v0.1 draft · prose CC-BY 4.0, schemas and codelists Apache 2.0 · published for review</p>
+<p style="font-family:var(--mono);font-size:13px;color:var(--muted)">OWHS v0.2 draft · prose CC-BY 4.0, schemas and codelists Apache 2.0 · published for review</p>
 <div class="downloads">
   <p><strong>Read it below</strong>, or take it with you:</p>
-  <p><a href="OWHS-v0.2-draft.md">Specification v0.2 as markdown</a> (current: sixteen entity types with executable schemas) · <a href="OWHS-v0.1-draft.md">v0.1 as markdown</a> (archive; the page below renders v0.1) · <a href="owhs-v0.2-bundle.zip">Complete bundle</a> (zip: both specification versions, the entity diagram, versioned JSON schemas with valid and invalid conformance examples, code lists, profiles, the validator and its checkers).</p>
+  <p><a href="OWHS-v0.2-draft.md">Specification as markdown</a> (95 KB) · <a href="owhs-v0.2-bundle.zip">Complete bundle</a> (377 KB zip: specification with its entity diagram, sixteen JSON schemas with valid and invalid conformance examples, 27 versioned codelists, the reference validator, the measurement-bundle and entity-graph checkers, the profile envelope, governance and decision log)</p>
+  <p style="font-size:14px;color:var(--muted)">This is the current draft (v0.2). The previous draft, v0.1, remains available: <a href="OWHS-v0.1-draft.html">page</a>, <a href="OWHS-v0.1-draft.md">markdown</a>, <a href="owhs-v0.1-bundle.zip">bundle</a>.</p>
   <p style="font-size:14px;color:var(--muted)">Tell us where it breaks against your data: <a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a>. A report of a failed mapping is worth as much to us as a successful one.</p>
 </div>
-<h2 class="doc-title" id="open-workplace-health-standard-owhs-v0.1-draft-schema">Open Workplace Health Standard (OWHS), v0.1 draft schema</h2>
+<h2 class="doc-title" id="open-workplace-health-standard-owhs-v0.2-draft-specification">Open Workplace Health Standard (OWHS) v0.2, draft specification</h2>
 <p><strong>Status:</strong> design draft for discussion · UK English · normative artefact is plain JSON Schema (Draft 2020-12) · FHIR profiles are a stated v1.x direction. This document is the schema design responding to the OWHS v0.1 scope draft; it takes the scope draft's six design principles as fixed constraints and does not restate them. Spec text is offered CC-BY 4.0; schemas, examples and validator Apache-2.0.</p>
-<p><strong>What is machine-checked in this draft.</strong> The three worked JSON Schemas meta-validate as Draft 2020-12; each valid example instance passes with zero errors and each invalid instance raises exactly the errors the error map names. Results: <a href="examples/validation_report.json"><code>validation_report.json</code></a>. Everything else (field tables, code lists, profile/identity/conformance prose) is design specification, not executed code.</p>
+<p><strong>What is machine-checked in this draft.</strong> Version 0.2 provides executable Draft 2020-12 schemas for sixteen entity types. The validation report records the schema version and the expected and observed errors for each example. The reference validator checks the declared structure, asserted formats, generic extensions, explicitly supplied profiles and named within-record rules. The measurement-bundle checker adds its documented supplied-context joins. These checks do not establish full Level 2 or Level 3 conformance, external terminology resolution, lawful processing, safe disclosure or scientific validity. The separate entity-graph envelope and G01-G10 relationship checks are documented in the supplied-entity graph guide (docs/entity-graph-validation-v0.2.md).</p>
 <p><strong>Primary-source anchors</strong> (every definitional choice cites one): sickness-absence semantics, 7.5-hour day and reason taxonomy → <strong>ONS, <em>Sickness absence in the UK labour market: 2025</em></strong> [1][10][26]; psychosocial domains → <strong>HSE Management Standards</strong> six domains [19] + MSIT [17]; RTW adjustment vocabulary → <strong>Statement of Fitness for Work (fit note)</strong> "may be fit" categories; statutory benefit entitlement → <strong>Statutory Sick Pay (SSP)</strong>; reasonable adjustments → <strong>Equality Act 2010 s.20</strong>; optional clinical coding → <strong>SNOMED CT</strong> (affiliate-licence caveat, never conformance-required); reserved national definitions → <strong>Workplace Health Intelligence Unit (WHIU)</strong> <code>whiu:</code> namespace [31][34]. No licensed instrument item text is reproduced anywhere in this standard.</p>
 <p><strong>A standing choice, stated once:</strong> where elegance and SME-implementability conflict, this draft chooses SME-implementability and says so at the point of choice (most visibly in the pseudonymisation design, §2f, and the strict-closure schema, §3.1.6).</p>
 <p><strong>An open invitation, stated once:</strong> the two domains where OWHS invents most, return-to-work outcomes and disability participation, are offered as good-faith strawmen, not settled designs. The people best placed to break them are insurer vocational-rehabilitation and analytics teams, occupational-health providers, disability-data specialists, and in time the WHIU itself. Comment on these two constructs is explicitly invited and will be weighted accordingly; both carry reserved <code>whiu:</code> escape hatches, so adopting a better definition is a code-list revision, not a schema break.</p>
 <hr>
 <h2 id="contents">Contents</h2>
 <ol>
-<li><a href="#scope-and-domain-coverage">Scope and domain coverage</a>: what an SME holds, and where each domain goes</li>
-<li>The schema: <a href="#entity-catalogue">entity catalogue + ERD</a> · <a href="#the-privacy-profile-normative">privacy profile</a> · <a href="#field-tables-entity-by-entity">field tables</a> · <a href="#code-lists">code lists</a> · <a href="#json-schemas-and-validation">schemas + validation</a> · <a href="#the-profile-mechanism">profile mechanism</a> · <a href="#identifiers-and-pseudonymisation">identifiers and pseudonymisation</a> · <a href="#conformance-levels">conformance levels</a></li>
-<li><a href="#the-honesty-pass-disputable-decisions-and-open-questions">The honesty pass</a>: the decisions reasonable people would dispute, and the open questions</li>
+<li>Scope and domain coverage (carried from v0.1)</li>
+<li>Entity catalogue</li>
+<li>The privacy profile (normative)</li>
+<li>Field tables, entity by entity (generated from the schemas)</li>
+<li>Code lists</li>
+<li>JSON Schemas and validation</li>
+<li>The profile mechanism</li>
+<li>Identifiers and pseudonymisation</li>
+<li>Conformance levels</li>
+<li>The honesty pass
+Sources</li>
 </ol>
-<hr>
 <h2 id="scope-and-domain-coverage">1. Scope and domain coverage</h2>
 <p>This sweep enumerates the workplace-health data a UK SME could hold or need, beyond the entities already in the scope draft, and routes each domain to one of four homes: <strong>core v0.1</strong> (vendor-neutral, every broker/HRIS/OH provider recognises it), a <strong>named profile</strong> (real but specialised or vendor-shaped), a <strong>reserved entity</strong> (too central to omit, too undefined to model now), or <strong>out of scope</strong> for v0.1. The full routing table is not included in this release; the reasoning and the two genuinely hard calls follow.</p>
 <h3 id="routing-summary">1.1 Routing summary</h3>
@@ -270,7 +278,7 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <p><strong>Net effect on the entity set:</strong> two new core entities (<code>OHEpisode</code>, <code>ReasonableAdjustment</code>), one new RTW outcome value (<code>ill-health-exit</code>), two reserved entities (<code>RiskAssessment</code>, <code>WorkplaceIncident</code>), and two named profiles (<code>owhs-ohsurveillance</code>, <code>owhs-msk</code>) alongside the steward's own profile already anticipated by the scope draft.</p>
 <hr>
 <h2 id="entity-catalogue">2. Entity catalogue</h2>
-<p>Sixteen entities in five clusters, plus two reserved names and one code-list-backed shared entity. New in v0.1 relative to the scope draft: <code>OHEpisode</code>, <code>ReasonableAdjustment</code> (both core), <code>ConstructDomain</code> promoted to an explicit shared entity, and the reserved <code>RiskAssessment</code> / <code>WorkplaceIncident</code>. Cardinalities read "parent : child".</p>
+<p>Sixteen entities in five clusters, plus two reserved names and one code-list-backed shared entity; in v0.2 every one of the sixteen has an executable schema (section 6). New in v0.1 relative to the scope draft: <code>OHEpisode</code>, <code>ReasonableAdjustment</code> (both core), <code>ConstructDomain</code> promoted to an explicit shared entity, and the reserved <code>RiskAssessment</code> / <code>WorkplaceIncident</code>. Cardinalities read "parent : child".</p>
 <h3 id="identity-cluster">Identity cluster</h3>
 <table>
 <thead>
@@ -463,23 +471,23 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>RiskAssessment</code></td>
 <td>Reserved name for HSE-MS/ISO-45003/DSE assessment events.</td>
-<td>Reserved, no fields in v0.1</td>
+<td>Reserved, no fields in v0.1 or v0.2</td>
 </tr>
 <tr>
 <td><code>WorkplaceIncident</code></td>
 <td>Reserved name for accident/RIDDOR records.</td>
-<td>Reserved, no fields in v0.1</td>
+<td>Reserved, no fields in v0.1 or v0.2</td>
 </tr>
 </tbody>
 </table>
 <h3 id="entity-relationship-diagram">Entity-relationship diagram</h3>
 <p>The Mermaid source is <a href="diagrams/owhs_erd_v0.1.mmd"><code>owhs_erd_v0.1.mmd</code></a> (renders natively in GitHub/Markdown); a static render is below. Solid lines are structural references; dotted lines are the aggregation flow into <code>AggregateReport</code>; dashed outlines are reserved names.</p>
-<p><img alt="OWHS v0.1 entity-relationship diagram" src="../owhs-erd-v0.1.svg"></p>
-<p><em>Figure, the OWHS v0.1 entity map. White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; grey boxes are shared definitions; dashed outlines are reserved names.</em></p>
+<p><img alt="OWHS entity-relationship diagram, drawn for v0.1 and unchanged in v0.2" src="../owhs-erd-current.svg"></p>
+<p><em>Figure, the OWHS entity map as drawn for v0.1. Version 0.2 adds no entity and removes none; the field-level references are in the section 4 tables. White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; grey boxes are shared definitions; dashed outlines are reserved names.</em></p>
 <h2 id="the-privacy-profile-normative">3. The privacy profile (normative)</h2>
 <p>Restated here because §2b field tables reference it on every row. The scope draft's P1 to P5 stand; this draft adds the fourth visibility class made necessary by occupational health and adjustments (§1.2).</p>
 <ul>
-<li><strong>P1, no direct identifiers</strong> in an OWHS payload; pseudonymous IDs and banded demographics only. In the three executable schemas, undeclared properties are rejected on the core objects. This rejects separate identifier fields but cannot detect identifiers embedded in permitted string values: an identifier written into a permitted string field, such as a source-system provider name, is structurally valid and no schema keyword detects it. The remaining entity field tables are specifications, not executable schemas. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.</li>
+<li><strong>P1, no direct identifiers</strong> in an OWHS payload; pseudonymous IDs and banded demographics only. All sixteen v0.2 entity types have executable schemas. Closed core objects reject undeclared property names, while extension objects apply the documented recursive named-key restriction. These rules cannot detect identifiers or sensitive meaning hidden in permitted values or aliases. Metadata is not automatically non-personal, and a structural pass is not a privacy-profile assessment. Producers MUST NOT place identifiers in free-text values, and that obligation is part of Level 3.</li>
 <li><strong>P2, aggregation floors:</strong> employer-visible aggregates require n≥5, or n≥10 for severe-distress measures. Below the applicable floor a conformant producer emits suppression metadata instead of the value; it refuses to emit, not merely hides. The enumerated <code>individual-employer</code> fields are exempt under the independent-legal-basis condition below.</li>
 <li><strong>P3, visibility is a field-level property</strong> with four classes: <code>open</code> / <code>aggregate-only</code> / <code>individual-employer</code> / <code>individual-never</code>. All instrument results are <code>individual-never</code> by definition.</li>
 <li><strong>P4, safeguarding-category signals</strong> (bullying, harassment, discrimination, crisis) are excluded from employer-visible outputs entirely, <strong>at any n</strong>.</li>
@@ -489,9 +497,11 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <hr>
 <hr>
 <h2 id="field-tables-entity-by-entity">4. Field tables, entity by entity</h2>
-<p><strong>Privacy classification (four classes).</strong> <code>open</code> = may appear in any output; <code>aggregate-only</code> = employer-visible only through an <code>AggregateReport</code> clearing the n-floor; <code>individual-never</code> = never leaves the producer at individual grain in any output, even to the employer (all instrument results, all safeguarding-category signals); <code>individual-employer</code> = may be held/shown about an identified <em>pseudonym</em> to the employer <strong>only</strong> where an independent legal basis entitles them (Equality Act adjustment duty, a released OH opinion, an RTW plan the worker is party to). <code>individual-employer</code> is the only class exempt from the aggregation floor and every field carrying it is enumerated here and in the privacy profile (§3). Fields marked <code>open</code> are structural/metadata, not personal.</p>
-<p><strong>Types</strong> are JSON Schema types with a semantic note. <code>codelist:&lt;name&gt;@&lt;ver&gt;</code> marks a value drawn from a versioned code list (§2c). "Anchor" is the primary source fixing the field's <em>meaning</em>.</p>
-<h3 id="organisation">Organisation</h3>
+<p>Generated from the sixteen executable v0.2 schemas: a row exists because the schema declares the field, <code>Req</code> is the schema's <code>required</code>, and a code-list column names the pinned list. Privacy classes are carried from the v0.1 tables for the fields that existed there and are not invented for any other field: a field without an explicit class reads <code>not separately assigned; entity restrictions apply</code>, and a nested field shows its nearest assigned parent's class marked as inherited. Anchors are carried from the v0.1 tables or, for fields added or redefined in v0.2, are the schema's description or the stated design choice. Nested objects are shown as <code>parent.child</code>; <code>ext</code> (the extension object keyed by profile namespace, section 7) is present on every entity and omitted from the rows.</p>
+<p>An unassigned field has no separate disclosure permission. The whole record remains subject to its entity boundary and the privacy profile. An <code>open</code> metadata field does not make a linked individual record publishable. A nested field without its own class shows its nearest assigned parent's class, marked as inherited; a nested field under an unassigned parent is itself unassigned.</p>
+<p><strong>Privacy classification (four classes).</strong> <code>open</code> = may appear in any output; <code>aggregate-only</code> = employer-visible only through an <code>AggregateReport</code> clearing the n-floor; <code>individual-never</code> = never leaves the producer at individual grain in any output, even to the employer; <code>individual-employer</code> = may be held or shown about an identified pseudonym to the employer only where an independent legal basis entitles them. A class is a field-level obligation on the producer; the schema does not enforce it.</p>
+<h3 id="organisation-new-in-v0.2">Organisation (new in v0.2)</h3>
+<p>Organisation scope and declared employee-count band. Not a statutory company-size determination, identity verification or disclosure assessment.</p>
 <table>
 <thead>
 <tr>
@@ -500,14 +510,14 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>orgId</code></td>
-<td>string (opaque)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>OWHS internal</td>
@@ -515,38 +525,56 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>companiesHouseNumber</code></td>
 <td>string</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>open</td>
 <td>Companies House</td>
 </tr>
 <tr>
 <td><code>sicCode</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:sic-2007</td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
 <td>open</td>
 <td>ONS SIC 2007 (sector comparability)</td>
 </tr>
 <tr>
+<td><code>sicVersion</code></td>
+<td>const <code>2007</code></td>
+<td>no</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>UK SIC 2007 retained as an edition; ONS also publishes SIC 2026</td>
+</tr>
+<tr>
 <td><code>sizeBand</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:org-size-band@0.1</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:org-size-band@0.1.1</td>
 <td>open</td>
 <td>Companies Act 2006 micro/small/medium bands</td>
 </tr>
 <tr>
+<td><code>sizeBandReferenceDate</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice: the date the band relates to</td>
+</tr>
+<tr>
 <td><code>country</code></td>
-<td>string</td>
-<td>✓</td>
-<td>ISO 3166-1 alpha-2</td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
 <td>open</td>
 <td>UK-first; structure allows extension</td>
 </tr>
 </tbody>
 </table>
-<h3 id="orgunit">OrgUnit</h3>
+<p><code>sicCode</code> and <code>sicVersion</code> require one another; the only permitted version is <code>2007</code>, retained as an edition (section 5).</p>
+<h3 id="orgunit-new-in-v0.2">OrgUnit (new in v0.2)</h3>
+<p>Organisation-scoped unit and declared headcount band. No zero band exists in the pinned vocabulary; unknown or zero is not 1-4. References and hierarchy need supplied-bundle checks.</p>
 <table>
 <thead>
 <tr>
@@ -555,45 +583,54 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>unitId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>OWHS internal</td>
 </tr>
 <tr>
 <td><code>orgId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>→ Organisation</td>
 </tr>
 <tr>
 <td><code>parentUnitId</code></td>
-<td>string (ref)</td>
-<td>○</td>
+<td>string (pattern)</td>
+<td>no</td>
 <td></td>
 <td>open</td>
 <td>self-join</td>
 </tr>
 <tr>
 <td><code>headcountBand</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:headcount-band@0.1</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:headcount-band@0.1.0</td>
 <td>open</td>
 <td>banded, never exact (small-cell control)</td>
 </tr>
+<tr>
+<td><code>headcountReferenceDate</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
 </tbody>
 </table>
-<h3 id="workerpseudonym">WorkerPseudonym</h3>
+<h3 id="workerpseudonym-new-in-v0.2">WorkerPseudonym (new in v0.2)</h3>
+<p>Organisation-scoped pseudonym with optional banded demographics. Syntax does not prove HMAC generation, salt custody, anonymity or permission to disclose demographics.</p>
 <table>
 <thead>
 <tr>
@@ -602,69 +639,63 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>pseudonymId</code></td>
-<td>string (opaque, per-org)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>§2f pseudonymisation design</td>
 </tr>
 <tr>
 <td><code>orgId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>scope boundary</td>
 </tr>
 <tr>
 <td><code>unitId</code></td>
-<td>string (ref)</td>
-<td>○</td>
+<td>string (pattern)</td>
+<td>no</td>
 <td></td>
 <td>open</td>
 <td>→ OrgUnit</td>
 </tr>
 <tr>
 <td><code>ageBand</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:age-band@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:age-band@0.1.0</td>
 <td>aggregate-only</td>
 <td>banded demographic (ONS age groups)</td>
 </tr>
 <tr>
 <td><code>tenureBand</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:tenure-band@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:tenure-band@0.1.0</td>
 <td>aggregate-only</td>
 <td>banded demographic</td>
 </tr>
 <tr>
 <td><code>workPattern</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:work-pattern@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:work-pattern@0.1.0</td>
 <td>aggregate-only</td>
 <td>full/part-time (ONS employment-type dimension)</td>
 </tr>
-<tr>
-<td><strong>Forbidden</strong></td>
-<td></td>
-<td>,</td>
-<td></td>
-<td>,</td>
-<td>name, NI number, email, DOB, address, schema MUST reject (§3 privacy)</td>
-</tr>
 </tbody>
 </table>
+<p>The five forbidden root identifier names (<code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code>, <code>address</code>) fail the closed root; inside <code>ext</code> they fail the recursive named-key rule (section 7). No raw age, birth date, tenure number or person name is carried.</p>
 <h3 id="absenceepisode">AbsenceEpisode</h3>
+<p>Reported sickness-absence episode with versioned reason-category mapping. No direct identifiers.</p>
 <table>
 <thead>
 <tr>
@@ -673,46 +704,46 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>episodeId</code></td>
 <td>string</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>OWHS internal</td>
 </tr>
 <tr>
 <td><code>pseudonymId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>individual-employer</td>
 <td>employer holds absence records lawfully</td>
 </tr>
 <tr>
 <td><code>reasonCode</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:absence-reason@0.1</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:absence-reason@0.2.0.</td>
 <td>aggregate-only</td>
 <td><strong>ONS reason taxonomy</strong> [1]</td>
 </tr>
 <tr>
 <td><code>startDate</code></td>
-<td>string (date)</td>
-<td>✓</td>
+<td>date</td>
+<td>yes</td>
 <td></td>
 <td>individual-employer</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>endDate</code></td>
-<td>string (date)</td>
-<td>○</td>
+<td>date</td>
+<td>no</td>
 <td></td>
 <td>individual-employer</td>
 <td>open episode if absent</td>
@@ -720,7 +751,7 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>workingDaysLost</code></td>
 <td>number</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>aggregate-only</td>
 <td><strong>ONS 7.5-hour working-day unit</strong> [26]</td>
@@ -728,7 +759,7 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>workingHoursLost</code></td>
 <td>number</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>aggregate-only</td>
 <td>ONS hours-based rate basis [1][10]</td>
@@ -736,7 +767,7 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>fitNoteFlag</code></td>
 <td>boolean</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>individual-employer</td>
 <td>fit note issued (Statement of Fitness for Work)</td>
@@ -744,31 +775,55 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>workRelatedFlag</code></td>
 <td>boolean</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>aggregate-only</td>
 <td>work-relatedness (feeds RIDDOR context)</td>
 </tr>
 <tr>
 <td><code>clinicalCauseCode</code></td>
-<td>string</td>
-<td>○</td>
-<td>SNOMED CT (optional ext.)</td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
 <td>individual-never</td>
 <td><strong>OPTIONAL</strong>; affiliate-licence caveat, never conformance-required</td>
 </tr>
 <tr>
 <td><code>sourceProvenance</code></td>
 <td>object</td>
-<td>✓</td>
-<td>codelist:source-type@0.1</td>
+<td>yes</td>
+<td></td>
 <td>open</td>
 <td>HRIS provider / manual</td>
 </tr>
+<tr>
+<td><code>sourceProvenance.sourceType</code></td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:source-type@0.1.0</td>
+<td>inherited: open (from <code>sourceProvenance</code>)</td>
+<td>OWHS record provenance</td>
+</tr>
+<tr>
+<td><code>sourceProvenance.sourceProvider</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>sourceProvenance</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>sourceProvenance.sourceId</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>sourceProvenance</code>)</td>
+<td></td>
+</tr>
 </tbody>
 </table>
-<p><em>Rate semantics:</em> an org sickness-absence rate derived from these episodes uses the ONS definition, "the percentage of working hours lost because of sickness or injury" [1], so it is ONS-comparable.</p>
 <h3 id="returntoworkoutcome">ReturnToWorkOutcome</h3>
+<p>What happened after an absence, including did-not-return and ill-health-exit. No direct identifiers.</p>
 <table>
 <thead>
 <tr>
@@ -777,77 +832,94 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>outcomeId</code></td>
 <td>string</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>OWHS internal</td>
 </tr>
 <tr>
 <td><code>absenceEpisodeId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string</td>
+<td>yes</td>
 <td></td>
 <td>individual-employer</td>
 <td>→ AbsenceEpisode</td>
 </tr>
 <tr>
 <td><code>pseudonymId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>individual-employer</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>outcomeType</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:rtw-outcome@0.1</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:rtw-outcome@0.1.0</td>
 <td>aggregate-only</td>
 <td>full / phased / adjusted / did-not-return / ill-health-exit</td>
 </tr>
 <tr>
 <td><code>adjustmentTypes</code></td>
-<td>array<string></td>
-<td>○</td>
-<td>codelist:rtw-adjustment@0.1</td>
+<td>array of string codes</td>
+<td>no</td>
+<td>codelist:rtw-adjustment@0.1.0</td>
 <td>individual-employer</td>
 <td><strong>fit-note "may be fit" categories</strong></td>
 </tr>
 <tr>
 <td><code>rtwDate</code></td>
-<td>string (date)</td>
-<td>○</td>
+<td>date</td>
+<td>no</td>
 <td></td>
 <td>individual-employer</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>sustainedAt</code></td>
-<td>array<object{checkpointWeeks,status}></td>
-<td>○</td>
-<td>codelist:rtw-checkpoint@0.1</td>
+<td>array of object</td>
+<td>no</td>
+<td>codelist:rtw-sustained-status@0.1.0 (element status; the checkpoint weeks are advisory rtw-checkpoint@0.1.0)</td>
 <td>aggregate-only</td>
 <td>any 1 to 104 weeks; {4,13,26} recommended, <strong>provisional pending <code>whiu:</code></strong></td>
 </tr>
 <tr>
+<td><code>sustainedAt[].checkpointWeeks</code></td>
+<td>integer</td>
+<td>yes</td>
+<td>codelist:rtw-checkpoint@0.1.0</td>
+<td>inherited: aggregate-only (from <code>sustainedAt</code>)</td>
+<td>Founder decision 7 Jul 2026: open integer, not enum. Recommended set {4,13,26} (codelist:rtw-checkpoint@0.1.0); producers SHOULD use the recommended set for comparability. whiu: definitions expected to supersede.</td>
+</tr>
+<tr>
+<td><code>sustainedAt[].status</code></td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:rtw-sustained-status@0.1.0</td>
+<td>inherited: aggregate-only (from <code>sustainedAt</code>)</td>
+<td>closed vocabulary; <code>unknown</code> means the checkpoint was not followed up, which is not a relapse</td>
+</tr>
+<tr>
 <td><code>whiuOutcomeCode</code></td>
-<td>string</td>
-<td>○</td>
-<td>reserved <code>whiu:</code> namespace</td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
 <td>aggregate-only</td>
 <td>reserved for WHIU crosswalk</td>
 </tr>
 </tbody>
 </table>
-<h3 id="ohepisode-new-core">OHEpisode  (new, core)</h3>
+<h3 id="ohepisode">OHEpisode</h3>
+<p>Management-facing envelope of an OH interaction. Carries NO clinical content.</p>
 <table>
 <thead>
 <tr>
@@ -856,102 +928,94 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>ohEpisodeId</code></td>
 <td>string</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>OWHS internal</td>
 </tr>
 <tr>
 <td><code>pseudonymId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>individual-employer</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>referralReason</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:oh-referral-reason@0.1</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:oh-referral-reason@0.1.0</td>
 <td>individual-employer</td>
 <td>management-facing reason, not diagnosis</td>
 </tr>
 <tr>
 <td><code>referralDate</code></td>
-<td>string (date)</td>
-<td>✓</td>
+<td>date</td>
+<td>yes</td>
 <td></td>
 <td>individual-employer</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>assessmentType</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:oh-assessment-type@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:oh-assessment-type@0.1.0</td>
 <td>individual-employer</td>
 <td>management referral / health surveillance / DSE / pre-placement</td>
 </tr>
 <tr>
 <td><code>assessmentDate</code></td>
-<td>string (date)</td>
-<td>○</td>
+<td>date</td>
+<td>no</td>
 <td></td>
 <td>individual-employer</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>fitnessOpinion</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:fitness-opinion@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:fitness-opinion@0.1.0</td>
 <td>individual-employer</td>
 <td><strong>fit / unfit / fit-with-adjustments</strong> (the released opinion, per AMRA 1988 / GMC)</td>
 </tr>
 <tr>
 <td><code>recommendationTypes</code></td>
-<td>array<string></td>
-<td>○</td>
-<td>codelist:rtw-adjustment@0.1</td>
+<td>array of string codes</td>
+<td>no</td>
+<td>codelist:rtw-adjustment@0.1.0</td>
 <td>individual-employer</td>
 <td>recommendation <em>types</em> only, shared with RTW adjustments</td>
 </tr>
 <tr>
 <td><code>opinionReleasedToEmployer</code></td>
 <td>boolean</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>consent flag; MUST be true for <code>fitnessOpinion</code> to be present</td>
 </tr>
 <tr>
-<td><code>clinicalCauseCode</code></td>
-<td>(never)</td>
-<td>✗</td>
-<td></td>
-<td>,</td>
-<td><strong>schema MUST reject</strong>, no diagnosis/history/report text in OWHS</td>
-</tr>
-<tr>
 <td><code>linkedAbsenceEpisodeId</code></td>
-<td>string (ref)</td>
-<td>○</td>
+<td>string</td>
+<td>no</td>
 <td></td>
 <td>individual-employer</td>
 <td>→ AbsenceEpisode</td>
 </tr>
 </tbody>
 </table>
-<p><em>Boundary rule (normative):</em> <code>OHEpisode</code> carries no clinical content. <code>fitnessOpinion</code> MUST be absent unless <code>opinionReleasedToEmployer</code> is <code>true</code>. Any diagnosis, symptom, test-result or free-text report field is a conformance error.</p>
-<h3 id="reasonableadjustment-new-core">ReasonableAdjustment  (new, core)</h3>
+<h3 id="reasonableadjustment-new-in-v0.2">ReasonableAdjustment (new in v0.2)</h3>
+<p>Management-facing adjustment record, with sensitive disability flag restricted to the producer. Omitted endDate means no end date is recorded; null is not a date. A recorded category does not decide any legal duty or lawful disclosure.</p>
 <table>
 <thead>
 <tr>
@@ -960,62 +1024,70 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>adjustmentId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>OWHS internal</td>
 </tr>
 <tr>
+<td><code>orgId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
 <td><code>pseudonymId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>individual-employer</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>adjustmentCategory</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:adjustment-category@0.1</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:adjustment-category@0.1.0</td>
 <td>individual-employer</td>
 <td><strong>Equality Act 2010 s.20</strong> duty; superset of fit-note categories</td>
 </tr>
 <tr>
 <td><code>status</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:adjustment-status@0.1</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:adjustment-status@0.1.0</td>
 <td>aggregate-only</td>
 <td>proposed / in-place / declined / ended</td>
 </tr>
 <tr>
 <td><code>startDate</code></td>
-<td>string (date)</td>
-<td>○</td>
+<td>date</td>
+<td>no</td>
 <td></td>
 <td>individual-employer</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>endDate</code></td>
-<td>string (date)</td>
-<td>○</td>
+<td>date</td>
+<td>no</td>
 <td></td>
 <td>individual-employer</td>
-<td>standing adjustment if null</td>
+<td>Omit when no end date is recorded; null is invalid. Use status for adjustment state.</td>
 </tr>
 <tr>
 <td><code>sourceOhEpisodeId</code></td>
-<td>string (ref)</td>
-<td>○</td>
+<td>string (pattern)</td>
+<td>no</td>
 <td></td>
 <td>individual-employer</td>
 <td>→ OHEpisode (if OH-recommended)</td>
@@ -1023,14 +1095,16 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>disabilityRelated</code></td>
 <td>boolean</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>individual-never</td>
 <td>whether tied to a disability, sensitive; aggregate via DisabilityParticipation only</td>
 </tr>
 </tbody>
 </table>
+<p>Omit <code>endDate</code> when no end date is recorded; null is not a date. An omitted end date does not by itself show that the adjustment is in place; <code>status</code> is the separate record of that.</p>
 <h3 id="wellbeingobservation">WellbeingObservation</h3>
+<p>One answer to one survey item on one occasion, any vendor. Individual-never at this grain: it leaves an organisation only through an AggregateReport.</p>
 <table>
 <thead>
 <tr>
@@ -1039,93 +1113,134 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>observationId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
+<td>Primary identifier, unique within the organisation.</td>
+</tr>
+<tr>
+<td><code>orgId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Organisation scope. Metadata remains subject to P1.</td>
 </tr>
 <tr>
 <td><code>pseudonymId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>individual-never</td>
 <td>survey answers never individually employer-visible</td>
 </tr>
 <tr>
+<td><code>contextId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Same-organisation MeasurementContext reference; one immutable scoring and interpretation descriptor.</td>
+</tr>
+<tr>
 <td><code>itemId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>individual-never</td>
 <td>item identifier only, <strong>never item text</strong> (licensing)</td>
 </tr>
 <tr>
+<td><code>itemVersion</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Version of this item and its response options.</td>
+</tr>
+<tr>
 <td><code>constructCode</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:construct-domain@0.1</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:construct-domain@0.1.0</td>
 <td>aggregate-only</td>
 <td>shared construct list</td>
 </tr>
 <tr>
 <td><code>nativeValue</code></td>
 <td>number</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>individual-never</td>
 <td>vendor scale</td>
 </tr>
 <tr>
 <td><code>normalisedValue</code></td>
-<td>number (0 to 100)</td>
-<td>○</td>
+<td>number</td>
+<td>no</td>
 <td></td>
 <td>aggregate-only</td>
 <td>comparability</td>
 </tr>
 <tr>
 <td><code>occasionTs</code></td>
-<td>string (date-time)</td>
-<td>✓</td>
+<td>date-time</td>
+<td>yes</td>
 <td></td>
 <td>individual-never</td>
-<td></td>
+<td>Observation occasion, with an asserted time zone.</td>
 </tr>
 <tr>
 <td><code>collectionChannel</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:collection-channel@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:collection-channel@0.1.0</td>
 <td>open</td>
-<td></td>
-</tr>
-<tr>
-<td><code>samplingDesign</code></td>
-<td>object</td>
-<td>○</td>
-<td>codelist:sampling-design@0.1</td>
-<td>open</td>
-<td>complete / rotating-subset / adaptive + schedule ref</td>
+<td>How the answer was collected.</td>
 </tr>
 <tr>
 <td><code>safeguardingCategory</code></td>
 <td>boolean</td>
-<td>○</td>
+<td>yes</td>
 <td></td>
 <td>individual-never</td>
 <td>if true, <strong>excluded from all employer output at any n</strong> (§3 P4)</td>
 </tr>
+<tr>
+<td><code>samplingDesign</code></td>
+<td>object</td>
+<td>no</td>
+<td></td>
+<td>open</td>
+<td>complete / rotating-subset / adaptive + schedule ref</td>
+</tr>
+<tr>
+<td><code>samplingDesign.design</code></td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:sampling-design@0.1.0</td>
+<td>inherited: open (from <code>samplingDesign</code>)</td>
+<td>Sampling design under which this item was offered.</td>
+</tr>
+<tr>
+<td><code>samplingDesign.scheduleRef</code></td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>samplingDesign</code>)</td>
+<td>Schedule reference, required for rotating-subset and adaptive designs.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="instrumentadministration">InstrumentAdministration</h3>
+<p>One completed, partial or abandoned administration of a validated instrument: scores and bands, never item text. Individual-never at this grain. The schema does not grant a licence to administer the instrument.</p>
 <table>
 <thead>
 <tr>
@@ -1134,78 +1249,118 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>administrationId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
+<td>Primary identifier, unique within the organisation.</td>
+</tr>
+<tr>
+<td><code>orgId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Organisation scope.</td>
 </tr>
 <tr>
 <td><code>pseudonymId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>individual-never</td>
 <td>instrument results are individual-never by definition (§3 P3)</td>
 </tr>
 <tr>
+<td><code>contextId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Same-organisation MeasurementContext reference.</td>
+</tr>
+<tr>
+<td><code>instrumentId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Stable identifier of the exact instrument or form. Not its registry grade.</td>
+</tr>
+<tr>
 <td><code>instrumentCitation</code></td>
 <td>string</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td><strong>citation + version only, never item text</strong></td>
 </tr>
 <tr>
 <td><code>instrumentVersion</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
+<td>Form or version, separate from any dataset version.</td>
+</tr>
+<tr>
+<td><code>occasionTs</code></td>
+<td>date-time</td>
+<td>yes</td>
 <td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Administration occasion, with an asserted time zone.</td>
+</tr>
+<tr>
+<td><code>constructCodes</code></td>
+<td>array of string codes</td>
+<td>yes</td>
+<td>codelist:construct-domain@0.1.0</td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Constructs the instrument measures; a multidimensional instrument lists several without inventing one total construct.</td>
+</tr>
+<tr>
+<td><code>completionStatus</code></td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:completion-status@0.1.0</td>
+<td>open</td>
+<td>complete, partial or abandoned.</td>
 </tr>
 <tr>
 <td><code>totalScore</code></td>
 <td>number</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>individual-never</td>
-<td></td>
+<td>Total score, where the instrument defines one.</td>
 </tr>
 <tr>
 <td><code>subscaleScores</code></td>
 <td>object</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>individual-never</td>
-<td></td>
+<td>Subscale identifier to finite score.</td>
 </tr>
 <tr>
 <td><code>band</code></td>
-<td>string</td>
-<td>○</td>
-<td>(per instrument's published cut-points)</td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
 <td>aggregate-only</td>
 <td>producer's published banding</td>
 </tr>
 <tr>
-<td><code>completionStatus</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:completion-status@0.1</td>
-<td>open</td>
-<td></td>
-</tr>
-<tr>
 <td><code>aboveThresholdFlag</code></td>
 <td>boolean</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>individual-never</td>
 <td>severe-distress → <strong>n≥10</strong> aggregation floor (§3 P2)</td>
@@ -1213,6 +1368,7 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 </tbody>
 </table>
 <h3 id="measurementcontext">MeasurementContext</h3>
+<p>What makes scores comparable: the producing system, the scoring descriptor and its provenance, the data window it describes, and the stated limitations. Immutable: a changed descriptor is a new context.</p>
 <table>
 <thead>
 <tr>
@@ -1221,45 +1377,326 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>contextId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
+<td>Primary identifier, unique within the organisation.</td>
+</tr>
+<tr>
+<td><code>orgId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Organisation scope.</td>
 </tr>
 <tr>
 <td><code>producingSystem</code></td>
 <td>string</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>system + version</td>
 </tr>
 <tr>
+<td><code>knownLimitations</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>open</td>
+<td>Stated limitations. 'Not assessed' means exactly that.</td>
+</tr>
+<tr>
+<td><code>recallPeriod</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>The instrument's recall period where its source specifies one, for example 'preceding two weeks'. Distinct from observationWindow.</td>
+</tr>
+<tr>
 <td><code>scoringDescriptor</code></td>
 <td>object</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>aggregation method / estimation family / window (open descriptor, no method enum)</td>
 </tr>
 <tr>
-<td><code>knownLimitations</code></td>
+<td><code>scoringDescriptor.descriptorId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Identifier of this descriptor.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.descriptorVersion</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Version of this descriptor.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.method</code></td>
 <td>string</td>
-<td>○</td>
+<td>yes</td>
 <td></td>
-<td>open</td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Scoring method, in the producer's words.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.estimand</code></td>
+<td>string</td>
+<td>yes</td>
 <td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>What the score estimates: a period mean, a modelled current state, a rolling average with its window, and so on.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.observationWindow</code></td>
+<td>object</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>The data the descriptor represents. Not the instrument's recall period.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.observationWindow.start</code></td>
+<td>date-time</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.observationWindow.end</code></td>
+<td>date-time</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.sourceRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.scoreUnit</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Unit of the score.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.higherScoreMeaning</code></td>
+<td>string (code)</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.nativeScale</code></td>
+<td>object</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Bounds of the native response scale.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.nativeScale.min</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.nativeScale.max</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.normalisation</code></td>
+<td>object</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Rule that maps nativeValue to 0..100. Required by any observation carrying normalisedValue.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.normalisation.id</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Identifier of the rule or table.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.normalisation.version</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Version of the rule or table.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.normalisation.sourceRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.normalisation.description</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Optional description.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.banding</code></td>
+<td>object</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Banding table. Required by any administration carrying band.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.banding.id</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Identifier of the rule or table.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.banding.version</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Version of the rule or table.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.banding.sourceRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.banding.description</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Optional description.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.threshold</code></td>
+<td>object</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Threshold rule. Required by any administration carrying aboveThresholdFlag.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.threshold.id</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Identifier of the rule or table.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.threshold.version</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Version of the rule or table.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.threshold.sourceRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.threshold.description</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Optional description.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.missingResponseRule</code></td>
+<td>object</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Scoring rule for partial administrations. Required by any partial administration carrying scores.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.missingResponseRule.id</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Identifier of the rule or table.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.missingResponseRule.version</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Version of the rule or table.</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.missingResponseRule.sourceRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>scoringDescriptor.missingResponseRule.description</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>scoringDescriptor</code>)</td>
+<td>Optional description.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="benefitentitlement">BenefitEntitlement</h3>
+<h3 id="benefitentitlement-new-in-v0.2">BenefitEntitlement (new in v0.2)</h3>
+<p>Declared statutory scheme or commercial workforce benefit. No eligibility, rate or legal entitlement is computed. Statutory descriptions are dated and sourced; omitted optional terms are not zero.</p>
 <table>
 <thead>
 <tr>
@@ -1268,54 +1705,142 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>entitlementId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>orgId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>layer</code></td>
-<td>string</td>
-<td>✓</td>
-<td>{statutory, commercial}</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:benefit-layer@0.1.0</td>
 <td>open</td>
 <td>the statutory/commercial split</td>
 </tr>
 <tr>
 <td><code>statutory</code></td>
-<td>object{scheme,eligibility,waitingDays,rate,durationWeeks}</td>
-<td>○</td>
+<td>object</td>
+<td>no</td>
 <td></td>
 <td>open</td>
 <td><strong>SSP</strong> entitlement semantics (statutory layer)</td>
 </tr>
 <tr>
-<td><code>productCategory</code></td>
+<td><code>statutory.scheme</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>statutory.eligibility</code></td>
 <td>string</td>
-<td>○</td>
-<td>codelist:benefit-product@0.1</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>statutory.waitingDays</code></td>
+<td>integer</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>statutory.rate</code></td>
+<td>object</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>statutory.rate.amount</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>statutory.rate.currency</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td>ISO 4217 code syntax only; membership is not resolved.</td>
+</tr>
+<tr>
+<td><code>statutory.rate.basis</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td>Rate period or other calculation basis, for example per week. A variable statutory formula must be stated in description, not replaced with a fictitious fixed rate.</td>
+</tr>
+<tr>
+<td><code>statutory.rate.description</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>statutory.durationWeeks</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>statutory.sourceRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>statutory.asOfDate</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>statutory</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>productCategory</code></td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:benefit-product@0.1.0</td>
 <td>open</td>
 <td>UK-market vocabulary (PMI/GIP/GLA/cash plan/EAP/pension)</td>
 </tr>
 <tr>
 <td><code>serviceName</code></td>
 <td>string</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>open</td>
 <td>commercial layer</td>
@@ -1323,38 +1848,40 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>provider</code></td>
 <td>string</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>open</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>accessRoute</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:access-route@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:access-route@0.1.0</td>
 <td>open</td>
 <td>self-referral / manager / GP / OH</td>
 </tr>
 <tr>
 <td><code>eligibilityScope</code></td>
 <td>string</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>open</td>
 <td>who is covered</td>
 </tr>
 <tr>
 <td><code>healthDomainTags</code></td>
-<td>array<string></td>
-<td>○</td>
-<td>codelist:construct-domain@0.1</td>
+<td>array of string codes</td>
+<td>no</td>
+<td>codelist:construct-domain@0.1.0</td>
 <td>open</td>
 <td>maps services to the same constructs measurement uses</td>
 </tr>
 </tbody>
 </table>
-<h3 id="benefitutilisation">BenefitUtilisation</h3>
+<p>A <code>statutory</code> layer requires the closed <code>statutory</code> object and forbids <code>productCategory</code>; a <code>commercial</code> layer requires <code>productCategory</code> and forbids <code>statutory</code>. Within <code>statutory</code>, <code>waitingDays</code>, <code>rate</code> and <code>durationWeeks</code> are optional: absence of a term is not zero, and a supplied fixed amount is not proof of legal entitlement.</p>
+<h3 id="benefitutilisation-new-in-v0.2">BenefitUtilisation (new in v0.2)</h3>
+<p>Producer-held aggregate event counts. This is not an employer-output record: use an AggregateReport and the privacy profile for disclosure. Counts below a reporting floor can be structurally valid here. Claim contents and individual attendance are excluded.</p>
 <table>
 <thead>
 <tr>
@@ -1363,38 +1890,54 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>utilisationId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>orgId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>entitlementId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
-<td><code>periodStart</code> / <code>periodEnd</code></td>
-<td>string (date)</td>
-<td>✓</td>
+<td><code>periodStart</code></td>
+<td>date</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>periodEnd</code></td>
+<td>date</td>
+<td>yes</td>
 <td></td>
+<td>open</td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>usageCount</code></td>
 <td>integer</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>aggregate-only</td>
 <td>counts only, <strong>never individual claims</strong></td>
@@ -1402,23 +1945,24 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>claimCount</code></td>
 <td>integer</td>
-<td>○</td>
+<td>no</td>
 <td></td>
 <td>aggregate-only</td>
-<td></td>
+<td>Claim events, never an individual claim record. Repeated claims may exceed n.</td>
 </tr>
 <tr>
 <td><code>n</code></td>
 <td>integer</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
-<td>denominator for the floor check</td>
+<td>distinct people represented across the recorded service-use and claim events in this period; not the whole eligible workforce and not automatically the denominator for either event category separately; a released metric requires its own distinct-person count and completion metadata in AggregateReport</td>
 </tr>
 </tbody>
 </table>
-<h3 id="disabilityparticipation-reserved-minimal">DisabilityParticipation  (reserved-minimal)</h3>
-<p><strong>Status: placeholder, expected to be replaced by the WHIU's own construct.</strong> The current shape is deliberately unsuitable for anything beyond coarse org-level benchmarking: it cannot express cohort comparisons (for example disabled vs non-disabled RTW rates or absence patterns) or trajectories, and disability-as-a-band is a knowing simplification of a complex dimension (legal status, self-identification, fluctuating conditions). That poverty is the point: any richer structure invented now would be overwritten by the WHIU's definition and would meanwhile normalise employer-held disability data ahead of national guidance.</p>
+<p>BenefitUtilisation is a producer-held aggregate input. Its event counts may exceed the number of people because a person may use a service repeatedly. Values below a reporting floor may be recorded internally. This entity does not by itself establish permission to disclose counts, service attendance or claims; employer-visible numerical results must use AggregateReport and satisfy the privacy profile. No individual claim record is permitted.</p>
+<h3 id="disabilityparticipation-new-in-v0.2">DisabilityParticipation (new in v0.2)</h3>
+<p>Reserved-minimal producer-held organisation aggregate. No disability measure or national definition is invented. The shape has no respondent denominator or suppression metadata: this schema cannot establish the n&gt;=10 disclosure rule and does not authorise employer or benchmark release. Zero, unknown and non-disclosure must not be recoded into 1-4.</p>
 <table>
 <thead>
 <tr>
@@ -1427,22 +1971,22 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>reportId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
-<td></td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>orgId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>org level only</td>
@@ -1450,30 +1994,48 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td><code>period</code></td>
 <td>string</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
+<td>Human-readable period label; periodStart and periodEnd define the inclusive dates.</td>
+</tr>
+<tr>
+<td><code>periodStart</code></td>
+<td>date</td>
+<td>yes</td>
 <td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice: inclusive reporting dates</td>
+</tr>
+<tr>
+<td><code>periodEnd</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice: inclusive reporting dates</td>
 </tr>
 <tr>
 <td><code>disabledHeadcountBand</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:headcount-band@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:headcount-band@0.1.0</td>
 <td>aggregate-only</td>
 <td><strong>n≥10</strong> floor; banded, minimal until <code>whiu:</code> defines the measure</td>
 </tr>
 <tr>
 <td><code>whiuMeasureCode</code></td>
-<td>string</td>
-<td>○</td>
-<td>reserved <code>whiu:</code></td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
 <td>aggregate-only</td>
 <td>reserved</td>
 </tr>
 </tbody>
 </table>
+<p>The executable schema validates this reserved-minimal record's structure and reporting dates. It does not contain a respondent denominator or suppression metadata and cannot verify the n&gt;=10 disclosure requirement. A valid instance is not an employer-output or benchmark-release approval. Missing, zero and non-disclosure must not be recoded into an existing positive headcount band. Publication requires a governed measure definition and a release mechanism that can establish the applicable privacy conditions; neither is supplied by this placeholder.</p>
 <h3 id="aggregatereport">AggregateReport</h3>
+<p>Employer-visible aggregate results and their suppression declarations. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).</p>
 <table>
 <thead>
 <tr>
@@ -1482,217 +2044,585 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <th>Req</th>
 <th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>reportId</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
+<td>Primary identifier, unique within the organisation.</td>
+</tr>
+<tr>
+<td><code>orgId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Organisation scope.</td>
 </tr>
 <tr>
 <td><code>level</code></td>
-<td>string</td>
-<td>✓</td>
-<td>{org, unit}</td>
-<td>open</td>
+<td>string (code)</td>
+<td>yes</td>
 <td></td>
+<td>open</td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>unitId</code></td>
-<td>string (ref)</td>
-<td>○</td>
+<td>string (pattern)</td>
+<td>no</td>
 <td></td>
 <td>open</td>
+<td>OrgUnit reference; required at unit level, forbidden at org level.</td>
+</tr>
+<tr>
+<td><code>periodStart</code></td>
+<td>date</td>
+<td>yes</td>
 <td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice: inclusive reporting dates</td>
+</tr>
+<tr>
+<td><code>periodEnd</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice: inclusive reporting dates</td>
 </tr>
 <tr>
 <td><code>n</code></td>
 <td>integer</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>respondent count</td>
 </tr>
 <tr>
+<td><code>observationCount</code></td>
+<td>integer</td>
+<td>no</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Responses underlying the estimate; may exceed n with repeated observations.</td>
+</tr>
+<tr>
 <td><code>headcount</code></td>
 <td>integer</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>denominator</td>
 </tr>
 <tr>
+<td><code>eligibleN</code></td>
+<td>integer</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Distinct people eligible or offered this metric in the window.</td>
+</tr>
+<tr>
 <td><code>completionRate</code></td>
-<td>number</td>
-<td>✓</td>
+<td>number/null</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td><strong>P5</strong> completeness travels with the aggregate</td>
 </tr>
 <tr>
 <td><code>metricCode</code></td>
-<td>string</td>
-<td>✓</td>
-<td>codelist:construct-domain@0.1 / metric</td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
 <td>open</td>
 <td>what is reported</td>
 </tr>
 <tr>
+<td><code>measureKind</code></td>
+<td>string (code)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Source grain, not a reliability claim.</td>
+</tr>
+<tr>
+<td><code>releaseCategory</code></td>
+<td>string (code)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS P2/P4 declared category</td>
+</tr>
+<tr>
 <td><code>value</code></td>
 <td>number</td>
-<td>✓ unsuppressed</td>
+<td>no</td>
 <td></td>
 <td>open (post-floor)</td>
 <td>the aggregate value; <strong>required when <code>suppressed:false</code>, and MUST be absent when <code>suppressed:true</code></strong></td>
 </tr>
 <tr>
 <td><code>interval</code></td>
-<td>object{low,high}</td>
-<td>○</td>
+<td>object</td>
+<td>no</td>
 <td></td>
 <td>open</td>
 <td>uncertainty; MUST be absent when <code>suppressed:true</code>, since an interval discloses the suppressed value to within its width</td>
 </tr>
 <tr>
+<td><code>interval.low</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>interval</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>interval.high</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>interval</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>interval.level</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>interval</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>interval.method</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>interval</code>)</td>
+<td>Interval method.</td>
+</tr>
+<tr>
+<td><code>interval.sourceRef</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>interval</code>)</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
 <td><code>suppressed</code></td>
 <td>boolean</td>
-<td>✓</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td><strong>P5</strong> whether withheld</td>
 </tr>
 <tr>
 <td><code>suppressionReason</code></td>
-<td>string</td>
-<td>○</td>
-<td>codelist:suppression-reason@0.1</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:suppression-reason@0.1.0</td>
 <td>open</td>
 <td>below-floor / safeguarding / low-completion</td>
 </tr>
 <tr>
 <td><code>contextId</code></td>
-<td>string (ref)</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
 <td>open</td>
 <td>→ MeasurementContext</td>
 </tr>
+<tr>
+<td><code>benchmarkRef</code></td>
+<td>object</td>
+<td>no</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>Reference to a comparison release. No implied score equivalence. Not resolved by the core validator.</td>
+</tr>
+<tr>
+<td><code>benchmarkRef.benchmarkId</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>BenchmarkRelease identifier.</td>
+</tr>
+<tr>
+<td><code>benchmarkRef.releaseVersion</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>benchmarkRef.sourceRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
 </tbody>
 </table>
-<p><strong>Erratum, 4 September 2026.</strong> As first published, this table marked <code>value</code> unconditionally required while §9 required a producer below an aggregation floor to set <code>suppressed:true</code> and not emit the value. The two could not both be satisfied, so no conformant suppressed report could exist. <code>value</code> is required when <code>suppressed</code> is false and must be absent when it is true, as the table now states. This corrects a contradiction in the specification; it does not change what a producer below a floor was always required to do.</p>
-<h3 id="benchmarkrelease">BenchmarkRelease</h3>
+<h3 id="benchmarkrelease-new-in-v0.2">BenchmarkRelease (new in v0.2)</h3>
+<p>One versioned comparison distribution for one declared metric, scoring rule, population and data period. Sample composition and exclusion are declarations, not verified truth. Percentiles do not establish representativeness, clinical thresholds, anonymity or comparability with a different measure.</p>
 <table>
 <thead>
 <tr>
 <th>Field</th>
 <th>Type</th>
 <th>Req</th>
+<th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>benchmarkId</code></td>
-<td>string</td>
-<td>✓</td>
-<td>open</td>
+<td>string (pattern)</td>
+<td>yes</td>
 <td></td>
+<td>open</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>releaseVersion</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
 </tr>
 <tr>
 <td><code>composition</code></td>
-<td>object{orgCount,sectors,sizeBands,sampleSizes}</td>
-<td>✓</td>
+<td>object</td>
+<td>yes</td>
+<td></td>
 <td>open</td>
 <td>composition disclosure</td>
 </tr>
 <tr>
+<td><code>composition.orgCount</code></td>
+<td>integer</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>composition</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>composition.sectors</code></td>
+<td>array of patterned strings</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>composition</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>composition.sicVersion</code></td>
+<td>const <code>2007</code></td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>composition</code>)</td>
+<td>UK SIC 2007 retained as an edition; ONS also publishes SIC 2026</td>
+</tr>
+<tr>
+<td><code>composition.sizeBands</code></td>
+<td>array of string codes</td>
+<td>yes</td>
+<td>codelist:org-size-band@0.1.1</td>
+<td>inherited: open (from <code>composition</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>composition.sampleSizes</code></td>
+<td>object</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>composition</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>composition.sampleSizes.people</code></td>
+<td>integer</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>composition</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>composition.sampleSizes.observations</code></td>
+<td>integer</td>
+<td>no</td>
+<td></td>
+<td>inherited: open (from <code>composition</code>)</td>
+<td></td>
+</tr>
+<tr>
 <td><code>percentiles</code></td>
 <td>object</td>
-<td>✓</td>
+<td>yes</td>
+<td></td>
 <td>open</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>percentiles.method</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>percentiles</code>)</td>
+<td>Published quantile algorithm, weighting and handling of ties/missing values. No universal quantile algorithm is presumed.</td>
+</tr>
+<tr>
+<td><code>percentiles.values</code></td>
+<td>array of object</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>percentiles</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>percentiles.values[].probability</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>percentiles</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>percentiles.values[].value</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>inherited: open (from <code>percentiles</code>)</td>
 <td></td>
 </tr>
 <tr>
 <td><code>leaveOneOut</code></td>
 <td>boolean</td>
-<td>✓</td>
+<td>yes</td>
+<td></td>
 <td>open</td>
 <td>self-comparison honesty</td>
 </tr>
 <tr>
-<td><code>validFrom</code> / <code>validTo</code></td>
-<td>string (date)</td>
-<td>✓</td>
+<td><code>excludedOrgId</code></td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice: required iff leaveOneOut</td>
+</tr>
+<tr>
+<td><code>validFrom</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
+<td>open</td>
+<td>validity window</td>
+</tr>
+<tr>
+<td><code>validTo</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
 <td>open</td>
 <td>validity window</td>
 </tr>
 <tr>
 <td><code>source</code></td>
 <td>string</td>
-<td>✓</td>
-<td>open</td>
+<td>yes</td>
 <td></td>
+<td>open</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>dataPeriodStart</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>dataPeriodEnd</code></td>
+<td>date</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>measure</code></td>
+<td>object</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice: one metric and scoring rule per release</td>
+</tr>
+<tr>
+<td><code>measure.metricCode</code></td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td></td>
+</tr>
+<tr>
+<td><code>measure.instrumentId</code></td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td></td>
+</tr>
+<tr>
+<td><code>measure.instrumentVersion</code></td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td></td>
+</tr>
+<tr>
+<td><code>measure.scoreUnit</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td></td>
+</tr>
+<tr>
+<td><code>measure.scoringDescriptorRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td></td>
+</tr>
+<tr>
+<td><code>population</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>samplingMethod</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>knownLimitations</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
+<tr>
+<td><code>releaseCategory</code></td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:release-category@0.1.0</td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS P2/P4 declared category</td>
 </tr>
 </tbody>
 </table>
-<h3 id="crosswalk">Crosswalk</h3>
+<p>A benchmark release identifies one metric, scoring rule, population and data period. Its sample sizes, composition, exclusion and quantiles are producer declarations. The validator checks their stated structure and internal consistency; it does not reconstruct the data, verify who was excluded, establish representativeness, validate clinical cut-points or prove that a recipient's measure is comparable. A leave-one-out release names the excluded organisation. Sharing a metric identifier or a numeric range does not establish measurement equivalence. Disclosure review, including composition and repeated-release risks, remains necessary.</p>
+<h3 id="crosswalk-new-in-v0.2">Crosswalk (new in v0.2)</h3>
+<p>Versioned, sourced mapping assertions. At least one target is required; construct codes remain the shared vocabulary, not extra person-level entities.</p>
 <table>
 <thead>
 <tr>
 <th>Field</th>
 <th>Type</th>
 <th>Req</th>
+<th>Code list</th>
 <th>Privacy</th>
-<th>Anchor</th>
+<th>Anchor or description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>constructCode</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (code)</td>
+<td>yes</td>
+<td>codelist:construct-domain@0.1.0</td>
 <td>open</td>
 <td>codelist:construct-domain</td>
 </tr>
 <tr>
 <td><code>hseDomain</code></td>
-<td>string</td>
-<td>○</td>
+<td>string (code)</td>
+<td>no</td>
+<td>codelist:hse-management-domain@0.1.0</td>
 <td>open</td>
 <td><strong>HSE MS six domains</strong> [19]</td>
 </tr>
 <tr>
 <td><code>iso45003Clause</code></td>
-<td>string</td>
-<td>○</td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
 <td>open</td>
 <td>ISO 45003 hazard taxonomy</td>
 </tr>
 <tr>
+<td><code>iso45003Edition</code></td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>ISO 45003 edition being mapped; ISO text is referenced, not reproduced</td>
+</tr>
+<tr>
 <td><code>whiuCode</code></td>
-<td>string</td>
-<td>○</td>
+<td>string (pattern)</td>
+<td>no</td>
+<td></td>
 <td>open</td>
 <td>reserved <code>whiu:</code></td>
 </tr>
 <tr>
 <td><code>crosswalkVersion</code></td>
-<td>string</td>
-<td>✓</td>
+<td>string (pattern)</td>
+<td>yes</td>
+<td></td>
 <td>open</td>
 <td>versioned independently of the spec</td>
 </tr>
+<tr>
+<td><code>sourceRef</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>not separately assigned; entity restrictions apply</td>
+<td>OWHS v0.2 design choice</td>
+</tr>
 </tbody>
 </table>
+<p>At least one of <code>hseDomain</code>, <code>iso45003Clause</code> and <code>whiuCode</code> is required; <code>iso45003Clause</code> and <code>iso45003Edition</code> require one another. Clause syntax is not clause existence or mapping validity; WHIU syntax is not resolved terminology.</p>
 <hr>
 <h2 id="code-lists">5. Code lists</h2>
-<p>Every list is a standalone JSON file with its own <code>version</code> (semver), independent of the spec version, registered in <a href="codelists/_registry.json"><code>_registry.json</code></a>. Schemas pin a list as <code>name@version</code>, so a code list can add values (minor bump) without a spec release. Files: every list is in the download bundle (<code>owhs-v0.1-bundle.zip</code>) under <code>codelists/</code>.</p>
+<p>Every list is a standalone JSON file with its own <code>version</code> (semver), independent of the spec version, registered in <a href="codelists/_registry.json"><code>_registry.json</code></a>. Schemas pin a list as <code>name@version</code>. The registry holds 27 lists; archived versions live under <code>codelists/archive/</code> and are never edited. Files: every list is in the download bundle (<code>owhs-v0.2-bundle.zip</code>) under <code>codelists/</code>.</p>
 <table>
 <thead>
 <tr>
@@ -1705,9 +2635,9 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tbody>
 <tr>
 <td><code>absence-reason</code></td>
-<td>0.1.0</td>
-<td>6</td>
-<td>ONS Sickness absence in the UK labour market 2025 [1]</td>
+<td>0.2.0</td>
+<td>11</td>
+<td>ONS Sickness absence in the UK labour market, 2025 edition, Tables 4, 4a and 5, reason categories and non-disclosure response; published 1 May 2026.</td>
 </tr>
 <tr>
 <td><code>access-route</code></td>
@@ -1732,6 +2662,12 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <td>0.1.0</td>
 <td>5</td>
 <td>ONS-aligned age groups</td>
+</tr>
+<tr>
+<td><code>benefit-layer</code></td>
+<td>0.1.0</td>
+<td>2</td>
+<td>OWHS benefit-layer distinction, specification section 4; a data-model convention.</td>
 </tr>
 <tr>
 <td><code>benefit-product</code></td>
@@ -1770,6 +2706,12 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <td>OWHS banded headcount (small-cell disclosure control)</td>
 </tr>
 <tr>
+<td><code>hse-management-domain</code></td>
+<td>0.1.0</td>
+<td>6</td>
+<td>HSE Management Standards, six areas of work design. OWHS codes identify domains; a mapping is not a compliance certificate.</td>
+</tr>
+<tr>
 <td><code>oh-assessment-type</code></td>
 <td>0.1.0</td>
 <td>5</td>
@@ -1783,9 +2725,15 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 </tr>
 <tr>
 <td><code>org-size-band</code></td>
-<td>0.1.0</td>
+<td>0.1.1</td>
 <td>4</td>
-<td>Companies Act 2006 size classification</td>
+<td>Employee-count bands informed by DBT business population and small-business survey statistics; OWHS micro band includes zero employees. Not a Companies Act company-size classification.</td>
+</tr>
+<tr>
+<td><code>release-category</code></td>
+<td>0.1.0</td>
+<td>3</td>
+<td>OWHS P2/P4 and the existing v0.2 AggregateReport declarations. A producer-declared classification, not an inferred clinical diagnosis.</td>
 </tr>
 <tr>
 <td><code>rtw-adjustment</code></td>
@@ -1797,13 +2745,13 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <td><code>rtw-checkpoint</code></td>
 <td>0.1.0</td>
 <td>3</td>
-<td>OWHS v0.1 provisional sustained-RTW checkpoints</td>
+<td>OWHS v0.1 RECOMMENDED set (schema takes open integer 1-104 per founder decision 7 Jul 2026); whiu: reserved</td>
 </tr>
 <tr>
 <td><code>rtw-outcome</code></td>
 <td>0.1.0</td>
 <td>5</td>
-<td>OWHS v0.1; return-to-work outcome types (no official UK taxonomy; insurer/OH case systems use proprietary ones)</td>
+<td>OWHS v0.1; return-to-work outcome types (no UK incumbent)</td>
 </tr>
 <tr>
 <td><code>rtw-sustained-status</code></td>
@@ -1815,7 +2763,7 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <td><code>safeguarding-category</code></td>
 <td>0.1.0</td>
 <td>6</td>
-<td>OWHS v0.1 provisional safeguarding categories; governance-owned</td>
+<td>OWHS v0.1 provisional; governance-owned; seeded from the steward's safeguarding taxonomy (categories only)</td>
 </tr>
 <tr>
 <td><code>sampling-design</code></td>
@@ -1849,86 +2797,636 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 </tr>
 </tbody>
 </table>
-<p><strong>The closed-vocabulary rule.</strong> A field whose permitted values are fixed is bound to a registered code list, and nowhere else. Concretely:</p>
-<ul>
-<li><strong>Every closed vocabulary is a registered list.</strong> If a field's values are a fixed set, that set lives in <code>codelists/</code> with its own <code>version</code> and a <code>_registry.json</code> entry. A schema may not carry a fixed set of values that exists nowhere else: an enum without a list is a vocabulary with no owner, no version and no route for anyone to propose a change to it.</li>
-<li><strong>A schema pins by <code>name@version</code> in a <code>$comment</code> and repeats the values inline.</strong> The inline <code>enum</code> is the executable copy; the comment is what says which list and which version it was copied from. Both are required, because the validator resolves neither: nothing in the tooling reads <code>codelists/</code> at Level 1, so the comment is the only record of what the enum is supposed to be a copy of. Keeping the two in step is a Level 2 obligation and is not yet checked by any tool in this repository.</li>
-<li><strong>A closed vocabulary is closed.</strong> A producer may not add values. A profile may restrict a bound field to a subset (section 7) and may not extend it. Adding a value is a minor version bump on the list, followed by a schema update pinning the new version.</li>
-<li><strong>An advisory list is marked as advisory in the schema.</strong> Where a list records what producers SHOULD use rather than what they MUST, the schema takes the wider type and the <code>$comment</code> says so, naming the list as a recommended set. <code>sustainedAt[].checkpointWeeks</code> is the worked example: an open integer from 1 to 104, with <code>rtw-checkpoint@0.1.0</code> cited as the recommended set per decision D4. An advisory list is not a closed vocabulary and the rule above does not apply to it.</li>
-</ul>
-<p><code>rtw-sustained-status@0.1.0</code> was created under this rule at v0.1: the three values were previously inline in <code>ReturnToWorkOutcome</code> with no list behind them. The values are unchanged, so no instance that validated before validates differently now.</p>
-<p><strong>Design notes on the anchored lists.</strong>
-- <strong><code>absence-reason</code></strong> adopts the six ONS reason categories verbatim (minor illness, musculoskeletal, mental health, respiratory, gastrointestinal, other), so an org rate is ONS-comparable [1]. It carries <em>no</em> diagnosis granularity, clinical cause is the separate optional SNOMED field.
-- <strong><code>rtw-adjustment</code></strong> is the four statutory fit-note "may be fit for work" categories (phased return, altered hours, amended duties, workplace adaptations) and nothing else; it is shared by <code>ReturnToWorkOutcome.adjustmentTypes</code> and <code>OHEpisode.recommendationTypes</code>. One modelling choice, stated explicitly: OWHS records the <strong>realised adjustments over an episode</strong>, not the chronological sequence of fit notes. An absence involving several fit notes with changing advice records the set of adjustments actually enacted; the note-by-note paper trail stays in the employer's absence system.
-- <strong><code>adjustment-category</code></strong> (anchored to Equality Act 2010 s.20) is a deliberate <strong>superset</strong> of <code>rtw-adjustment</code>, the four fit-note codes are a strict subset, so an OH recommendation expressed in fit-note terms maps into the broader adjustment record without translation. To be precise about the legal claim: the list covers statutory s.20 reasonable adjustments <strong>plus closely related workplace arrangements</strong> (for example absence-policy flexibility and additional support), and does not assert that every code is a s.20 adjustment in law; it is a management record anchored to the duty, not a legal determination.
-- <strong><code>benefit-product</code></strong> is the UK market's own vocabulary (PMI/GIP/GLA/cash plan/EAP/dental/pension/…), not an OWHS invention; statutory SSP is modelled structurally in <code>BenefitEntitlement.statutory</code>, never as a product code.
-- <strong><code>construct-domain</code></strong> is the single shared vocabulary used by <em>both</em> measurement and services. Its first six codes map 1:1 to the <strong>HSE Management Standards six domains</strong> [19] (the <code>Crosswalk</code> entity carries the HSE/ISO-45003/<code>whiu:</code> mappings); the remaining codes are outcome constructs (mental health, MSK, financial wellbeing, sleep/fatigue) that are not HSE work-design domains.</p>
-<p><strong>New lists the added domains needed:</strong> <code>oh-referral-reason</code>, <code>oh-assessment-type</code>, <code>fitness-opinion</code>, <code>adjustment-category</code>, <code>adjustment-status</code>, plus supporting bands (<code>org-size-band</code>, <code>headcount-band</code>, <code>age-band</code>, <code>tenure-band</code>, <code>work-pattern</code>) and operational enums (<code>source-type</code>, <code>completion-status</code>, <code>collection-channel</code>, <code>sampling-design</code>, <code>access-route</code>, <code>suppression-reason</code>, <code>rtw-outcome</code>, <code>rtw-checkpoint</code>). The OH lists are strictly management-facing: <code>fitness-opinion</code> is the categorical released opinion (fit / fit-with-adjustments / unfit / not-assessed), never a clinical basis.</p>
+<p>These schemas retain UK SIC 2007 explicitly as an edition. ONS also publishes SIC 2026; codes from different editions must not be mixed or relabelled without an explicit mapping. Country, SIC, currency, ISO clause and reserved WHIU strings are checked only to the stated syntactic extent. They are not resolved against live external registers. The existing headcount bands have no zero/unknown category, and the existing tenure labels do not by themselves settle the shared ten-year boundary. No producer should infer an absent category or boundary rule from a structural pass.</p>
 <hr>
 <h2 id="json-schemas-and-validation">6. JSON Schemas and validation</h2>
-<p>Three core entities are given as full JSON Schema (Draft 2020-12), each with a valid and a deliberately invalid instance. All three schemas meta-validate (<code>Draft202012Validator.check_schema</code>), every valid instance passes with <strong>0</strong> errors, and every invalid instance raises exactly the errors the error map names. The machine-checked results are in <a href="examples/validation_report.json"><code>validation_report.json</code></a>; the validator run is reproducible with <code>jsonschema</code>.</p>
-<p>Schemas: <a href="schemas/AbsenceEpisode.json"><code>AbsenceEpisode.json</code></a> · <a href="schemas/ReturnToWorkOutcome.json"><code>ReturnToWorkOutcome.json</code></a> · <a href="schemas/OHEpisode.json"><code>OHEpisode.json</code></a>.</p>
-<p><strong>FHIR-forward design choices.</strong> Every entity is a flat resource with a stable <code>$id</code>, string ids, <code>date</code>/<code>date-time</code> formats, and coded fields as string enums, each maps to a FHIR resource later (<code>AbsenceEpisode</code>→<code>Encounter</code>/<code>Observation</code>, <code>ReturnToWorkOutcome</code>→<code>Observation</code>/<code>Task</code>, <code>OHEpisode</code>→<code>Observation</code> with a work-context profile). No design choice here blocks a v1.x FHIR mapping.</p>
-<h3 id="privacy-and-boundary-rules-expressed-in-schema">Privacy and boundary rules expressed <em>in schema</em></h3>
-<p>The three executable schemas enforce the following structural constraints. They do not enforce the whole privacy profile or detect sensitive content embedded in permitted string values:</p>
+<p>Each of the sixteen entity types in the v0.2 catalogue has an executable schema and passing and failing examples. The generated validation report identifies each entity and schema version and records its observed errors. C1-C18 are documented within-record checks implemented by the reference validator; they are not all JSON Schema keywords. ConstructDomain remains a code list. RiskAssessment and WorkplaceIncident remain reserved without executable schemas. DisabilityParticipation is an executable reserved-minimal shape with the stated disclosure limitations. The separate entity-graph envelope and G01-G10 relationship checks are documented in the supplied-entity graph guide (docs/entity-graph-validation-v0.2.md).</p>
+<p>Schemas: <code>schemas/v0.2/</code> (sixteen entity types, in the bundle and under this page's <code>schemas/</code> directory) and <a href="schemas/catalogue.json"><code>schemas/catalogue.json</code></a>; the three v0.1 entry points remain at <code>schemas/&lt;Entity&gt;.json</code> with byte-identical archived copies under <code>schemas/v0.1/</code>. Examples: <code>examples/v0.2/</code> (in the bundle and under this page's <code>examples/</code> directory). Report: <a href="examples/validation_report.json"><code>examples/validation_report.json</code></a>.</p>
+<h3 id="privacy-and-boundary-rules-expressed-in-schema">Privacy and boundary rules expressed in schema</h3>
 <ul>
-<li><strong>Direct-identifier ban (P1):</strong> <code>additionalProperties:false</code> on each entity and on every nested object rejects <code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code>, <code>address</code> and every other property not declared in the schema, whether it arrives as a known identifier name or as a typo. An earlier <code>not/anyOf</code> member asserting the same five names has been removed: it duplicated an error that <code>additionalProperties</code> already raised, changed no verdict, and its comment claimed to forbid identifiers "anywhere", which was untrue of values. A key-based rule cannot reach an identifier pasted into a permitted string field; that is stated as a producer obligation in §3 P1.</li>
-<li><strong>Pseudonym shape:</strong> <code>pseudonymId</code> must match <code>^owhs:pseudo:[0-9a-f]{16,64}$</code>, so a raw employee reference (<code>EMP-Jane-Smith</code>) is a schema error, not a warning.</li>
-<li><strong>OH clinical-content boundary:</strong> <code>OHEpisode</code> rejects <code>diagnosis</code>, <code>clinicalCauseCode</code>, <code>symptoms</code>, <code>testResults</code>, <code>reportText</code>, <code>history</code> via both <code>additionalProperties:false</code> and an explicit <code>not/anyOf</code>.</li>
-<li><strong>OH consent gate:</strong> an <code>if/then</code> requires <code>opinionReleasedToEmployer === true</code> whenever <code>fitnessOpinion</code> is present.</li>
-<li><strong>RTW semantic integrity:</strong> an <code>if/then</code> forbids <code>adjustmentTypes</code> on a <code>did-not-return</code> outcome (you cannot record return adjustments for someone who did not return).</li>
+<li><strong>Direct-identifier ban (P1):</strong> Core schema validation checks declared property names, the documented recursive named-key restrictions in extensions, and each entity's identifier syntax. It cannot detect identifiers or sensitive meaning hidden in permitted values or aliases; a structural pass does not establish P1 compliance.</li>
+<li><strong>Pseudonym shape:</strong> WorkerPseudonym, ReasonableAdjustment and the absence, RTW and OH records require the declared <code>owhs:pseudo:</code> hexadecimal shape. The retained WellbeingObservation and InstrumentAdministration schemas accept opaque WorkerPseudonym references under their own identifier pattern. The core validator does not resolve those references or establish how any identifier was generated. Where a supplied entity graph is checked, its worker-reference rules provide the additional join.</li>
+<li><strong>Opaque identifiers:</strong> every new identifier field forbids whitespace explicitly and takes the shared identifier pattern.</li>
+<li><strong>OH clinical-content boundary and consent gate; RTW semantic integrity:</strong> unchanged from v0.1.</li>
+<li><strong>Layer branches:</strong> <code>BenefitEntitlement</code> requires the statutory object or the product category according to <code>layer</code> and forbids the other; <code>BenchmarkRelease</code> requires <code>excludedOrgId</code> exactly when <code>leaveOneOut</code> is true, applies declared sample floors of 5 (ordinary) and 10 (severe-distress) to <code>sampleSizes.people</code>, and admits no <code>safeguarding</code> release at all.</li>
+<li><strong>Paired fields:</strong> <code>sicCode</code> with <code>sicVersion</code>; <code>iso45003Clause</code> with <code>iso45003Edition</code>; <code>instrumentId</code> with <code>instrumentVersion</code>.</li>
 </ul>
-<h3 id="error-map-proven-by-the-validator">Error map (proven by the validator)</h3>
+<h3 id="error-map-generated-from-the-validation-report">Error map (generated from the validation report)</h3>
+<p>Every committed v0.2 example, with the errors the reference validator raised on it. A valid example raises none; an invalid one raises exactly the keywords or named rules listed. A <code>[profile]</code> note (an extension namespace whose profile semantics were not checked) is not an error and is not counted. The map is generated from <code>examples/validation_report.json</code>, so it cannot drift from the run.</p>
 <table>
 <thead>
 <tr>
 <th>Entity</th>
-<th>Invalid instance contains</th>
-<th>Errors raised (validator keyword)</th>
+<th>Example</th>
+<th>Expected</th>
+<th>Errors raised</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td><code>Organisation</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>pattern</code>, <code>maxLength</code> (2)</td>
+</tr>
+<tr>
+<td><code>Organisation</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>OrgUnit</code></td>
+<td><code>external-parent-not-resolved-here.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>OrgUnit</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>enum</code> (1)</td>
+</tr>
+<tr>
+<td><code>OrgUnit</code></td>
+<td><code>self-parent.invalid</code></td>
+<td>fail</td>
+<td><code>C18</code> (1)</td>
+</tr>
+<tr>
+<td><code>OrgUnit</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>WorkerPseudonym</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>pattern</code> (1)</td>
+</tr>
+<tr>
+<td><code>WorkerPseudonym</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
 <td><code>AbsenceEpisode</code></td>
-<td>direct name, raw pseudonym, <code>reasonCode:"back-pain"</code>, missing <code>sourceProvenance</code></td>
-<td><code>additionalProperties</code> (name), <code>pattern</code> (pseudonymId), <code>enum</code> (reasonCode not in ONS list), <code>required</code> (sourceProvenance), <strong>4 errors</strong></td>
+<td><code>ext-identifier-nested.invalid</code></td>
+<td>fail</td>
+<td><code>anyOf</code> (1)</td>
 </tr>
 <tr>
-<td><code>AbsenceEpisode</code> (<code>chronology.invalid</code>)</td>
-<td><code>endDate</code> before <code>startDate</code></td>
-<td><code>C1</code> (named cross-field rule), <strong>1 error</strong></td>
+<td><code>AbsenceEpisode</code></td>
+<td><code>ext-namespace.invalid</code></td>
+<td>fail</td>
+<td><code>pattern</code> (1)</td>
 </tr>
 <tr>
-<td><code>AbsenceEpisode</code> (<code>chronology-boundary.valid</code>)</td>
-<td><code>endDate</code> equal to <code>startDate</code></td>
-<td>none; the boundary is inclusive, <strong>0 errors</strong></td>
+<td><code>AbsenceEpisode</code></td>
+<td><code>ext-namespace.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
 </tr>
 <tr>
-<td><code>AbsenceEpisode</code> (<code>dates.invalid</code>)</td>
-<td><code>startDate:"02/03/2026"</code>, <code>endDate:"2026-13-45"</code></td>
-<td><code>format</code> (startDate), <code>format</code> (endDate), <strong>2 errors</strong></td>
+<td><code>AbsenceEpisode</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>additionalProperties</code>, <code>required</code>, <code>pattern</code>, <code>enum</code> (4)</td>
+</tr>
+<tr>
+<td><code>AbsenceEpisode</code></td>
+<td><code>new-reason.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>AbsenceEpisode</code></td>
+<td><code>non-disclosure.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>AbsenceEpisode</code></td>
+<td><code>unknown-reason.invalid</code></td>
+<td>fail</td>
+<td><code>enum</code> (1)</td>
+</tr>
+<tr>
+<td><code>AbsenceEpisode</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
 </tr>
 <tr>
 <td><code>ReturnToWorkOutcome</code></td>
-<td><code>did-not-return</code> <strong>with</strong> <code>adjustmentTypes</code></td>
-<td><code>not</code> (a did-not-return outcome may not carry return adjustments), <strong>1 error</strong></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>not</code> (1)</td>
+</tr>
+<tr>
+<td><code>ReturnToWorkOutcome</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
 </tr>
 <tr>
 <td><code>OHEpisode</code></td>
-<td><code>diagnosis</code> + <code>clinicalCauseCode</code> present; <code>fitnessOpinion:"unfit"</code> but <code>opinionReleasedToEmployer:false</code></td>
-<td><code>additionalProperties</code> (clinical fields), <code>not</code> (clinical-content boundary), <code>const</code> (consent flag must be true), <strong>3 errors</strong></td>
+<td><code>ext-clinical-key.invalid</code></td>
+<td>fail</td>
+<td><code>not</code> (1)</td>
+</tr>
+<tr>
+<td><code>OHEpisode</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>additionalProperties</code>, <code>not</code>, <code>const</code> (3)</td>
+</tr>
+<tr>
+<td><code>OHEpisode</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>ReasonableAdjustment</code></td>
+<td><code>equal-c10.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>ReasonableAdjustment</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>enum</code> (1)</td>
+</tr>
+<tr>
+<td><code>ReasonableAdjustment</code></td>
+<td><code>reversed-c10.invalid</code></td>
+<td>fail</td>
+<td><code>C10</code> (1)</td>
+</tr>
+<tr>
+<td><code>ReasonableAdjustment</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>WellbeingObservation</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>required</code>, <code>required</code>, <code>maximum</code>, <code>format</code>, <code>pattern</code>, <code>required</code> (6)</td>
+</tr>
+<tr>
+<td><code>WellbeingObservation</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>InstrumentAdministration</code></td>
+<td><code>abandoned-with-score.invalid</code></td>
+<td>fail</td>
+<td><code>not</code> (1)</td>
+</tr>
+<tr>
+<td><code>InstrumentAdministration</code></td>
+<td><code>complete-without-score.invalid</code></td>
+<td>fail</td>
+<td><code>anyOf</code> (1)</td>
+</tr>
+<tr>
+<td><code>InstrumentAdministration</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>minItems</code>, <code>not</code> (2)</td>
+</tr>
+<tr>
+<td><code>InstrumentAdministration</code></td>
+<td><code>subscales-only.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>InstrumentAdministration</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>MeasurementContext</code></td>
+<td><code>equal-instants-different-offsets.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>MeasurementContext</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>MeasurementContext</code></td>
+<td><code>window-and-scale.invalid</code></td>
+<td>fail</td>
+<td><code>C4</code>, <code>C5</code> (2)</td>
+</tr>
+<tr>
+<td><code>BenefitEntitlement</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>not</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenefitEntitlement</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>c15-0-0-0.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>c15-0-1-0.invalid</code></td>
+<td>fail</td>
+<td><code>C15</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>c15-1-0-0.invalid</code></td>
+<td>fail</td>
+<td><code>C15</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>c15-1-0-1.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>c15-2-1-1.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>c15-2-100-50.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>c15-3-1-1.invalid</code></td>
+<td>fail</td>
+<td><code>C15</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>equal-c11.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>minimum</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>reversed-c11.invalid</code></td>
+<td>fail</td>
+<td><code>C11</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenefitUtilisation</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>DisabilityParticipation</code></td>
+<td><code>equal-c12.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>DisabilityParticipation</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>enum</code> (1)</td>
+</tr>
+<tr>
+<td><code>DisabilityParticipation</code></td>
+<td><code>reversed-c12.invalid</code></td>
+<td>fail</td>
+<td><code>C12</code> (1)</td>
+</tr>
+<tr>
+<td><code>DisabilityParticipation</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>benchmark-scalar.invalid</code></td>
+<td>fail</td>
+<td><code>type</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>n-above-eligible.invalid</code></td>
+<td>fail</td>
+<td><code>maximum</code>, <code>C7</code> (2)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>n4-unsuppressed.invalid</code></td>
+<td>fail</td>
+<td><code>const</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>observations-below-n.invalid</code></td>
+<td>fail</td>
+<td><code>C8</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>org-level-with-unit.invalid</code></td>
+<td>fail</td>
+<td><code>not</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>period-reversed.invalid</code></td>
+<td>fail</td>
+<td><code>C3</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>rate-wrong.invalid</code></td>
+<td>fail</td>
+<td><code>C9</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>safeguarding-n100-unsuppressed.invalid</code></td>
+<td>fail</td>
+<td><code>const</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>severe-n10.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>severe-n9-unsuppressed.invalid</code></td>
+<td>fail</td>
+<td><code>const</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>suppressed-below-floor.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>suppressed-with-value.invalid</code></td>
+<td>fail</td>
+<td><code>not</code> (1)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>AggregateReport</code></td>
+<td><code>zero-eligible.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>c16-3-30-90.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>c16-5-5-4.invalid</code></td>
+<td>fail</td>
+<td><code>C16</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>c16-5-5-5.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>c16-6-5-5.invalid</code></td>
+<td>fail</td>
+<td><code>C16</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>duplicate-probability.invalid</code></td>
+<td>fail</td>
+<td><code>C17</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>equal-c13.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>equal-c14.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>required</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>inverted-values.invalid</code></td>
+<td>fail</td>
+<td><code>C17</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>reversed-c13.invalid</code></td>
+<td>fail</td>
+<td><code>C13</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>reversed-c14.invalid</code></td>
+<td>fail</td>
+<td><code>C14</code> (1)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>single-quantile.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>tied-values.valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>BenchmarkRelease</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
+</tr>
+<tr>
+<td><code>Crosswalk</code></td>
+<td><code>invalid</code></td>
+<td>fail</td>
+<td><code>enum</code> (1)</td>
+</tr>
+<tr>
+<td><code>Crosswalk</code></td>
+<td><code>valid</code></td>
+<td>pass</td>
+<td>none (0)</td>
 </tr>
 </tbody>
 </table>
-<p>The valid instances model the same worker (one pseudonym) through a coherent journey: a 10-working-day (75-hour, ONS 7.5h/day) musculoskeletal absence → an OH management referral returning <code>fit-with-adjustments</code> with released opinion → a phased RTW with altered hours, sustained at 4 and 13 weeks. That the three valid instances cross-reference cleanly (<code>absenceEpisodeId</code>, <code>linkedAbsenceEpisodeId</code>) demonstrates the relationships in the ERD hold at instance level.</p>
-<p><strong>Cross-field checks and implementation limits.</strong> The reference validator implements C1 (<code>AbsenceEpisode.endDate</code> not before <code>startDate</code>) and C2 (<code>OHEpisode.assessmentDate</code> not before <code>referralDate</code>) in addition to JSON Schema and format validation. Aggregation floors, suppression and visibility requirements belong to Level 3 and are not implemented by the current reference validator. A schema comment records a requirement; it does not execute it.</p>
+<h3 id="named-within-record-rules">Named within-record rules</h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Entity</th>
+<th>Predicate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td><code>AbsenceEpisode</code></td>
+<td>endDate not before startDate</td>
+</tr>
+<tr>
+<td>C2</td>
+<td><code>OHEpisode</code></td>
+<td>assessmentDate not before referralDate</td>
+</tr>
+<tr>
+<td>C3</td>
+<td><code>AggregateReport</code></td>
+<td>periodEnd not before periodStart</td>
+</tr>
+<tr>
+<td>C4</td>
+<td><code>MeasurementContext</code></td>
+<td>observationWindow ordered as UTC instants</td>
+</tr>
+<tr>
+<td>C5</td>
+<td><code>MeasurementContext</code></td>
+<td>nativeScale min below max</td>
+</tr>
+<tr>
+<td>C6</td>
+<td><code>AggregateReport</code></td>
+<td>interval low not above high</td>
+</tr>
+<tr>
+<td>C7</td>
+<td><code>AggregateReport</code></td>
+<td>n &lt;= eligibleN &lt;= headcount</td>
+</tr>
+<tr>
+<td>C8</td>
+<td><code>AggregateReport</code></td>
+<td>observationCount not below n</td>
+</tr>
+<tr>
+<td>C9</td>
+<td><code>AggregateReport</code></td>
+<td>completionRate is n/eligibleN, null only when eligibleN is 0</td>
+</tr>
+<tr>
+<td>C10</td>
+<td><code>ReasonableAdjustment</code></td>
+<td>if both dates exist, endDate &gt;= startDate</td>
+</tr>
+<tr>
+<td>C11</td>
+<td><code>BenefitUtilisation</code></td>
+<td>periodEnd &gt;= periodStart</td>
+</tr>
+<tr>
+<td>C12</td>
+<td><code>DisabilityParticipation</code></td>
+<td>periodEnd &gt;= periodStart</td>
+</tr>
+<tr>
+<td>C13</td>
+<td><code>BenchmarkRelease</code></td>
+<td>validTo &gt;= validFrom</td>
+</tr>
+<tr>
+<td>C14</td>
+<td><code>BenchmarkRelease</code></td>
+<td>dataPeriodEnd &gt;= dataPeriodStart</td>
+</tr>
+<tr>
+<td>C15</td>
+<td><code>BenefitUtilisation</code></td>
+<td>n &lt;= usageCount + claimCount (an absent claimCount contributes no recorded events); n = 0 requires both recorded event counts to be zero. Repeated events may exceed n. Declarations are compared; people are not deduplicated</td>
+</tr>
+<tr>
+<td>C16</td>
+<td><code>BenchmarkRelease</code></td>
+<td>composition.orgCount &lt;= sampleSizes.people; observations, when supplied, &gt;= people. Contributing organisations and people, not invited but non-contributing units</td>
+</tr>
+<tr>
+<td>C17</td>
+<td><code>BenchmarkRelease</code></td>
+<td>percentile probabilities strictly increase in array order and values never decrease; tied values and a single quantile are valid, duplicate probabilities are not; no quantile algorithm or sampling distribution is verified</td>
+</tr>
+<tr>
+<td>C18</td>
+<td><code>OrgUnit</code></td>
+<td>parentUnitId, if supplied, differs from unitId; the direct self-loop only</td>
+</tr>
+</tbody>
+</table>
+<p>Rules run only after the entity's structural operands are valid; a malformed date is the format check's finding, and a negative count the schema's. Malformed inputs yield named validation or tool errors, never a traceback. Cross-record joins (organisation hierarchies beyond the direct self-loop, references to other entities, benchmark applicability) are not within-record rules and are outside this validator; the optional entity-graph checker covers them on a supplied bundle (G01-G10, docs/entity-graph-validation-v0.2.md).</p>
 <hr>
 <h2 id="the-profile-mechanism">7. The profile mechanism</h2>
 <p>OWHS follows the FHIR profiling pattern: a <strong>vendor profile constrains and extends the core, but may never contradict it</strong>. The core spec is the interoperability contract; a profile is a labelled overlay that a consumer can ignore and still read the core fields.</p>
 <p><strong>Naming and namespacing.</strong> A profile has a reverse-DNS-free short id, <code>owhs-&lt;slug&gt;</code> (e.g. <code>owhs-msk</code>, <code>owhs-ohsurveillance</code>). Profile-specific fields are carried under a single reserved object, <code>ext</code>, keyed by profile id:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>{ &quot;episodeId&quot;: &quot;...&quot;, &quot;reasonCode&quot;: &quot;musculoskeletal&quot;,</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  &quot;ext&quot;: { &quot;owhs-msk&quot;: { &quot;surveillanceWave&quot;: 3 } } }</span></code></pre></div>
-<p>Core validators use <code>additionalProperties:false</code> on the top level but explicitly permit the <code>ext</code> object, whose sub-keys are only validated when the matching profile schema is loaded. A consumer that does not understand <code>owhs-msk</code> drops <code>ext.owhs-msk</code> and still has a conformant core record.</p>
+<p>Every core permits the generic <code>ext</code> object. Its namespace syntax, object shape and recursive named-key restrictions are checked without a profile. An explicitly supplied matching profile adds its own constraints and is reported with its version and envelope hash. Unchecked extension namespaces are reported as having profile semantics not checked. A core pass does not establish that an omitted profile's semantics hold. A consumer that does not understand <code>owhs-msk</code> drops <code>ext.owhs-msk</code> and still has a conformant core record.</p>
 <p><strong>What a profile MAY do:</strong> add fields under its <code>ext</code> key; narrow a core field (tighten a <code>maxLength</code>, restrict an enum to a subset, make a core-optional field required <em>within the profile</em>); add profile-scoped code lists; bind a core code-list field to a profile-specific value set that is a <strong>subset</strong> of the core list.</p>
 <p><strong>What a profile MUST NOT do:</strong> widen a core constraint (add enum values to a core list, relax a <code>required</code>, remove <code>additionalProperties:false</code>); change a field's type or meaning; change a field's privacy classification to something more permissive (a profile can make an <code>open</code> field <code>individual-never</code>, never the reverse); override any privacy-profile MUST (aggregation floors, identifier ban, safeguarding exclusion); or place any field outside <code>ext</code> that is not defined in core. A profile that needs a new top-level field is a <strong>core change request</strong> (RFC), not a profile.</p>
 <p><strong>The steward's own profile</strong>, the worked example of extensibility, lives entirely under its <code>ext</code> key: its sampling design, scoring specifics and construct sub-taxonomy, none of which the core presumes. It doubles as the conformance test for the mechanism: if the steward's product can be expressed without touching core, the boundary is drawn correctly.</p>
@@ -1951,7 +3449,7 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <h3 id="level-1-schema-valid">Level 1, Schema-valid</h3>
 <p>Structural conformance to the Draft 2020-12 schemas.
 - Every entity instance validates against its schema (<code>additionalProperties:false</code>, required fields, types, patterns), <strong>with every <code>format</code> asserted</strong>. In Draft 2020-12 <code>format</code> is an annotation unless a validator is told to assert it, so a validator that does not assert it accepts any string where a date is declared. A conformance claim at this level requires the assertion.
-- The direct-identifier ban (P1) passes: <code>name</code>, <code>nino</code>, <code>email</code>, <code>dateOfBirth</code> and <code>address</code> are rejected by <code>additionalProperties:false</code> on the entity and on every nested object, and <code>pseudonymId</code> matches the pseudonym pattern.
+- Direct-identifier ban (P1): Core schema validation checks declared property names, the documented recursive named-key restrictions in extensions, and each entity's identifier syntax. It cannot detect identifiers or sensitive meaning hidden in permitted values or aliases; a structural pass does not establish P1 compliance.
 - Cross-field structural rules the schema encodes fire: OH clinical-content boundary, OH consent gate, RTW <code>did-not-return</code>-vs-adjustments rule.
 - The named cross-field rules below fire. JSON Schema compares an instance against a schema and never one field of an instance against another, so an ordering rule between two dates cannot be expressed in it. These rules are implemented in the reference validator and each has an instance in <code>examples/</code>.</p>
 <table>
@@ -1966,17 +3464,97 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <tr>
 <td>C1</td>
 <td><code>AbsenceEpisode</code></td>
-<td>Where <code>endDate</code> is present it must not precede <code>startDate</code>.</td>
+<td>endDate not before startDate</td>
 </tr>
 <tr>
 <td>C2</td>
 <td><code>OHEpisode</code></td>
-<td>Where <code>assessmentDate</code> is present it must not precede <code>referralDate</code>.</td>
+<td>assessmentDate not before referralDate</td>
+</tr>
+<tr>
+<td>C3</td>
+<td><code>AggregateReport</code></td>
+<td>periodEnd not before periodStart</td>
+</tr>
+<tr>
+<td>C4</td>
+<td><code>MeasurementContext</code></td>
+<td>observationWindow ordered as UTC instants</td>
+</tr>
+<tr>
+<td>C5</td>
+<td><code>MeasurementContext</code></td>
+<td>nativeScale min below max</td>
+</tr>
+<tr>
+<td>C6</td>
+<td><code>AggregateReport</code></td>
+<td>interval low not above high</td>
+</tr>
+<tr>
+<td>C7</td>
+<td><code>AggregateReport</code></td>
+<td>n &lt;= eligibleN &lt;= headcount</td>
+</tr>
+<tr>
+<td>C8</td>
+<td><code>AggregateReport</code></td>
+<td>observationCount not below n</td>
+</tr>
+<tr>
+<td>C9</td>
+<td><code>AggregateReport</code></td>
+<td>completionRate is n/eligibleN, null only when eligibleN is 0</td>
+</tr>
+<tr>
+<td>C10</td>
+<td><code>ReasonableAdjustment</code></td>
+<td>if both dates exist, endDate &gt;= startDate</td>
+</tr>
+<tr>
+<td>C11</td>
+<td><code>BenefitUtilisation</code></td>
+<td>periodEnd &gt;= periodStart</td>
+</tr>
+<tr>
+<td>C12</td>
+<td><code>DisabilityParticipation</code></td>
+<td>periodEnd &gt;= periodStart</td>
+</tr>
+<tr>
+<td>C13</td>
+<td><code>BenchmarkRelease</code></td>
+<td>validTo &gt;= validFrom</td>
+</tr>
+<tr>
+<td>C14</td>
+<td><code>BenchmarkRelease</code></td>
+<td>dataPeriodEnd &gt;= dataPeriodStart</td>
+</tr>
+<tr>
+<td>C15</td>
+<td><code>BenefitUtilisation</code></td>
+<td>n &lt;= usageCount + claimCount (an absent claimCount contributes no recorded events); n = 0 requires both recorded event counts to be zero. Repeated events may exceed n. Declarations are compared; people are not deduplicated</td>
+</tr>
+<tr>
+<td>C16</td>
+<td><code>BenchmarkRelease</code></td>
+<td>composition.orgCount &lt;= sampleSizes.people; observations, when supplied, &gt;= people. Contributing organisations and people, not invited but non-contributing units</td>
+</tr>
+<tr>
+<td>C17</td>
+<td><code>BenchmarkRelease</code></td>
+<td>percentile probabilities strictly increase in array order and values never decrease; tied values and a single quantile are valid, duplicate probabilities are not; no quantile algorithm or sampling distribution is verified</td>
+</tr>
+<tr>
+<td>C18</td>
+<td><code>OrgUnit</code></td>
+<td>parentUnitId, if supplied, differs from unitId; the direct self-loop only</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><em>Not yet checked:</em> whether coded values are current, whether aggregates clear the floors.</li>
+<li><em>What the validators do not establish:</em> the validators enforce their pinned inline values and the declared structural aggregation and suppression conditions. They do not establish that an external terminology is current, that the submitted counts are true, or that an output is safe to disclose. Code-list and generator gates verify only their documented version and consistency contracts.</li>
 </ul>
 <h3 id="level-2-code-lists">Level 2, +Code lists</h3>
 <p>Level 1, plus every coded field resolves to a <strong>current</strong> code-list version.
@@ -1990,13 +3568,15 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 - <strong>Visibility classes (P3):</strong> no <code>individual-never</code> field value appears at individual grain in any output; <code>individual-employer</code> fields appear only where the declared legal basis is present.
 - <strong>Completeness travels (P5):</strong> every <code>AggregateReport</code> carries <code>completionRate</code>, <code>suppressed</code>, and (where applicable) <code>suppressionReason</code>.
 - <strong>Refuse, don't hide:</strong> a Level-3 producer that cannot satisfy a floor MUST refuse to emit the offending value (suppression is emitting <em>metadata about a withholding</em>, which is permitted and required; emitting the raw sub-floor value is non-conformant).</p>
-<p>The reference validator implements Level 1 today (proven in §2d), including the format assertion and the named cross-field rules. Levels 2 and 3 are specified as the checks a full validator adds, and are cross-record or payload-level rather than per-instance, which is why they are conformance levels and not schema keywords. <strong>No tool in this repository verifies Level 2 or Level 3.</strong></p>
+<p>The reference validator implements Level 1 today, including the format assertion and the named within-record rules C1 to C18 (section 6). Levels 2 and 3 are specified as the checks a full validator adds, and are cross-record or payload-level rather than per-instance, which is why they are conformance levels and not schema keywords. <strong>No tool in this repository verifies Level 2 or Level 3.</strong></p>
 <p>Three parts of Level 3 are not verifiable from payloads at all, and are audit obligations. They are stated here rather than left to be inferred, because a reader could otherwise take a Level 3 declaration to mean more than it can mean.</p>
 <ul>
 <li><strong>A recipient cannot verify <code>n</code>.</strong> Every floor check compares a value against a respondent count the producer supplied. A recipient can check that a report is internally consistent with the <code>n</code> it declares; it cannot check that <code>n</code> is true.</li>
 <li><strong>Withholding by omission is undetectable unless suppression is emitted.</strong> If a producer simply leaves out the cells that fell below a floor, a recipient sees a shorter list and nothing else. "Refuse, don't hide" therefore has an observable meaning only if a Level 3 producer emits a suppressed <code>AggregateReport</code> for every cell it would otherwise have reported.</li>
 <li><strong>Visibility classes (P3) are properties of a pipeline, not of a payload.</strong> No payload records where a value was sent, so <code>individual-never</code> is verified by review of the producer's implementation and not by any validator.</li>
 </ul>
+<hr>
+<p>The measurement-bundle checker retains its documented context checks. The optional entity-graph checker additionally validates the declared organisation-scoped references, identity uniqueness, unit hierarchy and named benchmark-reference rules in a supplied bundle. Each report lists its exercised checks, unresolved external references and interpretation limits. These checks do not establish a complete dataset, the truth of submitted provenance or counts, benchmark comparability, safe disclosure or full Level 2 or Level 3 conformance.</p>
 <hr>
 <h2 id="the-honesty-pass-disputable-decisions-and-open-questions">10. The honesty pass: disputable decisions and open questions</h2>
 <p>Three registers, none smoothed over: decisions reasonable standards authors would dispute, assumptions the WHIU's future definitions could overturn, and open questions that need a governance rather than a technical decision.</p>
@@ -2018,7 +3598,7 @@ footer .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 <p><strong>Adopting the ONS six-category reason taxonomy as the core enum.</strong> ONS designed it for a <em>population survey</em>, not an employer episode record; its "minor illness" / "other" buckets are coarse for management use, and "other" explicitly mixes COVID-19, accidents and diabetes [1]. Anchoring to it buys comparability at the cost of analytic resolution, and some authors would prefer a richer employer taxonomy that <em>rolls up</em> to ONS.</p>
 </li>
 <li>
-<p><strong>Closed core objects.</strong> Rejecting undeclared properties prevents extra identifier fields in the implemented core schemas, but cannot detect identifiers inside allowed string values. The specified <code>ext</code> mechanism is not yet implemented by the three schemas. Any extension implementation must preserve the producer's P1 obligation and define its validation boundary explicitly.</p>
+<p><strong>Closed core objects.</strong> Rejecting undeclared properties prevents extra identifier fields in the sixteen v0.2 core schemas, but cannot detect identifiers inside allowed string values. The <code>ext</code> mechanism is implemented in v0.2 (section 7): its namespace syntax, object shape and recursive named-key restrictions are checked without a profile, and an explicitly supplied profile adds its own constraints. An extension implementation must preserve the producer's P1 obligation and define its validation boundary explicitly.</p>
 </li>
 <li>
 <p><strong>Modelling <code>ill-health-exit</code> as an RTW <em>value</em> rather than its own entity.</strong> Compresses a significant, sensitive event (medical capability dismissal / ill-health retirement) into an enum on an outcome record. Defensible for SME simplicity; disputable because it under-models an event with distinct legal and pension dimensions.</p>

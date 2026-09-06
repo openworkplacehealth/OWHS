@@ -1,0 +1,7 @@
+{
+ "tab": "registry",
+ "date": "2026-09-06",
+ "shown": "6 Sep 2026",
+ "version": "Maintenance tooling (v0.9.0 unchanged)",
+ "html": "Maintenance workflows added to the registry, none of which changes a dataset, a grade, a status or a licence class: a harvester that queries Europe PMC, OpenAlex and Crossref for every instrument and writes a candidate artefact for a person to screen; a weekly watcher that hashes the visible text of every licence page the registry cites and opens an issue when one changes; a monthly watcher that checks every cited DOI for retraction and update notices; and a tripwire that accepts a monthly cycle only when the run artefact is complete over the full inventory and named by an issue the workflow itself opened. Harvest runs are configured to write an artefact and open or update a review issue. Licence and retraction watchers upload their results and raise an issue when they report a change, signal or incomplete run. The tripwire opens an issue if it cannot verify the monthly cycle and no issue for that cycle already exists. A first dry run over 12 July to 5 September 2026 is recorded as an engineering result, not as evidence about retrieval."
+}
