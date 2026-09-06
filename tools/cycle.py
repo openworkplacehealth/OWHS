@@ -244,6 +244,8 @@ def envelope_against_plan(env, pl):
 def policy_problems(expected, declared):
     """The artefact's declared channel set must equal the authoritative plan channel by channel, including whether each is
     required or declared unavailable, its provider, route, date basis and exact query. Duplicate ids are refused."""
+    bad = channel_id_problems(declared, "expected_channels")
+    if bad: return bad
     p = []
     ids = [c.get("channel_id") for c in declared]
     if len(ids) != len(set(ids)): p.append("duplicate channel ids in the artefact's expected set")
@@ -256,11 +258,28 @@ def policy_problems(expected, declared):
         for k in ("instrument_id", "route", "source", "date_basis", "query"):
             if e.get(k) != d.get(k): p.append(f"channel {cid}: {k} differs from the plan"); break
         if bool(e.get("unavailable")) != bool(d.get("unavailable")): p.append(f"channel {cid}: the artefact declares {'unavailable' if d.get('unavailable') else 'required'}, the plan says {'unavailable' if e.get('unavailable') else 'required'}")
+        elif e.get("unavailable") != d.get("unavailable"): p.append(f"channel {cid}: the artefact's unavailability reason {str(d.get('unavailable'))[:60]!r} is not the plan's {str(e.get('unavailable'))[:60]!r}")
     return p
 
 
 OUTCOMES = ("complete", "partial", "failed", "unavailable")
 DESCRIPTOR_KEYS = ("instrument_id", "route", "source", "date_basis", "query", "unavailable")
+
+
+def channel_id_problems(items, label):
+    """Channel ids must be non-empty strings before any set, dict key, sort or duplicate detection touches them; a malformed id is
+    reported by name and position, never stringified into a comparison."""
+    p = []
+    for i, c in enumerate(items):
+        cid = c.get("channel_id") if isinstance(c, dict) else None
+        if not isinstance(cid, str) or not cid: p.append(f"{label}[{i}]: channel_id {cid!r} is not a non-empty string")
+    return p[:3]
+
+
+def run_id_problem(v, label="run_id"):
+    """The harvester's own run identity must be a non-empty string; null or empty never binds anything. This is the harvester's id,
+    not the GitHub numeric run id, which acquisition records separately."""
+    return None if isinstance(v, str) and v else f"{label} {v!r} is not a non-empty string; no harvester run identity to bind"
 
 
 def _count_ok(v, nullable=False):
@@ -277,6 +296,9 @@ def envelope_shape_problems(env):
         v = env.get(k)
         if not isinstance(v, list): p.append(f"{k} is not a list")
         elif not all(isinstance(x, dict) for x in v): p.append(f"{k} contains a non-object element")
+        else: p += channel_id_problems(v, k)
+    rp = run_id_problem(env.get("run_id"))
+    if rp: p.append(rp)
     if env.get("channels_not_complete") is not None and not isinstance(env.get("channels_not_complete"), list): p.append("channels_not_complete is not a list")
     for k in ("requested_window", "date_bases"):
         if env.get(k) is not None and not isinstance(env.get(k), dict): p.append(f"{k} is not an object")
@@ -293,6 +315,8 @@ def execution_problems(plan, channels):
     or null, outcome one of the four). No collected-versus-reported equality is imposed: that needs provider-specific rules."""
     p = []
     if not isinstance(channels, list) or not all(isinstance(c, dict) for c in channels): return ["execution log is not a list of objects"]
+    bad = channel_id_problems(channels, "channels")
+    if bad: return bad
     ids = [c.get("channel_id") for c in channels]
     dup = sorted({i for i in ids if ids.count(i) > 1})
     if dup: p.append(f"duplicate execution results for channel(s) {dup[:5]}; one result per planned channel")
@@ -467,8 +491,12 @@ def advance_problems(env, tp, queries_path=None, artefact_sha=None, expected_sha
     if pol: p.append("the artefact's expected set differs from the trusted plan: " + pol[0])
     ex = execution_problems(plan_ch, env.get("channels", []))
     if ex: p.append("execution log: " + ex[0])
+    for v, label in ((env.get("run_id"), "envelope run_id"), (prop.get("run_id"), "proposal run_id")):
+        rp = run_id_problem(v, label)
+        if rp: p.append(rp)
     binds = {"query_sha256": tp["qsha_at_head"], "cycle_id": tp["cycle_id"], "run_id": env.get("run_id"), "last_complete_to": _iso(tp["to"]), "catch_from": _iso(tp["catch_from"])}
     for k, want in binds.items():
+        if k == "run_id" and not (isinstance(want, str) and want): continue          # already reported; two nulls are never a binding
         if prop.get(k) != want: p.append(f"proposal {k} {prop.get(k)!r} is not the trusted {want!r}")
     complete = sum(1 for c in env.get("channels", []) if isinstance(c, dict) and c.get("outcome") == "complete")
     if prop.get("channels_complete") != complete: p.append(f"proposal channels_complete {prop.get('channels_complete')!r} is not the {complete} complete channels in the artefact")
@@ -716,6 +744,24 @@ def self_test():
     exec_case("a negative hit count", lambda e: e["channels"][0].update(collected_hits=-1), "non-negative integer")
     exec_case("an outcome outside the producer's vocabulary", lambda e: e["channels"][0].update(outcome="done"), "not one of")
     exec_case("a missing result for a planned channel", lambda e: e["channels"].pop(0), "no execution result")
+    # identifiers are typed before any set, key, sort or duplicate detection: malformed ids refuse by name, never a TypeError
+    for label, change, needle in (("an executed channel_id that is an array", lambda e: e["channels"][0].update(channel_id=[]), "channels[0]: channel_id [] is not a non-empty string"),
+                                  ("a declared channel_id that is an array", lambda e: e["expected_channels"][0].update(channel_id=[]), "expected_channels[0]: channel_id [] is not a non-empty string"),
+                                  ("executed ids of mixed types (null and an integer)", lambda e: (e["channels"][0].update(channel_id=None), e["channels"][1].update(channel_id=7)), "channel_id None is not a non-empty string"),
+                                  ("an empty executed channel_id", lambda e: e["channels"][0].update(channel_id=""), "channel_id '' is not a non-empty string"),
+                                  ("a null harvester run_id", lambda e: e.update(run_id=None), "run_id None is not a non-empty string"),
+                                  ("an empty harvester run_id", lambda e: e.update(run_id=""), "run_id '' is not a non-empty string"),
+                                  ("an integer harvester run_id", lambda e: e.update(run_id=12345), "run_id 12345 is not a non-empty string")):
+        e = env_trusted(copy.deepcopy(plan_live), copy.deepcopy(full_live)); change(e)
+        try: rid_, why_ = live_with(e); t(f"artefact shape: {label} is refused by name before hashing or indexing", rid_ is None and "artefact shape" in why_[0] and needle in why_[0], why_)
+        except TypeError as ex: t(f"artefact shape: {label} is refused by name before hashing or indexing", False, f"TypeError {ex}")
+    for fn, label in ((lambda: policy_problems(plan_live, [{**plan_live[0], "channel_id": []}] + plan_live[1:]), "policy_problems"), (lambda: execution_problems(plan_live, [{**full_live[0], "channel_id": None}, {**full_live[1], "channel_id": 7}] + full_live[2:]), "execution_problems")):
+        try: out_ = fn(); t(f"pure {label}: malformed channel ids are a named refusal, not a TypeError", bool(out_) and "not a non-empty string" in out_[0], out_)
+        except TypeError as ex: t(f"pure {label}: malformed channel ids are a named refusal, not a TypeError", False, f"TypeError {ex}")
+    # the declared unavailability reason must equal the plan's exactly, as the execution log's descriptor already must
+    e_reason = env_trusted(copy.deepcopy(plan_live), copy.deepcopy(full_live)); next(c for c in e_reason["expected_channels"] if c["unavailable"])["unavailable"] = "unrelated reason"
+    rid_, why_ = live_with(e_reason); t("a declared unavailable channel whose reason is not the plan's is refused (exact equality, not truthiness)", rid_ is None and "unavailability reason" in why_[0], why_)
+    t("pure policy_problems: the plan's own reason passes and a different non-empty reason does not", not policy_problems(plan_live, copy.deepcopy(plan_live)) and any("unavailability reason" in x for x in policy_problems(plan_live, [dict(c, unavailable="other") if c["unavailable"] else c for c in plan_live])))
     for label, change, needle in (("a null execution result", lambda e: e["channels"].__setitem__(0, None), "non-object"), ("a null declared channel", lambda e: e["expected_channels"].__setitem__(0, None), "non-object"), ("a cycle that is an array", lambda e: e.update(cycle=["not-an-object"]), "cycle is not an object")):
         e = env_trusted(copy.deepcopy(plan_live), copy.deepcopy(full_live)); change(e)          # mutated after construction on private copies: the checker, not the fixture helper, must cope
         rid_, why_ = live_with(e)
@@ -776,6 +822,14 @@ def self_test():
         narrow_adv = env_adv(requested_window={"from": "2026-09-30", "to": "2026-10-01"}); narrow_adv["date_bases"]["publication"] = {"from": "2026-09-30", "to": "2026-10-01"}
         refused("advance: an artefact departing from the trusted plan is refused", narrow_adv, "trusted plan")
         refused("advance: a supplied file whose bytes are not the downloaded artefact's is refused", env_adv(), "not the artefact downloaded", artefact_sha="a" * 64, expected_sha="b" * 64)
+        refused("advance: envelope and proposal both carrying run_id null is refused; two nulls are not an identity binding", env_adv(run_id=None, watermark_proposal=dict(prop, run_id=None)), "run_id None is not a non-empty string")
+        refused("advance: a proposal run_id that is not the envelope's is refused", env_adv(watermark_proposal=dict(prop, run_id="r2")), "proposal run_id 'r2' is not the trusted 'r1'")
+        refused("advance: an empty-string proposal run_id is refused", env_adv(watermark_proposal=dict(prop, run_id="")), "proposal run_id '' is not a non-empty string")
+        refused("advance: a declared unavailability reason that is not the plan's is refused", (lambda e: (next(c for c in e["expected_channels"] if c["unavailable"]).update(unavailable="unrelated reason"), e)[1])(env_adv()), "unavailability reason")
+        for label, change in (("an executed channel_id that is an array", lambda e: e["channels"][0].update(channel_id=[])), ("a declared channel_id that is an array", lambda e: e["expected_channels"][0].update(channel_id=[])), ("executed ids of mixed types", lambda e: (e["channels"][0].update(channel_id=None), e["channels"][1].update(channel_id=7)))):
+            e_bad = env_adv(); change(e_bad)
+            try: refused(f"advance: {label} is refused by name, no TypeError, nothing written", e_bad, "not a non-empty string")
+            except TypeError as ex: t(f"advance: {label} is refused by name, no TypeError, nothing written", False, f"TypeError {ex}")
         try: advance_with(env_adv(), tp, wm, Path(tmp) / "absent.json"); t("advance: missing current configuration is refused (fail closed)", False)
         except SystemExit as ex: t("advance: missing current configuration is refused (fail closed)", "missing" in str(ex))
         t("advance: nothing was written by any refusal", not wm.exists())
