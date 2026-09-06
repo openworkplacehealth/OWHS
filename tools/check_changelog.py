@@ -4,12 +4,16 @@
 Usage:
   python tools/check_changelog.py --base origin/main   compare HEAD with the base and refuse a public change without an entry
   python tools/check_changelog.py --self-test          the rule on fixed path lists
+  python tools/check_changelog.py --counts             each tab's count on site/changelog.html equals its number of rows
+  python tools/check_changelog.py --fix-counts         rewrite the counts to the row numbers
 
 Published surfaces are the site, the specification, the schemas, the code lists, the registry
 dataset, the examples, the docs and the README. A change that touches only tooling, tests,
 workflows or evidence artefacts needs no entry. The two changelogs are CHANGELOG.md (specification,
 schemas, validator, examples) and site/changelog.html (registry, specification and site tabs).
 """
+import pathlib
+import re
 import subprocess
 import sys
 
@@ -33,6 +37,36 @@ def problems(paths):
     if any(p in CHANGELOGS for p in paths):
         return []
     return changed_public
+
+
+SITE_CHANGELOG = pathlib.Path(__file__).resolve().parents[1] / "site" / "changelog.html"
+TABS = ("registry", "specification", "site")
+
+
+def tab_counts(page_text):
+    """(tab, rows, count) for each of the three tabs; a tab whose panel or count is missing raises ValueError."""
+    out = []
+    for name in TABS:
+        panel = re.search(r'<section class="panel" id="panel-%s".*?</section>' % name, page_text, re.S)
+        count = re.search(r'id="tab-%s"[^>]*>[^<]*<span class="count">(\d+)</span>' % name, page_text)
+        if not panel or not count:
+            raise ValueError(f"the {name} tab or its panel was not found")
+        out.append((name, len(re.findall(r"<tr><td", panel.group(0))), int(count.group(1))))
+    return out
+
+
+def count_problems(page_text):
+    try:
+        return [f"the {n} tab says {c} and has {r} rows" for n, r, c in tab_counts(page_text) if r != c]
+    except ValueError as e:
+        return [str(e)]
+
+
+def fix_counts(page_text):
+    for name, rows, count in tab_counts(page_text):
+        if rows != count:
+            page_text = re.sub(r'(id="tab-%s"[^>]*>[^<]*<span class="count">)\d+(</span>)' % name, lambda m: m.group(1) + str(rows) + m.group(2), page_text, count=1)
+    return page_text
 
 
 def changed_paths(base):
@@ -63,6 +97,25 @@ def self_test():
         ok = got == want
         failures += not ok
         print(("ok  " if ok else "FAIL"), label, "" if ok else f"got {got}")
+    page = SITE_CHANGELOG.read_text(encoding="utf-8")
+    count_cases = [
+        ("the committed page's counts equal its rows", page, []),
+        ("a row added without a count change is refused, naming the tab", page.replace('<h2 class="panel-title">Site</h2>\n  <table>\n    <tr><th>Date</th><th>What changed</th></tr>\n', '<h2 class="panel-title">Site</h2>\n  <table>\n    <tr><th>Date</th><th>What changed</th></tr>\n    <tr><td>1 Jan 2026</td><td>x</td></tr>\n', 1), ["the site tab says {} and has {} rows"]),
+        ("a missing tab is refused", page.replace('id="tab-site"', 'id="tab-elsewhere"', 1), ["the site tab or its panel was not found"]),
+    ]
+    for label, text, want in count_cases:
+        got = count_problems(text)
+        if want and "{}" in want[0]:
+            n = [r for r in tab_counts(page) if r[0] == "site"][0]
+            want = [want[0].format(n[2], n[1] + 1)]
+        ok = got == want
+        failures += not ok
+        print(("ok  " if ok else "FAIL"), label, "" if ok else f"got {got}")
+    fixed = fix_counts(count_cases[1][1])
+    ok = count_problems(fixed) == []
+    failures += not ok
+    print(("ok  " if ok else "FAIL"), "fix-counts rewrites a stale count to the row number")
+    cases += count_cases + [None]
     print(f"{len(cases) - failures}/{len(cases)} changelog checks passed")
     return 1 if failures else 0
 
@@ -70,6 +123,19 @@ def self_test():
 def main(argv):
     if "--self-test" in argv:
         return self_test()
+    if "--counts" in argv:
+        found = count_problems(SITE_CHANGELOG.read_text(encoding="utf-8"))
+        if found:
+            print("PROBLEM " + "; ".join(found))
+            return 1
+        print("ok: every tab count on site/changelog.html equals its number of rows")
+        return 0
+    if "--fix-counts" in argv:
+        text = SITE_CHANGELOG.read_text(encoding="utf-8")
+        fixed = fix_counts(text)
+        SITE_CHANGELOG.write_text(fixed, encoding="utf-8")
+        print("counts rewritten" if fixed != text else "counts already equal their rows")
+        return 0
     if "--base" not in argv or argv.index("--base") + 1 >= len(argv):
         print(__doc__)
         return 2

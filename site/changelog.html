@@ -92,9 +92,9 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <p class="meta">every version of the registry and the specification, and every change to the site, dated · newest first · <a href="automation.html">how the monthly automation runs</a></p>
 
   <div class="tabs" role="tablist" aria-label="Changelog sections">
-  <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">12</span></button>
+  <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">13</span></button>
   <button type="button" class="tab" role="tab" id="tab-specification" aria-controls="panel-specification" aria-selected="false">Specification <span class="count">5</span></button>
-  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">8</span></button>
+  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">11</span></button>
 </div>
 
 <section class="panel" id="panel-registry" role="tabpanel" aria-labelledby="tab-registry" tabindex="0">
@@ -135,6 +135,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <table>
     <tr><th>Date</th><th>What changed</th></tr>
     <tr><td>6 Sep 2026</td><td>The <a href="question-bank/">question bank</a>'s Civil Service People Survey source recorded a landing page as its URL while its SHA-256 identified the 2024 Benchmark Results file. The source now carries that file's URL beside the hash, re-verified against the download. Wording, counts and every other field are unchanged.</td></tr>
+    <tr><td>6 Sep 2026</td><td>The tab counts on this page said 11 registry rows and 7 site rows while the tables held 12 and 9; three rows had been added without the counts moving. The counts now equal the rows, and a check refuses a page whose counts and rows differ.</td></tr>
     <tr><td>5 Sep 2026</td><td>The <a href="automation.html">automation page</a> and the <a href="methods.html">methods page</a> now describe the monthly sweep as it runs: an assisted session working through web search that verifies every DOI it reports and states which indexes it could query directly. Direct querying with the published strings, the monthly proposal check, the frozen-month regression test and regeneration on merge are listed as planned, not running. The sweep's instructions now forbid any grade, status or licence change outright. The README and the specification no longer say that closed objects guarantee the identifier ban or that the validator enforces the aggregation floors: closure stops an identifier occupying a field of its own, and the floors are a Level 3 obligation no tool here verifies. The specification's code-list table gains the <span class="mono">safeguarding-category</span> row it lacked, and the methods page links the current rubric.</td></tr>
     <tr><td>5 Sep 2026</td><td>The code-list count on the <a href="index.html">home page</a> and <a href="how-it-works.html">How it works</a> reads 24, matching the registry since <span class="mono">rtw-sustained-status</span> was added on 4 September; the spec page and README already carried the new figure.</td></tr>
     <tr><td>4 Sep 2026</td><td>This changelog split into three sections, one each for the instrument evidence registry, the specification and the site, and added to the navigation on every page. Each section is linkable directly, at <span class="mono">#registry</span>, <span class="mono">#specification</span> and <span class="mono">#site</span>, so a single history can be cited. Without JavaScript all three render in full.</td></tr>

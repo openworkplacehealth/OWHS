@@ -34,5 +34,7 @@ jobs:
         run: |
           git fetch --no-tags origin ${{ github.base_ref }}
           python tools/check_changelog.py --base origin/${{ github.base_ref }}
+      - name: each changelog tab's count equals its number of rows
+        run: python tools/check_changelog.py --counts
       - name: changelog rule behaves as documented
         run: python tools/check_changelog.py --self-test
