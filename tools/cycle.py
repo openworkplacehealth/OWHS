@@ -34,7 +34,7 @@ channel counts as incomplete), carries the current query file's hash, and a bot-
 GitHub run and that artefact's hash. A partial run, an unrelated successful run, a hand-written issue or an issue
 describing a run that failed does not satisfy it.
 """
-import datetime, hashlib, json, os, re, subprocess, sys, tempfile
+import copy, datetime, hashlib, json, os, re, subprocess, sys, tempfile
 from pathlib import Path
 
 sys.dont_write_bytecode = True
@@ -259,6 +259,67 @@ def policy_problems(expected, declared):
     return p
 
 
+OUTCOMES = ("complete", "partial", "failed", "unavailable")
+DESCRIPTOR_KEYS = ("instrument_id", "route", "source", "date_basis", "query", "unavailable")
+
+
+def _count_ok(v, nullable=False):
+    if v is None: return nullable
+    return isinstance(v, int) and not isinstance(v, bool) and v >= 0
+
+
+def envelope_shape_problems(env):
+    """Named shape problems with an artefact envelope, checked before any field is read, hashed, sorted or indexed."""
+    if not isinstance(env, dict): return ["artefact root is not an object"]
+    p = []
+    if not isinstance(env.get("cycle"), dict): p.append("cycle is not an object")
+    for k in ("expected_channels", "channels"):
+        v = env.get(k)
+        if not isinstance(v, list): p.append(f"{k} is not a list")
+        elif not all(isinstance(x, dict) for x in v): p.append(f"{k} contains a non-object element")
+    if env.get("channels_not_complete") is not None and not isinstance(env.get("channels_not_complete"), list): p.append("channels_not_complete is not a list")
+    for k in ("requested_window", "date_bases"):
+        if env.get(k) is not None and not isinstance(env.get(k), dict): p.append(f"{k} is not an object")
+    if env.get("watermark_proposal") is not None and not isinstance(env.get("watermark_proposal"), dict): p.append("watermark_proposal is not an object")
+    return p
+
+
+def execution_problems(plan, channels):
+    """The execution log against the authoritative plan: exactly one result per planned channel (missing, extra and duplicate ids
+    refused, whichever order a duplicate arrives in); each result's descriptor equal to the plan's (instrument, route, source, date
+    basis, exact query and the plan's unavailable policy or reason, in the producer's own nullable representation); a required channel
+    complete with no error; a planned-unavailable channel reported unavailable with the plan's reason or no error; counts typed as the
+    producer writes them (pages and collected_hits non-negative integers, reported_hits a non-negative integer or null, error a string
+    or null, outcome one of the four). No collected-versus-reported equality is imposed: that needs provider-specific rules."""
+    p = []
+    if not isinstance(channels, list) or not all(isinstance(c, dict) for c in channels): return ["execution log is not a list of objects"]
+    ids = [c.get("channel_id") for c in channels]
+    dup = sorted({i for i in ids if ids.count(i) > 1})
+    if dup: p.append(f"duplicate execution results for channel(s) {dup[:5]}; one result per planned channel")
+    planned = {c["channel_id"]: c for c in plan}
+    missing = sorted(set(planned) - set(ids)); extra = sorted(set(ids) - set(planned))
+    if missing: p.append(f"{len(missing)} planned channel(s) have no execution result: {missing[:5]}")
+    if extra: p.append(f"{len(extra)} execution result(s) for unplanned channel(s): {[str(x)[:40] for x in extra[:5]]}")
+    for c in channels:
+        cid = c.get("channel_id")
+        if cid not in planned: continue
+        e = planned[cid]
+        diff = [k for k in DESCRIPTOR_KEYS if c.get(k) != e.get(k)]
+        if diff: p.append(f"channel {cid}: the executed descriptor differs from the plan in {diff}"); continue
+        out = c.get("outcome")
+        if out not in OUTCOMES: p.append(f"channel {cid}: outcome {out!r} is not one of {OUTCOMES}"); continue
+        err = c.get("error")
+        if err is not None and not isinstance(err, str): p.append(f"channel {cid}: error is not a string or null"); continue
+        if not _count_ok(c.get("pages")) or not _count_ok(c.get("collected_hits")) or not _count_ok(c.get("reported_hits"), nullable=True): p.append(f"channel {cid}: pages, collected_hits or reported_hits is not a non-negative integer (booleans are not counts)"); continue
+        if e.get("unavailable"):
+            if out != "unavailable": p.append(f"channel {cid}: the plan declares it unavailable ({e['unavailable']}) but the run reports {out!r}")
+            elif err not in (None, e["unavailable"]): p.append(f"channel {cid}: unavailable with an error {err!r} that is not the plan's reason")
+        else:
+            if out != "complete": p.append(f"channel {cid}: required channel reported {out!r}")
+            elif err: p.append(f"channel {cid}: reported complete yet carries error {err!r}")
+    return p
+
+
 def verify(cycle_id, qsha, expected, runs, artefacts, issues, cfg=None, trusted=None):
     """Pure correlation. runs: [{github_run_id, conclusion, event, head_sha, started_at}]; artefacts: {github_run_id: (envelope dict,
     sha256)}; issues: [{author, body}]. The plan is either `expected` (a fixed authoritative channel set, for offline contract tests)
@@ -277,6 +338,9 @@ def verify(cycle_id, qsha, expected, runs, artefacts, issues, cfg=None, trusted=
         if run.get("conclusion") != "success": reasons.append(f"run {rid}: conclusion {run.get('conclusion')}"); continue
         if rid not in artefacts: reasons.append(f"run {rid}: no artefact candidates-{cycle_id}"); continue
         env, sha = artefacts[rid]
+        if env is None: reasons.append(f"run {rid}: artefact refused: {sha}"); continue          # (None, reason) from the download path
+        shape = envelope_shape_problems(env)
+        if shape: reasons.append(f"run {rid}: artefact shape: " + "; ".join(shape[:3])); continue
         cyc = env.get("cycle") or {}
         if cyc.get("id") != cycle_id: reasons.append(f"run {rid}: artefact is cycle {cyc.get('id')!r}, not {cycle_id}"); continue
         if cyc.get("kind") != "planned": reasons.append(f"run {rid}: cycle kind {cyc.get('kind')!r} is not planned"); continue
@@ -295,6 +359,8 @@ def verify(cycle_id, qsha, expected, runs, artefacts, issues, cfg=None, trusted=
         else: reasons.append(f"run {rid}: no authoritative plan available to judge the artefact against (the artefact's own dates are not one)"); continue
         pol = policy_problems(plan, declared)
         if pol: reasons.append(f"run {rid}: " + "; ".join(pol[:3])); continue
+        ex = execution_problems(plan, env.get("channels", []))                   # what actually ran, bound to the plan, one result per channel
+        if ex: reasons.append(f"run {rid}: execution log: " + "; ".join(ex[:3])); continue
         missing = channels_not_complete(plan, env.get("channels", []))          # judged against the plan's policy, not the artefact's
         if missing: reasons.append(f"run {rid}: {len(missing)} of {len(plan)} required channels not complete: {[m['channel_id'] for m in missing][:5]}"); continue
         if env.get("channels_not_complete"): reasons.append(f"run {rid}: artefact itself lists {len(env['channels_not_complete'])} channels not complete"); continue
@@ -323,20 +389,41 @@ def fetch_live(cycle_id, repo, gh_json=None, download=None):
     for r in runs:
         if r["conclusion"] != "success": continue
         got = (download or _download_artefact)(r["github_run_id"], repo, cycle_id)
-        if got: artefacts[r["github_run_id"]] = got
+        if got: artefacts[r["github_run_id"]] = got            # (envelope, sha256), or (None, reason) which verify reports by name
     issues = json.loads(gh_json("issue", "list", "--repo", repo, "--label", "evidence-sweep", "--state", "all", "--search", f'"Evidence harvest {cycle_id}" in:title', "--json", "author,body"))
     issues = [{"author": ("app/" + i["author"]["login"]) if i["author"].get("is_bot") else i["author"]["login"], "body": i["body"]} for i in issues]
     return runs, artefacts, issues
+
+
+def _no_dupes(pairs):
+    keys = [k for k, _ in pairs]
+    if len(keys) != len(set(keys)): raise ValueError(f"duplicate object key {next(k for k in keys if keys.count(k) > 1)!r}")
+    return dict(pairs)
+
+
+def _no_nonfinite(name): raise ValueError(f"non-finite number {name}")
+
+
+def parse_artefact_dir(d):
+    """The downloaded artefact directory: exactly one JSON file (an ambiguous directory is refused, never resolved by picking the first),
+    strict JSON (duplicate keys at any depth, NaN and Infinity refused) whose root is an object. Returns (envelope, sha256) or (None, reason)."""
+    files = sorted(Path(d).glob("*.json"))
+    if not files: return None, "no JSON file in the downloaded artefact"
+    if len(files) > 1: return None, f"ambiguous artefact: {len(files)} JSON files downloaded ({[f.name for f in files][:4]}); none is chosen"
+    raw = files[0].read_bytes()
+    try: env = json.loads(raw.decode("utf-8"), object_pairs_hook=_no_dupes, parse_constant=_no_nonfinite)
+    except (UnicodeDecodeError, ValueError) as e: return None, f"artefact {files[0].name} is not strict JSON: {str(e)[:100]}"
+    if not isinstance(env, dict): return None, f"artefact {files[0].name} root is not an object"
+    return env, hashlib.sha256(raw).hexdigest()
 
 
 def _download_artefact(run_id, repo, cycle_id):
     with tempfile.TemporaryDirectory() as tmp:
         d = Path(tmp) / run_id
         p = subprocess.run(["gh", "run", "download", run_id, "--repo", repo, "-n", f"candidates-{cycle_id}", "-D", str(d)], capture_output=True, text=True)
-        if p.returncode != 0: return None
-        files = list(d.glob("*.json"))
-        if not files: return None
-        return (json.loads(files[0].read_text(encoding="utf-8")), hashlib.sha256(files[0].read_bytes()).hexdigest())
+        if p.returncode != 0: return None, f"gh run download failed: {p.stderr.strip()[:120]}"
+        if not d.exists(): return None, "gh run download produced no directory"
+        return parse_artefact_dir(d)
 
 
 def verify_live_detail(cycle_id, repo, gh_json=None, download=None, cfg=None, qsha=None, reader=read_at_head, lister=tree_at_head):
@@ -371,8 +458,15 @@ def advance_problems(env, tp, queries_path=None, artefact_sha=None, expected_sha
     qpath = Path(queries_path) if queries_path else QUERIES
     if not qpath.exists(): p.append("the query configuration is missing; cannot advance without it")
     elif query_sha(qpath) != tp["qsha_at_head"]: p.append(f"the current configuration {query_sha(qpath)[:12]} is not the configuration the run used {tp['qsha_at_head'][:12]}; a watermark belongs to the configuration that produced it")
+    shape = envelope_shape_problems(env)
+    if shape: return p + ["artefact shape: " + "; ".join(shape[:3])]
     mism = envelope_against_plan(env, tp)
     if mism: p.append("the artefact departs from the trusted plan: " + mism[0])
+    plan_ch = expected_channels(tp["cfg"], _iso(tp["from"]), _iso(tp["to"]), _iso(tp["catch_from"]), tp["full_history"])
+    pol = policy_problems(plan_ch, env.get("expected_channels") or [])
+    if pol: p.append("the artefact's expected set differs from the trusted plan: " + pol[0])
+    ex = execution_problems(plan_ch, env.get("channels", []))
+    if ex: p.append("execution log: " + ex[0])
     binds = {"query_sha256": tp["qsha_at_head"], "cycle_id": tp["cycle_id"], "run_id": env.get("run_id"), "last_complete_to": _iso(tp["to"]), "catch_from": _iso(tp["catch_from"])}
     for k, want in binds.items():
         if prop.get(k) != want: p.append(f"proposal {k} {prop.get(k)!r} is not the trusted {want!r}")
@@ -383,17 +477,20 @@ def advance_problems(env, tp, queries_path=None, artefact_sha=None, expected_sha
     return p
 
 
-def advance_with(env, tp, path=WATERMARKS, queries_path=None, artefact_sha=None, expected_sha=None):
-    """Write the accepted run's proposal into the watermark file. Refuses before writing on any problem; never moves backwards."""
+def advance_with(env, tp, path=WATERMARKS, queries_path=None, artefact_sha=None, expected_sha=None, github_run_id=None, artefact_sha256=None):
+    """Write the accepted run's proposal into the watermark file. Refuses before writing on any problem; never moves backwards. The
+    entry records the harvester's own run_id (from the proposal) and, separately, the GitHub run id and artefact SHA-256 returned by
+    acquisition; the two identifiers are never conflated."""
     problems = advance_problems(env, tp, queries_path, artefact_sha, expected_sha)
     if problems: raise SystemExit("this artefact cannot advance the watermark: " + "; ".join(problems))
     prop = env["watermark_proposal"]
     marks = load_watermarks(path)
     cur = marks["entries"].get(prop["query_sha256"])
     if cur and cur["last_complete_to"] >= prop["last_complete_to"]: raise SystemExit(f"watermark already at {cur['last_complete_to']}; nothing to advance")
-    marks["entries"][prop["query_sha256"]] = {k: v for k, v in prop.items() if k != "note"} | {"advanced_on": datetime.date.today().isoformat(), "date_bases": env.get("date_bases"), "run_head": tp["head_sha"], "policy_version": POLICY_VERSION}
+    marks["entries"][prop["query_sha256"]] = {k: v for k, v in prop.items() if k != "note"} | {"advanced_on": datetime.date.today().isoformat(), "date_bases": env.get("date_bases"), "run_head": tp["head_sha"], "policy_version": POLICY_VERSION,
+                                                                                               "github_run_id": github_run_id, "artefact_sha256": artefact_sha256}
     Path(path).write_text(json.dumps(marks, indent=2) + "\n", encoding="utf-8")
-    print(f"watermark for query {prop['query_sha256'][:12]} advanced to {prop['last_complete_to']} (cycle {prop['cycle_id']}, run {prop['run_id']}, head {tp['head_sha'][:12]}); commit this in the screening pull request")
+    print(f"watermark for query {prop['query_sha256'][:12]} advanced to {prop['last_complete_to']} (cycle {prop['cycle_id']}, harvester run {prop['run_id']}, GitHub run {github_run_id}, artefact {str(artefact_sha256)[:12]}, head {tp['head_sha'][:12]}); commit this in the screening pull request")
 
 
 def advance(cycle_id, repo, artefact_path=None, path=WATERMARKS, gh_json=None, download=None, reader=read_at_head, lister=tree_at_head, queries_path=None):
@@ -405,13 +502,17 @@ def advance(cycle_id, repo, artefact_path=None, path=WATERMARKS, gh_json=None, d
     if not rid or art is None: raise SystemExit("cycle not verified; nothing advanced:\n  " + "\n  ".join(why[:10]))
     env, sha = art
     supplied = hashlib.sha256(Path(artefact_path).read_bytes()).hexdigest() if artefact_path else None
-    advance_with(env, tp, path, queries_path, artefact_sha=supplied, expected_sha=(sha if artefact_path else None))
+    advance_with(env, tp, path, queries_path, artefact_sha=supplied, expected_sha=(sha if artefact_path else None), github_run_id=rid, artefact_sha256=sha)
 
 
 # ---------- offline suite ----------
 
 def self_test():
     failures = 0
+    def res(c, outcome=None):
+        """An execution result as the producer writes it: descriptor plus pages, hit counts, outcome and error."""
+        out = outcome or ("unavailable" if c["unavailable"] else "complete")
+        return {**c, "pages": 0 if out == "unavailable" else 1, "reported_hits": None if out == "unavailable" else 0, "collected_hits": 0, "outcome": out, "error": (c["unavailable"] or None) if out == "unavailable" else None}
     def t(label, ok, detail=""):
         nonlocal failures; print(("ok  " if ok else "FAIL"), label, "" if ok else detail); failures += not ok
     D = datetime.date
@@ -443,9 +544,9 @@ def self_test():
     expq = expected_channels(cfg, "2026-09-01", "2026-10-01", None, True)
     t("a quarterly plan adds full-history names and citation channels", any(c["date_basis"] == "full_history" and c["route"] == "cites" for c in expq) and not any(c["date_basis"] == "full_history" and c["route"] == "abbreviation" for c in expq))
     alias = [c for c in exp if c["instrument_id"] == "a" and c["route"] == "names" and c["date_basis"] == "publication" and c["source"] == "europepmc"]
-    ran_minus_one = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in exp if c["channel_id"] != alias[1]["channel_id"]]
+    ran_minus_one = [res(c) for c in exp if c["channel_id"] != alias[1]["channel_id"]]
     t("dropping one alias channel while its sibling completes is visible in the denominator", [m["channel_id"] for m in channels_not_complete(exp, ran_minus_one)] == [alias[1]["channel_id"]])
-    full_run = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in exp]
+    full_run = [res(c) for c in exp]
     t("a full run with the declared-unavailable filter reported as unavailable has nothing missing", channels_not_complete(exp, full_run) == [])
     Q = "q" * 64
     def env(cycle="2026-10", kind="planned", status="complete", full=True, q=Q, drop=None, channels=None, expected=None):
@@ -466,7 +567,7 @@ def self_test():
     t("a hand-authored issue with the right marker is refused", rid is None, why)
     miss = env(drop=alias[1]["channel_id"]); s2 = hashlib.sha256(json.dumps(miss).encode()).hexdigest()
     rid, why = verify("2026-10", Q, exp, runs, {"100": (miss, s2)}, [mark("100", s2)])
-    t("one missing alias channel (sibling complete) is refused against the full denominator", rid is None and "not complete" in why[0], why)
+    t("one missing alias channel (sibling complete) is refused against the full denominator", rid is None and ("not complete" in why[0] or "no execution result" in why[0]), why)
     alt = env(q="z" * 64); s3 = hashlib.sha256(json.dumps(alt).encode()).hexdigest()
     rid, why = verify("2026-10", Q, exp, runs, {"100": (alt, s3)}, [mark("100", s3)])
     t("an artefact built from a different query file is refused", rid is None and "query file hash" in why[0], why)
@@ -508,7 +609,7 @@ def self_test():
         return (lambda h, path: files.get(path) if h == head else None), (lambda h: set(tree) if h == head else None)
     # 1 October 2026 is a quarterly month: the trusted plan is 1 September to 1 October, catch-up from 3 July, full history on
     plan_live = expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", True)
-    full_live = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in plan_live]
+    full_live = [res(c) for c in plan_live]
     RUN_NAME = "evidence-harvest schedule from=[] to=[]"
     runs_json = [{"databaseId": 100, "conclusion": "success", "event": "schedule", "headSha": HEAD, "startedAt": "2026-10-01T06:00:12Z", "displayTitle": RUN_NAME}]
     def env_trusted(expected, channels, **kw):
@@ -522,10 +623,10 @@ def self_test():
         except Exception as ex: return None, [f"EXCEPTION {type(ex).__name__}: {ex}"]
     rid, why = live_with(env_trusted(plan_live, full_live)); t("live wrapper: an artefact matching the trusted plan read from the run's head in a real repository passes", rid == "100", why)
     # five counterexamples: each departs from the trusted plan in one declaration and is refused
-    nofh = env_trusted(expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False), [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)])
+    nofh = env_trusted(expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False), [res(c) for c in expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)])
     nofh["date_bases"]["full_history"] = False
     rid, why = live_with(nofh); t("trusted plan: an October artefact with full history disabled is refused", rid is None and "full history" in why[0], why)
-    nocatch = env_trusted(expected_channels(cfg, "2026-09-01", "2026-10-01", None, True), [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in expected_channels(cfg, "2026-09-01", "2026-10-01", None, True)])
+    nocatch = env_trusted(expected_channels(cfg, "2026-09-01", "2026-10-01", None, True), [res(c) for c in expected_channels(cfg, "2026-09-01", "2026-10-01", None, True)])
     nocatch["date_bases"]["first_indexed"] = None
     rid, why = live_with(nocatch); t("trusted plan: an artefact omitting the first-index catch-up is refused", rid is None and "first-index catch-up" in why[0], why)
     narrow = env_trusted(plan_live, full_live, requested_window={"from": "2026-09-30", "to": "2026-10-01"}); narrow["date_bases"]["publication"] = {"from": "2026-09-30", "to": "2026-10-01"}
@@ -572,7 +673,7 @@ def self_test():
     rid, why = live_with(env_trusted(plan_live, full_live), reader=r_, lister=l_); t("policy: a head whose harvest.py records no policy version is unverified", rid is None and "records no policy version" in why[0], why)
     # dispatch provenance comes from GitHub's run name, never from the artefact
     rerun = [{"databaseId": 101, "conclusion": "success", "event": "workflow_dispatch", "headSha": HEAD, "startedAt": "2026-10-02T09:30:00Z", "displayTitle": "evidence-harvest workflow_dispatch from=[] to=[]"}]
-    pl2 = expected_channels(cfg, "2026-09-01", "2026-10-02", "2026-07-04", True); fl2 = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in pl2]
+    pl2 = expected_channels(cfg, "2026-09-01", "2026-10-02", "2026-07-04", True); fl2 = [res(c) for c in pl2]
     e2 = env_trusted(pl2, fl2, requested_window={"from": "2026-09-01", "to": "2026-10-02"}, started_at="2026-10-02T09:33:00Z"); e2["date_bases"] = {"publication": {"from": "2026-09-01", "to": "2026-10-02"}, "first_indexed": {"from": "2026-07-04", "to": "2026-10-02"}, "full_history": True}
     rid, why = live_with(e2, runs=rerun, run_id="101"); t("dispatch: a later planned re-run whose run name records empty inputs passes with its own run-date window", rid == "101", why)
     rid, why = live_with(e2, runs=[{**rerun[0], "displayTitle": "evidence-harvest workflow_dispatch from=[2026-09-01] to=[2026-10-02]"}], run_id="101"); t("dispatch: a run whose recorded inputs carry a window is a manual cycle and never satisfies the planned one, whatever the artefact says", rid is None and "carried window inputs" in why[0], why)
@@ -586,7 +687,7 @@ def self_test():
     one = env_trusted([plan_live[0]], [full_live[0]]); rid, why = live_with(one)
     t("live wrapper: a one-channel self-declared manifest fails against the trusted plan", rid is None and "required by the plan are absent" in why[0], why)
     exempt = [dict(c) for c in plan_live]; req = next(c for c in exempt if not c["unavailable"]); req["unavailable"] = "synthetic exemption not in the plan"
-    chans = [{**c, "outcome": ("unavailable" if c["unavailable"] else "complete")} for c in exempt]
+    chans = [res(c) for c in exempt]
     rid, why = live_with(env_trusted(exempt, chans)); t("live wrapper: a required channel self-exempted as unavailable by the artefact fails", rid is None and "declares unavailable, the plan says required" in why[0], why)
     import os as _os
     saved = _os.environ.get("OPENALEX_API_KEY"); _os.environ["OPENALEX_API_KEY"] = "probe-not-a-real-key"
@@ -599,6 +700,38 @@ def self_test():
     unav = next(c for c in plan_live if c["unavailable"])
     rid, why = live_with(env_trusted(plan_live, full_live)); t("a configured unavailable channel stays reported as unavailable and the cycle still verifies", rid == "100" and any(c["channel_id"] == unav["channel_id"] and c["outcome"] == "unavailable" for c in full_live))
     dup = env_trusted(plan_live + [plan_live[0]], full_live); rid, why = live_with(dup); t("duplicate channel ids in the artefact are refused", rid is None and "duplicate channel ids" in why[0], why)
+    # the execution log is bound to the plan: what ran, not only what was declared
+    def exec_case(label, change, needle):
+        e = env_trusted(copy.deepcopy(plan_live), copy.deepcopy(full_live)); change(e); rid_, why_ = live_with(e)
+        t(f"execution log: {label} is refused", rid_ is None and needle in why_[0], why_)
+    exec_case("a result whose query differs from the plan", lambda e: e["channels"][0].update(query="unrelated query"), "executed descriptor differs")
+    exec_case("a result whose provider differs from the plan", lambda e: e["channels"][0].update(source="unrelated-provider"), "executed descriptor differs")
+    exec_case("a result whose date basis differs from the plan", lambda e: e["channels"][0].update(date_basis="unrelated-date-basis"), "executed descriptor differs")
+    exec_case("a failed duplicate inserted before the complete result", lambda e: e["channels"].insert(0, {**e["channels"][0], "outcome": "failed"}), "duplicate execution results")
+    exec_case("a complete duplicate inserted after a failed result", lambda e: (e["channels"].append({**e["channels"][0]}), e["channels"][0].update(outcome="failed")), "duplicate execution results")
+    exec_case("a complete result carrying an error", lambda e: e["channels"][0].update(error="http 503"), "carries error")
+    exec_case("a result for an unplanned channel", lambda e: e["channels"].append({**e["channels"][0], "channel_id": "unplanned"}), "unplanned channel")
+    exec_case("a planned-unavailable channel reported complete", lambda e: next(c for c in e["channels"] if c["outcome"] == "unavailable").update(outcome="complete", error=None, reported_hits=0, pages=1), "plan declares it unavailable")
+    exec_case("a boolean page count", lambda e: e["channels"][0].update(pages=True), "booleans are not counts")
+    exec_case("a negative hit count", lambda e: e["channels"][0].update(collected_hits=-1), "non-negative integer")
+    exec_case("an outcome outside the producer's vocabulary", lambda e: e["channels"][0].update(outcome="done"), "not one of")
+    exec_case("a missing result for a planned channel", lambda e: e["channels"].pop(0), "no execution result")
+    for label, change, needle in (("a null execution result", lambda e: e["channels"].__setitem__(0, None), "non-object"), ("a null declared channel", lambda e: e["expected_channels"].__setitem__(0, None), "non-object"), ("a cycle that is an array", lambda e: e.update(cycle=["not-an-object"]), "cycle is not an object")):
+        e = env_trusted(copy.deepcopy(plan_live), copy.deepcopy(full_live)); change(e)          # mutated after construction on private copies: the checker, not the fixture helper, must cope
+        rid_, why_ = live_with(e)
+        t(f"artefact shape: {label} is refused by name, no exception", rid_ is None and "artefact shape" in why_[0] and needle in why_[0], why_)
+    # the download path: strict JSON, one file, an object root
+    with tempfile.TemporaryDirectory() as dtmp:
+        dd = Path(dtmp)
+        (dd / "a.json").write_text('{"cycle": {"id": "x"}, "cycle": {"id": "y"}}', encoding="utf-8"); env_, why_ = parse_artefact_dir(dd); t("download: duplicate JSON keys are refused", env_ is None and "duplicate object key" in why_, why_)
+        (dd / "a.json").write_text('{not json', encoding="utf-8"); env_, why_ = parse_artefact_dir(dd); t("download: invalid JSON is refused by name", env_ is None and "not strict JSON" in why_, why_)
+        (dd / "a.json").write_text('[1, 2]', encoding="utf-8"); env_, why_ = parse_artefact_dir(dd); t("download: a non-object root is refused", env_ is None and "not an object" in why_, why_)
+        (dd / "a.json").write_text('{"x": NaN}', encoding="utf-8"); env_, why_ = parse_artefact_dir(dd); t("download: NaN is refused", env_ is None and "non-finite" in why_, why_)
+        (dd / "a.json").write_text('{"ok": 1}', encoding="utf-8"); (dd / "b.json").write_text('{"ok": 2}', encoding="utf-8"); env_, why_ = parse_artefact_dir(dd); t("download: two JSON files are ambiguous and neither is chosen", env_ is None and "ambiguous" in why_, why_)
+        (dd / "b.json").unlink(); env_, sha_ = parse_artefact_dir(dd); t("download: one strict object file is returned with its byte hash", env_ == {"ok": 1} and sha_ == hashlib.sha256(b'{"ok": 1}').hexdigest())
+    rid, why = live_with(env_trusted(plan_live, full_live), runs=runs_json) if False else (None, None)
+    refused_dl = verify("2026-10", QH, None, [{"github_run_id": "100", "conclusion": "success", "event": "schedule"}], {"100": (None, "artefact a.json is not strict JSON: duplicate object key 'cycle'")}, [], trusted={"100": (None, "x")})
+    t("verify reports a refused artefact by its reason and never touches the watermark", refused_dl[0] is None and "artefact refused" in refused_dl[1][0], refused_dl[1])
     failed_runs = [{"github_run_id": "100", "conclusion": "failure", "event": "schedule"}]
     rid, why = verify("2026-10", Q, exp, failed_runs, {"100": (good, sha)}, [mark("100", sha)])
     t("a failed run with a complete-looking issue is refused", rid is None and "conclusion failure" in why[0], why)
@@ -628,7 +761,7 @@ def self_test():
         t("advance: a trusted plan derives from the fixture run", tp is not None, why_tp)
         prop = {"query_sha256": QH, "last_complete_to": "2026-10-01", "catch_from": "2026-07-03", "cycle_id": "2026-10", "run_id": "r1", "channels_complete": sum(1 for c in full_live if c["outcome"] == "complete")}
         def env_adv(**kw):
-            e = env_trusted(plan_live, full_live); e["watermark_proposal"] = dict(prop); e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
+            e = env_trusted(copy.deepcopy(plan_live), copy.deepcopy(full_live)); e["watermark_proposal"] = dict(prop); e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
         def refused(label, e, needle, tp_=tp, **kw):
             try: advance_with(e, tp_, wm, qfile, **kw); t(label, False, "written")
             except SystemExit as ex: t(label, needle in str(ex), str(ex)[:200])
@@ -657,7 +790,15 @@ def self_test():
         wm2 = Path(tmp) / "w2.json"
         with contextlib.redirect_stdout(io.StringIO()):
             advance("2026-10", "example/repo", None, wm2, gh_json=stub_gh_factory(runs_json, issues_ok), download=lambda rid_, repo_, cyc: (good_env, good_sha), reader=real_reader, lister=real_lister, queries_path=qfile)
-        t("production advance: a verified cycle advances from the downloaded artefact under the run's plan", json.loads(wm2.read_text())["entries"][QH]["run_head"] == HEAD)
+        ent2 = json.loads(wm2.read_text())["entries"][QH]
+        t("production advance: a verified cycle advances from the downloaded artefact under the run's plan, recording the GitHub run id and artefact hash separately from the harvester's run id", ent2["run_head"] == HEAD and ent2["github_run_id"] == "100" and ent2["artefact_sha256"] == good_sha and ent2["run_id"] == "r1", ent2)
+        for label, change in (("a result whose query differs from the plan", lambda e: e["channels"][0].update(query="unrelated query")), ("a failed duplicate result", lambda e: e["channels"].insert(0, {**e["channels"][0], "outcome": "failed"})), ("a null execution result", lambda e: e["channels"].__setitem__(0, None))):
+            bad_env = env_adv(); change(bad_env); bad_sha = hashlib.sha256(json.dumps(bad_env).encode()).hexdigest()      # mutated after construction
+            issues_bad = [{"author": {"login": "github-actions", "is_bot": True}, "body": f"<!-- owhs-cycle cycle_id=2026-10 kind=planned github_run_id=100 artefact_sha256={bad_sha} -->"}]
+            wmx = Path(tmp) / f"wx-{label[:8].replace(' ', '')}.json"
+            try:
+                advance("2026-10", "example/repo", None, wmx, gh_json=stub_gh_factory(runs_json, issues_bad), download=lambda rid_, repo_, cyc: (bad_env, bad_sha), reader=real_reader, lister=real_lister, queries_path=qfile); t(f"production advance: {label} with a matching issue and artefact refuses", False, "written")
+            except SystemExit as ex: t(f"production advance: {label} with a matching issue and artefact refuses and writes nothing", "cycle not verified" in str(ex) and not wmx.exists(), str(ex)[:160])
         wm3 = Path(tmp) / "w3.json"
         try:
             advance("2026-10", "example/repo", None, wm3, gh_json=stub_gh_factory([], []), download=lambda *a: None, reader=real_reader, lister=real_lister, queries_path=qfile); t("production advance: an unverifiable cycle refuses", False)
