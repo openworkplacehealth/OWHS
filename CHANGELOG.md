@@ -7,6 +7,40 @@ behind it, the entry says so plainly rather than describing the fix as an improv
 Registry grade corrections are not here. They have their own numbered log at
 `site/instrument-registry/corrections.html`, and grades remain frozen.
 
+## 6 September 2026
+
+### Added: version 0.2 schemas, first set
+
+`schemas/v0.2/` holds the three v0.1 entities with an optional `ext` object keyed by profile
+namespace, and four measurement entities as executable schemas: `WellbeingObservation`,
+`InstrumentAdministration`, `MeasurementContext` and `AggregateReport`. The v0.1 schemas are
+unchanged at their paths and archived byte for byte under `schemas/v0.1/`. Extension payloads are
+objects; the named identifier keys are refused at every depth, and `OHEpisode` refuses its named
+clinical-content keys as well. This is a key-based check: an identifier inside a permitted string is
+not detected, and the schemas say so. The report's suppression declarations are checked against the
+P2 floors and the P4 category, which is structural consistency, not a disclosure assessment.
+
+### Added: `--profile` on the validator, rules C3 to C9, and a bundle checker
+
+`tools/validate.py` keeps its two-argument form and exit codes and adds `--profile ENVELOPE`, applied
+to the whole instance after the core, which it cannot override; the profile's version and envelope
+hash are recorded together. Rules C3 to C9 cover period ordering, UTC window ordering, native-scale
+bounds, interval ordering, `n <= eligibleN <= headcount`, observation count and completion rate. The
+validator reads JSON with the standard's grammar only: NaN, Infinity and an overflowing literal are
+refused with a diagnostic. `tools/check_measurement.py` checks a supplied bundle's envelope, each
+item, and then the joins over the items that passed, and lists what it cannot resolve.
+
+### Corrected: the absence-reason code list described itself as the ONS taxonomy
+
+`codelists/absence-reason.json` 0.2.0 carries the ten substantive reason categories and the separate
+non-disclosure response in the ONS 2025 sickness absence workbook (Tables 4, 4a and 5). The
+six-category list it replaces is archived at 0.1.0, and `codelists/mappings/absence-reason-ons-2025-v1.json`
+records each row's source cell and its relation to the legacy codes: a legacy `other` is not
+upgraded automatically, and non-disclosure never maps to `other` or to missing data. The v0.1
+`AbsenceEpisode` schema keeps its six codes and its pin at 0.1.0; the v0.2 schema pins 0.2.0.
+`codelists/org-size-band.json` 0.1.1 keeps the same codes and bounds, states the inclusive bounds
+as metadata, and its anchor no longer calls them a Companies Act classification.
+
 ## 4 September 2026
 
 ### Corrected: the error map named a rule no schema contains
