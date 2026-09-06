@@ -74,3 +74,5 @@ jobs:
         run: python tools/measure_recall.py --self-test
       - name: screening proposal allowlist gate
         run: python tools/check_proposal_allowlist.py --self-test
+      - name: document pages are rendered from docs/ and their local links resolve
+        run: python tools/build_doc_page.py --check

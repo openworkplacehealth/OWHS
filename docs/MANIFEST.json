@@ -1,0 +1,6 @@
+{
+  "note": "Every generated document page: its markdown source and its output under site/. tools/build_doc_page.py renders exactly this set and its check fails when a listed source is absent, when a docs/*.md file is not listed, or when an output differs from a fresh render.",
+  "pages": [
+    {"source": "docs/science.md", "output": "site/science.html"}
+  ]
+}
