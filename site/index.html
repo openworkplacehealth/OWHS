@@ -143,7 +143,7 @@ ul,ol{max-width:760px}
       <div class="figs">
         <div class="fig"><b>16</b><span>entities defined, one shared shape</span></div>
         <div class="fig"><b>27</b><span>versioned code lists, anchored to ONS, HSE, the fit note</span></div>
-        <div class="fig"><b>n ≥ 5</b><span>smallest group an employer ever sees</span></div>
+        <div class="fig"><b>n ≥ 5</b><span>smallest group in any employer-visible aggregate</span></div>
       </div>
       <div class="depth">
         <a href="how-it-works.html"><em>Explain</em>How it works</a>
@@ -195,7 +195,7 @@ ul,ol{max-width:760px}
 
 <section id="record"><div class="wrap">
   <h2>Held as an open, versioned, forkable public record</h2>
-  <p>Reference material in this field has a habit of disappearing. The What Works Centre for Wellbeing, which published the 2020 Workplace Wellbeing Question Bank, closed in 2023; that bank now survives only as an archive. OWHS is built so the same cannot happen here.</p>
+  <p>Reference material in this field has a habit of disappearing. The What Works Centre for Wellbeing, which published the 2020 Workplace Wellbeing Question Bank, closed in April 2024; that bank now survives only as an archive. OWHS is built so the same cannot happen here.</p>
   <ol class="principles">
     <li><b>Everything is versioned and downloadable.</b> Each release of the specification, the registry and the question bank is a dated dataset anyone can keep a copy of.</li>
     <li><b>Corrections are made in the open.</b> The registry carries a public corrections log and a right of reply for instrument authors; the question bank carries a changelog. A grade or an item changes with a reason attached, never quietly.</li>
@@ -209,7 +209,7 @@ ul,ol{max-width:760px}
   <p>Workplace-health data can identify and harm people. So the privacy rules are part of the standard itself: a technically valid payload that violates them is non-conformant, and a conformant producer refuses to emit it.</p>
   <ol class="principles">
     <li><b>No direct identifiers, ever.</b> Pseudonymous worker references and banded demographics only, in every payload. Pseudonymised records are still personal data under UK GDPR: the standard reduces disclosure and re-identification risk, it does not make data anonymous.</li>
-    <li><b>Small groups are never reported.</b> Minimum aggregation of five for anything an employer sees, rising to ten for severe-distress measures, consistent with statistical disclosure control practice in official statistics.</li>
+    <li><b>Small groups are never reported in aggregates.</b> Minimum aggregation of five for employer-visible aggregates, rising to ten for severe-distress measures, consistent with statistical disclosure control practice in official statistics. The separately enumerated individual-employer fields, such as a released occupational-health opinion, sit outside those floors where an independent legal basis permits the employer to hold them.</li>
     <li><b>Individual results belong to the individual.</b> Instrument results are never employer-visible at person level, by definition rather than by configuration.</li>
     <li><b>Safeguarding signals are excluded entirely.</b> Bullying, harassment, discrimination and crisis signals never appear in employer-visible outputs, at any group size.</li>
     <li><b>Every number carries its context.</b> Completion rates and suppression records travel with every aggregate, so consumers can see what is not being said.</li>

@@ -1060,8 +1060,16 @@ Registry text; the construct-domain admission rule for the standard itself is de
         here="admission"), encoding="utf-8")
 
 def build_corrections():
+    # Two parallel arrays carry the same nine ids. corrections_log holds only id, date and summary for
+    # the entries from C-0004 on, so rendering from it alone left every grade-moving correction on the
+    # page with an empty description and empty Was and Now. Merge by id and take the fuller record.
+    merged = {c.get("id"): dict(c) for c in D.get("corrections_log", [])}
+    for c in D.get("corrections", []):
+        base = merged.setdefault(c.get("id"), {})
+        for k, v in c.items():
+            if v not in (None, "", []) and not base.get(k): base[k] = v
     entries = []
-    for c in sorted(D.get("corrections_log", []), key=lambda x: x.get("id", ""), reverse=True):
+    for c in sorted(merged.values(), key=lambda x: x.get("id", ""), reverse=True):
         entries.append(f"""<div class="prop">
 <h3>{esc(c.get("id"))} &middot; {(f'<a href="{esc(c.get("instrument_id"))}.html">{esc(BY_ID.get(c.get("instrument_id"), {}).get("display_name", c.get("instrument_id")))}</a>' if c.get("instrument_id") else "every record")}</h3>
 <p class="findings">{md(c.get("description", ""))}</p>

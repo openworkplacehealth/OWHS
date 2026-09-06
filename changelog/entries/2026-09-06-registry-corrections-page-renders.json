@@ -1,0 +1,7 @@
+{
+ "tab": "registry",
+ "date": "2026-09-06",
+ "shown": "6 September 2026",
+ "html": "Corrections page: six of the nine corrections rendered with an empty description and empty Was and Now. The generator read the summary array rather than the full one; it now merges both by id.",
+ "version": "0.9.0"
+}

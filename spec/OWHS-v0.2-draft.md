@@ -177,7 +177,7 @@ Organisation scope and declared employee-count band. Not a statutory company-siz
 | `companiesHouseNumber` | string | no |  | open | Companies House |
 | `sicCode` | string (pattern) | no |  | open | ONS SIC 2007 (sector comparability) |
 | `sicVersion` | const `2007` | no |  | not separately assigned; entity restrictions apply | UK SIC 2007 retained as an edition; ONS also publishes SIC 2026 |
-| `sizeBand` | string (code) | yes | codelist:org-size-band@0.1.1 | open | Companies Act 2006 micro/small/medium bands |
+| `sizeBand` | string (code) | yes | codelist:org-size-band@0.1.1 | open | Employee-count bands informed by DBT business population statistics; not a Companies Act company-size classification |
 | `sizeBandReferenceDate` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: the date the band relates to |
 | `country` | string (pattern) | yes |  | open | UK-first; structure allows extension |
 
@@ -335,7 +335,7 @@ What makes scores comparable: the producing system, the scoring descriptor and i
 | `contextId` | string (pattern) | yes |  | open | Primary identifier, unique within the organisation. |
 | `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | Organisation scope. |
 | `producingSystem` | string | yes |  | open | system + version |
-| `knownLimitations` | string | yes |  | open | Stated limitations. 'Not assessed' means exactly that. |
+| `knownLimitations` | string | yes |  | open | OWHS v0.2 design choice |
 | `recallPeriod` | string | no |  | not separately assigned; entity restrictions apply | The instrument's recall period where its source specifies one, for example 'preceding two weeks'. Distinct from observationWindow. |
 | `scoringDescriptor` | object | yes |  | open | aggregation method / estimation family / window (open descriptor, no method enum) |
 | `scoringDescriptor.descriptorId` | string (pattern) | yes |  | inherited: open (from `scoringDescriptor`) | Identifier of this descriptor. |
@@ -381,7 +381,7 @@ Declared statutory scheme or commercial workforce benefit. No eligibility, rate 
 | `entitlementId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
 | `orgId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
 | `layer` | string (code) | yes | codelist:benefit-layer@0.1.0 | open | the statutory/commercial split |
-| `statutory` | object | no |  | open | **SSP** entitlement semantics (statutory layer) |
+| `statutory` | object | no |  | open | closed statutory-term object; dated and sourced; no rate or eligibility is computed |
 | `statutory.scheme` | string (pattern) | yes |  | inherited: open (from `statutory`) |  |
 | `statutory.eligibility` | string | yes |  | inherited: open (from `statutory`) |  |
 | `statutory.waitingDays` | integer | no |  | inherited: open (from `statutory`) |  |
@@ -411,8 +411,8 @@ Producer-held aggregate event counts. This is not an employer-output record: use
 | `utilisationId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
 | `orgId` | string (pattern) | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice |
 | `entitlementId` | string (pattern) | yes |  | open | OWHS v0.2 design choice |
-| `periodStart` | date | yes |  | open | OWHS v0.2 design choice |
-| `periodEnd` | date | yes |  | open | OWHS v0.2 design choice |
+| `periodStart` | date | yes |  | open | OWHS v0.2 design choice: inclusive reporting dates |
+| `periodEnd` | date | yes |  | open | OWHS v0.2 design choice: inclusive reporting dates |
 | `usageCount` | integer | yes |  | aggregate-only | counts only, **never individual claims** |
 | `claimCount` | integer | no |  | aggregate-only | Claim events, never an individual claim record. Repeated claims may exceed n. |
 | `n` | integer | yes |  | open | distinct people represented across the recorded service-use and claim events in this period; not the whole eligible workforce and not automatically the denominator for either event category separately; a released metric requires its own distinct-person count and completion metadata in AggregateReport |
@@ -447,7 +447,7 @@ Employer-visible aggregate results and their suppression declarations. Structura
 | `unitId` | string (pattern) | no |  | open | OrgUnit reference; required at unit level, forbidden at org level. |
 | `periodStart` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
 | `periodEnd` | date | yes |  | not separately assigned; entity restrictions apply | OWHS v0.2 design choice: inclusive reporting dates |
-| `n` | integer | yes |  | open | respondent count |
+| `n` | integer | yes |  | open | distinct people represented across the recorded service-use and claim events in this period; not the whole eligible workforce and not automatically the denominator for either event category separately; a released metric requires its own distinct-person count and completion metadata in AggregateReport |
 | `observationCount` | integer | no |  | not separately assigned; entity restrictions apply | Responses underlying the estimate; may exceed n with repeated observations. |
 | `headcount` | integer | yes |  | open | denominator |
 | `eligibleN` | integer | yes |  | not separately assigned; entity restrictions apply | Distinct people eligible or offered this metric in the window. |

@@ -9,6 +9,16 @@ Registry grade corrections are not here. They have their own numbered log at
 
 ## 6 September 2026
 
+### Fixed: the organisation size band said Companies Act, its code list says otherwise
+
+The `sizeBand` row in the Organisation field table carried the version 0.1 anchor, "Companies Act 2006
+micro/small/medium bands". `codelists/org-size-band.json` states in its own anchor that these are
+employee-count bands informed by DBT business population statistics and are **not** a Companies Act
+company-size classification, and `tools/check_codelist_mappings.py` already asserts that. The
+specification contradicted its own code list on a definitional anchor. `tools/build_spec_v0_2.py` now
+lets a version 0.2 redefinition override an anchor carried from the version 0.1 table, and the row
+matches the code list.
+
 ### Fixed: the published specification page had drifted from its source
 
 `site/spec/index.html` was rendered once and then edited by hand alongside the markdown. The page

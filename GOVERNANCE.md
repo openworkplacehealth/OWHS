@@ -17,7 +17,7 @@ We are explicit about this rather than hiding it: a standard has to start somewh
 
 Alltoogether develops commercial products that may implement OWHS. The standard does not require use of any Alltoogether product, and the project publishes its contribution, decision and change processes openly.
 
-A standard stewarded by a company with products in the same field carries a real conflict, and no wording removes it. What manages it is process, in public: every change goes through a visible history; every material decision is logged with reasons; the instrument registry marks the instruments Alltoogether's own products use, so a reader checking for favourable treatment can do so at a glance; and when evidence points against something the steward's products use, the change follows the same public process as any other.
+A standard stewarded by a company with products in the same field carries a real conflict, and no wording removes it. What manages it is process, in public: every change goes through a visible history; every material decision is logged with reasons; and when evidence points against something the steward's products use, the change follows the same public process as any other.
 
 ## How governance evolves
 
