@@ -1,0 +1,18 @@
+{
+  "observationId": "obs-1",
+  "orgId": "org-demo",
+  "pseudonymId": "p-7f3a",
+  "contextId": "ctx-2026q3",
+  "itemId": "item-energy",
+  "itemVersion": "2",
+  "constructCode": "mental-health",
+  "nativeValue": 4,
+  "normalisedValue": 75,
+  "occasionTs": "2026-08-12T09:15:00Z",
+  "safeguardingCategory": false,
+  "collectionChannel": "app",
+  "samplingDesign": {
+    "design": "rotating-subset",
+    "scheduleRef": "sched-a"
+  }
+}

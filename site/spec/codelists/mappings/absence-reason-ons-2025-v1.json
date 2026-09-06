@@ -1,0 +1,114 @@
+{
+  "id": "absence-reason-ons-2025",
+  "version": "1.0.0",
+  "kind": "crosswalk",
+  "note": "A crosswalk between the ONS 2025 workbook's reason categories and absence-reason@0.2.0, with the relation of each row to the legacy absence-reason@0.1.0 codes. Not a code list.",
+  "source_url": "https://www.ons.gov.uk/file?uri=%2Femploymentandlabourmarket%2Fpeopleinwork%2Femploymentandemployeetypes%2Fdatasets%2Fsicknessabsenceinthelabourmarket%2F2025%2Fsicknessabsence2025.xlsx",
+  "source_landing_page": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/datasets/sicknessabsenceinthelabourmarket",
+  "source_published": "2026-05-01",
+  "source_sha256": "3dc547c84b70a4d4a3c65841ead2cfafa6f8a10ced2810a8b7608803519f45de",
+  "source_tables": [
+    "Table 4",
+    "Table 4a",
+    "Table 5"
+  ],
+  "source_cells": "A5:A15 of each table; A16 is the total and has no row here; notes 12 and 13 on the Notes sheet describe Other and the coding of COVID-19",
+  "target": "absence-reason@0.2.0",
+  "legacy": "absence-reason@0.1.0",
+  "rows": [
+    {
+      "source_label": "Minor illnesses",
+      "source_cell": "A5",
+      "target_code": "minor-illness",
+      "relation": "exact_category",
+      "legacy_code": "minor-illness",
+      "legacy_relation": "retained"
+    },
+    {
+      "source_label": "Musculoskeletal problems",
+      "source_cell": "A6",
+      "target_code": "musculoskeletal",
+      "relation": "exact_category",
+      "legacy_code": "musculoskeletal",
+      "legacy_relation": "retained"
+    },
+    {
+      "source_label": "Other",
+      "source_cell": "A7",
+      "target_code": "other",
+      "relation": "exact_category",
+      "legacy_code": "other",
+      "legacy_relation": "ambiguous_residual"
+    },
+    {
+      "source_label": "Mental health conditions",
+      "source_cell": "A8",
+      "target_code": "mental-health",
+      "relation": "exact_category",
+      "legacy_code": "mental-health",
+      "legacy_relation": "retained"
+    },
+    {
+      "source_label": "Gastrointestinal problems",
+      "source_cell": "A9",
+      "target_code": "gastrointestinal",
+      "relation": "exact_category",
+      "legacy_code": "gastrointestinal",
+      "legacy_relation": "retained"
+    },
+    {
+      "source_label": "Respiratory conditions",
+      "source_cell": "A10",
+      "target_code": "respiratory",
+      "relation": "exact_category",
+      "legacy_code": "respiratory",
+      "legacy_relation": "retained"
+    },
+    {
+      "source_label": "Eye/ear/nose/mouth/dental problems",
+      "source_cell": "A11",
+      "target_code": "eye-ear-nose-mouth-dental",
+      "relation": "exact_category",
+      "legacy_code": null,
+      "legacy_relation": "no_exact_mapping",
+      "explanatory_note": "A broad analytical roll-up of this category into the legacy Other would be an OWHS aggregation, not a source mapping; it is not a default conversion."
+    },
+    {
+      "source_label": "Genito-urinary problems",
+      "source_cell": "A12",
+      "target_code": "genito-urinary",
+      "relation": "exact_category",
+      "legacy_code": null,
+      "legacy_relation": "no_exact_mapping",
+      "explanatory_note": "A broad analytical roll-up of this category into the legacy Other would be an OWHS aggregation, not a source mapping; it is not a default conversion."
+    },
+    {
+      "source_label": "Heart, blood pressure, circulation problems",
+      "source_cell": "A13",
+      "target_code": "heart-blood-pressure-circulation",
+      "relation": "exact_category",
+      "legacy_code": null,
+      "legacy_relation": "no_exact_mapping",
+      "explanatory_note": "A broad analytical roll-up of this category into the legacy Other would be an OWHS aggregation, not a source mapping; it is not a default conversion."
+    },
+    {
+      "source_label": "Headaches and migraines",
+      "source_cell": "A14",
+      "target_code": "headaches-migraines",
+      "relation": "exact_category",
+      "legacy_code": null,
+      "legacy_relation": "no_exact_mapping",
+      "explanatory_note": "A broad analytical roll-up of this category into the legacy Other would be an OWHS aggregation, not a source mapping; it is not a default conversion."
+    },
+    {
+      "source_label": "Prefers not to give details",
+      "source_cell": "A15",
+      "target_code": "prefers-not-to-give-details",
+      "relation": "exact_category",
+      "legacy_code": null,
+      "legacy_relation": "unmappable_non_disclosure"
+    }
+  ],
+  "legacy_policy": "Do not automatically upgrade a legacy Other value. The old list did not specify how omitted categories or non-disclosure were recorded. Retain the original value and version, or seek source information for reclassification. A lossy six-category analytical roll-up must be labelled as an OWHS aggregation, with its mapping and non-disclosure handling disclosed; it is not the ONS Other category. Never infer the four missing categories by splitting an aggregate Other total.",
+  "missing_data": "A null or unanswered reason is not converted to prefers-not-to-give-details; those mean different things. A missing reason is not guessed to make a required field validate."
+}

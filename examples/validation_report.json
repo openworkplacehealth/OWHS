@@ -79,5 +79,306 @@
         "errors": []
       }
     }
-  }
+  },
+  "results_v0_2": {
+    "AbsenceEpisode": {
+      "ext-identifier-nested.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 2,
+        "errors": [
+          "[anyOf] ext/owhs-example/notes: [{'email': 'x@y.example'}] is not valid under any of the given schemas",
+          "[profile] ext/owhs-example: profile semantics not checked"
+        ]
+      },
+      "ext-namespace.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 2,
+        "errors": [
+          "[pattern] ext: 'Example' does not match '^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$'",
+          "[profile] ext/Example: profile semantics not checked"
+        ]
+      },
+      "ext-namespace.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 1,
+        "errors": [
+          "[profile] ext/owhs-example: profile semantics not checked"
+        ]
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 4,
+        "errors": [
+          "[additionalProperties] <root>: Additional properties are not allowed ('name' was unexpected)",
+          "[required] <root>: 'sourceProvenance' is a required property",
+          "[pattern] pseudonymId: 'EMP-Jane-Smith' does not match '^owhs:pseudo:[0-9a-f]{16,64}$'",
+          "[enum] reasonCode: 'back-pain' is not one of ['minor-illness', 'musculoskeletal', 'other', 'mental-health', 'gastrointestinal', 'respiratory', 'eye-ear-nose-mouth-dental', 'genito-urinary', 'heart-blood-pressure-circulation', 'headaches-migraines', 'prefers-not-to-give-details']"
+        ]
+      },
+      "new-reason.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "non-disclosure.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "unknown-reason.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[enum] reasonCode: 'unknown' is not one of ['minor-illness', 'musculoskeletal', 'other', 'mental-health', 'gastrointestinal', 'respiratory', 'eye-ear-nose-mouth-dental', 'genito-urinary', 'heart-blood-pressure-circulation', 'headaches-migraines', 'prefers-not-to-give-details']"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "AggregateReport": {
+      "benchmark-scalar.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[type] benchmarkRef: 'bench-uk-2026' is not of type 'object'"
+        ]
+      },
+      "n-above-eligible.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 2,
+        "errors": [
+          "[maximum] completionRate: 1.25 is greater than the maximum of 1",
+          "[C7] <root>: n 25 <= eligibleN 20 <= headcount 40 does not hold"
+        ]
+      },
+      "n4-unsuppressed.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[const] suppressed: True was expected"
+        ]
+      },
+      "observations-below-n.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C8] <root>: observationCount 9 is below n 12"
+        ]
+      },
+      "org-level-with-unit.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[not] <root>: {'reportId': 'rep-1', 'orgId': 'org-demo', 'level': 'org', 'unitId': 'unit-ops', 'periodStart': '2026-07-01', 'periodEnd': '2026-09-30', 'n': 12, 'observationCount': 30, 'headcount': 40, 'eligibleN': 20, 'completionRate': 0.6, 'metricCode': 'energy-mean', 'measureKind': 'observation', 'releaseCategory': 'ordinary', 'value': 71.5, 'interval': {'low': 65.0, 'high': 78.0, 'level': 0.95, 'method': 'bootstrap percentile'}, 'suppressed': False, 'contextId': 'ctx-2026q3', 'benchmarkRef': {'benchmarkId': 'bench-uk-2026', 'releaseVersion': '2026.1', 'sourceRef': 'https://example.org/benchmarks/2026.1'}} should not be valid under {'required': ['unitId']}"
+        ]
+      },
+      "period-reversed.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C3] <root>: periodEnd '2026-09-30' precedes periodStart '2026-10-01'"
+        ]
+      },
+      "rate-wrong.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[C9] <root>: completionRate 0.15 is not n/eligibleN = 0.6"
+        ]
+      },
+      "safeguarding-n100-unsuppressed.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[const] suppressed: True was expected"
+        ]
+      },
+      "severe-n10.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "severe-n9-unsuppressed.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[const] suppressed: True was expected"
+        ]
+      },
+      "suppressed-below-floor.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "suppressed-with-value.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[not] <root>: {'reportId': 'rep-1', 'orgId': 'org-demo', 'level': 'unit', 'unitId': 'unit-ops', 'periodStart': '2026-07-01', 'periodEnd': '2026-09-30', 'n': 12, 'observationCount': 30, 'headcount': 40, 'eligibleN': 20, 'completionRate': 0.6, 'metricCode': 'energy-mean', 'measureKind': 'observation', 'releaseCategory': 'ordinary', 'value': 71.5, 'interval': {'low': 65.0, 'high': 78.0, 'level': 0.95, 'method': 'bootstrap percentile'}, 'suppressed': True, 'contextId': 'ctx-2026q3', 'benchmarkRef': {'benchmarkId': 'bench-uk-2026', 'releaseVersion': '2026.1', 'sourceRef': 'https://example.org/benchmarks/2026.1'}, 'suppressionReason': 'low-completion'} should not be valid under {'anyOf': [{'required': ['value']}, {'required': ['interval']}]}"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "zero-eligible.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "InstrumentAdministration": {
+      "abandoned-with-score.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[not] <root>: {'administrationId': 'adm-1', 'orgId': 'org-demo', 'pseudonymId': 'p-7f3a', 'contextId': 'ctx-2026q3', 'instrumentId': 'who-5', 'instrumentCitation': 'Topp CW et al. The WHO-5 Well-Being Index: a systematic review of the literature. Psychother Psychosom 2015;84:167-176.', 'instrumentVersion': '1998', 'occasionTs': '2026-08-12T09:20:00+01:00', 'constructCodes': ['mental-health'], 'completionStatus': 'abandoned', 'totalScore': 68, 'band': 'moderate', 'aboveThresholdFlag': False} should not be valid under {'anyOf': [{'required': ['totalScore']}, {'required': ['subscaleScores']}, {'required': ['band']}, {'required': ['aboveThresholdFlag']}]}"
+        ]
+      },
+      "complete-without-score.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[anyOf] <root>: {'administrationId': 'adm-1', 'orgId': 'org-demo', 'pseudonymId': 'p-7f3a', 'contextId': 'ctx-2026q3', 'instrumentId': 'who-5', 'instrumentCitation': 'Topp CW et al. The WHO-5 Well-Being Index: a systematic review of the literature. Psychother Psychosom 2015;84:167-176.', 'instrumentVersion': '1998', 'occasionTs': '2026-08-12T09:20:00+01:00', 'constructCodes': ['mental-health'], 'completionStatus': 'complete', 'band': 'moderate', 'aboveThresholdFlag': False} is not valid under any of the given schemas"
+        ]
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 2,
+        "errors": [
+          "[minItems] constructCodes: [] should be non-empty",
+          "[not] subscaleScores: 'email' should not be valid under {'enum': ['name', 'nino', 'email', 'dateOfBirth', 'address']}"
+        ]
+      },
+      "subscales-only.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "MeasurementContext": {
+      "equal-instants-different-offsets.valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      },
+      "window-and-scale.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 2,
+        "errors": [
+          "[C4] <root>: observationWindow end '2026-09-29T21:00:00Z' precedes start '2026-09-30T00:00:00+02:00' (compared as UTC instants)",
+          "[C5] <root>: nativeScale min 5 is not below max 1"
+        ]
+      }
+    },
+    "OHEpisode": {
+      "ext-clinical-key.invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 2,
+        "errors": [
+          "[not] ext/owhs-x: 'diagnosis' should not be valid under {'enum': ['name', 'nino', 'email', 'dateOfBirth', 'address', 'diagnosis', 'clinicalCauseCode', 'symptoms', 'testResults', 'reportText', 'history']}",
+          "[profile] ext/owhs-x: profile semantics not checked"
+        ]
+      },
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 3,
+        "errors": [
+          "[additionalProperties] <root>: Additional properties are not allowed ('clinicalCauseCode', 'diagnosis' were unexpected)",
+          "[not] <root>: {'ohEpisodeId': 'oh-BAD', 'pseudonymId': 'owhs:pseudo:a1b2c3d4e5f60718', 'referralReason': 'long-term-absence', 'referralDate': '2026-03-05', 'fitnessOpinion': 'unfit', 'opinionReleasedToEmployer': False, 'diagnosis': 'Major depressive disorder', 'clinicalCauseCode': '370143000'} should not be valid under {'anyOf': [{'required': ['diagnosis']}, {'required': ['clinicalCauseCode']}, {'required': ['symptoms']}, {'required': ['testResults']}, {'required': ['reportText']}, {'required': ['history']}]}",
+          "[const] opinionReleasedToEmployer: True was expected"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "ReturnToWorkOutcome": {
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 1,
+        "errors": [
+          "[not] <root>: {'outcomeId': 'rtw-BAD', 'absenceEpisodeId': 'abs-2026-000123', 'pseudonymId': 'owhs:pseudo:a1b2c3d4e5f60718', 'outcomeType': 'did-not-return', 'adjustmentTypes': ['phased-return']} should not be valid under {'required': ['adjustmentTypes']}"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    "WellbeingObservation": {
+      "invalid": {
+        "expected": "fail",
+        "exit_code": 1,
+        "error_count": 6,
+        "errors": [
+          "[required] <root>: 'orgId' is a required property",
+          "[required] <root>: 'contextId' is a required property",
+          "[maximum] normalisedValue: 130 is greater than the maximum of 100",
+          "[format] occasionTs: '2026-08-12T09:15:00' is not a 'date-time'",
+          "[pattern] occasionTs: '2026-08-12T09:15:00' does not match '(Z|[+-]\\\\d{2}:\\\\d{2})$'",
+          "[required] samplingDesign: 'scheduleRef' is a required property"
+        ]
+      },
+      "valid": {
+        "expected": "pass",
+        "exit_code": 0,
+        "error_count": 0,
+        "errors": []
+      }
+    }
+  },
+  "note_v0_2": "Schema version 0.2: the three v0.1 entities with the extension mechanism and four measurement entities. Cross-field rules C3 to C9 apply to AggregateReport and MeasurementContext. Bundle-level joins are checked by tools/check_measurement.py, not here."
 }
