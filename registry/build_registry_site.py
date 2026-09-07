@@ -43,8 +43,9 @@ def _org_grade(r):
     return (r.get("criterion_validity_organisational") or {}).get("grade", "Absent")
 ORG_ABSENT = sum(1 for r in GRADED if _org_grade(r) == "Absent")
 ORG_THIN = sum(1 for r in GRADED if _org_grade(r) in ("Very low", "Low"))
-# The founding finding is computed, not asserted: an earlier hand-written version called test-retest the
-# "most-absent" property, which the matrix below it contradicted. Two other properties are absent more often.
+# These counters feed the matrix summary. They describe the current registered assessments and nothing
+# beyond them: they do not establish that one property is the field's weakest, since measurement
+# invariance and responsiveness also reach no High grade, and they measure no one's beliefs or usage.
 def _trt(r): return ((r.get("test_retest_reliability") or {}).get("grade")) or "Absent"
 TRT_HIGH = sum(1 for r in GRADED if _trt(r) == "High")
 TRT_WEAK = sum(1 for r in GRADED if _trt(r) in ("Absent", "Very low", "Low"))
@@ -708,14 +709,11 @@ maintained under the Open Workplace Health Standard, distinct from the normative
 it never reproduces them. It grades evidence about instruments, never evidence about interventions.</p>
 <p class="purpose">{PURPOSE}</p>
 
-<div class="callout"><b>The founding finding, stated plainly.</b> Two things stand out across the first {len(GRADED)} instruments.
-Test-retest reliability is the field's weakest property: {TRT_HIGH} of the {len(GRADED)} instruments reach a High grade for it
-and {TRT_WEAK} are Absent or Low, so practitioners tracking change over time are running on far less stability evidence than
-they assume. And the instruments in common UK workplace use carry little evidence that
-their scores predict recorded work outcomes such as absence or turnover, while the instruments that carry that evidence, built
-in the occupational-epidemiology tradition, are not in common UK use. Organisational criterion validity is absent for
-{ORG_ABSENT} of the {len(GRADED)} and thin for a further {ORG_THIN}. The clinical screeners are superbly evidenced for their
-constructs and thinly evidenced for workplaces. The matrix below makes each of those asymmetries citable row by row.</div>
+<div class="callout"><b>What the current matrix records.</b> Across the {len(GRADED)} instruments,
+{TRT_HIGH} reach a High grade for test-retest reliability and {TRT_WEAK} are graded Absent, Very low or Low.
+Organisational criterion validity is recorded as Absent for {ORG_ABSENT} and graded Low or Very low for a further {ORG_THIN}.
+These counts describe the current registered assessments; they do not rank instruments or establish how commonly an instrument is used.
+The separate thin-status marker is explained in the matrix legend.</div>
 
 {freeze_banner()}
 <h2>The grade matrix</h2>
@@ -761,7 +759,7 @@ populations, in any country, whose construct sits in the workplace health and we
 time, properly or not at all, and the stages are public.</p>
 <p><b>Stage one, the instruments in common UK use.</b> The first {len(GRADED)} records: the instruments the OWHS question bank
 draws items from, so that every published item has an evidence record behind it, and the instruments UK employers and vendors
-most often field. Chosen for use, not for evidence, which is why the founding finding reads as it does.</p>
+most often field. Chosen for use, not for evidence.</p>
 <p><b>Stage two, the occupational-epidemiology tradition and the single items.</b> The instruments built to measure job conditions
 and validated against recorded outcomes in long cohorts: the Job Content Questionnaire and the Effort-Reward Imbalance
 questionnaire first, then the short demand-control forms and the organisational-justice scales. Alongside them, the
@@ -868,8 +866,7 @@ direction that harms a workplace reader. They are graded separately everywhere, 
 <h2 id="organisational-outcomes">Criterion validity against organisational outcomes</h2>
 <p>This property records whether an instrument's scores have been shown to relate to outcomes an organisation records:
 sickness absence, return to work, occupational health referral, enacted adjustments, benefit use, actual turnover, rated or
-objective performance, and safety incidents. Across this registry it is the property most often absent, and that absence is
-one of the registry's founding findings.</p>
+objective performance, and safety incidents. Across this registry it is the property most often absent.</p>
 <p><b>What counts as an outcome here.</b> An organisational outcome is an event the organisation recorded, an outcome linked
 from a register, or a performance measure rated independently of the person completing the instrument. Self-reported
 constructs do not count in this property, however work-related they are: an association between an instrument and
