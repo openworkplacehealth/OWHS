@@ -73,6 +73,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
     <a href="instrument-registry/index.html">Instrument registry</a>
     <a href="methods.html">How we grade</a>
     <a href="governance.html">Governance</a>
+    <a href="review.html">Open review</a>
     <a href="changelog.html">Changelog</a>
     <a href="search.html">Search</a>
   </nav>
@@ -83,6 +84,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <p class="meta">contribute · updated 6 September 2026 · spec v0.2 draft · registry v0.9.0</p>
 
   <p>OWHS is an early open specification and an instrument evidence registry, both published to be improved. The ask is deliberately small. Nobody is being asked to endorse the standard, join a working group, adopt it, or put their name to anything. The most useful thing an outsider can do is find where it is wrong.</p>
+  <p>Looking for a specific question to help with? See <a href="review.html">open questions and corrections</a>.</p>
 
   <div class="callout">
     <p><strong>You do not need to endorse it or join anything.</strong> A note that says "this field cannot exist in my system" or "this grade is wrong, here is the paper" is a complete contribution. Substantive contributions are reviewed in the next published maintenance cycle. The project makes no response-time promises except one: corrections of factual error take priority over all other work.</p>
@@ -91,13 +93,13 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2>Three asks</h2>
 
   <h3>1. Find the flaw</h3>
-  <p>Read one part of the <a href="spec/index.html">specification</a>, one code list, or one <a href="instrument-registry/index.html">registry record</a>, and say where it is wrong, ambiguous or unsafe. The privacy profile is the part that most needs hostile reading: if you can construct a payload that is conformant and still identifies a person, or an aggregate that leaks below the floor, that is the single most valuable report the project can receive. Raise it as a <em>privacy or safeguarding concern</em> in the repository, or by email if you would rather it stayed private until it is fixed.</p>
+  <p>Read one part of the <a href="spec/index.html">specification</a>, one code list, or one <a href="instrument-registry/index.html">registry record</a>, and say where it is wrong, ambiguous or unsafe. The privacy profile is the part that most needs hostile reading: if you can construct a payload that is conformant and still identifies a person, or an aggregate that leaks below the floor, that is the single most valuable report the project can receive. Raise it as a <a href="https://github.com/openworkplacehealth/OWHS/issues/new?template=1-privacy-safeguarding-concern.yml"><em>privacy or safeguarding concern</em></a> in the repository, or by email if you would rather it stayed private until it is fixed.</p>
 
   <h3>2. Find the missing field</h3>
-  <p>If you hold this kind of data, you know what the entities leave out. A sickness absence episode with no field for the thing your organisation actually records is a defect in the standard, not in your records. Suggest the field, the code list value or the definition, with one sentence on why it is needed and where it comes from. Raise it as a <em>schema, codelist or definition suggestion</em>.</p>
+  <p>If you hold this kind of data, you know what the entities leave out. A sickness absence episode with no field for the thing your organisation actually records is a defect in the standard, not in your records. Suggest the field, the code list value or the definition, with one sentence on why it is needed and where it comes from. Raise it as a <a href="https://github.com/openworkplacehealth/OWHS/issues/new?template=2-schema-codelist-definition-suggestion.yml"><em>schema, codelist or definition suggestion</em></a>.</p>
 
   <h3>3. Test-map one export</h3>
-  <p>Take one export you already produce (an absence report, a return-to-work log, an OH referral summary, a survey extract) and try to map it to one OWHS entity. Report where it broke: which fields had no home, which definitions did not match yours, where the privacy rules made the mapping impossible. A mapping that failed is worth as much to the project as one that succeeded. Raise it as an <em>implementation mapping report</em>. No data leaves your organisation: the report describes the mapping, never the records.</p>
+  <p>Take one export you already produce (an absence report, a return-to-work log, an OH referral summary, a survey extract) and try to map it to one OWHS entity. Report where it broke: which fields had no home, which definitions did not match yours, where the privacy rules made the mapping impossible. A mapping that failed is worth as much to the project as one that succeeded. Raise it as an <a href="https://github.com/openworkplacehealth/OWHS/issues/new?template=3-implementation-mapping-report.yml"><em>implementation mapping report</em></a>. No data leaves your organisation: the report describes the mapping, never the records.</p>
 
   <h2>The registry needs raters</h2>
   <p>The evidence grades in the <a href="instrument-registry/index.html">instrument registry</a> were assigned by one rater, Zak Fenton, who created OWHS and is employed by the steward. Because of that, all grades and statuses are frozen from first publication, and they stay frozen until two named psychometric raters who are not employees of the steward have joined and the inter-rater procedure in the <a href="instrument-registry/rubric.html">grading rubric</a> is in force. This is the registry's critical path and the project's most specific ask.</p>
@@ -110,7 +112,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2>Where to send it</h2>
   <table>
     <tr><th>Route</th><th>Use it for</th></tr>
-    <tr><td>Repository issue (public)</td><td>Any of the three asks, using the matching issue template at <a href="https://github.com/openworkplacehealth/OWHS">github.com/openworkplacehealth/OWHS</a>. Each template carries the interest declaration.</td></tr>
+    <tr><td>Repository issue (public)</td><td>Any of the three asks, using the matching issue template at <a href="https://github.com/openworkplacehealth/OWHS/issues/new/choose">choose an issue form</a>. Each template carries the interest declaration.</td></tr>
     <tr><td><a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a></td><td>Anything you would rather not raise in public, privacy concerns you want fixed before they are visible, and rater volunteers.</td></tr>
     <tr><td><a href="instrument-registry/corrections.html">Registry corrections</a></td><td>A wrong citation, sample size, licence date or grade in a registry record. Quote the cell, the rubric section, and the evidence.</td></tr>
   </table>
@@ -123,7 +125,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 
 <footer><div class="wrap">
   <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
-<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). The specification and registry are CC-BY 4.0.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
 </div></footer>
 </body>
 </html>
