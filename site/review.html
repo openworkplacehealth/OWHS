@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://openworkplacehealth.org/review.html">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/review.html">
+<meta property="og:title" content="Open questions and corrections · OWHS">
+<meta property="og:description" content="Help review OWHS: open questions about the specification, registry evidence needing re-examination, published corrections and ways to contribute.">
+<meta property="og:image" content="https://openworkplacehealth.org/owhs-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Open Workplace Health Standard: an open data standard for UK workplace health">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://openworkplacehealth.org/owhs-card.png">
+<!-- /auto -->
+<title>Open questions and corrections · OWHS</title>
+<meta name="description" content="Help review OWHS: open questions about the specification, registry evidence needing re-examination, published corrections and ways to contribute.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--body:#33393f;--muted:#5c646c;--line:#e3e6e9;--accent:#0b6e5f;--accent-soft:#e6f2f0;--paper:#ffffff;--wash:#f6f7f8;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:17px}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+h1,h2,h3{color:var(--ink);line-height:1.25}
+h1{font-size:clamp(28px,4.5vw,40px);font-weight:700;letter-spacing:-0.02em;margin-bottom:10px}
+h2{font-size:22px;font-weight:700;margin:40px 0 12px}
+h3{font-size:17px;font-weight:600;margin:24px 0 6px}
+p{margin:14px 0;max-width:760px}
+ul,ol{margin:14px 0 14px 22px}
+li{margin:7px 0}
+header{border-bottom:1px solid var(--line);padding:18px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover{color:var(--accent)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:34px}
+article{padding:56px 0 30px}
+.quote{background:var(--wash);border-left:4px solid var(--accent);padding:22px 26px;margin:26px 0}
+.quote p{font-size:17px;color:var(--ink);font-weight:500;margin:0 0 8px}
+.quote p:last-child{margin-bottom:0}
+.callout{background:var(--accent-soft);border-radius:8px;padding:20px 24px;margin:24px 0}
+.callout p{margin:8px 0}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:var(--wash);color:var(--ink);font-weight:600}
+.mono{font-family:var(--mono);font-size:13.5px}
+footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted)}
+</style>
+<!-- analytics --><script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_UBxs6DIFwK73c1QzudH8AWR6HHZtNAkqhpbz3lCcPfg',{api_host:'https://eu.i.posthog.com',ui_host:'https://eu.posthog.com',defaults:'2026-05-30',cookieless_mode:'always',person_profiles:'never',autocapture:false,capture_pageview:true,capture_pageleave:true,disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});</script><!-- /analytics -->
+</head>
+<body>
+
+<header><div class="nav">
+  <a class="mark" href="index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="why.html">The case</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="standard.html">Inside the standard</a>
+    <a href="question-bank/index.html">Question bank</a>
+    <a href="instrument-registry/index.html">Instrument registry</a>
+    <a href="methods.html">How we grade</a>
+    <a href="governance.html">Governance</a>
+    <a href="review.html">Open review</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="search.html">Search</a>
+  </nav>
+</div></header>
+
+<article><div class="wrap">
+  <h1>Open questions and corrections</h1>
+  <p class="meta">public review · list checked 7 September 2026</p>
+<p>OWHS is open to correction. This page brings together questions where evidence or practical experience would help, concerns about how evidence has been interpreted, and the record of changes already made.</p>
+<p>You can contribute a source, a counterexample or an implementation experience. You do not need to review the whole project to make a useful contribution.</p>
+<p><a href="#questions">Questions about the standard</a> · <a href="#evidence">Evidence needing review</a> · <a href="#corrections">Published corrections</a> · <a href="#contribute">Contribute</a></p>
+<p>The list below was checked on <strong>7 September 2026</strong>. Follow each source for subsequent comments and decisions. An open question is not a confirmed error. This page lists selected public questions; the <a href="methods.html">methods and limitations</a> and the <a href="spec/#the-honesty-pass-disputable-decisions-and-open-questions">specification's open questions</a> provide further context.</p>
+<h2 id="questions">Questions about the standard</h2>
+
+<h3 id="construct-domains">Which constructs should the vocabulary include?</h3>
+
+<p><strong>RFC 0001: proposal open for comment.</strong> Comment window: 7 September to 17 October 2026. Decision not yet taken at the date checked.</p>
+<p>The proposal concerns the construct-domain code list, its safeguarding and visibility fields, and its mapping to question-bank topic groups. Input is particularly useful on whether proposed constructs are sufficiently distinct, what has been omitted, and where a visibility default belongs.</p>
+<p><a href="https://github.com/openworkplacehealth/OWHS/blob/main/rfcs/0001-construct-domain-v0.2.md">Read RFC 0001</a> · <a href="https://github.com/openworkplacehealth/OWHS/issues/24">Join the existing discussion, #24</a></p>
+<h3 id="identifiable-subjects">What if an aggregate describes an identifiable manager?</h3>
+
+<p><strong>RFC 0002: proposal open for comment.</strong> Comment window: 7 September to 17 October 2026. Decision not yet taken at the date checked.</p>
+<p>The proposal asks how to handle outputs that describe a person other than the respondent, including team ratings of a manager. It seeks critique of the proposed protections, practical examples, and relevant data-protection and employment-law analysis. The proposed subject-count rule remains a proposal, not a demonstrated privacy guarantee. This decision must precede admission of subject-identifying codes under RFC 0001.</p>
+<p><a href="https://github.com/openworkplacehealth/OWHS/blob/main/rfcs/0002-subject-identifying-constructs.md">Read RFC 0002</a> · <a href="https://github.com/openworkplacehealth/OWHS/issues/25">Join the existing discussion, #25</a></p>
+<h3 id="score-comparability">What should a normalised score communicate?</h3>
+
+<p><strong>Open discussion, #16.</strong> Affects the representation and interpretation of normalised instrument scores. The thread asks what role the field should have and what evidence a comparison needs. Useful input includes scoring examples, limitations of rescaling and proposed alternatives. Earlier wording in the thread may predate the current specification.</p>
+<p><a href="https://github.com/openworkplacehealth/OWHS/issues/16">Read and contribute to #16</a></p>
+<h3 id="disclosure-authority">How should authority to disclose an occupational-health opinion be recorded?</h3>
+
+<p><strong>Open discussion, #17.</strong> Affects the occupational-health episode model. The thread asks how authorisation, the basis for disclosure and the time of release should be represented. Useful input includes synthetic workflow examples and relevant legal or professional sources. Earlier wording in the thread may predate the current specification.</p>
+<p><a href="https://github.com/openworkplacehealth/OWHS/issues/17">Read and contribute to #17</a></p>
+<h3 id="overlapping-reports">How should overlapping and repeated reports be handled?</h3>
+
+<p><strong>Open discussion, #18.</strong> Affects aggregate reporting and the privacy profile. The thread asks what additional rules are needed for reports whose groups or reporting periods overlap. Useful input includes synthetic counterexamples, disclosure-control methods and practical implementation constraints. The latest checked comment describes the question as substantively open despite prose changes.</p>
+<p><a href="https://github.com/openworkplacehealth/OWHS/issues/18">Read and contribute to #18</a></p>
+<h2 id="evidence">Evidence needing review</h2>
+
+<h3 id="isi-reference-standard">ISI: reference-standard evidence</h3>
+
+<p><strong>Re-adjudication requested, #33.</strong> Affects the ISI record's criterion-validity property for a reference standard in registry v0.9.0.</p>
+<p>The public notice questions the basis of the displayed grade. It asks reviewers to separate each study's sample, comparator, threshold and accuracy estimates, inspect the supporting full texts, and assess whether the published rubric's conditions are met. The notice links the original study and relevant pages. It does not announce a replacement grade or a recommendation to use the instrument.</p>
+<p><a href="https://github.com/openworkplacehealth/OWHS/issues/33">Read the notice and contribute to #33</a> · <a href="instrument-registry/isi.html">Inspect the ISI record</a></p>
+<h3 id="organisational-evidence">WAS and TIS-6: organisational criterion validity</h3>
+
+<p><strong>Listed for re-examination in the current methods.</strong> The methods page names these two cells. A review can help establish what the cited studies actually support for the stated organisational outcomes and populations. Please identify the record, property and source passage in any response.</p>
+<p><a href="methods.html">Read the methods statement</a> · <a href="https://github.com/openworkplacehealth/OWHS/issues/new?template=4-registry-correction.yml">Submit evidence or a correction</a></p>
+<p><strong>Independent psychometric review is still needed.</strong> Registry grades and statuses remain frozen under the <a href="instrument-registry/how-to-read.html#raters">published review policy</a>. Researchers interested in independent rating can <a href="mailto:hello@openworkplacehealth.org?subject=Independent%20psychometric%20review">contact the registry</a>, describing their relevant experience and any interests. Reviewing a record does not by itself appoint a rater or lift the freeze.</p>
+<h2 id="corrections">Published corrections</h2>
+
+<p>The <a href="instrument-registry/corrections.html">registry correction record</a> publishes numbered corrections with the previous and replacement values, evidence and notes. It also provides the sections for errata and rights of reply. The <a href="changelog.html">changelog</a> records changes to the specification, registry and site.</p>
+<p>These records have different purposes. A concern awaiting examination is not a published correction. A correction to one field does not establish that the rest of an instrument record has been independently verified.</p>
+<h2 id="contribute">Contribute a bounded piece of evidence</h2>
+
+<p>For a scientific concern, provide the instrument record and property, the exact statement being challenged, a primary source with a section or page, and the change or uncertainty you think follows. For an implementation problem, provide a synthetic example, the relevant specification or schema version, and what happened.</p>
+<ul>
+<li><a href="https://github.com/openworkplacehealth/OWHS/issues/new?template=4-registry-correction.yml">Submit a registry correction or evidence challenge</a>.</li>
+<li><a href="https://github.com/openworkplacehealth/OWHS/issues/new?template=2-schema-codelist-definition-suggestion.yml">Report a schema, code-list or definition problem</a>.</li>
+<li><a href="https://github.com/openworkplacehealth/OWHS/issues/new?template=3-implementation-mapping-report.yml">Share an implementation or mapping report</a>.</li>
+<li><a href="mailto:hello@openworkplacehealth.org?subject=OWHS%20public%20review">Email a contribution</a> if you do not use GitHub. Include the relevant question or record and whether you consent to being named.</li>
+</ul>
+<p>Declare relevant financial or professional interests. GitHub issues and comments are public under your account. Do not include real employee or patient data. If a concern could enable disclosure or exploitation, <a href="mailto:hello@openworkplacehealth.org?subject=Private%20privacy%20or%20safeguarding%20concern">email it privately first</a>.</p>
+<p>The <a href="contribute.html">contribution guide</a> and <a href="governance.html">governance page</a> explain how contributions and decisions are handled. Factual corrections take priority; no response deadline is promised. A closed discussion is not by itself evidence that the scientific or implementation question has been resolved.</p>
+</div></article>
+
+<footer><div class="wrap">
+  <p>The Open Workplace Health Standard (OWHS) · early open specification · <a href="index.html">openworkplacehealth.org</a></p>
+  <p>Specification prose is CC BY 4.0. Schemas, code lists, examples and tooling are Apache 2.0. Third-party instrument and survey-item wording remains with its source. <a href="legal.html">Legal</a></p>
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+</div></footer>
+</body>
+</html>

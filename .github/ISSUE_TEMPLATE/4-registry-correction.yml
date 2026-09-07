@@ -6,9 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Quote the cell, the rubric section you think was misapplied, and the evidence. Rubric v1.0: https://openworkplacehealth.org/instrument-registry/rubric.html
+        Quote the cell, identify the dataset and rubric versions, and give the rubric section and evidence. The published grading rubric is at https://openworkplacehealth.org/instrument-registry/rubric.html.
 
-        Grades and statuses are frozen until two named non-employee raters have joined. A correction that would move a grade is recorded, flagged on the cell, and applied when the freeze lifts. Corrections of fact (a wrong DOI, sample size, licence date or class) are made now.
+        Grades and statuses remain frozen until two named psychometric raters who are not employees of the steward have joined the registry and the inter-rater procedure in the rubric is in force. Submit suspected factual errors and grade or licence concerns for review. Any accepted change must be recorded through the public correction process; submitting an issue does not itself change a grade, status or licence class.
   - type: input
     id: record
     attributes:
@@ -97,4 +97,4 @@ body:
   - type: markdown
     attributes:
       value: |
-        Substantive contributions are reviewed in the next published maintenance cycle. Corrections of factual error take priority over all other work. There is no other response-time promise.
+        Corrections of factual error take priority over other registry work. There is no response-time promise.

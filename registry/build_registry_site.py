@@ -356,6 +356,7 @@ def page(title, body, desc="", here=""):
     <a href="index.html" class="here">Instrument registry</a>
     <a href="../methods.html">How we grade</a>
     <a href="../governance.html">Governance</a>
+    <a href="../review.html">Open review</a>
     <a href="../changelog.html">Changelog</a>
     <a href="../search.html">Search</a>
   </nav>
@@ -1075,8 +1076,13 @@ def build_corrections():
         for k, v in c.items():
             if v not in (None, "", []) and not base.get(k): base[k] = v
     entries = []
+    # Stable per-correction anchors, so a public notice can cite C-0007 directly. The ids must be
+    # unique and well formed before they become link targets that other pages depend on.
+    ids = [c.get("id") for c in merged.values()]
+    assert all(isinstance(i, str) and re.fullmatch(r"C-[0-9]{4}", i) for i in ids), f"correction ids malformed: {ids}"
+    assert len(ids) == len(set(ids)), f"duplicate correction ids: {ids}"
     for c in sorted(merged.values(), key=lambda x: x.get("id", ""), reverse=True):
-        entries.append(f"""<div class="prop">
+        entries.append(f"""<div class="prop" id="{esc(c.get("id"))}">
 <h3>{esc(c.get("id"))} &middot; {(f'<a href="{esc(c.get("instrument_id"))}.html">{esc(BY_ID.get(c.get("instrument_id"), {}).get("display_name", c.get("instrument_id")))}</a>' if c.get("instrument_id") else "every record")}</h3>
 <p class="findings">{md(c.get("description", ""))}</p>
 <p class="findings"><b>Was:</b> {md(c.get("old_value", ""))}</p>
@@ -1105,20 +1111,17 @@ def build_corrections():
 <p class="lede">Every correction to a published record is logged here with the old value, the new value, and the source
 that settled it. This page is trust infrastructure: the registry expects to be wrong sometimes and corrects itself in
 public, newest first.</p>
-<div class="callout"><b>To file a correction:</b> open an issue in the public repository (a template asks for the record, the
-field, the evidence and any interest you hold in the instrument) or write to hello@openworkplacehealth.org. Corrections of
-factual error take priority over all other registry work. Grades and statuses are single-rater and {esc(FROZEN_PHRASE)} until
-independent raters join (see <a href="how-to-read.html#raters">who graded this</a>); a correction can still fix any error of fact.</div>
-<h2>Corrections</h2>
+<div class="callout"><b>To submit a correction:</b> <a href="https://github.com/openworkplacehealth/OWHS/issues/new?template=4-registry-correction.yml">open a registry correction issue</a> or <a href="mailto:hello@openworkplacehealth.org">email hello@openworkplacehealth.org</a>. Identify the record, field, evidence and any financial or professional interest. Corrections of factual error take priority over other registry work. Grades and statuses remain frozen under the <a href="how-to-read.html#raters">published review policy</a>. Reporting a problem does not itself change a published grade, status or licence class.</div>
+<h2 id="corrections">Corrections</h2>
 {''.join(entries)}
-<h2>Errata</h2>
+<h2 id="errata">Errata</h2>
 {err}
-<h2>Right of reply</h2>
+<h2 id="right-of-reply">Right of reply</h2>
 <p class="findings">{esc(ror.get("policy", ""))}</p>
 {rr}
-<h2>Verifications</h2>
+<h2 id="verifications">Verifications</h2>
 {''.join(ver)}
-<h2>Dataset changes</h2>
+<h2 id="dataset-changes">Dataset changes</h2>
 {''.join(chg)}
 """
     (SITE / "corrections.html").write_text(page("Corrections, errata and right of reply | OWHS Instrument Registry", body,

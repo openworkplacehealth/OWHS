@@ -97,15 +97,16 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <p class="meta">every version of the registry and the specification, and every change to the site, dated · newest first · <a href="automation.html">how the monthly automation runs</a></p>
 
   <div class="tabs" role="tablist" aria-label="Changelog sections">
-  <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">19</span></button>
+  <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">20</span></button>
   <button type="button" class="tab" role="tab" id="tab-specification" aria-controls="panel-specification" aria-selected="false">Specification <span class="count">9</span></button>
-  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">29</span></button>
+  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">30</span></button>
 </div>
 
 <section class="panel" id="panel-registry" role="tabpanel" aria-labelledby="tab-registry" tabindex="0">
   <h2 class="panel-title">Instrument evidence registry</h2>
   <table>
     <tr><th>Version</th><th>Date</th><th>What changed</th></tr>
+    <tr><td class="mono">0.9.0</td><td>7 September 2026</td><td>Corrections page: each numbered correction now carries a stable anchor, so a public notice can cite one directly, and the section headings are addressable. The submission callout links the correction form and the contact address rather than describing them, and states that reporting a problem does not itself change a grade, status or licence class.</td></tr>
     <tr><td class="mono">0.9.0</td><td>7 September 2026</td><td>The founding finding is computed from the matrix rather than asserted. Test-retest reliability is named as the weakest property, with the count of instruments reaching High and the count Absent or Low taken from the grades; it is no longer called the most absent property, which two other properties are.</td></tr>
     <tr><td class="mono">0.9.0</td><td>6 September 2026</td><td>Corrections page: six of the nine corrections rendered with an empty description and empty Was and Now. The generator read the summary array rather than the full one; it now merges both by id.</td></tr>
     <tr><td class="mono">Page generator (v0.9.0 unchanged)</td><td>6 Sep 2026</td><td>The status line at the top of the <a href="instrument-registry/">registry index</a> names the specification draft the registry sits beside as v0.2 draft, where it said v0.1; the <a href="question-bank/">question bank</a> index carries the same change. No grade, status, licence class or dataset value changes.</td></tr>
@@ -149,6 +150,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2 class="panel-title">Site</h2>
   <table>
     <tr><th>Date</th><th>What changed</th></tr>
+    <tr><td>7 September 2026</td><td><a href="review.html">Open questions and corrections</a> brings together public review questions, evidence concerns and contribution routes. Registry corrections now have direct links and stable reference anchors.</td></tr>
     <tr><td>7 September 2026</td><td>Every page carries an Open Graph and Twitter card image, so a link shared on LinkedIn or X renders with a picture rather than a blank card.</td></tr>
     <tr><td>6 Sep 2026</td><td>Corrected: the worked record on <a href="standard.html">Inside the standard</a> used two field names the schema does not declare (<span class="mono">fitNoteProvided</span> and <span class="mono">workRelated</span>; the schema's are <span class="mono">fitNoteFlag</span> and <span class="mono">workRelatedFlag</span>), so the record the page called valid was not. The record now validates, the sentence before the validator output says what the second record changes, and a check runs the page's record through the reference validator and compares the output the page shows with the validator's, so the demonstration cannot drift from the schema again.</td></tr>
     <tr><td>6 Sep 2026</td><td>The <a href="question-bank/">question bank</a>'s Civil Service People Survey source recorded a landing page as its URL while its SHA-256 identified the 2024 Benchmark Results file. The source now carries that file's URL beside the hash, re-verified against the download. Wording, counts and every other field are unchanged.</td></tr>
@@ -186,7 +188,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 
 <footer><div class="wrap">
   <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
-<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). The specification and registry are CC-BY 4.0.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
 </div></footer>
 
 <script>

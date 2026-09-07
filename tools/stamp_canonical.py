@@ -15,7 +15,7 @@ if POLICY not in ("noindex", "index"):
     sys.exit(f"robots-policy.txt must say noindex or index, not {POLICY!r}")
 ROBOTS = '<meta name="robots" content="noindex, nofollow">' if POLICY == "noindex" else '<meta name="robots" content="index, follow">'
 MARK = ('<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS\u2122 is a trade mark of '
-        'All Toogether Ltd (UK application pending). The specification and registry are CC-BY 4.0.</p>'
+        'All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p>'
         '<p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. '
         'Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->')
 # Visit counting: PostHog in cookieless mode (nothing stored on the device, IP discarded at ingest), page views and page leave only.

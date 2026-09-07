@@ -1,0 +1,7 @@
+{
+ "tab": "registry",
+ "date": "2026-09-07",
+ "shown": "7 September 2026",
+ "html": "Corrections page: each numbered correction now carries a stable anchor, so a public notice can cite one directly, and the section headings are addressable. The submission callout links the correction form and the contact address rather than describing them, and states that reporting a problem does not itself change a grade, status or licence class.",
+ "version": "0.9.0"
+}
