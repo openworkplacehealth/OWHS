@@ -43,11 +43,12 @@ def _org_grade(r):
     return (r.get("criterion_validity_organisational") or {}).get("grade", "Absent")
 ORG_ABSENT = sum(1 for r in GRADED if _org_grade(r) == "Absent")
 ORG_THIN = sum(1 for r in GRADED if _org_grade(r) in ("Very low", "Low"))
-# The founding finding is computed, not asserted: an earlier hand-written version called test-retest the
-# "most-absent" property, which the matrix below it contradicted. Two other properties are absent more often.
+# These counters describe the current registered assessments. They do not establish
+# a field-wide ranking of measurement properties, instrument use or practitioners' beliefs.
 def _trt(r): return ((r.get("test_retest_reliability") or {}).get("grade")) or "Absent"
 TRT_HIGH = sum(1 for r in GRADED if _trt(r) == "High")
 TRT_WEAK = sum(1 for r in GRADED if _trt(r) in ("Absent", "Very low", "Low"))
+TRT_ABSENT = sum(1 for r in GRADED if _trt(r) == "Absent")
 REVIEW_DATE = D.get("generated", "2026-07-12")
 CONFIRMED = "2026-09-03"   # grade_last_confirmed across the dataset (rubric 1.6 re-read before first publication)
 FROZEN = str(RATER.get("frozen_since", "from first publication"))
@@ -700,7 +701,7 @@ def build_index():
         rows += f'<tr class="{size_class(r)}"><td><a href="{esc(r["instrument_id"])}.html">{esc(r["display_name"])}</a></td>{cells}</tr>\n'
     heads = "".join(f"<th>{esc(h)}</th>" for _, h in MATRIX_COLS)
     body = f"""
-<span class="status-chip">OWHS v0.2 draft &middot; resource, not the normative spec &middot; {len(GRADED)} instruments graded, {len(RECORDS)} records, {len(WATCHLIST)} on the watchlist &middot; stage one of the field &middot; dataset v{esc(D["version"])}</span>
+<span class="status-chip">OWHS v0.2 draft &middot; resource, not the normative spec &middot; {len(GRADED)} instruments graded, {len(RECORDS)} records, {len(WATCHLIST)} on the watchlist &middot; initial instrument set &middot; dataset v{esc(D["version"])}</span>
 <h1>Instrument Registry</h1>
 <p class="lede">An evidence registry for the instruments used to measure workplace health and wellbeing: per-property
 grades with provenance, licence status verified against current steward terms, and a public corrections log. It is a resource
@@ -708,14 +709,11 @@ maintained under the Open Workplace Health Standard, distinct from the normative
 it never reproduces them. It grades evidence about instruments, never evidence about interventions.</p>
 <p class="purpose">{PURPOSE}</p>
 
-<div class="callout"><b>The founding finding, stated plainly.</b> Two things stand out across the first {len(GRADED)} instruments.
-Test-retest reliability is the field's weakest property: {TRT_HIGH} of the {len(GRADED)} instruments reach a High grade for it
-and {TRT_WEAK} are Absent or Low, so practitioners tracking change over time are running on far less stability evidence than
-they assume. And the instruments in common UK workplace use carry little evidence that
-their scores predict recorded work outcomes such as absence or turnover, while the instruments that carry that evidence, built
-in the occupational-epidemiology tradition, are not in common UK use. Organisational criterion validity is absent for
-{ORG_ABSENT} of the {len(GRADED)} and thin for a further {ORG_THIN}. The clinical screeners are superbly evidenced for their
-constructs and thinly evidenced for workplaces. The matrix below makes each of those asymmetries citable row by row.</div>
+<div class="callout"><b>What the current matrix records.</b> Across the {len(GRADED)} instruments,
+{TRT_HIGH} reach a High grade for test-retest reliability and {TRT_WEAK} are graded Absent, Very low or Low.
+Organisational criterion validity is recorded as Absent for {ORG_ABSENT} and graded Low or Very low for a further {ORG_THIN}.
+These counts describe the current registered assessments; they do not rank instruments or establish how commonly an instrument is used.
+The separate thin-status marker is explained in the matrix legend.</div>
 
 {freeze_banner()}
 <h2>The grade matrix</h2>
@@ -759,9 +757,7 @@ invariance. The single-item measures, and what each has been shown to screen for
 <p>The registry's scope is the whole field: every instrument with published measurement-property evidence in working-age
 populations, in any country, whose construct sits in the workplace health and wellbeing code list. It is built one record at a
 time, properly or not at all, and the stages are public.</p>
-<p><b>Stage one, the instruments in common UK use.</b> The first {len(GRADED)} records: the instruments the OWHS question bank
-draws items from, so that every published item has an evidence record behind it, and the instruments UK employers and vendors
-most often field. Chosen for use, not for evidence, which is why the founding finding reads as it does.</p>
+<p><b>Stage one, the initial instrument set.</b> The initial set contains {len(GRADED)} instruments, including measures represented in the OWHS question bank. It is a bounded selection of the field, not a survey of UK employer usage or a census of measurement evidence. Further instruments enter through the <a href="admission.html">public admission route</a>.</p>
 <p><b>Stage two, the occupational-epidemiology tradition and the single items.</b> The instruments built to measure job conditions
 and validated against recorded outcomes in long cohorts: the Job Content Questionnaire and the Effort-Reward Imbalance
 questionnaire first, then the short demand-control forms and the organisational-justice scales. Alongside them, the
@@ -868,8 +864,7 @@ direction that harms a workplace reader. They are graded separately everywhere, 
 <h2 id="organisational-outcomes">Criterion validity against organisational outcomes</h2>
 <p>This property records whether an instrument's scores have been shown to relate to outcomes an organisation records:
 sickness absence, return to work, occupational health referral, enacted adjustments, benefit use, actual turnover, rated or
-objective performance, and safety incidents. Across this registry it is the property most often absent, and that absence is
-one of the registry's founding findings.</p>
+objective performance, and safety incidents. In the current set of {len(GRADED)} instruments, organisational criterion validity is recorded as Absent for {ORG_ABSENT}.</p>
 <p><b>What counts as an outcome here.</b> An organisational outcome is an event the organisation recorded, an outcome linked
 from a register, or a performance measure rated independently of the person completing the instrument. Self-reported
 constructs do not count in this property, however work-related they are: an association between an instrument and
@@ -887,8 +882,7 @@ something changes it: evidence about interventions is a different literature, an
 
 <h2>Test-retest is structured, not prose</h2>
 <p>Retest findings are recorded as structured entries (coefficient, coefficient type, interval, sample, population), so
-bundled ICCs and internal-consistency contamination cannot pass as stability evidence. This is the property the registry
-found weakest across the entire instrument set.</p>
+bundled ICCs and internal-consistency contamination cannot pass as stability evidence. In the current set of {len(GRADED)} instruments, test-retest reliability has {TRT_HIGH} High grades and {TRT_ABSENT} Absent cells.</p>
 
 <h2>Licence currency</h2>
 <p>Licence status is verified against the steward's current distribution terms, with the verification date shown on every
@@ -1051,8 +1045,17 @@ def build_admission():
     text = re.sub(r"^# .*\n", "", text, count=1)          # page supplies the h1
     text = re.sub(r"\n---\n\n\*Maintained under.*$", "\n", text, flags=re.S)   # page footer carries this
     text = text.replace("set out in the grading rubric.", "set out in the [grading rubric](rubric.html).")
+    # Dated editorial clarification of current explanatory text. ADMISSION-v1.1.md is the published
+    # policy source and is never rewritten here; if its wording moves, this refuses rather than
+    # silently rendering an uncorrected scope description.
+    _before = '**Stage one, the instruments in common UK use.** The first 27 records: the instruments the OWHS question bank draws items from, so that every published item has an evidence record behind it, and the instruments UK employers and vendors most often field. Chosen for use, not for evidence, which is why the founding finding reads as it does.'
+    if text.count(_before) != 1:
+        raise SystemExit("admission scope paragraph not found exactly once in ADMISSION source; "
+                         "the clarification below no longer matches and must be re-reviewed")
+    text = text.replace(_before, '**Stage one, the initial instrument set.** The initial set contains 27 instruments, including measures represented in the OWHS question bank. It is a bounded selection of the field, not a survey of UK employer usage or a census of measurement evidence.', 1)
     body = f"""
 <h1>How an instrument enters this registry</h1>
+<div class="callout"><b>Clarification, 7 September 2026.</b> The stage-one description below has been corrected. The initial set does not establish which instruments UK employers and vendors most often field or support a field-wide conclusion about measurement evidence. The <a href="ADMISSION-v1.1.md">dated policy source</a> is retained as published. Admission criteria, grading order and the independent-rater condition are unchanged.</div>
 <p class="lede">Who may propose an instrument, what a proposal must contain, what the registry checks before a record exists,
 and what happens to proposals it declines. Grading is a separate step under the <a href="rubric.html">rubric</a>; nothing here
 assigns a grade.</p>

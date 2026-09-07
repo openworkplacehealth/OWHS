@@ -9,6 +9,15 @@ Registry grade corrections are not here. They have their own numbered log at
 
 ## 7 September 2026
 
+### Fixed: item 5 claimed a comparability trade-off the specification cannot establish
+
+The item said a richer employer taxonomy that rolls up to the ONS categories would buy analytic resolution
+at the cost of the comparability the anchor exists to provide. Whether two sets of rates are comparable
+depends on population, collection method, numerator and denominator, period and weighting definitions.
+Neither the v0.2 schemas nor `codelists/absence-reason.json` and its ONS crosswalk establishes that
+trade-off. The item now separates category alignment, which the mapping does support, from rate
+comparability, which it does not.
+
 ### Fixed: the honesty pass disputed a reason taxonomy version 0.2 no longer uses
 
 Item 5 of the honesty pass was carried from version 0.1, where the absence-reason enum had six categories.

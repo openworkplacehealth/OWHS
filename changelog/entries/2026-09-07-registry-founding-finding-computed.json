@@ -2,6 +2,6 @@
  "tab": "registry",
  "date": "2026-09-07",
  "shown": "7 September 2026",
- "html": "The founding finding is computed from the matrix rather than asserted. Test-retest reliability is named as the weakest property, with the count of instruments reaching High and the count Absent or Low taken from the grades; it is no longer called the most absent property, which two other properties are.",
+ "html": "The registry summary now states counts derived from the published matrix: test-retest High and Absent, Very low or Low grades, and organisational criterion Absent and Low or Very low grades. These are descriptions of the current registered assessments. The earlier field-wide weakness and use-prevalence claims are withdrawn; the separate thin status is not a grade count.",
  "version": "0.9.0"
 }
