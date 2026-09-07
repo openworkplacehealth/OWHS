@@ -43,6 +43,11 @@ def _org_grade(r):
     return (r.get("criterion_validity_organisational") or {}).get("grade", "Absent")
 ORG_ABSENT = sum(1 for r in GRADED if _org_grade(r) == "Absent")
 ORG_THIN = sum(1 for r in GRADED if _org_grade(r) in ("Very low", "Low"))
+# The founding finding is computed, not asserted: an earlier hand-written version called test-retest the
+# "most-absent" property, which the matrix below it contradicted. Two other properties are absent more often.
+def _trt(r): return ((r.get("test_retest_reliability") or {}).get("grade")) or "Absent"
+TRT_HIGH = sum(1 for r in GRADED if _trt(r) == "High")
+TRT_WEAK = sum(1 for r in GRADED if _trt(r) in ("Absent", "Very low", "Low"))
 REVIEW_DATE = D.get("generated", "2026-07-12")
 CONFIRMED = "2026-09-03"   # grade_last_confirmed across the dataset (rubric 1.6 re-read before first publication)
 FROZEN = str(RATER.get("frozen_since", "from first publication"))
@@ -703,8 +708,9 @@ it never reproduces them. It grades evidence about instruments, never evidence a
 <p class="purpose">{PURPOSE}</p>
 
 <div class="callout"><b>The founding finding, stated plainly.</b> Two things stand out across the first {len(GRADED)} instruments.
-Test-retest reliability is the field's weakest and most-absent property: practitioners tracking change over time are running
-on far less stability evidence than they assume. And the instruments in common UK workplace use carry little evidence that
+Test-retest reliability is the field's weakest property: {TRT_HIGH} of the {len(GRADED)} instruments reach a High grade for it
+and {TRT_WEAK} are Absent or Low, so practitioners tracking change over time are running on far less stability evidence than
+they assume. And the instruments in common UK workplace use carry little evidence that
 their scores predict recorded work outcomes such as absence or turnover, while the instruments that carry that evidence, built
 in the occupational-epidemiology tradition, are not in common UK use. Organisational criterion validity is absent for
 {ORG_ABSENT} of the {len(GRADED)} and thin for a further {ORG_THIN}. The clinical screeners are superbly evidenced for their

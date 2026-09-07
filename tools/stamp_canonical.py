@@ -68,7 +68,13 @@ for p in sorted(SITE.rglob("*.html")):
              f'<meta property="og:url" content="{url}">']
     if title: block.append(f'<meta property="og:title" content="{" ".join(title.group(1).split())}">')
     if desc: block.append(f'<meta property="og:description" content="{desc.group(1)}">')
-    block += ['<meta name="twitter:card" content="summary">', '<!-- /auto -->']
+    # One shared social card. Without an og:image a link pasted into LinkedIn renders with no picture,
+    # and summary_large_image is what makes the card the wide format rather than a thumbnail.
+    block += [f'<meta property="og:image" content="{BASE}owhs-card.png">',
+              '<meta property="og:image:width" content="1200">', '<meta property="og:image:height" content="630">',
+              '<meta property="og:image:alt" content="The Open Workplace Health Standard: an open data standard for UK workplace health">',
+              '<meta name="twitter:card" content="summary_large_image">',
+              f'<meta name="twitter:image" content="{BASE}owhs-card.png">', '<!-- /auto -->']
     block = "\n".join(block)
     if "<!-- auto -->" in t2:
         t2 = re.sub(r"<!-- auto -->.*?<!-- /auto -->", lambda m: block, t2, count=1, flags=re.S)

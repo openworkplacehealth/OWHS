@@ -79,6 +79,7 @@ HONESTY_6 = ("6. **Closed core objects.** Rejecting undeclared properties preven
              "identifiers inside allowed string values. The `ext` mechanism is implemented in v0.2 (section 7): its namespace syntax, object shape and recursive "
              "named-key restrictions are checked without a profile, and an explicitly supplied profile adds its own constraints. An extension implementation must "
              "preserve the producer's P1 obligation and define its validation boundary explicitly.")
+HONESTY_5 = ("5. **Anchoring the reason taxonomy to ONS categories.** v0.1 carried the six-category list; v0.2 replaces it with the ten substantive categories of the 2025 ONS workbook plus the separate non-disclosure response, eleven codes in all, so the coarse buckets that argument was about are gone. What remains disputable is the anchoring itself: ONS designed these categories for a *population survey*, not for an employer episode record, and a richer employer taxonomy that rolls up to ONS would buy analytic resolution at the cost of the comparability the anchor exists to provide.")
 RESERVED_NOTE = "Reserved, no fields in v0.1 or v0.2"
 FIGURE_CAPTION = ("*Figure, the OWHS entity map as drawn for v0.1. Version 0.2 adds no entity and removes none; the field-level references are in the section 4 tables. "
                   "White boxes are organisation-level entities; tinted boxes are individual-level records held against the pseudonym; filled boxes are the outputs that leave; "
@@ -252,6 +253,9 @@ def compose():
     # item 6 of the disputed decisions is version-bound: v0.1 said the ext mechanism was not implemented; v0.2 implements it
     s10, n10 = re.subn(r"^6\. \*\*.*?(?=\n\n7\. \*\*)", HONESTY_6, s10, count=1, flags=re.S | re.M)
     assert n10 == 1, "item 6 of the honesty pass was not found"
+    # item 5 is version-bound too: v0.1 argued about a six-category enum that v0.2 replaced with eleven codes
+    s10, n5 = re.subn(r"^5\. \*\*.*?(?=\n\n6\. \*\*)", HONESTY_5, s10, count=1, flags=re.S | re.M)
+    assert n5 == 1, "item 5 of the honesty pass was not found"
     src = secs["Sources (primary)"]
     body = head + "\n".join(contents) + "\n" + s1 + s2 + s3 + "\n".join(field_tables()) + "\n---\n\n" + "\n".join(codelist_table()) + "\n---\n\n" + "\n".join(s6) + "\n---\n\n" + s7 + s8 + s9 + s10 + src
     body = body.replace("\n\n\n\n", "\n\n\n")
