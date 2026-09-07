@@ -1,0 +1,510 @@
+{
+ "kind": "owhs_licence_watch_source_plan",
+ "version": "1",
+ "note": "One planned acquisition per transport URL, fanned out to every instrument that cites it. Counters name their denominator: a URL is not an instrument-source relationship. A planned source that fails is unchecked, never unchanged, and no alternative page is substituted for it.",
+ "dataset": "instrument-evidence-base-v0.9.0.json",
+ "sources": [
+  {
+   "source_id": "SRC-001",
+   "url": "https://analysisfunction.civilservice.gov.uk/policy-store/personal-well-being/",
+   "instrument_ids": [
+    "ons-4"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901211952/https://analysisfunction.civilservice.gov.uk/policy-store/personal-well-being/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-002",
+   "url": "https://cdn.who.int/media/docs/default-source/mental-health/who-5_english-original4da539d6ed4b49389e3afe47cda2326a.pdf",
+   "instrument_ids": [
+    "who-5"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212048/https://cdn.who.int/media/docs/default-source/mental-health/who-5_english-original4da539d6ed4b49389e3afe47cda2326a.pdf",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-003",
+   "url": "https://data.geods.ac.uk/dataset/maps-financial-wellbeing-survey",
+   "instrument_ids": [
+    "fcs-maps"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212119/https://data.geods.ac.uk/dataset/maps-financial-wellbeing-survey",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-004",
+   "url": "https://eprovide.mapi-trust.org/",
+   "instrument_ids": [
+    "isi",
+    "wpai"
+   ],
+   "purpose": "general_landing_page",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212243/https://eprovide.mapi-trust.org/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-005",
+   "url": "https://maps.org.uk/en/about-us/terms-and-conditions",
+   "instrument_ids": [
+    "fcs-maps"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": null,
+   "reviewed_addition": {
+    "added_by_review": "source review of the developer and publisher pages",
+    "primary_source_basis": "the general downloadable-material terms the published data page links to"
+   }
+  },
+  {
+   "source_id": "SRC-006",
+   "url": "https://maps.org.uk/en/publications/research/working-with-our-survey-data",
+   "instrument_ids": [
+    "fcs-maps"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "http://web.archive.org/web/20251006070814/https://maps.org.uk/en/publications/research/working-with-our-survey-data",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-007",
+   "url": "https://nfa.dk/vaerktoejer/spoergeskemaer/spoergeskema-til-maaling-af-udbraendthed-cbi/copenhagen-burnout-inventory-cbi",
+   "instrument_ids": [
+    "cbi"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212428/https://nfa.dk/vaerktoejer/spoergeskemaer/spoergeskema-til-maaling-af-udbraendthed-cbi/copenhagen-burnout-inventory-cbi",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-008",
+   "url": "https://sajhrm.co.za/index.php/sajhrm/article/view/507",
+   "instrument_ids": [
+    "tis-6"
+   ],
+   "purpose": "article_licence_declaration",
+   "required": true,
+   "extraction_profile_id": "aosis-article-licence",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212551/https://sajhrm.co.za/index.php/sajhrm/article/view/507",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-009",
+   "url": "https://sites.google.com/view/ipaq/faq",
+   "instrument_ids": [
+    "ipaq-sf"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "google-sites-ipaq",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212634/https://sites.google.com/view/ipaq/faq",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-010",
+   "url": "https://sites.google.com/view/ipaq/home",
+   "instrument_ids": [
+    "ipaq-sf"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "google-sites-ipaq",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212709/https://sites.google.com/view/ipaq/home",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-011",
+   "url": "https://support.gl-assessment.co.uk/knowledge-base/assessments/general-health-questionnaire-support/about-the-general-health-questionnaire/faqs",
+   "instrument_ids": [
+    "ghq-12"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212745/https://support.gl-assessment.co.uk/knowledge-base/assessments/general-health-questionnaire-support/about-the-general-health-questionnaire/faqs",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-012",
+   "url": "https://warwick.ac.uk/services/innovations/wemwbs/licenses/",
+   "instrument_ids": [
+    "wemwbs"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214737/https://warwick.ac.uk/services/innovations/wemwbs/licenses/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-013",
+   "url": "https://warwick.ac.uk/services/innovations/wemwbs/licenses/nhs/",
+   "instrument_ids": [
+    "wemwbs"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214759/https://warwick.ac.uk/services/innovations/wemwbs/licenses/nhs/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-014",
+   "url": "https://www.3ihc.nl/",
+   "instrument_ids": [
+    "copsoq-iii"
+   ],
+   "purpose": "rights_scope_unverified",
+   "required": true,
+   "extraction_profile_id": "generic-landing-unverified",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901212937/https://www.3ihc.nl/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-015",
+   "url": "https://www.baua.de/EN/Topics/Prevention/Mental-health/Work-Ability-Index",
+   "instrument_ids": [
+    "wai",
+    "was"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901213041/https://www.baua.de/EN/Topics/Prevention/Mental-health/Work-Ability-Index",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-016",
+   "url": "https://www.copsoq-network.org/assets/Uploads/COPSOQ-network-guidelines-for-the-use-of-COPSOQ-III-290618sig.pdf",
+   "instrument_ids": [
+    "copsoq-iii"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901213151/https://www.copsoq-network.org/assets/Uploads/COPSOQ-network-guidelines-for-the-use-of-COPSOQ-III-290618sig.pdf",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-017",
+   "url": "https://www.copsoq-network.org/licence-guidelines-and-questionnaire",
+   "instrument_ids": [
+    "copsoq-iii"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901213216/https://www.copsoq-network.org/licence-guidelines-and-questionnaire",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-018",
+   "url": "https://www.eurofound.europa.eu/en/surveys/about-eurofounds-surveys/data-availability",
+   "instrument_ids": [
+    "eurofound-ewcs"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "http://web.archive.org/web/20250828041157/https://www.eurofound.europa.eu/en/surveys/about-eurofounds-surveys/data-availability",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-019",
+   "url": "https://www.gl-assessment.co.uk/policies/permissions/",
+   "instrument_ids": [
+    "ghq-12"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901213316/https://www.gl-assessment.co.uk/policies/permissions/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-020",
+   "url": "https://www.gl-assessment.co.uk/products/general-health-questionnaire/",
+   "instrument_ids": [
+    "ghq-12"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901213349/https://www.gl-assessment.co.uk/products/general-health-questionnaire/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-021",
+   "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results/civil-service-people-survey-2024-results-highlights",
+   "instrument_ids": [
+    "csps-wellbeing"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901213510/https://www.gov.uk/government/publications/civil-service-people-survey-2024-results/civil-service-people-survey-2024-results-highlights",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-022",
+   "url": "https://www.gov.uk/government/publications/civil-service-people-survey-2024-results/quality-and-methodology-information-for-the-civil-service-people-survey-2024",
+   "instrument_ids": [
+    "csps-wellbeing"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901213554/https://www.gov.uk/government/publications/civil-service-people-survey-2024-results/quality-and-methodology-information-for-the-civil-service-people-survey-2024",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-023",
+   "url": "https://www.hcp.med.harvard.edu/ncs/k6_scales.php",
+   "instrument_ids": [
+    "k10"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260308233203/https://www.hcp.med.harvard.edu/ncs/k6_scales.php",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-024",
+   "url": "https://www.hse.gov.uk/stress/standards/downloads.htm",
+   "instrument_ids": [
+    "hse-msit"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901213940/https://www.hse.gov.uk/stress/standards/downloads.htm",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-025",
+   "url": "https://www.hse.gov.uk/stress/standards/notesindicatortool.htm",
+   "instrument_ids": [
+    "hse-msit"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214106/https://www.hse.gov.uk/stress/standards/notesindicatortool.htm",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-026",
+   "url": "https://www.mindgarden.com/117-maslach-burnout-inventory-mbi",
+   "instrument_ids": [
+    "mbi"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214143/https://www.mindgarden.com/117-maslach-burnout-inventory-mbi",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-027",
+   "url": "https://www.mindgarden.com/maslach-burnout-inventory-mbi/765-mbi-license-to-administer.html",
+   "instrument_ids": [
+    "mbi"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214218/https://www.mindgarden.com/maslach-burnout-inventory-mbi/765-mbi-license-to-administer.html",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-028",
+   "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/wellbeing/methodologies/surveysusingthe4officefornationalstatisticspersonalwellbeingquestions",
+   "instrument_ids": [
+    "ons-4"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214252/https://www.ons.gov.uk/peoplepopulationandcommunity/wellbeing/methodologies/surveysusingthe4officefornationalstatisticspersonalwellbeingquestions",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-029",
+   "url": "https://www.peggykern.org/questionnaires.html",
+   "instrument_ids": [
+    "perma"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214327/https://www.peggykern.org/questionnaires.html",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-030",
+   "url": "https://www.phqscreeners.com/",
+   "instrument_ids": [
+    "gad-7",
+    "phq-9"
+   ],
+   "purpose": "general_landing_page",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214402/https://www.phqscreeners.com/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-031",
+   "url": "https://www.phqscreeners.com/terms",
+   "instrument_ids": [
+    "phq-9"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214436/https://www.phqscreeners.com/terms",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-032",
+   "url": "https://www.ttl.fi/en",
+   "instrument_ids": [
+    "wai",
+    "was"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214513/https://www.ttl.fi/en",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-033",
+   "url": "https://www.ttl.fi/en/themes/well-being-at-work-and-work-ability/tyokyky/using-the-work-ability-index-wai",
+   "instrument_ids": [
+    "wai",
+    "was"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": null,
+   "reviewed_addition": {
+    "added_by_review": "source review of the developer and publisher pages",
+    "primary_source_basis": "the developer's own statement of research and own-operations use, its conditions and the restriction on selling the method"
+   }
+  },
+  {
+   "source_id": "SRC-034",
+   "url": "https://www.waiplus.online/",
+   "instrument_ids": [
+    "wai",
+    "was"
+   ],
+   "purpose": "general_landing_page",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "http://web.archive.org/web/20260418041234/https://www.waiplus.online/",
+   "reviewed_addition": null
+  },
+  {
+   "source_id": "SRC-035",
+   "url": "https://www.wilmarschaufeli.nl/publications/Schaufeli/Tests/UWES_GB_17.pdf",
+   "instrument_ids": [
+    "uwes-9"
+   ],
+   "purpose": "terms_document",
+   "required": true,
+   "extraction_profile_id": "generic-page-or-pdf",
+   "extraction_profile_version": "1.0.0",
+   "required_linked_document_ids": [],
+   "archived_reference": "https://web.archive.org/web/20260901214651/https://www.wilmarschaufeli.nl/publications/Schaufeli/Tests/UWES_GB_17.pdf",
+   "reviewed_addition": null
+  }
+ ]
+}

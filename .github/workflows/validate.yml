@@ -71,6 +71,8 @@ jobs:
         run: python tools/check_workflows.py
       - name: cycle definition and verifier contract
         run: python tools/cycle.py --self-test
+      - name: licence source watcher behaves as documented
+        run: python tools/watch_licences.py --self-test
       - name: harvester pure functions and expected channel set
         run: python tools/harvest.py --self-test
       - name: retraction watcher coverage accounting

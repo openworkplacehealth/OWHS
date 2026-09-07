@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-09-07",
+ "shown": "7 September 2026",
+ "html": "The licence-source watcher now compares a representation that keeps hyperlink targets and rights metadata alongside the visible text, so a licence link repointed at different terms is a change even when the wording is identical. It plans one acquisition for each source URL and reports separately how many URLs were checked and how many instrument-source relationships they cover, retains the bytes it compared, and states an unreachable source as unchecked rather than unchanged."
+}
