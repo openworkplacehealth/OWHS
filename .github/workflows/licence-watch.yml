@@ -26,30 +26,34 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: compare licence pages with baseline
+      - name: compare licence sources with the recorded baseline
         id: w
         continue-on-error: true
-        run: python tools/watch_licences.py --dry-run
+        run: python tools/watch_licences.py --plan evidence/licence-watch-sources-v1.json --captures /tmp/licence-captures --report /tmp/licence-report.json
+      # The public artifact is an allowlist: the run report only. The capture directory holds whole
+      # fetched pages and is never uploaded by a broad glob.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: licence-changes
-          path: evidence/licence-changes.json
-      - name: issue on change or incomplete run
+          name: licence-source-report
+          path: /tmp/licence-report.json
+      - name: open or update the one source-monitoring issue
         if: steps.w.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          MARKER="<!-- owhs-licence-source-monitor -->"
           python - <<'PY' > /tmp/body.md
-          import json
-          d = json.load(open('evidence/licence-changes.json'))
-          print(f"Run status **{d['status']}**: {d['attempted']} licence pages attempted, {d['succeeded']} fetched, {len(d['changed'])} changed, {len(d['unreachable'])} unreachable. An unreachable page is unchecked, not unchanged.\n")
-          if d['changed']:
-              print("The visible text of these pages differs from the recorded baseline. Read each against the registry record and the archived copy; if the terms changed, propose a correction through the usual process. This records a change of text, not a change of licence.")
-              for c in d['changed']:
-                  print(f"- **{c['instrument']}**: {c['url']}" + (f" (archived copy: {c['archived_copy']})" if c.get('archived_copy') else ""))
-          if d['unreachable']:
-              print("\nUnreachable this run (unchecked):")
-              for u in d['unreachable']: print(f"- {u['instrument']}: {u['url']} ({u['error']})")
+          import json, os
+          d = json.load(open('/tmp/licence-report.json'))
+          print("<!-- owhs-licence-source-monitor -->")
+          print(d["issue_body"])
+          print()
+          print(f"Run: {os.environ.get('GITHUB_SERVER_URL','')}/{os.environ.get('GITHUB_REPOSITORY','')}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}")
           PY
-          gh issue create --title "Licence watch $(date -u +%Y-%m-%d): $(python -c "import json;print(json.load(open('evidence/licence-changes.json'))['status'])") run, $(python -c "import json;print(len(json.load(open('evidence/licence-changes.json'))['changed']))") changed" --label licence --body-file /tmp/body.md
+          EXISTING=$(gh issue list --label licence --state open --search "$MARKER in:body" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file /tmp/body.md
+          else
+            gh issue create --title "Licence source monitoring" --label licence --body-file /tmp/body.md
+          fi
