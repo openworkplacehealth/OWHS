@@ -97,15 +97,16 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <p class="meta">every version of the registry and the specification, and every change to the site, dated · newest first · <a href="automation.html">how the monthly automation runs</a></p>
 
   <div class="tabs" role="tablist" aria-label="Changelog sections">
-  <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">21</span></button>
+  <button type="button" class="tab" role="tab" id="tab-registry" aria-controls="panel-registry" aria-selected="true">Instrument evidence registry <span class="count">22</span></button>
   <button type="button" class="tab" role="tab" id="tab-specification" aria-controls="panel-specification" aria-selected="false">Specification <span class="count">10</span></button>
-  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">33</span></button>
+  <button type="button" class="tab" role="tab" id="tab-site" aria-controls="panel-site" aria-selected="false">Site <span class="count">34</span></button>
 </div>
 
 <section class="panel" id="panel-registry" role="tabpanel" aria-labelledby="tab-registry" tabindex="0">
   <h2 class="panel-title">Instrument evidence registry</h2>
   <table>
     <tr><th>Version</th><th>Date</th><th>What changed</th></tr>
+    <tr><td class="mono">Page generator (v0.9.0 unchanged)</td><td>29 September 2026</td><td>Shorter page titles and search descriptions on the registry overview and twelve instrument record pages, led by the instrument's common abbreviation where it has one, so they fit in a search result. Record headings, full instrument names, grades, statuses, licence classes and citations are unchanged.</td></tr>
     <tr><td class="mono">0.9.0</td><td>7 September 2026</td><td>Corrections page: each numbered correction now carries a stable anchor, so a public notice can cite one directly, and the section headings are addressable. The submission callout links the correction form and the contact address rather than describing them, and states that reporting a problem does not itself change a grade, status or licence class.</td></tr>
     <tr><td class="mono">0.9.0</td><td>7 September 2026</td><td>The registry summary now states counts derived from the published matrix: test-retest High and Absent, Very low or Low grades, and organisational criterion Absent and Low or Very low grades. These are descriptions of the current registered assessments. The earlier field-wide weakness and use-prevalence claims are withdrawn; the separate thin status is not a grade count.</td></tr>
     <tr><td class="mono">0.9.0</td><td>7 September 2026</td><td>The registry summary and current reading guidance withdraw conclusions about a field-wide weakest property, practitioners' expectations and instrument use prevalence. They describe counts from the current registered assessments, with grade categories distinguished from the separate thin status. A dated clarification corrects the current admission page's scope description; the published policy source and admission rules are unchanged.</td></tr>
@@ -152,6 +153,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2 class="panel-title">Site</h2>
   <table>
     <tr><th>Date</th><th>What changed</th></tr>
+    <tr><td>29 September 2026</td><td>Shorter page titles and search descriptions on ten pages: the home page, how it works, the design notes, governance, how we grade, contribute, the entity map, the question bank overview and two question bank topic pages, so they fit in a search result. Page text is unchanged.</td></tr>
     <tr><td>29 September 2026</td><td>Schema identifiers now resolve. Each published schema declares a <span class="mono">$id</span> under <span class="mono">/schemas/</span>, but the files were served only under <span class="mono">/spec/schemas/</span>, so fetching an identifier, or a <span class="mono">$ref</span> between schemas that uses one, returned a not-found page. Requests under <span class="mono">/schemas/</span> are now answered with the same file from <span class="mono">/spec/schemas/</span>. No identifier, schema or download has changed, and the <span class="mono">/spec/schemas/</span> addresses keep working.</td></tr>
     <tr><td>7 September 2026</td><td>The licence-source watcher now compares a representation that keeps hyperlink targets and rights metadata alongside the visible text, so a licence link repointed at different terms is a change even when the wording is identical. It plans one acquisition for each source URL and reports separately how many URLs were checked and how many instrument-source relationships they cover, retains the bytes it compared, and states an unreachable source as unchecked rather than unchanged.</td></tr>
     <tr><td>7 September 2026</td><td><a href="review.html">Open questions and corrections</a> brings together public review questions, evidence concerns and contribution routes. Registry corrections now have direct links and stable reference anchors.</td></tr>

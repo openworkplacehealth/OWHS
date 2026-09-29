@@ -623,6 +623,31 @@ def verdict_box(rec):
             'registry informs but cannot make. Full evidence, with citations, below. This summary is generated from the record\'s data, '
             'not written by hand.</p></div>')
 
+# Page title and description for the records whose full display name makes both too long for a search result.
+# None keeps the default built from the display name. The page heading and every other use of the name are unchanged.
+RECORD_META = {
+    "copsoq-iii": ("COPSOQ III: Copenhagen Psychosocial Questionnaire | OWHS",
+                   "Evidence record for COPSOQ III, the Copenhagen Psychosocial Questionnaire: graded psychometric properties with provenance, licence status and citations."),
+    "csps-wellbeing": ("Civil Service People Survey: wellbeing and engagement | OWHS",
+                       "Evidence record for the Civil Service People Survey wellbeing and engagement items: graded properties with provenance, licence status and citations."),
+    "eurofound-ewcs": ("EWCS/EQLS: Eurofound wellbeing and working conditions | OWHS",
+                       "Evidence record for Eurofound EWCS/EQLS wellbeing and working-conditions item sets: graded properties with provenance, licence status and citations."),
+    "fcs-maps": ("MaPS: Financial Capability / Wellbeing Survey items | OWHS",
+                 "Evidence record for the MaPS Financial Capability and Financial Wellbeing Survey items: graded properties with provenance, licence status and citations."),
+    "ipaq-sf": ("IPAQ-SF: International Physical Activity Questionnaire | OWHS",
+                "Evidence record for IPAQ-SF, the International Physical Activity Questionnaire short form: graded properties with provenance, licence status and citations."),
+    "mbi": ("MBI: Maslach Burnout Inventory, workplace forms | OWHS", None),
+    "perma": ("Workplace PERMA-Profiler (and PERMA-Profiler) | OWHS", None),
+    "single-job-satisfaction": ("Single-item overall job satisfaction (Wanous tradition) | OWHS", None),
+    "single-stress": ("SISQ: single-item perceived stress (Elo tradition) | OWHS",
+                      "Evidence record for single-item perceived stress (Elo tradition, SISQ): graded psychometric properties with provenance, licence status and citations."),
+    "uwes-9": ("UWES-9: Utrecht Work Engagement Scale (9-item) | OWHS", None),
+    "wemwbs": ("WEMWBS: Warwick-Edinburgh Mental Wellbeing Scale | OWHS",
+               "Evidence record for WEMWBS and its short form SWEMWBS: graded psychometric properties with provenance, licence status and citations."),
+    "wpai": ("WPAI: Work Productivity and Activity Impairment | OWHS",
+             "Evidence record for Work Productivity and Activity Impairment (WPAI): graded psychometric properties with provenance, licence status and citations."),
+}
+
 def record_page(rec):
     rid = rec["instrument_id"]; ident = rec["identity"]
     contested = [lbl for k, lbl in PROPS if isinstance(rec.get(k), dict) and rec[k].get("status") == "contested"]
@@ -689,9 +714,10 @@ def record_page(rec):
         body.append(f'<h2>References ({len(cits)})</h2><ol class="refs">{lis}</ol>')
     if rec.get("record_notes"):
         body.append(f'<h2>Record notes</h2><p class="findings">{md(rec["record_notes"])}</p>')
+    title, desc = RECORD_META.get(rid, (None, None))
     (SITE / f"{rid}.html").write_text(
-        page(f'{rec["display_name"]} | OWHS Instrument Registry', "\n".join(body),
-             f'Evidence record for {rec["display_name"]}: graded psychometric properties with provenance, licence status and citations.'),
+        page(title or f'{rec["display_name"]} | OWHS Instrument Registry', "\n".join(body),
+             desc or f'Evidence record for {rec["display_name"]}: graded psychometric properties with provenance, licence status and citations.'),
         encoding="utf-8")
 
 def build_index():
@@ -775,7 +801,7 @@ cross-link. Corrections to any published record are logged publicly on the
 <a href="corrections.html">corrections and verifications page</a>.</p>
 """
     (SITE / "index.html").write_text(page("Instrument Registry | Open Workplace Health Standard", body,
-        "The open synthesis of the published evidence on instruments used to measure workplace health and wellbeing: graded properties with provenance, licence status, corrections log.",
+        "The open synthesis of published evidence on workplace health and wellbeing instruments: graded properties with provenance, licence status, corrections log.",
         here="index"), encoding="utf-8")
 
 def build_how():
