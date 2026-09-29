@@ -1,4 +1,7 @@
 {
   "buildCommand": null,
-  "outputDirectory": "site"
+  "outputDirectory": "site",
+  "rewrites": [
+    { "source": "/schemas/:path*", "destination": "/spec/schemas/:path*" }
+  ]
 }
