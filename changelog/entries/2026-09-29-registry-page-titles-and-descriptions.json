@@ -1,0 +1,7 @@
+{
+ "tab": "registry",
+ "date": "2026-09-29",
+ "shown": "29 September 2026",
+ "version": "Page generator (v0.9.0 unchanged)",
+ "html": "Shorter page titles and search descriptions on the registry overview and twelve instrument record pages, led by the instrument's common abbreviation where it has one, so they fit in a search result. Record headings, full instrument names, grades, statuses, licence classes and citations are unchanged."
+}
