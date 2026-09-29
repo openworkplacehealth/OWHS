@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-09-29",
+ "shown": "29 September 2026",
+ "html": "Schema identifiers now resolve. Each published schema declares a <span class=\"mono\">$id</span> under <span class=\"mono\">/schemas/</span>, but the files were served only under <span class=\"mono\">/spec/schemas/</span>, so fetching an identifier, or a <span class=\"mono\">$ref</span> between schemas that uses one, returned a not-found page. Requests under <span class=\"mono\">/schemas/</span> are now answered with the same file from <span class=\"mono\">/spec/schemas/</span>. No identifier, schema or download has changed, and the <span class=\"mono\">/spec/schemas/</span> addresses keep working."
+}
