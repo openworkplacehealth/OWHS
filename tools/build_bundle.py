@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Build or check site/spec/owhs-v0.2-bundle.zip and the site's schema, example and code-list mirrors.
+"""Build or check site/spec/owhs-v0.2-bundle.zip, the site's schema, example and code-list mirrors, and the schemas published
+at their declared identifiers.
 
-    python tools/build_bundle.py               rebuild the current bundle and refresh the managed mirrors under site/spec/
+    python tools/build_bundle.py               rebuild the current bundle, refresh the managed mirrors under site/spec/ and the
+                                               copies published at their declared identifiers under site/profiles/ and site/evidence/
     python tools/build_bundle.py --check       read-only: the bundle's member set, order and uncompressed bytes equal the declared
                                                source mapping, and every managed mirror path holds exactly the repository's JSON
                                                files byte for byte; nothing is written, so a stale checkout cannot repair itself
@@ -17,11 +19,20 @@ file name), the ERD, the versioned schemas and catalogue, examples, code lists, 
 governance, decisions and README. The earlier owhs-v0.1-bundle.zip is the published release archive and is never touched here
 (tools/check_v01_archive.py holds its identity). The domain routing table is not part of the release and is never included.
 File order is deterministic. ZIP timestamps and compression metadata are not content: a metadata-only regeneration with the same
-ordered members and bytes passes the check."""
-import hashlib, os, pathlib, shutil, subprocess, sys, tempfile, warnings, zipfile
+ordered members and bytes passes the check.
+
+Schemas outside schemas/ whose $id names a path on the site (the profile envelope and the retrieval-evaluation contracts) are
+published byte for byte at the path their $id declares, under site/profiles/ and site/evidence/, so each identifier resolves to
+its own file. The publication path is read from the source's $id and never chosen by hand: --check refuses a copy that differs
+from its source, a missing copy, a JSON file in those publication directories that no source declares, and a source whose $id
+is not on the site or falls outside them."""
+import hashlib, json, os, pathlib, shutil, subprocess, sys, tempfile, warnings, zipfile
 
 ROOT = pathlib.Path(os.environ["OWHS_BUNDLE_ROOT"]) if os.environ.get("OWHS_BUNDLE_ROOT") else pathlib.Path(__file__).resolve().parents[1]   # the override exists for the self-test's command-line cases on a temporary tree
 SUBDIRS = {"schemas": ("v0.1", "v0.2", "bundles"), "examples": ("v0.2", "bundles/v0.2", "bundles/v0.2/cases"), "codelists": ("archive", "mappings")}   # versioned sets, the graph envelope, fixtures, archived lists and the crosswalk
+ID_SOURCES = (("profiles", "profile-envelope.schema.json"), ("evidence/evaluation-contracts", "*.schema.json"))   # published at their $id
+ID_BASE = "https://openworkplacehealth.org/"
+ID_DIRS = ("profiles", "evidence")   # the site directories those identifiers name; every JSON file in them is managed
 TOOLS = ("check_profiles.py", "check_measurement.py", "check_codelist_mappings.py", "check_remaining_entities.py", "check_entity_graph.py")
 
 
@@ -68,6 +79,34 @@ def mirror_pairs(root):
     return pairs, managed
 
 
+def id_pairs(root):
+    """(destination, source) for every schema published at its declared $id, plus the problems found reading the identifiers.
+    The destination is site/ joined to the $id path, which must sit directly inside one of ID_DIRS."""
+    pairs, problems = [], []
+    for d, pattern in ID_SOURCES:
+        for src in sorted((root / d).glob(pattern)):
+            rel = src.relative_to(root).as_posix()
+            try:
+                sid = json.loads(src.read_text(encoding="utf-8")).get("$id")
+            except (ValueError, UnicodeDecodeError) as e:
+                problems.append(f"{rel} is not readable JSON, so its identifier cannot be published: {e}")
+                continue
+            if not isinstance(sid, str) or not sid.startswith(ID_BASE):
+                problems.append(f"{rel} declares $id {sid!r}, which is not a path on {ID_BASE}")
+                continue
+            parts = sid[len(ID_BASE):].split("/")
+            if len(parts) != 2 or parts[0] not in ID_DIRS or not parts[1].endswith(".json") or parts[1] in ("", ".", ".."):
+                problems.append(f"{rel} declares $id {sid}, which is not a JSON file directly under one of /{', /'.join(ID_DIRS)}/")
+                continue
+            pairs.append((root / "site" / parts[0] / parts[1], src))
+    seen = {}
+    for dest, src in pairs:
+        if dest in seen:
+            problems.append(f"{src.relative_to(root)} and {seen[dest].relative_to(root)} declare the same $id")
+        seen[dest] = src
+    return pairs, problems
+
+
 def missing_sources(root):
     """Declared source directories that do not exist. The builder treats absence as a required-source failure rather than
     silently publishing an empty mirror; --check reports it and the build refuses."""
@@ -79,6 +118,9 @@ def build(root):
     gone = missing_sources(root)
     if gone:
         raise SystemExit(f"refusing to build: declared source director{'y' if len(gone) == 1 else 'ies'} missing: {gone}; a publication path is never emptied by a build because its source vanished")
+    ids, bad = id_pairs(root)
+    if bad:
+        raise SystemExit("refusing to build: cannot publish at declared identifiers: " + "; ".join(bad))
     F = files(root)
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         for arc, src in sorted(F.items()):
@@ -97,6 +139,16 @@ def build(root):
     for dest, src in pairs:
         shutil.copy2(src, dest)
     print("site/spec mirror refreshed from schemas/, examples/ and codelists/ (versioned sets, archive and mappings included)")
+    for d in ID_DIRS:
+        m = root / "site" / d
+        if m.is_dir():
+            for p in m.glob("*.json"):
+                p.unlink()
+        else:
+            m.mkdir(parents=True)
+    for dest, src in ids:
+        shutil.copy2(src, dest)
+    print(f"{len(ids)} schemas published at their declared identifiers under site/{', site/'.join(ID_DIRS)}")
 
 
 def check(root):
@@ -143,6 +195,19 @@ def check(root):
         for p in sorted(m.glob("*.json")):
             if p not in wanted:
                 problems.append(f"orphan in a managed mirror path: {p.relative_to(root)} has no source in the repository")
+    ids, bad = id_pairs(root)
+    problems += bad
+    declared = {dest for dest, _ in ids}
+    for dest, src in ids:
+        if not dest.is_file():
+            problems.append(f"identifier copy missing: {dest.relative_to(root)} (the $id of {src.relative_to(root)})")
+        elif dest.read_bytes() != src.read_bytes():
+            problems.append(f"identifier copy {dest.relative_to(root)} differs from {src.relative_to(root)}")
+    for d in ID_DIRS:
+        m = root / "site" / d
+        for p in sorted(m.rglob("*.json")) if m.is_dir() else ():
+            if p not in declared:
+                problems.append(f"orphan in an identifier publication path: {p.relative_to(root)} is not the declared $id of any source")
     return problems
 
 
@@ -160,7 +225,7 @@ def self_test():
         nonlocal failures; print(("ok  " if ok else "FAIL"), label, "" if ok else str(detail)[:240]); failures += not ok
     with tempfile.TemporaryDirectory() as tmp:
         root = pathlib.Path(tmp) / "tree"
-        for d in ("spec", "schemas", "examples", "codelists", "profiles", "docs", "tools"):
+        for d in ("spec", "schemas", "examples", "codelists", "profiles", "docs", "tools", "evidence/evaluation-contracts"):
             shutil.copytree(ROOT / d, root / d)
         (root / "site" / "spec").mkdir(parents=True)
         for f in ("owhs-erd-v0.1.svg", "owhs-erd-current.svg"):
@@ -208,6 +273,23 @@ def self_test():
         unmanaged = root / "site" / "spec" / "notes.json"; unmanaged.write_text("{}")
         t("an unmanaged path beside the mirrors is left alone", not check(root), check(root)[:2]); unmanaged.unlink()
         t("the check never refreshed the mirrors: the mismatch above was reported, not repaired", mirror.read_bytes() == mb)
+        ids = id_pairs(root)[0]
+        t("every identifier-published schema sits at the site path its $id declares, byte for byte",
+          ids and len(ids) == sum(len(list((root / d).glob(pat))) for d, pat in ID_SOURCES) and all(d.read_bytes() == s.read_bytes() and "https://openworkplacehealth.org/" + d.relative_to(root / "site").as_posix() == json.loads(s.read_text())["$id"] for d, s in ids), [str(d.relative_to(root)) for d, _ in ids])
+        copy = root / "site" / "evidence" / "evaluation-manifest.schema.json"; cb = copy.read_bytes()
+        copy.write_bytes(cb + b"\n"); p = check(root); t("an identifier copy that differs from its source refuses", any("identifier copy" in x and "differs" in x for x in p), p[:2])
+        copy.unlink(); p = check(root); t("a missing identifier copy refuses", any("identifier copy missing" in x for x in p), p[:2]); copy.write_bytes(cb)
+        stray = root / "site" / "profiles" / "stray.json"; stray.write_text("{}")
+        p = check(root); t("a JSON file in an identifier publication path that no source declares refuses", any("orphan in an identifier publication path" in x for x in p), p[:2]); stray.unlink()
+        src = root / "profiles" / "profile-envelope.schema.json"; sb = src.read_bytes()
+        src.write_bytes(sb.replace(b"/profiles/profile-envelope.schema.json", b"/profiles/renamed.schema.json"))
+        p = check(root); t("a changed $id leaves the old copy an orphan and the new path missing", any("orphan in an identifier publication path" in x and "profile-envelope" in x for x in p) and any("identifier copy missing" in x and "renamed" in x for x in p), p[:3])
+        src.write_bytes(sb.replace(b"https://openworkplacehealth.org/profiles/", b"https://example.org/profiles/"))
+        p = check(root); t("an $id off the site refuses", any("not a path on" in x for x in p), p[:2])
+        before_zip = out.read_bytes()
+        r = subprocess.run([sys.executable, "-B", str(ROOT / "tools" / "build_bundle.py")], capture_output=True, text=True, cwd=root, env={**os.environ, "OWHS_BUNDLE_ROOT": str(root)})
+        t("an $id off the site: the build refuses before writing anything", r.returncode != 0 and "cannot publish at declared identifiers" in (r.stdout + r.stderr) and before_zip == out.read_bytes(), (r.returncode, (r.stdout + r.stderr)[-200:]))
+        src.write_bytes(sb); build(root); t("the source restored and rebuilt: the check passes again", not check(root), check(root)[:2])
         def logical(o):
             with zipfile.ZipFile(o) as z: return [(n, hashlib.sha256(z.read(n)).hexdigest()) for n in z.namelist()]
         members_before = logical(out); mirrors_before = {m: _tree_hash(m) for m in mirror_pairs(root)[1]}
@@ -252,7 +334,7 @@ def main(argv):
         if problems:
             print(f"{len(problems)} problem(s): the current bundle or a managed mirror is not a fresh build of the sources; run tools/build_bundle.py after the final source edits and commit the result")
             return 1
-        print(f"up to date: owhs-v0.2-bundle.zip holds the {len(files(ROOT))} declared members in order with their source bytes; every managed mirror path matches the repository")
+        print(f"up to date: owhs-v0.2-bundle.zip holds the {len(files(ROOT))} declared members in order with their source bytes; every managed mirror path matches the repository; the {len(id_pairs(ROOT)[0])} schemas published at their declared identifiers match their sources")
         return 0
     build(ROOT)
     return 0
