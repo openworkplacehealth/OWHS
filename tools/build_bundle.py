@@ -142,7 +142,7 @@ def build(root):
     for d in ID_DIRS:
         m = root / "site" / d
         if m.is_dir():
-            for p in m.glob("*.json"):
+            for p in m.rglob("*.json"):
                 p.unlink()
         else:
             m.mkdir(parents=True)
