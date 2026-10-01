@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-10-01",
+ "shown": "1 October 2026",
+ "html": "The profile envelope schema and the six retrieval-evaluation contract schemas are now published at the addresses their <span class=\"mono\">$id</span> declares, under <span class=\"mono\">/profiles/</span> and <span class=\"mono\">/evidence/</span>, so fetching those identifiers returns the schema rather than a not-found page. Each published copy is generated from its source file and a check refuses any copy that differs from it. No identifier or schema has changed."
+}
