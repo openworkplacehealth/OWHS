@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/rfcs/0003/schemas/CommitmentEvent.json",
+  "title": "OWHS CommitmentEvent (proposed by RFC 0003, not part of any release)",
+  "description": "PROPOSED new record type. One dated action an employer took, or was due to take, for one worker. Dates and a status only. No free text, no clinical content, no direct identifiers.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      },
+      "description": "Organisation scope"
+    },
+    "pseudonymId": {
+      "type": "string",
+      "pattern": "^owhs:pseudo:[0-9a-f]{16,64}$",
+      "description": "Per-org opaque pseudonym; never a direct identifier",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "commitmentCode": {
+      "type": "string",
+      "enum": [
+        "joining-conversation",
+        "issue-conversation",
+        "stay-in-work-plan",
+        "adjustment-agreed",
+        "adjustment-in-place",
+        "absence-contact",
+        "return-plan",
+        "provision-engaged",
+        "touchpoints-agreed",
+        "sustained-return-check"
+      ],
+      "$comment": "codelist:uk-commitment@0.1.0"
+    },
+    "triggerDate": {
+      "type": "string",
+      "format": "date",
+      "$comment": "the date that starts the clock; see uk-commitment 'trigger'"
+    },
+    "dueDate": {
+      "type": "string",
+      "format": "date",
+      "$comment": "computed from triggerDate under the stated counting rule; absent where the source gives no time limit"
+    },
+    "completedDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "met",
+        "late",
+        "not-done",
+        "declined-by-worker",
+        "not-applicable"
+      ],
+      "$comment": "codelist:commitment-status@0.1.0"
+    },
+    "linkedAbsenceEpisodeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "linkedOhEpisodeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "linkedAdjustmentId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "sourceProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceType"
+      ],
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "enum": [
+            "hris",
+            "manual",
+            "broker",
+            "oh-provider"
+          ],
+          "$comment": "codelist:source-type@0.1.0"
+        },
+        "sourceProvider": {
+          "type": "string"
+        },
+        "sourceId": {
+          "type": "string"
+        }
+      }
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "eventId",
+    "orgId",
+    "pseudonymId",
+    "commitmentCode",
+    "triggerDate",
+    "status",
+    "sourceProvenance"
+  ],
+  "allOf": [
+    {
+      "$comment": "BOUNDARY: no free text or clinical content permitted",
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "notes"
+            ]
+          },
+          {
+            "required": [
+              "comment"
+            ]
+          },
+          {
+            "required": [
+              "reason"
+            ]
+          },
+          {
+            "required": [
+              "diagnosis"
+            ]
+          },
+          {
+            "required": [
+              "clinicalCauseCode"
+            ]
+          },
+          {
+            "required": [
+              "planText"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "$comment": "a met or late event must say when it was done",
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "met",
+              "late"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "completedDate"
+        ]
+      }
+    },
+    {
+      "$comment": "an event that was not done, was declined or did not apply cannot carry a completion date",
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "not-done",
+              "declined-by-worker",
+              "not-applicable",
+              "open"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "completedDate"
+          ]
+        }
+      }
+    },
+    {
+      "$comment": "met, late and not-done are judged against a due date, so one must be present",
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "met",
+              "late",
+              "not-done"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "dueDate"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

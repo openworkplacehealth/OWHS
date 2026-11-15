@@ -1,0 +1,50 @@
+{
+  "returnId": "pr-BAD",
+  "orgId": "org-example-0042",
+  "provider": {
+    "providerRef": "provider-example-oh-01",
+    "serviceType": "occupational-health"
+  },
+  "periodStart": "2026-07-01",
+  "periodEnd": "2026-09-30",
+  "eligibleHeadcount": 184,
+  "minimumGroupSize": 3,
+  "suppressionRule": "owhs-mgs@0.1.0",
+  "measurementContext": {
+    "producingSystem": "example-case-system 1.0",
+    "countBasis": "contacts"
+  },
+  "cases": [
+    {
+      "pseudonymId": "owhs:pseudo:a1b2c3d4e5f60718",
+      "fitnessOpinion": "unfit"
+    }
+  ],
+  "rows": [
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "oh-referral-reason",
+        "code": "fitness-for-task"
+      },
+      "unit": "people",
+      "base": 17,
+      "n": 3,
+      "value": 3,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-closed",
+      "breakdown": {
+        "list": "fitness-opinion",
+        "code": "unfit"
+      },
+      "unit": "people",
+      "base": 14,
+      "n": 2,
+      "value": 2,
+      "suppressed": true,
+      "suppressionReason": "below-floor"
+    }
+  ]
+}
