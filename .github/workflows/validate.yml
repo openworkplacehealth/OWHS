@@ -115,3 +115,7 @@ jobs:
         run: python tools/build_sitemap.py --check
       - name: sitemap generator behaves as documented
         run: python tools/build_sitemap.py --self-test
+      - name: llms.txt and llms-full.txt are a fresh build from the pages' own sources, with no withheld wording
+        run: python tools/build_llms.py --check
+      - name: assistant-file generator behaves as documented
+        run: python tools/build_llms.py --self-test
