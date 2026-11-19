@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "html": "The <a href=\"/status.html\">status page</a> now says that November 2026 is the most recent month recorded as verified, with a complete search of the whole inventory up to 19 November 2026. The watermark file was empty until this change; it now holds the November cycle, recorded from run 44581601008 after the verification check was corrected. The <a href=\"sweeps/2026-11.html\">November sweep report</a> has a dated addendum saying so. The report's earlier wording, written before the check was corrected, is left as filed. The two Atom feeds are now served with the Atom content type."
+}

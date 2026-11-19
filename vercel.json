@@ -1,6 +1,12 @@
 {
   "buildCommand": null,
   "outputDirectory": "site",
+  "headers": [
+    {
+      "source": "/(feed|feed-[a-z]+)\\.xml",
+      "headers": [{ "key": "Content-Type", "value": "application/atom+xml; charset=utf-8" }]
+    }
+  ],
   "rewrites": [
     { "source": "/schemas", "destination": "/schemas/index.html" },
     { "source": "/schemas/:path*", "destination": "/spec/schemas/:path*" }

@@ -151,6 +151,14 @@
     <content type="html">&lt;p&gt;19 November 2026.&lt;/p&gt;&lt;p&gt;Instrument record pages now lead with the licence answer and carry it in the title and description; headings are clean text with the badges beside them; each record links to its related pages; dates are machine-readable. Grades, statuses, evidence forms, licence classes, the dataset and its version number are unchanged.&lt;/p&gt;</content>
   </entry>
   <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-11-19-site-status-page-names-verified-month</id>
+    <title>Site: The status page now says that November 2026 is the most recent month recorded as verified, with a complete ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-11-19T00:00:00Z</published>
+    <updated>2026-11-19T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;19 November 2026.&lt;/p&gt;&lt;p&gt;The &lt;a href=&quot;https://openworkplacehealth.org/status.html&quot;&gt;status page&lt;/a&gt; now says that November 2026 is the most recent month recorded as verified, with a complete search of the whole inventory up to 19 November 2026. The watermark file was empty until this change; it now holds the November cycle, recorded from run 44581601008 after the verification check was corrected. The &lt;a href=&quot;https://openworkplacehealth.org/sweeps/2026-11.html&quot;&gt;November sweep report&lt;/a&gt; has a dated addendum saying so. The report&#x27;s earlier wording, written before the check was corrected, is left as filed. The two Atom feeds are now served with the Atom content type.&lt;/p&gt;</content>
+  </entry>
+  <entry>
     <id>tag:openworkplacehealth.org,2026:changelog/2026-11-19-site-sweep-reports-october-november-2026</id>
     <title>Site: Two sweep reports added.</title>
     <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>

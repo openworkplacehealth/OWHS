@@ -91,6 +91,15 @@ def watermark_state(root=ROOT):
     return dates
 
 
+def watermark_cycle(root=ROOT):
+    """The cycle id (for example 2026-11) of the entry with the latest date, when it records one in the form YYYY-MM."""
+    w = json.loads((root / "evidence" / "watermarks.json").read_text(encoding="utf-8"))
+    es = [e for e in (w.get("entries") or {}).values() if isinstance(e, dict) and e.get("last_complete_to")]
+    if not es: return None
+    c = max(es, key=lambda e: e["last_complete_to"]).get("cycle_id")
+    return c if isinstance(c, str) and re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", c) else None
+
+
 def sweep_reports(root=ROOT):
     """Each sweep report page: its month, its own meta line, its filing date, whether it says no verified sweep exists, and the issue it links."""
     out = []
@@ -156,7 +165,9 @@ def render_body(root=ROOT):
 </div>""")
     latest = reports[-1]
     if marks:
-        verified = (f"<p>The watermark file records a complete, accepted full-inventory search up to <strong>{long_date(marks[-1])}</strong>. "
+        cyc = watermark_cycle(root)
+        lead = (f"<p>The most recent month recorded as verified is <strong>{month_name(cyc)}</strong>. " if cyc else "<p>")
+        verified = (f"{lead}The watermark file records a complete, accepted full-inventory search up to <strong>{long_date(marks[-1])}</strong>. "
                     "A month is recorded as verified only when the monthly verification accepts a complete search of the whole inventory and the record is committed through a reviewed pull request.</p>")
     else:
         verified = ("<p><strong>No month has yet been recorded as verified.</strong> The repository's watermark file (<code>evidence/watermarks.json</code>) is empty. "
@@ -292,7 +303,10 @@ def self_test():
         shutil.copy(ROOT / "vercel.json", r2 / "vercel.json")
         (r2 / "evidence" / "watermarks.json").write_text(json.dumps({"entries": {"a" * 64: {"last_complete_to": "2026-12-01"}}}), encoding="utf-8")
         body = render_body(r2)
-        t("a recorded watermark is stated with its date and the no-month sentence disappears", "1 December 2026" in body and "No month has yet been recorded" not in body)
+        t("a recorded watermark is stated with its date and the no-month sentence disappears", "1 December 2026" in body and "No month has yet been recorded" not in body and "most recent month recorded as verified" not in body)
+        (r2 / "evidence" / "watermarks.json").write_text(json.dumps({"entries": {"a" * 64: {"last_complete_to": "2026-12-01", "cycle_id": "2026-12"}, "b" * 64: {"last_complete_to": "2026-11-19", "cycle_id": "2026-11"}}}), encoding="utf-8")
+        body = render_body(r2)
+        t("a recorded cycle is named as the verified month beside the date searched up to", "most recent month recorded as verified is <strong>December 2026</strong>" in body and "1 December 2026" in body)
         (r2 / ".github" / "workflows" / "harvest.yml").write_text("on:\n  schedule:\n    - cron: '0 6 1 * *'\n    - cron: '0 6 2 * *'\n", encoding="utf-8")
         try:
             schedules(r2); t("a workflow with two schedules is refused", False)
@@ -300,7 +314,7 @@ def self_test():
             pass
     if fails:
         print("self-test FAILED:\n  " + "\n  ".join(fails)); sys.exit(1)
-    print("self-test ok: 15 cases (cron wording, job table matches the workflows, no host but api.github.com, no form, watermark wording, missed month, no sign-up promise)")
+    print("self-test ok: 16 cases (cron wording, job table matches the workflows, no host but api.github.com, no form, watermark wording, missed month, no sign-up promise)")
 
 
 if __name__ == "__main__":
