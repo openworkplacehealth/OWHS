@@ -6,8 +6,12 @@ name: sweep-tripwire
 # channel complete, was built from the current query file, and is named, with its hash and GitHub run id, by
 # an issue the workflow itself authored. A partial run, a manual catch-up, an unrelated successful run, a
 # hand-written issue or an issue describing a failed run does not satisfy it. If the check fails, one issue is
-# opened for the cycle (never a second). A missing sweep is an incomplete maintenance cycle, not a month with
-# no new evidence. This runs two days after the harvest; that is the response time.
+# opened for the cycle (never a second), assigned to the steward and mentioning that login once so GitHub emails a person;
+# its title names the month and the one action, and its body says until when the month can be recovered. A planned
+# cycle can only be completed by a run that starts in its own month, so when the previous month's issue is still open
+# and that month is still not verified, the issue is retitled and a comment says plainly that it can no longer be
+# recovered. A missing sweep is an incomplete maintenance cycle, not a month with no new evidence. This runs two
+# days after the harvest; that is the response time.
 
 on:
   schedule:
@@ -39,6 +43,23 @@ jobs:
           set -euo pipefail
           CYCLE=$(python tools/cycle.py window --event schedule | sed -n 's/^cycle_id=//p')
           echo "cycle $CYCLE"
+          STEWARD=zak-fenton        # tools/cycle.py ALERT_ASSIGNEE
+          # last month: if its tripwire issue is still open and the month is still not verified, it can no longer be recovered; say so once
+          PREV=$(python tools/cycle.py previous --cycle "$CYCLE")
+          # (nothing in this block may stop the check of this month below)
+          OLD=$(gh issue list --repo "$REPO" --label maintenance --state open --search "\"No verified evidence sweep for $PREV\" in:title" --json number,title --jq '[.[] | select(.title | contains("can no longer be recovered") | not)][0].number // empty' || true)
+          if [ -n "$OLD" ]; then
+            set +e
+            python tools/cycle.py verify --cycle "$PREV" --repo "$REPO" > /tmp/verify-prev.txt 2>&1
+            PRC=$?
+            set -e
+            if [ "$PRC" -eq 1 ] && python tools/cycle.py alert --cycle "$PREV" --rc "$PRC" --verify-output /tmp/verify-prev.txt --title-out /tmp/prev-title.txt --body-out /tmp/prev-body.md; then
+              gh issue edit "$OLD" --repo "$REPO" --title "$(cat /tmp/prev-title.txt)" || echo "could not retitle #$OLD"
+              gh issue comment "$OLD" --repo "$REPO" --body-file /tmp/prev-body.md || echo "could not comment on #$OLD"
+            else
+              echo "previous cycle $PREV: verifier exit $PRC; its issue #$OLD is left as it is"
+            fi
+          fi
           set +e
           python tools/cycle.py verify --cycle "$CYCLE" --repo "$REPO" > /tmp/verify.txt 2>&1
           RC=$?
@@ -48,7 +69,9 @@ jobs:
           if [ "$RC" -ne 1 ]; then echo "verifier tool error (exit $RC); treated as not verified" | tee -a /tmp/verify.txt; fi
           EXISTING=$(gh issue list --repo "$REPO" --label maintenance --state open --search "\"No verified evidence sweep for $CYCLE\" in:title" --json number --jq 'length')
           if [ "$EXISTING" = "0" ]; then
-            gh issue create --repo "$REPO" --title "No verified evidence sweep for $CYCLE" --label maintenance \
-              --body "$(printf 'tools/cycle.py verify could not correlate a successful evidence-harvest run, a complete full-inventory artefact for cycle %s built from the current query file, and a workflow-authored issue naming that run and artefact. Treat this cycle as incomplete until they exist. A partial run, a manual catch-up, an unrelated run or a hand-written issue does not count.\n\nVerifier exit %s. Output:\n```\n%s\n```' "$CYCLE" "$RC" "$(cat /tmp/verify.txt)")"
+            python tools/cycle.py alert --cycle "$CYCLE" --rc "$RC" --verify-output /tmp/verify.txt --title-out /tmp/title.txt --body-out /tmp/body.md
+            # an assignment GitHub refuses must never cost the issue itself
+            gh issue create --repo "$REPO" --title "$(cat /tmp/title.txt)" --label maintenance --assignee "$STEWARD" --body-file /tmp/body.md \
+              || gh issue create --repo "$REPO" --title "$(cat /tmp/title.txt)" --label maintenance --body-file /tmp/body.md
           fi
           exit 1

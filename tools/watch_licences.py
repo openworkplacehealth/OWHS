@@ -17,17 +17,26 @@ This version:
     re-read before the manifest may claim it exists;
   * separates acquisition coverage from comparison outcome, and never records a failed source as
     unchanged;
-  * refuses to accept a new baseline on its own. A candidate observation is written for review.
+  * refuses to accept a new baseline on its own. A candidate observation is written for review;
+  * keeps a third state beside changed and unchanged: a plan entry may declare, with a `fetch` block, that the
+    page refuses automated requests (the codes observed and the date first observed). When that page fails again
+    with a declared code it is reported as blocked to automation and listed as needing a person, every run; it is
+    not counted as a failed check and never as unchanged. It is still requested every run, and compared when it
+    answers. A failure with any other code is a failure. The run status counts only what automation can check.
 
     watch_licences.py --plan FILE --captures DIR --report FILE   # compare, write no baseline
     watch_licences.py --self-test                                # offline controls, no network
 
 Exit 0 complete with no unresolved change; 3 a change needs review; 4 incomplete with no change
 signal; 5 no successful required check. A page that could not be checked is unchecked, not unchanged.
+The report's `notify` field says whether this run warrants a comment on the standing issue: a change,
+a failure of a page automation can check, or (on a run in the first seven days of a month) a short
+reminder listing the pages that need a person. Otherwise it is null and nothing is posted.
 
 Nothing here edits a licence class, a status, a verification date or any dataset field.
 """
 import argparse
+import datetime as dt
 import gzip
 import hashlib
 import html
@@ -54,6 +63,10 @@ PROFILES = ("google-sites-ipaq", "aosis-article-licence", "generic-landing-unver
 ACQUIRED_OK = "acquired"
 ACQUIRE_FAILED = "acquisition_failed"
 EXTRACT_FAILED = "extraction_failed"
+
+# A declared third state: the page refuses automated requests and needs a person. Never "verified", never "unchanged".
+BLOCKED = "blocked-to-automation"
+FETCH_KEYS = {"status", "observed", "first_observed", "note"}
 
 # Comparison outcomes. These are monitoring labels, never registry grades or licence states.
 OUTCOMES = ("baseline_capture_only", "legacy_hash_match_snapshot_missing", "legacy_hash_change_snapshot_missing",
@@ -96,7 +109,8 @@ def load_plan(path):
     for e in plan["sources"]:
         missing = allowed - set(e)
         if missing: raise ToolError(f"{e.get('source_id')}: plan entry missing {', '.join(sorted(missing))}")
-        if set(e) - allowed: raise ToolError(f"{e.get('source_id')}: plan entry has unknown key(s)")
+        if set(e) - allowed - {"fetch"}: raise ToolError(f"{e.get('source_id')}: plan entry has unknown key(s)")
+        if "fetch" in e: check_fetch_block(e)
         if e["source_id"] in seen_ids: raise ToolError(f"duplicate source_id {e['source_id']}")
         if e["url"] in seen_urls: raise ToolError(f"duplicate url {e['url']}; plan one acquisition per transport URL")
         if e["purpose"] not in PURPOSES: raise ToolError(f"{e['source_id']}: unknown purpose {e['purpose']}")
@@ -104,6 +118,19 @@ def load_plan(path):
         if not e["instrument_ids"]: raise ToolError(f"{e['source_id']}: names no instrument")
         seen_ids.add(e["source_id"]); seen_urls.add(e["url"])
     return plan
+
+
+def check_fetch_block(e):
+    """The optional declaration that a page refuses automated requests: exactly status, observed codes, the date first
+    observed and a note. It can only ever describe a page as needing a person; there is no value that means verified."""
+    f, sid = e["fetch"], e.get("source_id")
+    if not isinstance(f, dict) or set(f) != FETCH_KEYS: raise ToolError(f"{sid}: fetch block needs exactly {', '.join(sorted(FETCH_KEYS))}")
+    if f["status"] != BLOCKED: raise ToolError(f"{sid}: fetch status must be {BLOCKED!r}")
+    if not isinstance(f["observed"], list) or not f["observed"] or not all(isinstance(c, str) and re.fullmatch(r"http_\d{3}|transport_[a-z_]+", c) for c in f["observed"]):
+        raise ToolError(f"{sid}: fetch observed must list the error codes seen, such as http_403")
+    try: dt.date.fromisoformat(str(f["first_observed"]))
+    except ValueError: raise ToolError(f"{sid}: fetch first_observed is not a YYYY-MM-DD date")
+    if not isinstance(f["note"], str) or not f["note"].strip(): raise ToolError(f"{sid}: fetch note must say what was observed")
 
 
 # ---------------------------------------------------------------- extraction
@@ -263,11 +290,22 @@ def compare(entry, attempt, rep, legacy, retained):
 
 # ---------------------------------------------------------------- reporting
 
-def issue_body(counts, changed, incomplete):
+def needs_person_lines(blocked):
+    out = []
+    for c in blocked:
+        f = c.get("declared_fetch") or {}
+        out.append(f"- **{', '.join(c['instrument_ids'])}**: `{c['url']}` ({c['error_code']} to automated requests since {f.get('first_observed')}; "
+                   f"archived copy: {c.get('archived_reference') or 'none recorded'})")
+    return out
+
+
+def issue_body(counts, changed, incomplete, blocked=()):
     """Safe generated Markdown. Fetched page content is never echoed into an issue."""
     lines = [f"Licence-source check: {counts['status']}. {counts['source_url_count']} unique source URLs "
-             f"checked for {counts['instrument_source_checks']} instrument-source relationships. "
-             f"{len(changed)} source changes need review; {counts['failed_urls']} source checks were incomplete. "
+             f"for {counts['instrument_source_checks']} instrument-source relationships; "
+             f"{counts.get('checkable_urls', counts['source_url_count'])} can be checked by automation and {counts['succeeded_urls']} of those were fetched and compared. "
+             f"{len(changed)} source changes need review; {counts['failed_urls']} automation-checkable source checks were incomplete; "
+             f"{len(blocked)} pages refuse automated requests and need a person. "
              "These are monitoring results, not confirmed changes to permissions or registry classifications.", ""]
     if changed:
         lines.append("Changes needing review:")
@@ -275,10 +313,21 @@ def issue_body(counts, changed, incomplete):
             lines.append(f"- **{', '.join(c['instrument_ids'])}**: `{c['url']}` ({c['outcome']})")
         lines.append("")
     if incomplete:
-        lines.append("Unchecked this run:")
+        lines.append("Unchecked this run (automation could not fetch these; a transient or new failure):")
         for c in incomplete:
             lines.append(f"- **{', '.join(c['instrument_ids'])}**: `{c['url']}` ({c['error_code']})")
-    return "\n".join(lines)
+        lines.append("")
+    if blocked:
+        lines.append("Need a person (these pages refuse automated requests, so automation cannot say whether they changed; open each in a browser and compare it with the archived copy):")
+        lines += needs_person_lines(blocked)
+    return "\n".join(lines).rstrip()
+
+
+def reminder_body(blocked):
+    """The short monthly reminder: only the pages that need a person, nothing else to read."""
+    return "\n".join([f"Monthly reminder: {len(blocked)} licence pages refuse automated requests, so the weekly watcher cannot say whether they changed. "
+                      "A person needs to open each in a browser and compare it with the archived copy. Everything automation can check was checked this week "
+                      "and nothing changed.", ""] + needs_person_lines(blocked))
 
 
 def run(plan, captures, opener=None, sleep=0.5):
@@ -295,6 +344,8 @@ def run(plan, captures, opener=None, sleep=0.5):
                                                    "links": [], "rights": [], "profile": entry["extraction_profile_id"]})
         retained = retain(captures, attempt, rep) if captures else {"capture_retention": "capture_retention_pending", "objects": {}}
         outcome, extract_error = compare(entry, attempt, rep, legacy_hashes, retained)
+        declared = entry.get("fetch")
+        blocked = bool(declared) and attempt["outcome"] == ACQUIRE_FAILED and attempt["error_code"] in declared["observed"]
         results.append({
             "source_id": entry["source_id"], "url": entry["url"], "instrument_ids": entry["instrument_ids"],
             "purpose": entry["purpose"], "extraction_profile_id": entry["extraction_profile_id"],
@@ -317,24 +368,42 @@ def run(plan, captures, opener=None, sleep=0.5):
             "retained_objects": retained["objects"],
             "comparison_replayable": retained["capture_retention"] == "retained" and rep.get("representation_sha256") is not None,
             "source_extraction_replayable": "raw" in retained["objects"],
+            "declared_fetch": declared,
+            "automation_state": (BLOCKED if blocked else ("declared_blocked_but_fetched" if declared and attempt["outcome"] == ACQUIRED_OK else
+                                 ("declared_blocked_new_failure" if declared else None))),
         })
     return results
 
 
 def summarise(plan, results):
     attempted = len(results)
-    succeeded = sum(1 for r in results if r["acquisition_outcome"] == ACQUIRED_OK)
-    failed = attempted - succeeded
+    blocked = [r for r in results if r.get("automation_state") == BLOCKED]
+    checkable = [r for r in results if r.get("automation_state") != BLOCKED]
+    succeeded = sum(1 for r in checkable if r["acquisition_outcome"] == ACQUIRED_OK)
+    failed = len(checkable) - succeeded
     checks = sum(len(r["instrument_ids"]) for r in results)
-    affected = sum(len(r["instrument_ids"]) for r in results if r["acquisition_outcome"] != ACQUIRED_OK)
+    affected = sum(len(r["instrument_ids"]) for r in checkable if r["acquisition_outcome"] != ACQUIRED_OK)
     changed = [r for r in results if r["comparison_outcome"] in ("selected_source_change_needs_review", "page_change_scope_unverified", "legacy_hash_change_snapshot_missing")]
-    status = "complete" if failed == 0 else ("failed" if succeeded == 0 else "partial")
+    status = "complete" if failed == 0 and checkable else ("failed" if succeeded == 0 else "partial")
     return {"status": status, "source_url_count": attempted, "attempted_urls": attempted,
-            "succeeded_urls": succeeded, "failed_urls": failed,
+            "checkable_urls": len(checkable), "succeeded_urls": succeeded, "failed_urls": failed,
+            "blocked_to_automation_urls": len(blocked),
             "instrument_source_checks": checks, "affected_instrument_source_failures": affected,
+            "needs_person_instrument_source_pairs": sum(len(r["instrument_ids"]) for r in blocked),
             "changes_needing_review": len(changed),
             "note": ("A source URL is not an instrument-source relationship. A failed source is unchecked, "
-                     "never unchanged. No comparison outcome is a licence determination.")}, changed
+                     "never unchanged. A page blocked to automation is unchecked and needs a person; it is "
+                     "left out of the status, which counts only what automation can check, and listed every run. "
+                     "No comparison outcome is a licence determination.")}, changed
+
+
+def notify(counts, changed, today):
+    """Whether this run warrants a comment on the standing issue, and why: a change, a failure of a page automation can
+    check, or a monthly reminder (a run in the first seven days of the month; the job runs weekly) that pages need a person."""
+    if changed: return "change"
+    if counts["status"] != "complete": return "failure"
+    if counts.get("blocked_to_automation_urls") and today.day <= 7: return "monthly-reminder"
+    return None
 
 
 def exit_code(counts, changed):
@@ -454,6 +523,47 @@ def self_test(tmp):
     t("the issue body carries no fetched page text", "terms" not in body)
     t("the issue body names both denominators", "unique source URLs" in body and "instrument-source relationships" in body)
 
+    # The third state: a page declared blocked to automation.
+    fb = {"status": BLOCKED, "observed": ["http_403"], "first_observed": "2026-09-07", "note": "refuses the watcher every week"}
+    refuses("a fetch block that claims anything but blocked-to-automation is refused", plan_of([dict(entry(), fetch=dict(fb, status="verified"))]), "fetch status")
+    refuses("a fetch block without its first-observed date is refused", plan_of([dict(entry(), fetch={k: v for k, v in fb.items() if k != "first_observed"})]), "fetch block needs exactly")
+    refuses("a fetch block with an invented error code is refused", plan_of([dict(entry(), fetch=dict(fb, observed=["blocked"]))]), "fetch observed")
+    refuses("a fetch block with an impossible date is refused", plan_of([dict(entry(), fetch=dict(fb, first_observed="2026-02-30"))]), "first_observed")
+    pfile = Path(tmp) / "plan-ok.json"; pfile.write_text(json.dumps(plan_of([dict(entry(), fetch=fb)])))
+    t("a well-formed fetch block is accepted", load_plan(pfile)["sources"][0]["fetch"] == fb)
+    three = plan_of([dict(entry(sid="SRC-001", url="https://example.org/blocked", insts=("fcs",)), fetch=fb, archived_reference="https://web.archive.org/x"),
+                     entry(sid="SRC-002", url="https://example.org/fine", insts=("who-5",)),
+                     dict(entry(sid="SRC-003", url="https://example.org/declared-but-open", insts=("k10",)), fetch=dict(fb, observed=["http_503"]))])
+    def opener3(code_for_blocked):
+        def o(req, timeout=None):
+            if "blocked" in req.full_url and "declared" not in req.full_url: raise urllib.error.HTTPError(req.full_url, code_for_blocked, "no", {}, None)
+            return _Resp(b"<html><body>terms</body></html>", url=req.full_url)
+        return o
+    r3 = run(three, Path(tmp) / "caps3", opener=opener3(403), sleep=0)
+    c3, ch3 = summarise(three, r3)
+    st = {r["source_id"]: r["automation_state"] for r in r3}
+    t("a declared page failing with a declared code is blocked to automation, not a failed check, and never unchanged",
+      st["SRC-001"] == BLOCKED and c3["failed_urls"] == 0 and c3["blocked_to_automation_urls"] == 1 and [r["comparison_outcome"] for r in r3 if r["source_id"] == "SRC-001"] == ["unchecked"], (st, c3))
+    t("the run is complete when everything automation can check was checked, and exits 0", c3["status"] == "complete" and c3["checkable_urls"] == 2 and exit_code(c3, ch3) == 0, c3)
+    t("a declared page that answers is compared like any other and says so", st["SRC-003"] == "declared_blocked_but_fetched")
+    r4 = run(three, Path(tmp) / "caps4", opener=opener3(404), sleep=0)
+    c4, ch4 = summarise(three, r4)
+    t("a declared page failing with an undeclared code (a 404, say) is a failure, not blocked: partial, exit 4",
+      [r["automation_state"] for r in r4 if r["source_id"] == "SRC-001"] == ["declared_blocked_new_failure"] and c4["status"] == "partial" and exit_code(c4, ch4) == 4, c4)
+    blocked3 = [r for r in r3 if r["automation_state"] == BLOCKED]
+    body3 = issue_body(c3, ch3, [], blocked3)
+    t("the issue body lists every page that needs a person with its code, first-observed date and archived copy",
+      "Need a person" in body3 and "https://example.org/blocked" in body3 and "since 2026-09-07" in body3 and "https://web.archive.org/x" in body3 and "terms" not in body3, body3)
+    D = dt.date
+    t("notify: a change is posted", notify(c3, [{"x": 1}], D(2026, 11, 16)) == "change")
+    t("notify: a failure of a checkable page is posted", notify(c4, [], D(2026, 11, 16)) == "failure")
+    t("notify: a quiet week with pages needing a person posts nothing", notify(c3, [], D(2026, 11, 16)) is None)
+    t("notify: the first run of a month posts the short reminder", notify(c3, [], D(2026, 12, 7)) == "monthly-reminder" and notify(c3, [], D(2026, 12, 8)) is None)
+    t("notify: a quiet week with nothing needing a person posts nothing, even early in the month", notify(dict(c3, blocked_to_automation_urls=0), [], D(2026, 12, 1)) is None)
+    rb = reminder_body(blocked3)
+    t("the reminder names only the pages that need a person and carries no fetched page text",
+      rb.startswith("Monthly reminder: 1 licence pages") and "https://example.org/blocked" in rb and "https://example.org/fine" not in rb and "terms" not in rb, rb)
+
     print(f"\n{ran} control(s) run, {failed} failure(s)")
     return 1 if failed else 0
 
@@ -479,13 +589,21 @@ def main(argv):
         captures = Path(args.captures) if args.captures else None
         results = run(plan, captures, sleep=args.sleep)
         counts, changed = summarise(plan, results)
+        blocked = [r for r in results if r.get("automation_state") == BLOCKED]
+        body = issue_body(counts, changed, [r for r in results if r["error_code"] and r.get("automation_state") != BLOCKED], blocked)
+        why = notify(counts, changed, datetime.now(timezone.utc).date())
         report = {"generated_utc": now(), "plan_version": plan["version"], "counts": counts,
-                  "results": results, "issue_body": issue_body(counts, changed, [r for r in results if r["error_code"]])}
+                  "results": results, "issue_body": body, "notify": why,
+                  "comment_body": reminder_body(blocked) if why == "monthly-reminder" else (body if why else None)}
         Path(args.report).write_text(json.dumps(report, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"run {counts['status']}: {counts['source_url_count']} unique source URLs, "
               f"{counts['instrument_source_checks']} instrument-source checks, "
+              f"{counts['checkable_urls']} checkable by automation, "
               f"{counts['failed_urls']} failed URL(s) affecting {counts['affected_instrument_source_failures']} pair(s), "
-              f"{counts['changes_needing_review']} change(s) needing review")
+              f"{counts['changes_needing_review']} change(s) needing review, "
+              f"{counts['blocked_to_automation_urls']} blocked to automation and needing a person"
+              + "".join(f"\n  needs a person: {r['url']} ({r['error_code']})" for r in blocked)
+              + f"\ncomment on the standing issue: {why or 'none this run'}")
         return exit_code(counts, changed)
     except ToolError as e:
         print(f"[tool] {e}", file=sys.stderr); return 2
