@@ -47,7 +47,7 @@ It grades 27 instruments, stage one of the field, across eight psychometric evid
 
 ## Get involved
 
-Issues and RFCs are open to anyone once this repository is public. The ask is deliberately small: find the flaw, suggest a missing field or definition, or test-map one of your existing exports and report where it breaks. You do not need to endorse the standard or join anything. Substantive contributions are reviewed in the next published maintenance cycle. Every issue template asks for a declaration of any financial or professional interest in what the contribution touches; an interest does not disqualify a contribution, an undeclared one does. The registry's most specific ask is for independent raters: see `site/contribute.html`. See `GOVERNANCE.md` for the progressive-governance model and the evidence-gated path to multi-stakeholder stewardship.
+Issues and RFCs are open to anyone. The ask is deliberately small: find the flaw, suggest a missing field or definition, or test-map one of your existing exports and report where it breaks. You do not need to endorse the standard or join anything. Substantive contributions are reviewed in the next published maintenance cycle. Every issue template asks for a declaration of any financial or professional interest in what the contribution touches; an interest does not disqualify a contribution, an undeclared one does. The registry's most specific ask is for independent raters: see `site/contribute.html`. See `GOVERNANCE.md` for the progressive-governance model and the evidence-gated path to multi-stakeholder stewardship.
 
 Contact: hello@openworkplacehealth.org · https://openworkplacehealth.org
 

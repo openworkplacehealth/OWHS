@@ -7,6 +7,16 @@ behind it, the entry says so plainly rather than describing the fix as an improv
 Registry grade corrections are not here. They have their own numbered log at
 `site/instrument-registry/corrections.html`, and grades remain frozen.
 
+## 19 November 2026
+
+### Fixed: the README and both RFCs still said comments open once the repository is public
+
+The repository is public. The README said issues and RFCs were open to anyone
+"once this repository is public", and RFCs 0001 and 0002 told readers to comment on the RFC's issue once
+the repository was public and to email until then. Both now say plainly that issues are open and that a
+comment can go on the RFC's issue or by email. Nothing else in either RFC changed, including its status,
+comment window and decision.
+
 ## 7 September 2026
 
 ### Fixed: item 5 claimed a comparability trade-off the specification cannot establish
