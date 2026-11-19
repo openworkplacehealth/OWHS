@@ -163,4 +163,4 @@ def owhs_versions():
     import jsonschema, platform
     from importlib.metadata import version
     return json.dumps({"python": platform.python_version(), "jsonschema": version("jsonschema"), "referencing": version("referencing"),
-                       "rfc3339-validator": version("rfc3339-validator"), "rfc3987": version("rfc3987")})
+                       "rfc3339-validator": version("rfc3339-validator"), "rfc3986-validator": version("rfc3986-validator")})

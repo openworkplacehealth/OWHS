@@ -131,20 +131,12 @@
    "loaded": "when the visitor first presses Check"
   },
   {
-   "path": "wheels/rfc3987-1.3.8-py2.py3-none-any.whl",
-   "source": "https://files.pythonhosted.org/packages/py2.py3/r/rfc3987/rfc3987-1.3.8-py2.py3-none-any.whl",
-   "sha256": "10702b1e51e5658843460b189b185c0366d2cf4cff716f13111b0ea9fd2dce53",
-   "licence": "GPL-3.0-or-later",
-   "licence_file": "wheels/LICENSE-rfc3987-GPL-3.0.txt",
+   "path": "wheels/rfc3986_validator-0.1.1-py2.py3-none-any.whl",
+   "source": "https://files.pythonhosted.org/packages/py2.py3/r/rfc3986-validator/rfc3986_validator-0.1.1-py2.py3-none-any.whl",
+   "sha256": "2f235c432ef459970b4306369336b9d5dbdda31b510ca1e327636e01f528bfa9",
+   "licence": "MIT",
+   "licence_file": "inside the wheel",
    "loaded": "when the visitor first presses Check"
-  },
-  {
-   "path": "wheels/LICENSE-rfc3987-GPL-3.0.txt",
-   "source": "https://www.gnu.org/licenses/gpl-3.0.txt",
-   "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
-   "licence": "licence text",
-   "licence_file": null,
-   "loaded": "never; kept for its licence terms"
   },
   {
    "path": "fonts/inter-latin.woff2",

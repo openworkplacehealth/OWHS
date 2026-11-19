@@ -38,9 +38,9 @@ PYODIDE_VERSION = "314.0.7"
 PYODIDE_URL = f"https://cdn.jsdelivr.net/pyodide/v{PYODIDE_VERSION}/full/"
 
 # Every vendored file: (path under vendor/, upstream URL, sha256, licence, licence file under vendor/, loaded when).
-# The wheels are the ones Pyodide publishes for this release, except rfc3339-validator and rfc3987, which are pure-Python
-# wheels from PyPI: jsonschema asserts the date-time and uri formats only when they are installed, as requirements.txt's
-# jsonschema[format] installs them for the command-line validator.
+# The wheels are the ones Pyodide publishes for this release, except rfc3339-validator and rfc3986-validator, which are
+# pure-Python wheels from PyPI: jsonschema asserts the date-time and uri formats only when they are installed, as
+# requirements.txt's jsonschema[format-nongpl] installs them for the command-line validator. Nothing vendored is GPL.
 PINS = [
     ("pyodide/pyodide.mjs", PYODIDE_URL + "pyodide.mjs", "6f1d60f7bf529beb300f0f47983c921d3982363640ba20af0e38efdddbc66109", "MPL-2.0", "pyodide/LICENSE-Pyodide.txt", "check"),
     ("pyodide/pyodide.asm.mjs", PYODIDE_URL + "pyodide.asm.mjs", "f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635", "MPL-2.0 (with Emscripten runtime, MIT)", "pyodide/LICENSE-Emscripten.txt", "check"),
@@ -58,8 +58,7 @@ PINS = [
     ("wheels/jsonschema_specifications-2025.9.1-py3-none-any.whl", PYODIDE_URL + "jsonschema_specifications-2025.9.1-py3-none-any.whl", "8e4353ea148a", "MIT", "inside the wheel", "check"),
     ("wheels/jsonschema-4.26.0-py3-none-any.whl", PYODIDE_URL + "jsonschema-4.26.0-py3-none-any.whl", "7ce77bd37ad1", "MIT", "inside the wheel", "check"),
     ("wheels/rfc3339_validator-0.1.4-py2.py3-none-any.whl", "https://files.pythonhosted.org/packages/py2.py3/r/rfc3339-validator/rfc3339_validator-0.1.4-py2.py3-none-any.whl", None, "MIT", "inside the wheel", "check"),
-    ("wheels/rfc3987-1.3.8-py2.py3-none-any.whl", "https://files.pythonhosted.org/packages/py2.py3/r/rfc3987/rfc3987-1.3.8-py2.py3-none-any.whl", None, "GPL-3.0-or-later", "wheels/LICENSE-rfc3987-GPL-3.0.txt", "check"),
-    ("wheels/LICENSE-rfc3987-GPL-3.0.txt", "https://www.gnu.org/licenses/gpl-3.0.txt", None, "licence text", None, "never"),
+    ("wheels/rfc3986_validator-0.1.1-py2.py3-none-any.whl", "https://files.pythonhosted.org/packages/py2.py3/r/rfc3986-validator/rfc3986_validator-0.1.1-py2.py3-none-any.whl", "2f235c432ef459970b4306369336b9d5dbdda31b510ca1e327636e01f528bfa9", "MIT", "inside the wheel", "check"),
     ("fonts/inter-latin.woff2", "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2", None, "OFL-1.1", "fonts/LICENSE-Inter-OFL.txt", "page"),
     ("fonts/plexmono-400-latin.woff2", "https://fonts.gstatic.com/s/ibmplexmono/v23/-F63fjptAgt5VM-kVkqdyU8n1i8q131nj-o.woff2", None, "OFL-1.1", "fonts/LICENSE-IBM-Plex-OFL.txt", "page"),
     ("fonts/plexmono-500-latin.woff2", "https://fonts.gstatic.com/s/ibmplexmono/v23/-F6qfjptAgt5VM-kVkqdyU8n3twJwlBFgsAXHNk.woff2", None, "OFL-1.1", "fonts/LICENSE-IBM-Plex-OFL.txt", "page"),

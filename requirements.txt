@@ -1,11 +1,17 @@
 # Runtime dependencies of the reference validator and the build tools.
 # Pinned to major versions only: the tools use stable public APIs.
 #
-# jsonschema provides the Draft 2020-12 validator. Its `[format]` extra installs the
+# jsonschema provides the Draft 2020-12 validator. Its `[format-nongpl]` extra installs the
 # packages that make `format` assertable: without them jsonschema registers no checker
 # for a format and accepts any value for it, which is why tools/validate.py refuses to
-# run rather than report a pass it cannot stand behind.
-jsonschema[format]>=4.18
+# run rather than report a pass it cannot stand behind. The formats the schemas use are
+# date (checked by jsonschema itself), date-time (rfc3339-validator) and uri
+# (rfc3986-validator, MIT). The `[format]` extra would check uri with rfc3987, which is
+# GPL-licensed; the browser checker at site/check/ vendors the same packages as this
+# file installs, so this is also what keeps GPL code out of the site. If rfc3987 is
+# installed anyway, jsonschema prefers it for uri; every committed example gives the
+# same result with either.
+jsonschema[format-nongpl]>=4.18
 
 # The registry site generator writes a printable PDF of the grade matrix.
 reportlab>=4

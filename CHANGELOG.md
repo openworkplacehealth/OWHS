@@ -20,6 +20,11 @@ verdict or in the rules reported; on 19 November all 82 single-record examples a
 page means structurally conformant at Level 1, as on the command line. Level 2 and Level 3 are still not verified by any
 tool, and the page says so. The README describes the page.
 
+`requirements.txt` now installs `jsonschema[format-nongpl]` instead of `jsonschema[format]`, so the `uri` format (used
+only by the profile envelope schema) is checked by rfc3986-validator, which is MIT-licensed, instead of rfc3987, which is
+GPL-licensed. The browser checker vendors the same package. Every committed example, all 157 single-record, bundle and
+profile-envelope runs, gives the same output under both, and `examples/validation_report.json` is unchanged.
+
 ## 7 September 2026
 
 ### Fixed: item 5 claimed a comparability trade-off the specification cannot establish
