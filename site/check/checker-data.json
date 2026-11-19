@@ -1,0 +1,2377 @@
+{
+ "checker": {
+  "name": "OWHS browser checker",
+  "version": "1.0.0",
+  "page": "https://openworkplacehealth.org/check/",
+  "reference_tools": {
+   "tools/validate.py": "41bdc4c03ccbda04da39ce897eab73fd98eb20603600ab4c999e40cb8d0d8f43",
+   "tools/check_entity_graph.py": "9913660553adc07b662dd516a3ba5f6cc49b6bc9dfa3ebb12b86a4fabe1b6178",
+   "tools/check_measurement.py": "e3ae0d64f01ff8e73ab3671c2ce5292136ff672356e676e1a36a5cb8c1712eb8"
+  },
+  "runtime": {
+   "pyodide": "314.0.7",
+   "python": "3.14.2",
+   "six": "1.17.0",
+   "typing-extensions": "4.15.0",
+   "attrs": "26.1.0",
+   "rpds-py": "0.30.0",
+   "referencing": "0.37.0",
+   "jsonschema-specifications": "2025.9.1",
+   "jsonschema": "4.26.0",
+   "rfc3339-validator": "0.1.4",
+   "rfc3987": "1.3.8"
+  }
+ },
+ "schema_version": "0.2",
+ "entities": {
+  "Organisation": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/Organisation.json",
+   "schema_path": "schemas/v0.2/Organisation.json",
+   "description": "Organisation scope and declared employee-count band. Not a statutory company-size determination, identity verification or disclosure assessment.",
+   "required": [
+    "orgId",
+    "sizeBand",
+    "sizeBandReferenceDate",
+    "country"
+   ],
+   "properties": [
+    "companiesHouseNumber",
+    "country",
+    "ext",
+    "orgId",
+    "sicCode",
+    "sicVersion",
+    "sizeBand",
+    "sizeBandReferenceDate"
+   ],
+   "spec": "/spec/#organisation-new-in-v0.2",
+   "fields": {
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS internal"
+    },
+    "companiesHouseNumber": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "Companies House"
+    },
+    "sicCode": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "ONS SIC 2007 (sector comparability)"
+    },
+    "sicVersion": {
+     "type": "const 2007",
+     "required": false,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "UK SIC 2007 retained as an edition; ONS also publishes SIC 2026"
+    },
+    "sizeBand": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:org-size-band@0.1.1",
+     "privacy": "open",
+     "anchor": "Employee-count bands informed by DBT business population statistics; not a Companies Act company-size classification"
+    },
+    "sizeBandReferenceDate": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice: the date the band relates to"
+    },
+    "country": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "UK-first; structure allows extension"
+    }
+   }
+  },
+  "OrgUnit": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/OrgUnit.json",
+   "schema_path": "schemas/v0.2/OrgUnit.json",
+   "description": "Organisation-scoped unit and declared headcount band. No zero band exists in the pinned vocabulary; unknown or zero is not 1-4. References and hierarchy need supplied-bundle checks.",
+   "required": [
+    "unitId",
+    "orgId",
+    "headcountBand",
+    "headcountReferenceDate"
+   ],
+   "properties": [
+    "ext",
+    "headcountBand",
+    "headcountReferenceDate",
+    "orgId",
+    "parentUnitId",
+    "unitId"
+   ],
+   "spec": "/spec/#orgunit-new-in-v0.2",
+   "fields": {
+    "unitId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS internal"
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "→ Organisation"
+    },
+    "parentUnitId": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "self-join"
+    },
+    "headcountBand": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:headcount-band@0.1.0",
+     "privacy": "open",
+     "anchor": "banded, never exact (small-cell control)"
+    },
+    "headcountReferenceDate": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    }
+   }
+  },
+  "WorkerPseudonym": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/WorkerPseudonym.json",
+   "schema_path": "schemas/v0.2/WorkerPseudonym.json",
+   "description": "Organisation-scoped pseudonym with optional banded demographics. Syntax does not prove HMAC generation, salt custody, anonymity or permission to disclose demographics.",
+   "required": [
+    "pseudonymId",
+    "orgId"
+   ],
+   "properties": [
+    "ageBand",
+    "ext",
+    "orgId",
+    "pseudonymId",
+    "tenureBand",
+    "unitId",
+    "workPattern"
+   ],
+   "spec": "/spec/#workerpseudonym-new-in-v0.2",
+   "fields": {
+    "pseudonymId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "§2f pseudonymisation design"
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "scope boundary"
+    },
+    "unitId": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "→ OrgUnit"
+    },
+    "ageBand": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:age-band@0.1.0",
+     "privacy": "aggregate-only",
+     "anchor": "banded demographic (ONS age groups)"
+    },
+    "tenureBand": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:tenure-band@0.1.0",
+     "privacy": "aggregate-only",
+     "anchor": "banded demographic"
+    },
+    "workPattern": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:work-pattern@0.1.0",
+     "privacy": "aggregate-only",
+     "anchor": "full/part-time (ONS employment-type dimension)"
+    }
+   }
+  },
+  "AbsenceEpisode": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/AbsenceEpisode.json",
+   "schema_path": "schemas/v0.2/AbsenceEpisode.json",
+   "description": "Reported sickness-absence episode with versioned reason-category mapping. No direct identifiers.",
+   "required": [
+    "episodeId",
+    "pseudonymId",
+    "reasonCode",
+    "startDate",
+    "sourceProvenance"
+   ],
+   "properties": [
+    "clinicalCauseCode",
+    "endDate",
+    "episodeId",
+    "ext",
+    "fitNoteFlag",
+    "pseudonymId",
+    "reasonCode",
+    "sourceProvenance",
+    "startDate",
+    "workRelatedFlag",
+    "workingDaysLost",
+    "workingHoursLost"
+   ],
+   "spec": "/spec/#absenceepisode",
+   "fields": {
+    "episodeId": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS internal"
+    },
+    "pseudonymId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "employer holds absence records lawfully"
+    },
+    "reasonCode": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:absence-reason@0.2.0",
+     "privacy": "aggregate-only",
+     "anchor": "ONS reason taxonomy [1]"
+    },
+    "startDate": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "endDate": {
+     "type": "date",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "open episode if absent"
+    },
+    "workingDaysLost": {
+     "type": "number",
+     "required": false,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "ONS 7.5-hour working-day unit [26]"
+    },
+    "workingHoursLost": {
+     "type": "number",
+     "required": false,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "ONS hours-based rate basis [1][10]"
+    },
+    "fitNoteFlag": {
+     "type": "boolean",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "fit note issued (Statement of Fitness for Work)"
+    },
+    "workRelatedFlag": {
+     "type": "boolean",
+     "required": false,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "work-relatedness (feeds RIDDOR context)"
+    },
+    "clinicalCauseCode": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "OPTIONAL; affiliate-licence caveat, never conformance-required"
+    },
+    "sourceProvenance": {
+     "type": "object",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "HRIS provider / manual"
+    },
+    "sourceProvenance.sourceType": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:source-type@0.1.0",
+     "privacy": "inherited: open (from sourceProvenance)",
+     "anchor": "OWHS record provenance"
+    },
+    "sourceProvenance.sourceProvider": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from sourceProvenance)",
+     "anchor": ""
+    },
+    "sourceProvenance.sourceId": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from sourceProvenance)",
+     "anchor": ""
+    }
+   }
+  },
+  "ReturnToWorkOutcome": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/ReturnToWorkOutcome.json",
+   "schema_path": "schemas/v0.2/ReturnToWorkOutcome.json",
+   "description": "What happened after an absence, including did-not-return and ill-health-exit. No direct identifiers.",
+   "required": [
+    "outcomeId",
+    "absenceEpisodeId",
+    "pseudonymId",
+    "outcomeType"
+   ],
+   "properties": [
+    "absenceEpisodeId",
+    "adjustmentTypes",
+    "ext",
+    "outcomeId",
+    "outcomeType",
+    "pseudonymId",
+    "rtwDate",
+    "sustainedAt",
+    "whiuOutcomeCode"
+   ],
+   "spec": "/spec/#returntoworkoutcome",
+   "fields": {
+    "outcomeId": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS internal"
+    },
+    "absenceEpisodeId": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "→ AbsenceEpisode"
+    },
+    "pseudonymId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "outcomeType": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:rtw-outcome@0.1.0",
+     "privacy": "aggregate-only",
+     "anchor": "full / phased / adjusted / did-not-return / ill-health-exit"
+    },
+    "adjustmentTypes": {
+     "type": "array of string codes",
+     "required": false,
+     "codelist": "codelist:rtw-adjustment@0.1.0",
+     "privacy": "individual-employer",
+     "anchor": "fit-note \"may be fit\" categories"
+    },
+    "rtwDate": {
+     "type": "date",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "sustainedAt": {
+     "type": "array of object",
+     "required": false,
+     "codelist": "codelist:rtw-sustained-status@0.1.0 (element status; the checkpoint weeks are advisory rtw-checkpoint@0.1.0)",
+     "privacy": "aggregate-only",
+     "anchor": "any 1 to 104 weeks; {4,13,26} recommended, provisional pending whiu:"
+    },
+    "sustainedAt[].checkpointWeeks": {
+     "type": "integer",
+     "required": true,
+     "codelist": "codelist:rtw-checkpoint@0.1.0",
+     "privacy": "inherited: aggregate-only (from sustainedAt)",
+     "anchor": "Founder decision 7 Jul 2026: open integer, not enum. Recommended set {4,13,26} (codelist:rtw-checkpoint@0.1.0); producers SHOULD use the recommended set for comparability. whiu: definitions expected to supersede."
+    },
+    "sustainedAt[].status": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:rtw-sustained-status@0.1.0",
+     "privacy": "inherited: aggregate-only (from sustainedAt)",
+     "anchor": "closed vocabulary; unknown means the checkpoint was not followed up, which is not a relapse"
+    },
+    "whiuOutcomeCode": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "reserved for WHIU crosswalk"
+    }
+   }
+  },
+  "OHEpisode": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/OHEpisode.json",
+   "schema_path": "schemas/v0.2/OHEpisode.json",
+   "description": "Management-facing envelope of an OH interaction. Carries NO clinical content.",
+   "required": [
+    "ohEpisodeId",
+    "pseudonymId",
+    "referralReason",
+    "referralDate",
+    "opinionReleasedToEmployer"
+   ],
+   "properties": [
+    "assessmentDate",
+    "assessmentType",
+    "ext",
+    "fitnessOpinion",
+    "linkedAbsenceEpisodeId",
+    "ohEpisodeId",
+    "opinionReleasedToEmployer",
+    "pseudonymId",
+    "recommendationTypes",
+    "referralDate",
+    "referralReason"
+   ],
+   "spec": "/spec/#ohepisode",
+   "fields": {
+    "ohEpisodeId": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS internal"
+    },
+    "pseudonymId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "referralReason": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:oh-referral-reason@0.1.0",
+     "privacy": "individual-employer",
+     "anchor": "management-facing reason, not diagnosis"
+    },
+    "referralDate": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "assessmentType": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:oh-assessment-type@0.1.0",
+     "privacy": "individual-employer",
+     "anchor": "management referral / health surveillance / DSE / pre-placement"
+    },
+    "assessmentDate": {
+     "type": "date",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "fitnessOpinion": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:fitness-opinion@0.1.0",
+     "privacy": "individual-employer",
+     "anchor": "fit / unfit / fit-with-adjustments (the released opinion, per AMRA 1988 / GMC)"
+    },
+    "recommendationTypes": {
+     "type": "array of string codes",
+     "required": false,
+     "codelist": "codelist:rtw-adjustment@0.1.0",
+     "privacy": "individual-employer",
+     "anchor": "recommendation *types* only, shared with RTW adjustments"
+    },
+    "opinionReleasedToEmployer": {
+     "type": "boolean",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "consent flag; MUST be true for fitnessOpinion to be present"
+    },
+    "linkedAbsenceEpisodeId": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "→ AbsenceEpisode"
+    }
+   }
+  },
+  "ReasonableAdjustment": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/ReasonableAdjustment.json",
+   "schema_path": "schemas/v0.2/ReasonableAdjustment.json",
+   "description": "Management-facing adjustment record, with sensitive disability flag restricted to the producer. Omitted endDate means no end date is recorded; null is not a date. A recorded category does not decide any legal duty or lawful disclosure.",
+   "required": [
+    "adjustmentId",
+    "orgId",
+    "pseudonymId",
+    "adjustmentCategory",
+    "status"
+   ],
+   "properties": [
+    "adjustmentCategory",
+    "adjustmentId",
+    "disabilityRelated",
+    "endDate",
+    "ext",
+    "orgId",
+    "pseudonymId",
+    "sourceOhEpisodeId",
+    "startDate",
+    "status"
+   ],
+   "spec": "/spec/#reasonableadjustment-new-in-v0.2",
+   "fields": {
+    "adjustmentId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS internal"
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "pseudonymId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "adjustmentCategory": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:adjustment-category@0.1.0",
+     "privacy": "individual-employer",
+     "anchor": "Equality Act 2010 s.20 duty; superset of fit-note categories"
+    },
+    "status": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:adjustment-status@0.1.0",
+     "privacy": "aggregate-only",
+     "anchor": "proposed / in-place / declined / ended"
+    },
+    "startDate": {
+     "type": "date",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "endDate": {
+     "type": "date",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "Omit when no end date is recorded; null is invalid. Use status for adjustment state."
+    },
+    "sourceOhEpisodeId": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-employer",
+     "anchor": "→ OHEpisode (if OH-recommended)"
+    },
+    "disabilityRelated": {
+     "type": "boolean",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "whether tied to a disability, sensitive; aggregate via DisabilityParticipation only"
+    }
+   }
+  },
+  "BenefitEntitlement": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/BenefitEntitlement.json",
+   "schema_path": "schemas/v0.2/BenefitEntitlement.json",
+   "description": "Declared statutory scheme or commercial workforce benefit. No eligibility, rate or legal entitlement is computed. Statutory descriptions are dated and sourced; omitted optional terms are not zero.",
+   "required": [
+    "entitlementId",
+    "orgId",
+    "layer"
+   ],
+   "properties": [
+    "accessRoute",
+    "eligibilityScope",
+    "entitlementId",
+    "ext",
+    "healthDomainTags",
+    "layer",
+    "orgId",
+    "productCategory",
+    "provider",
+    "serviceName",
+    "statutory"
+   ],
+   "spec": "/spec/#benefitentitlement-new-in-v0.2",
+   "fields": {
+    "entitlementId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "layer": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:benefit-layer@0.1.0",
+     "privacy": "open",
+     "anchor": "the statutory/commercial split"
+    },
+    "statutory": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "closed statutory-term object; dated and sourced; no rate or eligibility is computed"
+    },
+    "statutory.scheme": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": ""
+    },
+    "statutory.eligibility": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": ""
+    },
+    "statutory.waitingDays": {
+     "type": "integer",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": ""
+    },
+    "statutory.rate": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": ""
+    },
+    "statutory.rate.amount": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": ""
+    },
+    "statutory.rate.currency": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": "ISO 4217 code syntax only; membership is not resolved."
+    },
+    "statutory.rate.basis": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": "Rate period or other calculation basis, for example per week. A variable statutory formula must be stated in description, not replaced with a fictitious fixed rate."
+    },
+    "statutory.rate.description": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": ""
+    },
+    "statutory.durationWeeks": {
+     "type": "number",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": ""
+    },
+    "statutory.sourceRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "statutory.asOfDate": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from statutory)",
+     "anchor": ""
+    },
+    "productCategory": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:benefit-product@0.1.0",
+     "privacy": "open",
+     "anchor": "UK-market vocabulary (PMI/GIP/GLA/cash plan/EAP/pension)"
+    },
+    "serviceName": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "commercial layer"
+    },
+    "provider": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "accessRoute": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:access-route@0.1.0",
+     "privacy": "open",
+     "anchor": "self-referral / manager / GP / OH"
+    },
+    "eligibilityScope": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "who is covered"
+    },
+    "healthDomainTags": {
+     "type": "array of string codes",
+     "required": false,
+     "codelist": "codelist:construct-domain@0.1.0",
+     "privacy": "open",
+     "anchor": "maps services to the same constructs measurement uses"
+    }
+   }
+  },
+  "BenefitUtilisation": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/BenefitUtilisation.json",
+   "schema_path": "schemas/v0.2/BenefitUtilisation.json",
+   "description": "Producer-held aggregate event counts. This is not an employer-output record: use an AggregateReport and the privacy profile for disclosure. Counts below a reporting floor can be structurally valid here. Claim contents and individual attendance are excluded.",
+   "required": [
+    "utilisationId",
+    "orgId",
+    "entitlementId",
+    "periodStart",
+    "periodEnd",
+    "usageCount",
+    "n"
+   ],
+   "properties": [
+    "claimCount",
+    "entitlementId",
+    "ext",
+    "n",
+    "orgId",
+    "periodEnd",
+    "periodStart",
+    "usageCount",
+    "utilisationId"
+   ],
+   "spec": "/spec/#benefitutilisation-new-in-v0.2",
+   "fields": {
+    "utilisationId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "entitlementId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "periodStart": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice: inclusive reporting dates"
+    },
+    "periodEnd": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice: inclusive reporting dates"
+    },
+    "usageCount": {
+     "type": "integer",
+     "required": true,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "counts only, never individual claims"
+    },
+    "claimCount": {
+     "type": "integer",
+     "required": false,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "Claim events, never an individual claim record. Repeated claims may exceed n."
+    },
+    "n": {
+     "type": "integer",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "distinct people represented across the recorded service-use and claim events in this period; not the whole eligible workforce and not automatically the denominator for either event category separately; a released metric requires its own distinct-person count and completion metadata in AggregateReport"
+    }
+   }
+  },
+  "DisabilityParticipation": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/DisabilityParticipation.json",
+   "schema_path": "schemas/v0.2/DisabilityParticipation.json",
+   "description": "Reserved-minimal producer-held organisation aggregate. No disability measure or national definition is invented. The shape has no respondent denominator or suppression metadata: this schema cannot establish the n>=10 disclosure rule and does not authorise employer or benchmark release. Zero, unknown and non-disclosure must not be recoded into 1-4.",
+   "required": [
+    "reportId",
+    "orgId",
+    "period",
+    "periodStart",
+    "periodEnd"
+   ],
+   "properties": [
+    "disabledHeadcountBand",
+    "ext",
+    "orgId",
+    "period",
+    "periodEnd",
+    "periodStart",
+    "reportId",
+    "whiuMeasureCode"
+   ],
+   "spec": "/spec/#disabilityparticipation-new-in-v0.2",
+   "fields": {
+    "reportId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "org level only"
+    },
+    "period": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "Human-readable period label; periodStart and periodEnd define the inclusive dates."
+    },
+    "periodStart": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice: inclusive reporting dates"
+    },
+    "periodEnd": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice: inclusive reporting dates"
+    },
+    "disabledHeadcountBand": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:headcount-band@0.1.0",
+     "privacy": "aggregate-only",
+     "anchor": "n≥10 floor; banded, minimal until whiu: defines the measure"
+    },
+    "whiuMeasureCode": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "reserved"
+    }
+   }
+  },
+  "MeasurementContext": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/MeasurementContext.json",
+   "schema_path": "schemas/v0.2/MeasurementContext.json",
+   "description": "What makes scores comparable: the producing system, the scoring descriptor and its provenance, the data window it describes, and the stated limitations. Immutable: a changed descriptor is a new context.",
+   "required": [
+    "contextId",
+    "orgId",
+    "producingSystem",
+    "scoringDescriptor",
+    "knownLimitations"
+   ],
+   "properties": [
+    "contextId",
+    "ext",
+    "knownLimitations",
+    "orgId",
+    "producingSystem",
+    "recallPeriod",
+    "scoringDescriptor"
+   ],
+   "spec": "/spec/#measurementcontext",
+   "fields": {
+    "contextId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "Primary identifier, unique within the organisation."
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Organisation scope."
+    },
+    "producingSystem": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "system + version"
+    },
+    "knownLimitations": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "recallPeriod": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "The instrument's recall period where its source specifies one, for example 'preceding two weeks'. Distinct from observationWindow."
+    },
+    "scoringDescriptor": {
+     "type": "object",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "aggregation method / estimation family / window (open descriptor, no method enum)"
+    },
+    "scoringDescriptor.descriptorId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Identifier of this descriptor."
+    },
+    "scoringDescriptor.descriptorVersion": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Version of this descriptor."
+    },
+    "scoringDescriptor.method": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Scoring method, in the producer's words."
+    },
+    "scoringDescriptor.estimand": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "What the score estimates: a period mean, a modelled current state, a rolling average with its window, and so on."
+    },
+    "scoringDescriptor.observationWindow": {
+     "type": "object",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "The data the descriptor represents. Not the instrument's recall period."
+    },
+    "scoringDescriptor.observationWindow.start": {
+     "type": "date-time",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": ""
+    },
+    "scoringDescriptor.observationWindow.end": {
+     "type": "date-time",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": ""
+    },
+    "scoringDescriptor.sourceRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "scoringDescriptor.scoreUnit": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Unit of the score."
+    },
+    "scoringDescriptor.higherScoreMeaning": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": ""
+    },
+    "scoringDescriptor.nativeScale": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Bounds of the native response scale."
+    },
+    "scoringDescriptor.nativeScale.min": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": ""
+    },
+    "scoringDescriptor.nativeScale.max": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": ""
+    },
+    "scoringDescriptor.normalisation": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Rule that maps nativeValue to 0..100. Required by any observation carrying normalisedValue."
+    },
+    "scoringDescriptor.normalisation.id": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Identifier of the rule or table."
+    },
+    "scoringDescriptor.normalisation.version": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Version of the rule or table."
+    },
+    "scoringDescriptor.normalisation.sourceRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "scoringDescriptor.normalisation.description": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Optional description."
+    },
+    "scoringDescriptor.banding": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Banding table. Required by any administration carrying band."
+    },
+    "scoringDescriptor.banding.id": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Identifier of the rule or table."
+    },
+    "scoringDescriptor.banding.version": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Version of the rule or table."
+    },
+    "scoringDescriptor.banding.sourceRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "scoringDescriptor.banding.description": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Optional description."
+    },
+    "scoringDescriptor.threshold": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Threshold rule. Required by any administration carrying aboveThresholdFlag."
+    },
+    "scoringDescriptor.threshold.id": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Identifier of the rule or table."
+    },
+    "scoringDescriptor.threshold.version": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Version of the rule or table."
+    },
+    "scoringDescriptor.threshold.sourceRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "scoringDescriptor.threshold.description": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Optional description."
+    },
+    "scoringDescriptor.missingResponseRule": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Scoring rule for partial administrations. Required by any partial administration carrying scores."
+    },
+    "scoringDescriptor.missingResponseRule.id": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Identifier of the rule or table."
+    },
+    "scoringDescriptor.missingResponseRule.version": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Version of the rule or table."
+    },
+    "scoringDescriptor.missingResponseRule.sourceRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "scoringDescriptor.missingResponseRule.description": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from scoringDescriptor)",
+     "anchor": "Optional description."
+    }
+   }
+  },
+  "WellbeingObservation": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/WellbeingObservation.json",
+   "schema_path": "schemas/v0.2/WellbeingObservation.json",
+   "description": "One answer to one survey item on one occasion, any vendor. Individual-never at this grain: it leaves an organisation only through an AggregateReport.",
+   "required": [
+    "observationId",
+    "orgId",
+    "pseudonymId",
+    "contextId",
+    "itemId",
+    "itemVersion",
+    "constructCode",
+    "nativeValue",
+    "occasionTs",
+    "safeguardingCategory"
+   ],
+   "properties": [
+    "collectionChannel",
+    "constructCode",
+    "contextId",
+    "ext",
+    "itemId",
+    "itemVersion",
+    "nativeValue",
+    "normalisedValue",
+    "observationId",
+    "occasionTs",
+    "orgId",
+    "pseudonymId",
+    "safeguardingCategory",
+    "samplingDesign"
+   ],
+   "spec": "/spec/#wellbeingobservation",
+   "fields": {
+    "observationId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "Primary identifier, unique within the organisation."
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Organisation scope. Metadata remains subject to P1."
+    },
+    "pseudonymId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "survey answers never individually employer-visible"
+    },
+    "contextId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Same-organisation MeasurementContext reference; one immutable scoring and interpretation descriptor."
+    },
+    "itemId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "item identifier only, never item text (licensing)"
+    },
+    "itemVersion": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Version of this item and its response options."
+    },
+    "constructCode": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:construct-domain@0.1.0",
+     "privacy": "aggregate-only",
+     "anchor": "shared construct list"
+    },
+    "nativeValue": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "vendor scale"
+    },
+    "normalisedValue": {
+     "type": "number",
+     "required": false,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "comparability"
+    },
+    "occasionTs": {
+     "type": "date-time",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "Observation occasion, with an asserted time zone."
+    },
+    "collectionChannel": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:collection-channel@0.1.0",
+     "privacy": "open",
+     "anchor": "How the answer was collected."
+    },
+    "safeguardingCategory": {
+     "type": "boolean",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "if true, excluded from all employer output at any n (§3 P4)"
+    },
+    "samplingDesign": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "complete / rotating-subset / adaptive + schedule ref"
+    },
+    "samplingDesign.design": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:sampling-design@0.1.0",
+     "privacy": "inherited: open (from samplingDesign)",
+     "anchor": "Sampling design under which this item was offered."
+    },
+    "samplingDesign.scheduleRef": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from samplingDesign)",
+     "anchor": "Schedule reference, required for rotating-subset and adaptive designs."
+    }
+   }
+  },
+  "InstrumentAdministration": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/InstrumentAdministration.json",
+   "schema_path": "schemas/v0.2/InstrumentAdministration.json",
+   "description": "One completed, partial or abandoned administration of a validated instrument: scores and bands, never item text. Individual-never at this grain. The schema does not grant a licence to administer the instrument.",
+   "required": [
+    "administrationId",
+    "orgId",
+    "pseudonymId",
+    "contextId",
+    "instrumentId",
+    "instrumentCitation",
+    "instrumentVersion",
+    "occasionTs",
+    "constructCodes",
+    "completionStatus"
+   ],
+   "properties": [
+    "aboveThresholdFlag",
+    "administrationId",
+    "band",
+    "completionStatus",
+    "constructCodes",
+    "contextId",
+    "ext",
+    "instrumentCitation",
+    "instrumentId",
+    "instrumentVersion",
+    "occasionTs",
+    "orgId",
+    "pseudonymId",
+    "subscaleScores",
+    "totalScore"
+   ],
+   "spec": "/spec/#instrumentadministration",
+   "fields": {
+    "administrationId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "Primary identifier, unique within the organisation."
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Organisation scope."
+    },
+    "pseudonymId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "instrument results are individual-never by definition (§3 P3)"
+    },
+    "contextId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Same-organisation MeasurementContext reference."
+    },
+    "instrumentId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Stable identifier of the exact instrument or form. Not its registry grade."
+    },
+    "instrumentCitation": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "citation + version only, never item text"
+    },
+    "instrumentVersion": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "Form or version, separate from any dataset version."
+    },
+    "occasionTs": {
+     "type": "date-time",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Administration occasion, with an asserted time zone."
+    },
+    "constructCodes": {
+     "type": "array of string codes",
+     "required": true,
+     "codelist": "codelist:construct-domain@0.1.0",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Constructs the instrument measures; a multidimensional instrument lists several without inventing one total construct."
+    },
+    "completionStatus": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:completion-status@0.1.0",
+     "privacy": "open",
+     "anchor": "complete, partial or abandoned."
+    },
+    "totalScore": {
+     "type": "number",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "Total score, where the instrument defines one."
+    },
+    "subscaleScores": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "Subscale identifier to finite score."
+    },
+    "band": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "aggregate-only",
+     "anchor": "producer's published banding"
+    },
+    "aboveThresholdFlag": {
+     "type": "boolean",
+     "required": false,
+     "codelist": "",
+     "privacy": "individual-never",
+     "anchor": "severe-distress → n≥10 aggregation floor (§3 P2)"
+    }
+   }
+  },
+  "AggregateReport": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/AggregateReport.json",
+   "schema_path": "schemas/v0.2/AggregateReport.json",
+   "description": "Employer-visible aggregate results and their suppression declarations. Structural consistency of declarations, not a disclosure assessment: the schema cannot know the recipient, and a safeguarding record valid as suppressed must still never enter employer output (P4).",
+   "required": [
+    "reportId",
+    "orgId",
+    "level",
+    "periodStart",
+    "periodEnd",
+    "n",
+    "headcount",
+    "eligibleN",
+    "completionRate",
+    "metricCode",
+    "measureKind",
+    "releaseCategory",
+    "suppressed",
+    "contextId"
+   ],
+   "properties": [
+    "benchmarkRef",
+    "completionRate",
+    "contextId",
+    "eligibleN",
+    "ext",
+    "headcount",
+    "interval",
+    "level",
+    "measureKind",
+    "metricCode",
+    "n",
+    "observationCount",
+    "orgId",
+    "periodEnd",
+    "periodStart",
+    "releaseCategory",
+    "reportId",
+    "suppressed",
+    "suppressionReason",
+    "unitId",
+    "value"
+   ],
+   "spec": "/spec/#aggregatereport",
+   "fields": {
+    "reportId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "Primary identifier, unique within the organisation."
+    },
+    "orgId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Organisation scope."
+    },
+    "level": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "unitId": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OrgUnit reference; required at unit level, forbidden at org level."
+    },
+    "periodStart": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice: inclusive reporting dates"
+    },
+    "periodEnd": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice: inclusive reporting dates"
+    },
+    "n": {
+     "type": "integer",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "distinct people represented across the recorded service-use and claim events in this period; not the whole eligible workforce and not automatically the denominator for either event category separately; a released metric requires its own distinct-person count and completion metadata in AggregateReport"
+    },
+    "observationCount": {
+     "type": "integer",
+     "required": false,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Responses underlying the estimate; may exceed n with repeated observations."
+    },
+    "headcount": {
+     "type": "integer",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "denominator"
+    },
+    "eligibleN": {
+     "type": "integer",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Distinct people eligible or offered this metric in the window."
+    },
+    "completionRate": {
+     "type": "number/null",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "P5 completeness travels with the aggregate"
+    },
+    "metricCode": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "what is reported"
+    },
+    "measureKind": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Source grain, not a reliability claim."
+    },
+    "releaseCategory": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS P2/P4 declared category"
+    },
+    "value": {
+     "type": "number",
+     "required": false,
+     "codelist": "",
+     "privacy": "open (post-floor)",
+     "anchor": "the aggregate value; required when suppressed:false, and MUST be absent when suppressed:true"
+    },
+    "interval": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "uncertainty; MUST be absent when suppressed:true, since an interval discloses the suppressed value to within its width"
+    },
+    "interval.low": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from interval)",
+     "anchor": ""
+    },
+    "interval.high": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from interval)",
+     "anchor": ""
+    },
+    "interval.level": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from interval)",
+     "anchor": ""
+    },
+    "interval.method": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from interval)",
+     "anchor": "Interval method."
+    },
+    "interval.sourceRef": {
+     "type": "string",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from interval)",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "suppressed": {
+     "type": "boolean",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "P5 whether withheld"
+    },
+    "suppressionReason": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:suppression-reason@0.1.0",
+     "privacy": "open",
+     "anchor": "below-floor / safeguarding / low-completion"
+    },
+    "contextId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "→ MeasurementContext"
+    },
+    "benchmarkRef": {
+     "type": "object",
+     "required": false,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "Reference to a comparison release. No implied score equivalence. Not resolved by the core validator."
+    },
+    "benchmarkRef.benchmarkId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "BenchmarkRelease identifier."
+    },
+    "benchmarkRef.releaseVersion": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "benchmarkRef.sourceRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    }
+   }
+  },
+  "BenchmarkRelease": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/BenchmarkRelease.json",
+   "schema_path": "schemas/v0.2/BenchmarkRelease.json",
+   "description": "One versioned comparison distribution for one declared metric, scoring rule, population and data period. Sample composition and exclusion are declarations, not verified truth. Percentiles do not establish representativeness, clinical thresholds, anonymity or comparability with a different measure.",
+   "required": [
+    "benchmarkId",
+    "releaseVersion",
+    "composition",
+    "percentiles",
+    "leaveOneOut",
+    "validFrom",
+    "validTo",
+    "source",
+    "dataPeriodStart",
+    "dataPeriodEnd",
+    "measure",
+    "population",
+    "samplingMethod",
+    "knownLimitations",
+    "releaseCategory"
+   ],
+   "properties": [
+    "benchmarkId",
+    "composition",
+    "dataPeriodEnd",
+    "dataPeriodStart",
+    "excludedOrgId",
+    "ext",
+    "knownLimitations",
+    "leaveOneOut",
+    "measure",
+    "percentiles",
+    "population",
+    "releaseCategory",
+    "releaseVersion",
+    "samplingMethod",
+    "source",
+    "validFrom",
+    "validTo"
+   ],
+   "spec": "/spec/#benchmarkrelease-new-in-v0.2",
+   "fields": {
+    "benchmarkId": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "releaseVersion": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "composition": {
+     "type": "object",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "composition disclosure"
+    },
+    "composition.orgCount": {
+     "type": "integer",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from composition)",
+     "anchor": ""
+    },
+    "composition.sectors": {
+     "type": "array of patterned strings",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from composition)",
+     "anchor": ""
+    },
+    "composition.sicVersion": {
+     "type": "const 2007",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from composition)",
+     "anchor": "UK SIC 2007 retained as an edition; ONS also publishes SIC 2026"
+    },
+    "composition.sizeBands": {
+     "type": "array of string codes",
+     "required": true,
+     "codelist": "codelist:org-size-band@0.1.1",
+     "privacy": "inherited: open (from composition)",
+     "anchor": ""
+    },
+    "composition.sampleSizes": {
+     "type": "object",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from composition)",
+     "anchor": ""
+    },
+    "composition.sampleSizes.people": {
+     "type": "integer",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from composition)",
+     "anchor": ""
+    },
+    "composition.sampleSizes.observations": {
+     "type": "integer",
+     "required": false,
+     "codelist": "",
+     "privacy": "inherited: open (from composition)",
+     "anchor": ""
+    },
+    "percentiles": {
+     "type": "object",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "percentiles.method": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from percentiles)",
+     "anchor": "Published quantile algorithm, weighting and handling of ties/missing values. No universal quantile algorithm is presumed."
+    },
+    "percentiles.values": {
+     "type": "array of object",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from percentiles)",
+     "anchor": ""
+    },
+    "percentiles.values[].probability": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from percentiles)",
+     "anchor": ""
+    },
+    "percentiles.values[].value": {
+     "type": "number",
+     "required": true,
+     "codelist": "",
+     "privacy": "inherited: open (from percentiles)",
+     "anchor": ""
+    },
+    "leaveOneOut": {
+     "type": "boolean",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "self-comparison honesty"
+    },
+    "excludedOrgId": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice: required iff leaveOneOut"
+    },
+    "validFrom": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "validity window"
+    },
+    "validTo": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "validity window"
+    },
+    "source": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "dataPeriodStart": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "dataPeriodEnd": {
+     "type": "date",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "measure": {
+     "type": "object",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice: one metric and scoring rule per release"
+    },
+    "measure.metricCode": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": ""
+    },
+    "measure.instrumentId": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": ""
+    },
+    "measure.instrumentVersion": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": ""
+    },
+    "measure.scoreUnit": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": ""
+    },
+    "measure.scoringDescriptorRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": ""
+    },
+    "population": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "samplingMethod": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "knownLimitations": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    },
+    "releaseCategory": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:release-category@0.1.0",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS P2/P4 declared category"
+    }
+   }
+  },
+  "Crosswalk": {
+   "schema_id": "https://openworkplacehealth.org/schemas/v0.2/Crosswalk.json",
+   "schema_path": "schemas/v0.2/Crosswalk.json",
+   "description": "Versioned, sourced mapping assertions. At least one target is required; construct codes remain the shared vocabulary, not extra person-level entities.",
+   "required": [
+    "constructCode",
+    "crosswalkVersion",
+    "sourceRef"
+   ],
+   "properties": [
+    "constructCode",
+    "crosswalkVersion",
+    "ext",
+    "hseDomain",
+    "iso45003Clause",
+    "iso45003Edition",
+    "sourceRef",
+    "whiuCode"
+   ],
+   "spec": "/spec/#crosswalk-new-in-v0.2",
+   "fields": {
+    "constructCode": {
+     "type": "string (code)",
+     "required": true,
+     "codelist": "codelist:construct-domain@0.1.0",
+     "privacy": "open",
+     "anchor": "codelist:construct-domain"
+    },
+    "hseDomain": {
+     "type": "string (code)",
+     "required": false,
+     "codelist": "codelist:hse-management-domain@0.1.0",
+     "privacy": "open",
+     "anchor": "HSE MS six domains [19]"
+    },
+    "iso45003Clause": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "ISO 45003 hazard taxonomy"
+    },
+    "iso45003Edition": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "ISO 45003 edition being mapped; ISO text is referenced, not reproduced"
+    },
+    "whiuCode": {
+     "type": "string (pattern)",
+     "required": false,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "reserved whiu:"
+    },
+    "crosswalkVersion": {
+     "type": "string (pattern)",
+     "required": true,
+     "codelist": "",
+     "privacy": "open",
+     "anchor": "versioned independently of the spec"
+    },
+    "sourceRef": {
+     "type": "string",
+     "required": true,
+     "codelist": "",
+     "privacy": "not separately assigned; entity restrictions apply",
+     "anchor": "OWHS v0.2 design choice"
+    }
+   }
+  }
+ },
+ "rules": {
+  "C1": {
+   "entity": "AbsenceEpisode",
+   "statement": "endDate not before startDate",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C2": {
+   "entity": "OHEpisode",
+   "statement": "assessmentDate not before referralDate",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C3": {
+   "entity": "AggregateReport",
+   "statement": "periodEnd not before periodStart",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C4": {
+   "entity": "MeasurementContext",
+   "statement": "observationWindow ordered as UTC instants",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C5": {
+   "entity": "MeasurementContext",
+   "statement": "nativeScale min below max",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C6": {
+   "entity": "AggregateReport",
+   "statement": "interval low not above high",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C7": {
+   "entity": "AggregateReport",
+   "statement": "n <= eligibleN <= headcount",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C8": {
+   "entity": "AggregateReport",
+   "statement": "observationCount not below n",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C9": {
+   "entity": "AggregateReport",
+   "statement": "completionRate is n/eligibleN, null only when eligibleN is 0",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C10": {
+   "entity": "ReasonableAdjustment",
+   "statement": "if both dates exist, endDate >= startDate",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C11": {
+   "entity": "BenefitUtilisation",
+   "statement": "periodEnd >= periodStart",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C12": {
+   "entity": "DisabilityParticipation",
+   "statement": "periodEnd >= periodStart",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C13": {
+   "entity": "BenchmarkRelease",
+   "statement": "validTo >= validFrom",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C14": {
+   "entity": "BenchmarkRelease",
+   "statement": "dataPeriodEnd >= dataPeriodStart",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C15": {
+   "entity": "BenefitUtilisation",
+   "statement": "n <= usageCount + claimCount (an absent claimCount contributes no recorded events); n = 0 requires both recorded event counts to be zero. Repeated events may exceed n. Declarations are compared; people are not deduplicated",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C16": {
+   "entity": "BenchmarkRelease",
+   "statement": "composition.orgCount <= sampleSizes.people; observations, when supplied, >= people. Contributing organisations and people, not invited but non-contributing units",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C17": {
+   "entity": "BenchmarkRelease",
+   "statement": "percentile probabilities strictly increase in array order and values never decrease; tied values and a single quantile are valid, duplicate probabilities are not; no quantile algorithm or sampling distribution is verified",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "C18": {
+   "entity": "OrgUnit",
+   "statement": "parentUnitId, if supplied, differs from unitId; the direct self-loop only",
+   "source": "specification, section 9, Level 1",
+   "link": "/spec/#named-within-record-rules"
+  },
+  "G01": {
+   "entity": null,
+   "statement": "every record carrying orgId equals its enclosing Organisation's orgId; the three older episodes (absence, return to work, OH) inherit the group scope for this checker only, and no field is injected into a source record",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G02": {
+   "entity": null,
+   "statement": "unique group orgId, unique scoped entity keys, unique benchmark (benchmarkId, releaseVersion); duplicates are errors even when byte-identical, with no first-wins or last-wins",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G03": {
+   "entity": null,
+   "statement": "every present declared intra-organisation reference resolves to exactly one supplied target in the enclosing group; a match in another group fails",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G04": {
+   "entity": null,
+   "statement": "ReturnToWorkOutcome and its AbsenceEpisode, OHEpisode and its optional linked AbsenceEpisode, ReasonableAdjustment and its optional source OHEpisode share one pseudonymId; both records' worker references must also resolve",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G05": {
+   "entity": null,
+   "statement": "OrgUnit parent links form an acyclic graph within each organisation, walked iteratively (C18 already catches the direct self-loop)",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G06": {
+   "entity": null,
+   "statement": "rtwDate, when present, is on or after the linked AbsenceEpisode's startDate; it is not required to follow endDate (phased return and a continuing episode are not rejected), and no date is inferred from the outcome label",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G07": {
+   "entity": null,
+   "statement": "every report benchmarkRef resolves by the exact (benchmarkId, releaseVersion) pair; another version is never substituted",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G08": {
+   "entity": null,
+   "statement": "the referenced release's measure.metricCode equals the report's metricCode; equal strings are declared identity only",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G09": {
+   "entity": null,
+   "statement": "a referenced release with leaveOneOut true names the referencing organisation as excludedOrgId; an unreferenced release's excluded organisation need not be supplied",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  },
+  "G10": {
+   "entity": null,
+   "statement": "comparisonAsOfDate lies within the referenced release's validFrom and validTo, inclusive; unreferenced old releases may be carried as inventory",
+   "source": "supplied-entity graph guide",
+   "link": "/entity-graph-validation.html"
+  }
+ },
+ "links": {
+  "level1": "/spec/#level-1-schema-valid",
+  "levels": "/spec/#conformance-levels",
+  "rules": "/spec/#named-within-record-rules",
+  "privacy": "/spec/#the-privacy-profile-normative",
+  "boundary": "/spec/#privacy-and-boundary-rules-expressed-in-schema",
+  "profiles": "/spec/#the-profile-mechanism",
+  "graph": "/entity-graph-validation.html",
+  "identifiers": "/spec/#identifiers-and-pseudonymisation"
+ },
+ "samples": [
+  {
+   "label": "Absence episode that passes",
+   "file": "examples/v0.2/AbsenceEpisode.valid.json",
+   "kind": "AbsenceEpisode",
+   "expect": "pass",
+   "text": "{\n  \"episodeId\": \"abs-2026-000123\",\n  \"pseudonymId\": \"owhs:pseudo:a1b2c3d4e5f60718\",\n  \"reasonCode\": \"musculoskeletal\",\n  \"startDate\": \"2026-03-02\",\n  \"endDate\": \"2026-03-16\",\n  \"workingDaysLost\": 10,\n  \"workingHoursLost\": 75,\n  \"fitNoteFlag\": true,\n  \"workRelatedFlag\": false,\n  \"sourceProvenance\": {\n    \"sourceType\": \"hris\",\n    \"sourceProvider\": \"BrightHR\",\n    \"sourceId\": \"BR-99812\"\n  }\n}"
+  },
+  {
+   "label": "Absence episode with four problems",
+   "file": "examples/v0.2/AbsenceEpisode.invalid.json",
+   "kind": "AbsenceEpisode",
+   "expect": "fail",
+   "text": "{\n  \"episodeId\": \"abs-BAD\",\n  \"pseudonymId\": \"EMP-Jane-Smith\",\n  \"name\": \"Jane Smith\",\n  \"reasonCode\": \"back-pain\",\n  \"startDate\": \"2026-03-02\"\n}"
+  },
+  {
+   "label": "Aggregate report that passes",
+   "file": "examples/v0.2/AggregateReport.valid.json",
+   "kind": "AggregateReport",
+   "expect": "pass",
+   "text": "{\n  \"reportId\": \"rep-1\",\n  \"orgId\": \"org-demo\",\n  \"level\": \"unit\",\n  \"unitId\": \"unit-ops\",\n  \"periodStart\": \"2026-07-01\",\n  \"periodEnd\": \"2026-09-30\",\n  \"n\": 12,\n  \"observationCount\": 30,\n  \"headcount\": 40,\n  \"eligibleN\": 20,\n  \"completionRate\": 0.6,\n  \"metricCode\": \"energy-mean\",\n  \"measureKind\": \"observation\",\n  \"releaseCategory\": \"ordinary\",\n  \"value\": 71.5,\n  \"interval\": {\n    \"low\": 65.0,\n    \"high\": 78.0,\n    \"level\": 0.95,\n    \"method\": \"bootstrap percentile\"\n  },\n  \"suppressed\": false,\n  \"contextId\": \"ctx-2026q3\",\n  \"benchmarkRef\": {\n    \"benchmarkId\": \"bench-uk-2026\",\n    \"releaseVersion\": \"2026.1\",\n    \"sourceRef\": \"https://example.org/benchmarks/2026.1\"\n  }\n}\n"
+  },
+  {
+   "label": "Aggregate report of four people, not suppressed",
+   "file": "examples/v0.2/AggregateReport.n4-unsuppressed.invalid.json",
+   "kind": "AggregateReport",
+   "expect": "fail",
+   "text": "{\n  \"reportId\": \"rep-1\",\n  \"orgId\": \"org-demo\",\n  \"level\": \"unit\",\n  \"unitId\": \"unit-ops\",\n  \"periodStart\": \"2026-07-01\",\n  \"periodEnd\": \"2026-09-30\",\n  \"n\": 4,\n  \"observationCount\": 30,\n  \"headcount\": 40,\n  \"eligibleN\": 5,\n  \"completionRate\": 0.8,\n  \"metricCode\": \"energy-mean\",\n  \"measureKind\": \"observation\",\n  \"releaseCategory\": \"ordinary\",\n  \"value\": 71.5,\n  \"interval\": {\n    \"low\": 65.0,\n    \"high\": 78.0,\n    \"level\": 0.95,\n    \"method\": \"bootstrap percentile\"\n  },\n  \"suppressed\": false,\n  \"contextId\": \"ctx-2026q3\",\n  \"benchmarkRef\": {\n    \"benchmarkId\": \"bench-uk-2026\",\n    \"releaseVersion\": \"2026.1\",\n    \"sourceRef\": \"https://example.org/benchmarks/2026.1\"\n  }\n}\n"
+  },
+  {
+   "label": "OH episode with a clinical key",
+   "file": "examples/v0.2/OHEpisode.ext-clinical-key.invalid.json",
+   "kind": "OHEpisode",
+   "expect": "fail",
+   "text": "{\n  \"ohEpisodeId\": \"oh-2026-000045\",\n  \"pseudonymId\": \"owhs:pseudo:a1b2c3d4e5f60718\",\n  \"referralReason\": \"return-to-work\",\n  \"referralDate\": \"2026-03-05\",\n  \"assessmentType\": \"management-referral\",\n  \"assessmentDate\": \"2026-03-11\",\n  \"fitnessOpinion\": \"fit-with-adjustments\",\n  \"recommendationTypes\": [\n    \"phased-return\",\n    \"amended-duties\"\n  ],\n  \"opinionReleasedToEmployer\": true,\n  \"linkedAbsenceEpisodeId\": \"abs-2026-000123\",\n  \"ext\": {\n    \"owhs-x\": {\n      \"diagnosis\": \"...\"\n    }\n  }\n}\n"
+  },
+  {
+   "label": "Unit that is its own parent",
+   "file": "examples/v0.2/OrgUnit.self-parent.invalid.json",
+   "kind": "OrgUnit",
+   "expect": "fail",
+   "text": "{\n  \"unitId\": \"unit-demo\",\n  \"orgId\": \"org-demo\",\n  \"headcountBand\": \"10-19\",\n  \"headcountReferenceDate\": \"2026-09-01\",\n  \"parentUnitId\": \"unit-demo\"\n}\n"
+  },
+  {
+   "label": "Bundle of all sixteen record types that passes",
+   "file": "examples/bundles/v0.2/EntityGraph.valid.json",
+   "kind": "bundle",
+   "expect": "pass",
+   "text": "{\n  \"schema_version\": \"0.2\",\n  \"comparisonAsOfDate\": \"2026-09-01\",\n  \"organisations\": [\n    {\n      \"organisation\": {\n        \"orgId\": \"org-demo\",\n        \"country\": \"GB\",\n        \"sizeBand\": \"small\",\n        \"sizeBandReferenceDate\": \"2026-09-01\"\n      },\n      \"units\": [\n        {\n          \"unitId\": \"unit-demo\",\n          \"orgId\": \"org-demo\",\n          \"headcountBand\": \"10-19\",\n          \"headcountReferenceDate\": \"2026-09-01\"\n        }\n      ],\n      \"workers\": [\n        {\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"orgId\": \"org-demo\",\n          \"unitId\": \"unit-demo\",\n          \"ageBand\": \"35-49\"\n        }\n      ],\n      \"absences\": [\n        {\n          \"episodeId\": \"abs-2026-000123\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"reasonCode\": \"musculoskeletal\",\n          \"startDate\": \"2026-03-02\",\n          \"endDate\": \"2026-03-16\",\n          \"workingDaysLost\": 10,\n          \"workingHoursLost\": 75,\n          \"fitNoteFlag\": true,\n          \"workRelatedFlag\": false,\n          \"sourceProvenance\": {\n            \"sourceType\": \"manual\",\n            \"sourceProvider\": \"Synthetic example\"\n          }\n        }\n      ],\n      \"rtwOutcomes\": [\n        {\n          \"outcomeId\": \"rtw-2026-000123\",\n          \"absenceEpisodeId\": \"abs-2026-000123\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"outcomeType\": \"phased\",\n          \"adjustmentTypes\": [\n            \"phased-return\",\n            \"altered-hours\"\n          ],\n          \"rtwDate\": \"2026-03-17\",\n          \"sustainedAt\": [\n            {\n              \"checkpointWeeks\": 4,\n              \"status\": \"sustained\"\n            },\n            {\n              \"checkpointWeeks\": 13,\n              \"status\": \"sustained\"\n            }\n          ]\n        }\n      ],\n      \"ohEpisodes\": [\n        {\n          \"ohEpisodeId\": \"oh-2026-000045\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"referralReason\": \"return-to-work\",\n          \"referralDate\": \"2026-03-05\",\n          \"assessmentType\": \"management-referral\",\n          \"assessmentDate\": \"2026-03-11\",\n          \"fitnessOpinion\": \"fit-with-adjustments\",\n          \"recommendationTypes\": [\n            \"phased-return\",\n            \"amended-duties\"\n          ],\n          \"opinionReleasedToEmployer\": true,\n          \"linkedAbsenceEpisodeId\": \"abs-2026-000123\"\n        }\n      ],\n      \"adjustments\": [\n        {\n          \"adjustmentId\": \"adjustment-demo\",\n          \"orgId\": \"org-demo\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"adjustmentCategory\": \"altered-hours\",\n          \"status\": \"in-place\",\n          \"startDate\": \"2026-09-01\",\n          \"sourceOhEpisodeId\": \"oh-2026-000045\"\n        }\n      ],\n      \"entitlements\": [\n        {\n          \"entitlementId\": \"entitlement-demo\",\n          \"orgId\": \"org-demo\",\n          \"layer\": \"commercial\",\n          \"productCategory\": \"EAP\"\n        }\n      ],\n      \"utilisations\": [\n        {\n          \"utilisationId\": \"utilisation-demo\",\n          \"orgId\": \"org-demo\",\n          \"entitlementId\": \"entitlement-demo\",\n          \"periodStart\": \"2026-08-01\",\n          \"periodEnd\": \"2026-08-31\",\n          \"usageCount\": 30,\n          \"claimCount\": 2,\n          \"n\": 20\n        }\n      ],\n      \"disabilityParticipations\": [\n        {\n          \"reportId\": \"disability-demo\",\n          \"orgId\": \"org-demo\",\n          \"period\": \"August 2026\",\n          \"periodStart\": \"2026-08-01\",\n          \"periodEnd\": \"2026-08-31\"\n        }\n      ],\n      \"contexts\": [\n        {\n          \"contextId\": \"ctx-2026q3\",\n          \"orgId\": \"org-demo\",\n          \"producingSystem\": \"demo-scoring 2.1\",\n          \"knownLimitations\": \"Synthetic example. Not assessed.\",\n          \"scoringDescriptor\": {\n            \"descriptorId\": \"desc-mean\",\n            \"descriptorVersion\": \"1\",\n            \"method\": \"period mean of native responses\",\n            \"estimand\": \"mean response over the observation window\",\n            \"observationWindow\": {\n              \"start\": \"2026-07-01T00:00:00Z\",\n              \"end\": \"2026-09-30T23:59:59Z\"\n            },\n            \"sourceRef\": \"https://example.org/methods/desc-mean-1\",\n            \"higherScoreMeaning\": \"higher-construct\",\n            \"nativeScale\": {\n              \"min\": 1,\n              \"max\": 5\n            },\n            \"normalisation\": {\n              \"id\": \"norm-linear\",\n              \"version\": \"1\",\n              \"sourceRef\": \"https://example.org/methods/norm-linear-1\"\n            },\n            \"banding\": {\n              \"id\": \"band-3\",\n              \"version\": \"1\",\n              \"sourceRef\": \"https://example.org/methods/band-3-1\"\n            },\n            \"threshold\": {\n              \"id\": \"thr-1\",\n              \"version\": \"1\",\n              \"sourceRef\": \"https://example.org/methods/thr-1\"\n            },\n            \"missingResponseRule\": {\n              \"id\": \"mrr-prorate\",\n              \"version\": \"1\",\n              \"sourceRef\": \"https://example.org/methods/mrr-prorate-1\"\n            }\n          }\n        }\n      ],\n      \"observations\": [\n        {\n          \"observationId\": \"obs-1\",\n          \"orgId\": \"org-demo\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"contextId\": \"ctx-2026q3\",\n          \"itemId\": \"item-energy\",\n          \"itemVersion\": \"2\",\n          \"constructCode\": \"mental-health\",\n          \"nativeValue\": 4,\n          \"normalisedValue\": 75,\n          \"occasionTs\": \"2026-08-12T09:15:00Z\",\n          \"safeguardingCategory\": false,\n          \"collectionChannel\": \"app\",\n          \"samplingDesign\": {\n            \"design\": \"rotating-subset\",\n            \"scheduleRef\": \"sched-a\"\n          }\n        }\n      ],\n      \"administrations\": [\n        {\n          \"administrationId\": \"adm-1\",\n          \"orgId\": \"org-demo\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"contextId\": \"ctx-2026q3\",\n          \"instrumentId\": \"who-5\",\n          \"instrumentCitation\": \"Topp CW et al. The WHO-5 Well-Being Index: a systematic review of the literature. Psychother Psychosom 2015;84:167-176.\",\n          \"instrumentVersion\": \"1998\",\n          \"occasionTs\": \"2026-08-12T09:20:00+01:00\",\n          \"constructCodes\": [\n            \"mental-health\"\n          ],\n          \"completionStatus\": \"complete\",\n          \"totalScore\": 68,\n          \"band\": \"moderate\",\n          \"aboveThresholdFlag\": false\n        }\n      ],\n      \"reports\": [\n        {\n          \"reportId\": \"rep-1\",\n          \"orgId\": \"org-demo\",\n          \"level\": \"unit\",\n          \"unitId\": \"unit-demo\",\n          \"periodStart\": \"2026-07-01\",\n          \"periodEnd\": \"2026-09-30\",\n          \"n\": 12,\n          \"observationCount\": 30,\n          \"headcount\": 40,\n          \"eligibleN\": 20,\n          \"completionRate\": 0.6,\n          \"metricCode\": \"synthetic-score\",\n          \"measureKind\": \"observation\",\n          \"releaseCategory\": \"ordinary\",\n          \"value\": 71.5,\n          \"interval\": {\n            \"low\": 65.0,\n            \"high\": 78.0,\n            \"level\": 0.95,\n            \"method\": \"bootstrap percentile\"\n          },\n          \"suppressed\": false,\n          \"contextId\": \"ctx-2026q3\",\n          \"benchmarkRef\": {\n            \"benchmarkId\": \"benchmark-demo\",\n            \"releaseVersion\": \"1\",\n            \"sourceRef\": \"https://example.org/benchmark/demo\"\n          }\n        }\n      ]\n    }\n  ],\n  \"benchmarks\": [\n    {\n      \"benchmarkId\": \"benchmark-demo\",\n      \"releaseVersion\": \"1\",\n      \"composition\": {\n        \"orgCount\": 3,\n        \"sectors\": [],\n        \"sicVersion\": \"2007\",\n        \"sizeBands\": [\n          \"small\"\n        ],\n        \"sampleSizes\": {\n          \"people\": 30,\n          \"observations\": 90\n        }\n      },\n      \"percentiles\": {\n        \"method\": \"Synthetic nearest-rank illustration; equal person weights, no missing values.\",\n        \"values\": [\n          {\n            \"probability\": 0.25,\n            \"value\": 2\n          },\n          {\n            \"probability\": 0.5,\n            \"value\": 3\n          },\n          {\n            \"probability\": 0.75,\n            \"value\": 4\n          }\n        ]\n      },\n      \"leaveOneOut\": false,\n      \"validFrom\": \"2026-09-01\",\n      \"validTo\": \"2026-12-31\",\n      \"source\": \"Synthetic example; no observed workforce data.\",\n      \"dataPeriodStart\": \"2026-08-01\",\n      \"dataPeriodEnd\": \"2026-08-31\",\n      \"measure\": {\n        \"metricCode\": \"synthetic-score\",\n        \"scoreUnit\": \"synthetic points\",\n        \"scoringDescriptorRef\": \"synthetic-method-v1\"\n      },\n      \"population\": \"Synthetic contributing organisations and workers.\",\n      \"samplingMethod\": \"Constructed example, not a sample survey.\",\n      \"knownLimitations\": \"Illustration only. Sector composition was not specified. No empirical percentile or population inference.\",\n      \"releaseCategory\": \"ordinary\"\n    }\n  ],\n  \"crosswalks\": [\n    {\n      \"constructCode\": \"demands\",\n      \"hseDomain\": \"demands\",\n      \"crosswalkVersion\": \"1\",\n      \"sourceRef\": \"https://www.hse.gov.uk/stress/standards/demands.htm\"\n    }\n  ]\n}\n"
+  },
+  {
+   "label": "Bundle with a return before its absence began",
+   "file": "examples/bundles/v0.2/cases/return-before-absence-start.json",
+   "kind": "bundle",
+   "expect": "fail",
+   "text": "{\n  \"schema_version\": \"0.2\",\n  \"comparisonAsOfDate\": \"2026-09-01\",\n  \"organisations\": [\n    {\n      \"organisation\": {\n        \"orgId\": \"org-demo\",\n        \"country\": \"GB\",\n        \"sizeBand\": \"small\",\n        \"sizeBandReferenceDate\": \"2026-09-01\"\n      },\n      \"units\": [\n        {\n          \"unitId\": \"unit-demo\",\n          \"orgId\": \"org-demo\",\n          \"headcountBand\": \"10-19\",\n          \"headcountReferenceDate\": \"2026-09-01\"\n        }\n      ],\n      \"workers\": [\n        {\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"orgId\": \"org-demo\",\n          \"unitId\": \"unit-demo\",\n          \"ageBand\": \"35-49\"\n        }\n      ],\n      \"absences\": [\n        {\n          \"episodeId\": \"abs-2026-000123\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"reasonCode\": \"musculoskeletal\",\n          \"startDate\": \"2026-03-02\",\n          \"endDate\": \"2026-03-16\",\n          \"workingDaysLost\": 10,\n          \"workingHoursLost\": 75,\n          \"fitNoteFlag\": true,\n          \"workRelatedFlag\": false,\n          \"sourceProvenance\": {\n            \"sourceType\": \"manual\",\n            \"sourceProvider\": \"Synthetic example\"\n          }\n        }\n      ],\n      \"rtwOutcomes\": [\n        {\n          \"outcomeId\": \"rtw-2026-000123\",\n          \"absenceEpisodeId\": \"abs-2026-000123\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"outcomeType\": \"phased\",\n          \"adjustmentTypes\": [\n            \"phased-return\",\n            \"altered-hours\"\n          ],\n          \"rtwDate\": \"2026-03-01\",\n          \"sustainedAt\": [\n            {\n              \"checkpointWeeks\": 4,\n              \"status\": \"sustained\"\n            },\n            {\n              \"checkpointWeeks\": 13,\n              \"status\": \"sustained\"\n            }\n          ]\n        }\n      ],\n      \"ohEpisodes\": [\n        {\n          \"ohEpisodeId\": \"oh-2026-000045\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"referralReason\": \"return-to-work\",\n          \"referralDate\": \"2026-03-05\",\n          \"assessmentType\": \"management-referral\",\n          \"assessmentDate\": \"2026-03-11\",\n          \"fitnessOpinion\": \"fit-with-adjustments\",\n          \"recommendationTypes\": [\n            \"phased-return\",\n            \"amended-duties\"\n          ],\n          \"opinionReleasedToEmployer\": true,\n          \"linkedAbsenceEpisodeId\": \"abs-2026-000123\"\n        }\n      ],\n      \"adjustments\": [\n        {\n          \"adjustmentId\": \"adjustment-demo\",\n          \"orgId\": \"org-demo\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"adjustmentCategory\": \"altered-hours\",\n          \"status\": \"in-place\",\n          \"startDate\": \"2026-09-01\",\n          \"sourceOhEpisodeId\": \"oh-2026-000045\"\n        }\n      ],\n      \"entitlements\": [\n        {\n          \"entitlementId\": \"entitlement-demo\",\n          \"orgId\": \"org-demo\",\n          \"layer\": \"commercial\",\n          \"productCategory\": \"EAP\"\n        }\n      ],\n      \"utilisations\": [\n        {\n          \"utilisationId\": \"utilisation-demo\",\n          \"orgId\": \"org-demo\",\n          \"entitlementId\": \"entitlement-demo\",\n          \"periodStart\": \"2026-08-01\",\n          \"periodEnd\": \"2026-08-31\",\n          \"usageCount\": 30,\n          \"claimCount\": 2,\n          \"n\": 20\n        }\n      ],\n      \"disabilityParticipations\": [\n        {\n          \"reportId\": \"disability-demo\",\n          \"orgId\": \"org-demo\",\n          \"period\": \"August 2026\",\n          \"periodStart\": \"2026-08-01\",\n          \"periodEnd\": \"2026-08-31\"\n        }\n      ],\n      \"contexts\": [\n        {\n          \"contextId\": \"ctx-2026q3\",\n          \"orgId\": \"org-demo\",\n          \"producingSystem\": \"demo-scoring 2.1\",\n          \"knownLimitations\": \"Synthetic example. Not assessed.\",\n          \"scoringDescriptor\": {\n            \"descriptorId\": \"desc-mean\",\n            \"descriptorVersion\": \"1\",\n            \"method\": \"period mean of native responses\",\n            \"estimand\": \"mean response over the observation window\",\n            \"observationWindow\": {\n              \"start\": \"2026-07-01T00:00:00Z\",\n              \"end\": \"2026-09-30T23:59:59Z\"\n            },\n            \"sourceRef\": \"https://example.org/methods/desc-mean-1\",\n            \"higherScoreMeaning\": \"higher-construct\",\n            \"nativeScale\": {\n              \"min\": 1,\n              \"max\": 5\n            },\n            \"normalisation\": {\n              \"id\": \"norm-linear\",\n              \"version\": \"1\",\n              \"sourceRef\": \"https://example.org/methods/norm-linear-1\"\n            },\n            \"banding\": {\n              \"id\": \"band-3\",\n              \"version\": \"1\",\n              \"sourceRef\": \"https://example.org/methods/band-3-1\"\n            },\n            \"threshold\": {\n              \"id\": \"thr-1\",\n              \"version\": \"1\",\n              \"sourceRef\": \"https://example.org/methods/thr-1\"\n            },\n            \"missingResponseRule\": {\n              \"id\": \"mrr-prorate\",\n              \"version\": \"1\",\n              \"sourceRef\": \"https://example.org/methods/mrr-prorate-1\"\n            }\n          }\n        }\n      ],\n      \"observations\": [\n        {\n          \"observationId\": \"obs-1\",\n          \"orgId\": \"org-demo\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"contextId\": \"ctx-2026q3\",\n          \"itemId\": \"item-energy\",\n          \"itemVersion\": \"2\",\n          \"constructCode\": \"mental-health\",\n          \"nativeValue\": 4,\n          \"normalisedValue\": 75,\n          \"occasionTs\": \"2026-08-12T09:15:00Z\",\n          \"safeguardingCategory\": false,\n          \"collectionChannel\": \"app\",\n          \"samplingDesign\": {\n            \"design\": \"rotating-subset\",\n            \"scheduleRef\": \"sched-a\"\n          }\n        }\n      ],\n      \"administrations\": [\n        {\n          \"administrationId\": \"adm-1\",\n          \"orgId\": \"org-demo\",\n          \"pseudonymId\": \"owhs:pseudo:0123456789abcdef0123456789abcdef\",\n          \"contextId\": \"ctx-2026q3\",\n          \"instrumentId\": \"who-5\",\n          \"instrumentCitation\": \"Topp CW et al. The WHO-5 Well-Being Index: a systematic review of the literature. Psychother Psychosom 2015;84:167-176.\",\n          \"instrumentVersion\": \"1998\",\n          \"occasionTs\": \"2026-08-12T09:20:00+01:00\",\n          \"constructCodes\": [\n            \"mental-health\"\n          ],\n          \"completionStatus\": \"complete\",\n          \"totalScore\": 68,\n          \"band\": \"moderate\",\n          \"aboveThresholdFlag\": false\n        }\n      ],\n      \"reports\": [\n        {\n          \"reportId\": \"rep-1\",\n          \"orgId\": \"org-demo\",\n          \"level\": \"unit\",\n          \"unitId\": \"unit-demo\",\n          \"periodStart\": \"2026-07-01\",\n          \"periodEnd\": \"2026-09-30\",\n          \"n\": 12,\n          \"observationCount\": 30,\n          \"headcount\": 40,\n          \"eligibleN\": 20,\n          \"completionRate\": 0.6,\n          \"metricCode\": \"synthetic-score\",\n          \"measureKind\": \"observation\",\n          \"releaseCategory\": \"ordinary\",\n          \"value\": 71.5,\n          \"interval\": {\n            \"low\": 65.0,\n            \"high\": 78.0,\n            \"level\": 0.95,\n            \"method\": \"bootstrap percentile\"\n          },\n          \"suppressed\": false,\n          \"contextId\": \"ctx-2026q3\",\n          \"benchmarkRef\": {\n            \"benchmarkId\": \"benchmark-demo\",\n            \"releaseVersion\": \"1\",\n            \"sourceRef\": \"https://example.org/benchmark/demo\"\n          }\n        }\n      ]\n    }\n  ],\n  \"benchmarks\": [\n    {\n      \"benchmarkId\": \"benchmark-demo\",\n      \"releaseVersion\": \"1\",\n      \"composition\": {\n        \"orgCount\": 3,\n        \"sectors\": [],\n        \"sicVersion\": \"2007\",\n        \"sizeBands\": [\n          \"small\"\n        ],\n        \"sampleSizes\": {\n          \"people\": 30,\n          \"observations\": 90\n        }\n      },\n      \"percentiles\": {\n        \"method\": \"Synthetic nearest-rank illustration; equal person weights, no missing values.\",\n        \"values\": [\n          {\n            \"probability\": 0.25,\n            \"value\": 2\n          },\n          {\n            \"probability\": 0.5,\n            \"value\": 3\n          },\n          {\n            \"probability\": 0.75,\n            \"value\": 4\n          }\n        ]\n      },\n      \"leaveOneOut\": false,\n      \"validFrom\": \"2026-09-01\",\n      \"validTo\": \"2026-12-31\",\n      \"source\": \"Synthetic example; no observed workforce data.\",\n      \"dataPeriodStart\": \"2026-08-01\",\n      \"dataPeriodEnd\": \"2026-08-31\",\n      \"measure\": {\n        \"metricCode\": \"synthetic-score\",\n        \"scoreUnit\": \"synthetic points\",\n        \"scoringDescriptorRef\": \"synthetic-method-v1\"\n      },\n      \"population\": \"Synthetic contributing organisations and workers.\",\n      \"samplingMethod\": \"Constructed example, not a sample survey.\",\n      \"knownLimitations\": \"Illustration only. Sector composition was not specified. No empirical percentile or population inference.\",\n      \"releaseCategory\": \"ordinary\"\n    }\n  ],\n  \"crosswalks\": [\n    {\n      \"constructCode\": \"demands\",\n      \"hseDomain\": \"demands\",\n      \"crosswalkVersion\": \"1\",\n      \"sourceRef\": \"https://www.hse.gov.uk/stress/standards/demands.htm\"\n    }\n  ]\n}\n"
+  }
+ ],
+ "engine": {
+  "pyodide_dir": "vendor/pyodide/",
+  "wheels": [
+   "wheels/six-1.17.0-py2.py3-none-any.whl",
+   "wheels/typing_extensions-4.15.0-py3-none-any.whl",
+   "wheels/attrs-26.1.0-py3-none-any.whl",
+   "wheels/rpds_py-0.30.0-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
+   "wheels/referencing-0.37.0-py3-none-any.whl",
+   "wheels/jsonschema_specifications-2025.9.1-py3-none-any.whl",
+   "wheels/jsonschema-4.26.0-py3-none-any.whl",
+   "wheels/rfc3339_validator-0.1.4-py2.py3-none-any.whl",
+   "wheels/rfc3987-1.3.8-py2.py3-none-any.whl"
+  ],
+  "files": "engine-files.json",
+  "runner": "runner.py",
+  "bytes": 13876783
+ },
+ "fixtures": {
+  "records": 82,
+  "bundles": 65
+ }
+}

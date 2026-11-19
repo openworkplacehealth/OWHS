@@ -5,7 +5,8 @@ robots policy: the one word in ../robots-policy.txt (noindex | index) decides th
 The generators always emit noindex; this tool is what makes a build match the published posture, so a
 rebuild after the lift cannot quietly put noindex back. Also places the one managed footer line (trade mark
 and licence, and the no-cookies line) as the last element of every page footer, and the one managed visit-counting
-script before </head>, so every generator shares them. Idempotent. Run before any deploy."""
+script before </head>, so every generator shares them; the pages in NO_COUNTING get no counting script and a footer line
+that says so. Idempotent. Run before any deploy."""
 import os, re, sys, pathlib
 BASE = "https://openworkplacehealth.org/"
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -18,6 +19,10 @@ MARK = ('<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:
         'All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p>'
         '<p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. '
         'Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->')
+# The browser checker (site/check/) carries no visit counting at all: its Content-Security-Policy lets it fetch only from the
+# site itself, so a visitor can confirm that nothing about the file they check, or their visit, goes anywhere else.
+NO_COUNTING = {"check/index.html"}
+MARK_NO_COUNTING = MARK.replace("Visits are counted without identifying anyone.", "This page counts no visits and sends nothing anywhere.")
 # Visit counting: PostHog in cookieless mode (nothing stored on the device, IP discarded at ingest), page views and page leave only.
 # person_profiles 'never': no person records are ever created and the SDK sends no $set of initial referrer/campaign properties.
 ANALYTICS = ('<!-- analytics --><script>' + '!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);' +
@@ -26,20 +31,23 @@ ANALYTICS = ('<!-- analytics --><script>' + '!function(t,e){var o,n,p,r;e.__SV||
              "disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});"
              '</script><!-- /analytics -->')
 
-def head_analytics(t):
-    """One managed script block before </head>; rebuilt on every run, added where absent."""
+def head_analytics(t, counting=True):
+    """One managed script block before </head>; rebuilt on every run, added where absent, removed from a page that counts no visits."""
+    if not counting:
+        return re.sub(r"<!-- analytics -->.*?<!-- /analytics -->\n?", "", t, count=1, flags=re.S)
     if "<!-- analytics -->" in t:
         return re.sub(r"<!-- analytics -->.*?<!-- /analytics -->", lambda m: ANALYTICS, t, count=1, flags=re.S)
     if "</head>" in t:
         return t.replace("</head>", ANALYTICS + "\n</head>", 1)
     return t
 
-def footer_mark(t):
+def footer_mark(t, counting=True):
     """One managed line at the end of the first footer; rebuilt on every run, added where absent."""
+    mark = MARK if counting else MARK_NO_COUNTING
     if "<!-- mark -->" in t:
-        return re.sub(r"<!-- mark -->.*?<!-- /mark -->", lambda m: MARK, t, count=1, flags=re.S)
+        return re.sub(r"<!-- mark -->.*?<!-- /mark -->", lambda m: mark, t, count=1, flags=re.S)
     if "</div></footer>" in t:
-        return t.replace("</div></footer>", MARK + "\n</div></footer>", 1)
+        return t.replace("</div></footer>", mark + "\n</div></footer>", 1)
     return t
 
 n = 0
@@ -80,7 +88,8 @@ for p in sorted(SITE.rglob("*.html")):
         t2 = re.sub(r"<!-- auto -->.*?<!-- /auto -->", lambda m: block, t2, count=1, flags=re.S)
     else:
         t2 = t2.replace(tag, tag + "\n" + block, 1)
-    t2 = head_analytics(footer_mark(t2))
+    counting = rel not in NO_COUNTING
+    t2 = head_analytics(footer_mark(t2, counting), counting)
     if t2 != orig:
         p.write_text(t2, encoding="utf-8"); n += 1
 print(f"canonical stamped or refreshed on {n} pages; robots policy {POLICY} applied")
