@@ -5,15 +5,15 @@ folder changes a grade, a status or a licence class. These tools find and watch.
 
 | Tool | Schedule | Writes | May never |
 |---|---|---|---|
-| `tools/harvest.py` | monthly, `.github/workflows/harvest.yml`, first of the month | `candidates/YYYY-MM.json` as a run artefact; one issue labelled `evidence-sweep` | touch the dataset |
-| `tools/watch_licences.py` | weekly, `.github/workflows/licence-watch.yml`, Mondays | `licence-changes.json` as a run artefact; an issue when a page's visible text changed | change a licence class or status |
-| `tools/watch_retractions.py` | monthly, `.github/workflows/retraction-watch.yml`, the second | `retraction-signals.json` as a run artefact; an issue when a cited work carries an update notice or retraction flag | remove evidence or move a grade |
-| tripwire | monthly, `.github/workflows/tripwire.yml`, the third | an issue if `tools/cycle.py verify` cannot correlate a successful harvest run, a complete full-inventory artefact for this month's planned cycle and the workflow's own issue naming both | anything else |
+| `tools/harvest.py` | monthly, `.github/workflows/harvest.yml`, first of the month | `candidates/YYYY-MM.json` as a run artefact; one issue labelled `evidence-sweep`, assigned to the steward when the cycle is not complete | touch the dataset |
+| `tools/watch_licences.py` | weekly, `.github/workflows/licence-watch.yml`, Mondays | `licence-report.json` as a run artefact; a comment on the one standing `licence` issue when a page changed, when a page automation can check failed, or once a month to list the pages that need a person | change a licence class or status |
+| `tools/watch_retractions.py` | monthly, `.github/workflows/retraction-watch.yml`, the second | `retraction-signals.json` as a run artefact; an issue when a cited work carries an update notice or retraction flag, or the run is incomplete | remove evidence or move a grade |
+| tripwire | monthly, `.github/workflows/tripwire.yml`, the third | an issue, assigned to the steward, if `tools/cycle.py verify` cannot correlate a successful harvest run, a complete full-inventory artefact for this month's planned cycle and the workflow's own issue naming both | anything else |
 | `tools/cycle.py` | called by both workflows | nothing on its own; `advance` writes `watermarks.json` locally for the screening pull request | run a harvest, open an issue |
 
 ## The harvester
 
-`tools/harvest.py` queries Europe PMC, OpenAlex and Crossref directly. Europe PMC serves the names and abbreviation routes; OpenAlex serves the citation route, and the other two as well when an `OPENALEX_API_KEY` secret is set. Keyless OpenAlex use has a daily credit budget (1,000 credits, 10 per search when this was written) that a full run of every route exceeds, and a run that hits it fails those channels fast and reports itself partial rather than waiting hours. The key, if used, is read from the environment and never written to a log or an artefact. Its configuration is
+`tools/harvest.py` queries Europe PMC, OpenAlex and Crossref directly. Europe PMC serves the names and abbreviation routes; OpenAlex serves the citation route (the provider profile in the query file keeps the other two routes off OpenAlex). Without a key OpenAlex refuses to page past the first page of results: the second page of a cursor-paged query is answered http 401, "API key required for cursor paging". Keyless use also shares one small daily budget with every other keyless caller on the same network address. In the November 2026 run this ended the two citation channels with more than 200 results in the window (PHQ-9 and GAD-7) partial, so the cycle could not be verified. Setting the `OPENALEX_API_KEY` repository secret is the fix; the key authenticates requests and never changes the plan. It is read from the environment and never written to a log or an artefact, and any error text that echoed it is scrubbed. When OpenAlex answers 401, the channel records the server's reason and the run prints, once, a plain line saying what happened and that setting the secret is the fix. Its configuration is
 `queries/instruments-v1.json`: one entry per parent record with long names, abbreviations and the context
 each abbreviation requires, citation seeds (development and anchor papers, with their OpenAlex identifiers,
 each verified to resolve on the date recorded), an exclusion list that starts empty by design, and a note where
@@ -44,10 +44,35 @@ outcome, the candidates, the new-instrument candidates, the low-priority counts,
 proposal when the run was complete over the full inventory. A run whose
 status is not `complete` exits non-zero after writing its artefact, so the workflow shows the cycle as
 incomplete. A server-requested wait of up to two minutes is honoured inside the run; a longer one defers the
-channel with the reason recorded. The candidate list is sorted, so two runs over one window diff cleanly.
+channel with the reason recorded. The candidate list is sorted, so two runs over one window diff cleanly. The
+artefact also carries `next_action`, the one action a person needs to take when the run is not complete, chosen
+from the cause the run recorded (a missing or refused OpenAlex key, the time budget, or a channel failure), and the
+issue puts it in its title and first line.
+
+The harvester prints one line per channel as it goes (instrument, route, provider, date basis, outcome, pages,
+hits and elapsed time), flushed, so the Actions log shows where a run is and where it stopped. The workflow gives it
+a time budget of 240 minutes (`--time-budget-minutes`), inside a step limit of 270 and a job limit of 300 minutes;
+GitHub cancels any job at 360. After the budget no new page, channel or Crossref check starts: a channel cut
+between pages ends partial with the reason, a channel not reached is recorded as failed with the reason "time
+budget reached before this channel started" (it stays in the denominator), a candidate not checked against
+Crossref says so, and the run is `partial`. The file is still written, uploaded and reported in the issue. The
+windowed channels run first, then the untargeted channel, then the quarterly full-history channels, so a run that
+reaches its budget loses the full-history pass before the monthly one. The rule that a cycle verifies only when
+every expected channel is complete is unchanged.
+
+The quarterly full-history pass does not fit in one run, and cannot complete under the current plan. The
+1 October 2026 run (GitHub run 36862246228) ran for six hours with no output until GitHub cancelled it, and wrote
+no candidates file. Counted on 19 November 2026, the 82 full-history channels report 240,818 hits between them,
+and 15 of them report more than the 25-page channel budget can collect (2,500 on Europe PMC, 5,000 on OpenAlex),
+so those 15 end `partial` ("page budget reached") however long the run takes; every candidate is then checked
+against Crossref one request at a time. The next quarterly cycle, 1 January 2027, will therefore stop at its
+time budget and report `partial`, with the issue saying that a re-run stops in the same place. How the
+full-history pass should run (split across runs, a different page budget, a different verification step) is a
+decision for the steward and is not made here.
 Saved source responses and pinned code and configuration support reproducible replay; live index results can
 change between requests. No language model is involved at any point. `--self-test` checks the pure functions
-and the query file's shape offline; replay fixtures against saved responses are designed and not yet built.
+and the query file's shape offline, and, with the network stubbed, the progress lines, the OpenAlex 401 line, the
+time budget and `next_action`; replay fixtures against saved responses are designed and not yet built.
 
 ### Cycles, windows and watermarks
 
@@ -73,7 +98,10 @@ screening pull request a person merges: the harvest writes a proposal into its a
 `python tools/cycle.py advance --artefact FILE` copies it in after checking the proposal against the envelope
 it sits in (status complete, full inventory, planned cycle, every expected channel complete, matching query hash,
 cycle, run id, window end and channel count, valid dates). Nothing advances automatically, so a failed or
-partial month leaves the window where it was and the next run covers it again. `python tools/cycle.py --self-test`
+partial month leaves the watermark where it was. Once a watermark exists, the next complete run covers the missed
+period again. While none exists (none has yet been set), each planned window starts on the first day of the
+previous month, so a missed month's publication window is searched again only by a manual run with an explicit
+window, the 90-day first-index catch-up and the quarterly full-history pass. `python tools/cycle.py --self-test`
 runs the offline contract suite: month rollover, manual old window, watermark-derived window, changed query file,
 and every verification refusal below.
 
@@ -106,18 +134,39 @@ is not part of this folder.
 
 ## The licence watcher
 
-`tools/watch_licences.py` fetches every licence page named in a record's identity block, reduces HTML to
-visible text (a PDF is hashed as bytes), and compares the hash with `licence-hashes.json`. Each run reports its
-status (`complete`, `partial`, `failed`) with attempted, fetched and failed counts; an unreachable page is
-unchecked, not unchanged, and a partial or failed run opens an issue even when nothing changed. A failed run
-leaves the previous baseline untouched. A change is a reason to read the page against the registry record and
-the archived copy the record links; it says nothing about what changed. Baselines are updated by committing
-`licence-hashes.json` through a pull request, never by the workflow.
+`tools/watch_licences.py` fetches every licence page in the reviewed source plan (`licence-watch-sources-v1.json`,
+one acquisition per URL), builds a representation that keeps visible text, link targets and rights metadata (a PDF
+is hashed as bytes), and compares it with `licence-hashes.json`. A page that could not be fetched is unchecked,
+never unchanged. A failed run leaves the previous baseline untouched. A change is a reason to read the page against
+the registry record and the archived copy the record links; it says nothing about what changed. Baselines are
+updated by committing `licence-hashes.json` through a pull request, never by the workflow.
+
+Some pages refuse automated requests every week. A plan entry may say so with a `fetch` block: status
+`blocked-to-automation`, the error codes observed, the date first observed and a note of what was seen. There is no
+value that means verified. Six pages carry one, from the weekly run logs of 7 September to 16 November 2026: two
+on maps.org.uk (http 403), the Work Ability Index page at www.baua.de (http 403), the Eurofound survey data page
+(http 429), the K6 scales page at www.hcp.med.harvard.edu (http 503), and the GHQ-12 FAQ at
+support.gl-assessment.co.uk, which was fetched normally until 26 October and has answered http 403 since
+2 November. Each is still requested every week. When it fails again with a declared code it is reported as
+blocked to automation and listed as needing a person, with the archived copy to compare against; when it answers,
+it is compared like any other page; when it fails with any other code (a 404, say), that is a failure. Each run
+reports its status (`complete`, `partial`, `failed`) over the pages automation can check, with attempted, fetched
+and failed counts beside the number blocked to automation, so `complete` means everything automation can check was
+checked, never that the blocked pages were. Those pages are unchecked until a person opens them. The one standing
+issue (label `licence`) gets a comment only when a page changed, when a page automation can check failed, or on
+the first run of a month, when a short reminder lists the pages that need a person.
 
 ## The tripwire
 
 An early version of the monthly sweep failed silently for a month. The tripwire exists so that cannot recur
-unnoticed. On the third of each month it runs `python tools/cycle.py verify --cycle <this month>`, which is
+unnoticed. Its October and November 2026 issues then sat unread for weeks, so the issue it opens is now assigned to
+the steward (`ALERT_ASSIGNEE` in `tools/cycle.py`) and mentions that login once, which makes GitHub email a person; its
+title names the month and the one action ("re-run evidence-harvest by 30 November 2026"), and its body says until
+when the month can be recovered. A planned cycle is named by the month a run starts in, so after the last day of
+that month (UTC) no run can complete it. On the next month's run, if the previous month's issue is still open and
+that month is still not verified, the tripwire retitles it ("missed, can no longer be recovered") and says so in a
+comment. The harvest issue for a cycle that is not complete carries the same assignment and mention. On the
+third of each month it runs `python tools/cycle.py verify --cycle <this month>`, which is
 read-only: it lists the `evidence-harvest` runs of the month, downloads the cycle's artefact from each successful
 one, and accepts the cycle only when one artefact names this cycle as planned, reports status complete over the
 full inventory with every expected channel complete (the denominator is the query file's channel set), was built
@@ -138,9 +187,16 @@ work's own `update-to` with its type and target (it is itself a notice), and Ope
 Correction, expression of concern, retraction, withdrawal and reinstatement are different events and are kept
 by type. Cells are mapped to citations by the dataset's typed references (precondition evidence and retest
 entries), never by prose. A signal opens one issue naming every record and cell that cites the work; so does a
-partial or failed run. Absence of a signal is not proof that a work stands; a DOI outside Crossref's coverage is
-reported as such, not as clean. `--self-test` stubs the paged source offline and checks the page-cap case with and
-without a signal, a deferred source and an all-sources failure.
+partial or failed run. Absence of a signal is not proof that a work stands. When Crossref answers 404 for a DOI,
+the watcher asks doi.org which agency registered it (`https://doi.org/doiRA/DOI`). A DOI another agency registered
+is listed every run, in `outside_crossref` and in the run's summary line, as "not a Crossref DOI, cannot be checked
+at Crossref", and does not by itself make the run partial. Two cited DOIs are in this position, both registered
+with DataCite: 10.25318/82-003-x202600300002-eng (Statistics Canada) and 10.5255/ukda-sn-9511-1 (UK Data Service).
+DataCite has no field equivalent to Crossref's update notices, so no retraction check is made at their own agency:
+only their OpenAlex flag is checked, and they are otherwise unchecked by automation. A failed agency lookup, or a
+DOI doi.org assigns to Crossref that Crossref answers 404 for, stays unchecked and makes the run partial. `--self-test` stubs the paged source offline and checks the page-cap case with and
+without a signal, a deferred source, an all-sources failure, a DOI another agency registered and a failed agency
+lookup.
 
 ## The retrieval evaluation (designed; not yet run)
 
