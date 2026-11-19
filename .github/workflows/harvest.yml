@@ -8,8 +8,11 @@ run-name: "evidence-harvest ${{ github.event_name }} from=[${{ inputs.from }}] t
 # opens or updates one issue labelled evidence-sweep for the cycle. It changes no dataset, no grade and no page:
 # a candidate is a work to be read, not a finding. Screening and any proposal to add a citation happen afterwards,
 # in a pull request a person merges. A run whose channels did not all complete ends with a failure outcome; its
-# artefact and issue are still produced, and the issue says partial. The cycle id, the window and the marker the
-# tripwire correlates on come from tools/cycle.py, the single definition both workflows use.
+# artefact and issue are still produced, and the issue says partial, names the one action needed, is assigned to the
+# steward and mentions that login once so GitHub emails a person. The harvester prints a line per channel as it goes and works
+# to a time budget (240 minutes) well inside the job's 300-minute limit: what it had not reached by then is recorded as
+# not started, with that reason, and the file is still written. The cycle id, the window and the marker the tripwire
+# correlates on come from tools/cycle.py, the single definition both workflows use.
 
 on:
   schedule:
@@ -34,6 +37,7 @@ concurrency:
 jobs:
   harvest:
     runs-on: ubuntu-latest
+    timeout-minutes: 300        # GitHub's own limit is 360; the harvester stops starting work at 240 and still writes its file
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -52,8 +56,10 @@ jobs:
       - name: harvest
         id: h
         continue-on-error: true
+        timeout-minutes: 270      # a backstop only: the harvester's own budget ends at 240 and the issue steps below still run
         env:
-          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}     # optional; absent, OpenAlex is used for citation lookups only
+          PYTHONUNBUFFERED: "1"
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}     # without it OpenAlex refuses page two of any query (http 401), so a citation channel over 200 results ends partial
           FROM: ${{ steps.w.outputs.from }}
           TO: ${{ steps.w.outputs.to }}
           CYCLE: ${{ steps.w.outputs.cycle_id }}
@@ -63,7 +69,7 @@ jobs:
         run: |
           # publication window plus the 90-day first-index catch-up; on a quarterly cycle the names and citation channels also run over the full history
           FH=""; if [ "$FULL_HISTORY" = "true" ]; then FH="--full-history"; fi
-          python tools/harvest.py --from "$FROM" --to "$TO" --catch-from "$CATCH_FROM" $FH --cycle-id "$CYCLE" --cycle-kind "$KIND" --out "evidence/candidates/$CYCLE.json"
+          python tools/harvest.py --from "$FROM" --to "$TO" --catch-from "$CATCH_FROM" $FH --cycle-id "$CYCLE" --cycle-kind "$KIND" --time-budget-minutes 240 --out "evidence/candidates/$CYCLE.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -80,10 +86,13 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -e
+          export STEWARD=zak-fenton        # tools/cycle.py ALERT_ASSIGNEE: assigned and mentioned once when the cycle is not complete
           FILE="evidence/candidates/$MONTH.json"
+          BY="before the month ends"
+          if [ "$KIND" = "planned" ]; then BY="by $(python -c "import sys; sys.path.insert(0, 'tools'); import cycle; print(cycle.long_date(cycle.recovery_deadline('$MONTH')))") (UTC)"; fi
           if [ ! -f "$FILE" ]; then
-            TITLE="Evidence harvest $MONTH: failed run, no candidates file"
-            BODY="The harvest produced no candidates file. Run: $RUN_URL. Treat this cycle as incomplete.
+            TITLE="Evidence harvest $MONTH: failed run, no candidates file. Read the run log, then re-run evidence-harvest $BY"
+            BODY="@$STEWARD, the harvest produced no candidates file, so cycle $MONTH is incomplete. **The one action:** read the run log (the harvester prints a line per channel, so the last line shows how far it got), then re-run evidence-harvest (Run workflow, both window fields empty) $BY. Run: $RUN_URL.
           <!-- owhs-cycle cycle_id=$MONTH kind=$KIND github_run_id=$GH_RUN_ID artefact_sha256=none status=failed -->"
             STATUS=failed
           else
@@ -95,6 +104,8 @@ jobs:
           nc = d.get('channels_not_complete', [])
           low = sum(1 for x in d['candidates'] if x.get('screening_priority') == 'low')
           db = d.get('date_bases') or {}
+          if d['status'] != 'complete':
+              print(f"@{os.environ['STEWARD']}, cycle {d['cycle']['id']} is {d['status']}. **The one action:** {d.get('next_action') or 'read the channel errors below, then re-run evidence-harvest.'}\n")
           bases = f"publication {d['requested_window']['from']} to {d['requested_window']['to']}" + (f"; first indexed {db['first_indexed']['from']} to {db['first_indexed']['to']}" if db.get('first_indexed') else "") + ("; full history (quarterly)" if db.get('full_history') else "")
           print(f"Cycle **{d['cycle']['id']}** ({d['cycle']['kind']}), run `{d['run_id']}`, status **{d['status']}**, full inventory: {d.get('full_inventory')}, windows: {bases}, query file {d['query_version']} (`{d['query_sha256'][:12]}`), workflow run {os.environ['RUN_URL']}, artefact sha256 `{sha[:12]}`. "
                 f"{len(d['candidates'])} candidates ({low} low priority: no property term found in title or abstract), {len(d['new_instrument_candidates'])} new-instrument candidates, {len(d['expected_channels'])} expected channels of which {len(nc)} did not complete.\n")
@@ -111,21 +122,28 @@ jobs:
               print("\nExpected channels that did not complete (treat these instruments as not fully searched this cycle):")
               for ch in nc: print(f"- {ch['instrument_id']} {ch['route']} {ch['source']} {ch['date_basis']} ({ch['outcome']})")
               for ch in [x for x in d['channels'] if x['outcome'] != 'complete']: print(f"  - {ch['instrument_id']} {ch['route']} {ch['source']}: {ch['outcome']}, {ch['error']}")
+          for w in d['warnings']:
+              if w.get('type') in ('openalex http 401', 'time budget'): print(f"\n{w['detail']}")
           if d['warnings']:
               print(f"\n{len(d['warnings'])} warnings in the artefact.")
           print(f"\nThe full candidates file is the run artefact `candidates-{os.environ['MONTH']}`. A candidate is a work retrieved by an instrument's names, abbreviation or citation route. Nothing here is a grade, a judgement or a registry change; screening and any proposed citation follow in a pull request a person merges.")
           PY
             STATUS=$(python -c "import json,os;print(json.load(open('evidence/candidates/'+os.environ['MONTH']+'.json'))['status'])")
+            ACTION=$(python -c "import json,os;print(json.load(open('evidence/candidates/'+os.environ['MONTH']+'.json')).get('next_action') or '')")
             TITLE="Evidence harvest $MONTH: $STATUS run, candidates for screening"
+            if [ "$STATUS" != "complete" ]; then TITLE="Evidence harvest $MONTH: $STATUS run. $ACTION"; fi
             if [ "$KIND" = "manual" ]; then TITLE="Evidence harvest $MONTH (manual window, not a planned cycle): $STATUS run"; fi
             BODY="$(cat /tmp/body.md)"
           fi
+          ASSIGN=(); if [ "$STATUS" != "complete" ]; then ASSIGN=(--assignee "$STEWARD"); fi
           EXISTING=$(gh issue list --label evidence-sweep --state all --search "\"Evidence harvest $MONTH\" in:title" --json number --jq '.[0].number // empty')
           if [ -n "$EXISTING" ]; then
             gh issue edit "$EXISTING" --title "$TITLE" --body "$BODY"
+            if [ "$STATUS" != "complete" ]; then gh issue edit "$EXISTING" --add-assignee "$STEWARD" || echo "could not assign $STEWARD"; fi
             echo "updated issue #$EXISTING"
           else
-            gh issue create --title "$TITLE" --label evidence-sweep --body "$BODY"
+            # an assignment GitHub refuses must never cost the issue itself
+            gh issue create --title "$TITLE" --label evidence-sweep "${ASSIGN[@]}" --body "$BODY" || gh issue create --title "$TITLE" --label evidence-sweep --body "$BODY"
           fi
       - name: cycle outcome
         if: always()

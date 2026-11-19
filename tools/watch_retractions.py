@@ -12,8 +12,13 @@ separately so one source's failure never hides another's answer:
 
 Correction, erratum, expression of concern, retraction, withdrawal and reinstatement are different events and
 are kept by type. A signal is any of the three answering yes. A check that could not be made is recorded as
-unchecked for that source; absence of a signal is never proof that a work stands. DataCite DOIs are reported as
-outside Crossref's coverage rather than as clean.
+unchecked for that source; absence of a signal is never proof that a work stands. When Crossref answers 404 for a
+DOI, the DOI's registration agency is looked up at doi.org (https://doi.org/doiRA/DOI). A DOI registered with another
+agency (DataCite, for instance) is listed in outside_crossref as "not a Crossref DOI, cannot be checked at Crossref",
+every run, and does not by itself make the run partial; its OpenAlex flag is still checked. No other agency's record
+is checked for retraction: DataCite has no field equivalent to Crossref's update notices, so these works are
+unchecked by automation at their own agency, and the report says so. A failed lookup, or an agency of Crossref
+answering 404, stays unchecked and makes the run partial.
 
 Writes evidence/retraction-signals.json with a run status (complete: every check on every DOI was made in
 full; partial: some checks failed or a paged check hit its page cap before the index was exhausted; failed:
@@ -22,7 +27,8 @@ that cite the work, and the unchecked list, in which a truncated check appears p
 coverage whether or not a signal was found. Exit 0 complete and no signal; 3 a signal exists; 4 partial with no
 signal; 5 failed. The workflow opens an issue on 3, 4 and 5.
 
-    python tools/watch_retractions.py --self-test      offline: stubbed pages, page-cap truncation with and without a signal
+    python tools/watch_retractions.py --self-test      offline: stubbed pages, page-cap truncation with and without a signal,
+                                                       a DOI another agency registered, a failed agency lookup
 
 Cells are mapped to citations by the typed references the dataset carries: the `citation` field of each
 precondition_evidence entry and each retest entry, matched on the citation key. Prose mentions are not used.
@@ -126,25 +132,44 @@ def crossref_incoming(doi, fetch=None):
     return {"notices": notices, "truncated": truncated, "pages": pages, "total_results": total}, err
 
 
+def registration_agency(doi, fetch=None):
+    """The DOI's registration agency from doi.org, or (None, reason). Called only after Crossref answers 404."""
+    data, err = (fetch or get)(f"https://doi.org/doiRA/{urllib.parse.quote(doi, safe='/')}")
+    if err: return None, f"registration agency lookup failed: {err}"
+    row = data[0] if isinstance(data, list) and data and isinstance(data[0], dict) else {}
+    if row.get("RA"): return row["RA"], None
+    return None, f"registration agency lookup gave no agency ({row.get('status') or 'empty answer'})"
+
+
 def openalex_flag(doi):
     oa, err = get(f"https://api.openalex.org/works/https://doi.org/{urllib.parse.quote(doi, safe='')}?select=is_retracted&mailto={MAILTO}")
     if err: return None, err
     return {"is_retracted": bool(oa.get("is_retracted"))}, None
 
 
-def run(refs, checkers):
+def run(refs, checkers, agency=None):
     """Pure assembly over the three checkers, each (doi) -> (result, error). A truncated paged check is incomplete
-    coverage for that DOI and source, recorded in unchecked and counted, independently of any signal."""
-    signals, unchecked = [], []
-    counters = {s: {"attempted": 0, "succeeded": 0, "failed": 0, "truncated": 0} for s in ("crossref_record", "crossref_incoming", "openalex")}
+    coverage for that DOI and source, recorded in unchecked and counted, independently of any signal. agency, (doi) ->
+    (name, error), is asked only when the Crossref record check answers 404: a DOI another agency registered is listed
+    in outside_crossref and counted as not applicable for that source rather than failed."""
+    signals, unchecked, outside = [], [], []
+    counters = {s: {"attempted": 0, "succeeded": 0, "failed": 0, "truncated": 0, "not_crossref": 0} for s in ("crossref_record", "crossref_incoming", "openalex")}
     for doi, where in sorted(refs.items()):
         results = {}
         for name, fn in checkers:
             counters[name]["attempted"] += 1
             res, err = fn(doi)
             if err:
+                reason = err
+                if name == "crossref_record" and err.startswith("http 404"):
+                    ra, ra_err = agency(doi) if agency else (None, "registration agency not looked up")
+                    if ra and ra.lower() != "crossref":
+                        counters[name]["not_crossref"] += 1
+                        outside.append({"doi": doi, "registration_agency": ra, "reason": f"not a Crossref DOI (registered with {ra}), cannot be checked at Crossref; no retraction check is made at {ra}", "cited_by": where})
+                        continue
+                    reason = f"{err} at Crossref; " + (f"doi.org names {ra} as the agency" if ra else ra_err)
                 counters[name]["failed"] += 1
-                unchecked.append({"doi": doi, "source": name, "reason": ("not registered with Crossref (DataCite or other agency)" if name.startswith("crossref") and err.startswith("http 404") else err), "cited_by": where})
+                unchecked.append({"doi": doi, "source": name, "reason": reason, "cited_by": where})
                 continue
             results[name] = res
             if res.get("truncated"):
@@ -158,9 +183,16 @@ def run(refs, checkers):
         if own or inc or flag:
             signals.append({"doi": doi, "crossref_incoming_notices": inc, "crossref_incoming_truncated": (results.get("crossref_incoming") or {}).get("truncated", False),
                             "openalex_is_retracted": flag, "is_itself_a_notice_about": own, "cited_by": where})
-    total_att = sum(c["attempted"] for c in counters.values()); total_ok = sum(c["succeeded"] for c in counters.values())
+    total_att = sum(c["attempted"] - c["not_crossref"] for c in counters.values()); total_ok = sum(c["succeeded"] for c in counters.values())
     status = "complete" if total_att and total_ok == total_att else ("failed" if total_ok == 0 else "partial")
-    return status, counters, signals, unchecked
+    return status, counters, signals, unchecked, outside
+
+
+def summary_line(status, refs, signals, unchecked, outside):
+    line = f"run {status}: {len(refs)} DOIs, {len(signals)} with a signal, {len(unchecked)} source checks not made or not complete"
+    if outside:
+        line += f"; {len(outside)} not Crossref DOIs, cannot be checked at Crossref: " + ", ".join(f"{o['doi']} ({o['registration_agency']})" for o in outside)
+    return line
 
 
 def exit_code(status, signals):
@@ -180,21 +212,38 @@ def self_test():
     clean = lambda d: ({"is_notice_about": []}, None); oa = lambda d: ({"is_retracted": False}, None)
     r, err = crossref_incoming("10.1/target", fetch=pages(total=PAGE * MAX_PAGES + 1))
     assert err is None and r["truncated"] and r["pages"] == MAX_PAGES and r["notices"] == [], r
-    status, counters, signals, unchecked = run(refs, (("crossref_record", clean), ("crossref_incoming", lambda d: crossref_incoming(d, fetch=pages(PAGE * MAX_PAGES + 1))), ("openalex", oa)))
+    status, counters, signals, unchecked, _out = run(refs, (("crossref_record", clean), ("crossref_incoming", lambda d: crossref_incoming(d, fetch=pages(PAGE * MAX_PAGES + 1))), ("openalex", oa)))
     assert status == "partial" and not signals and len(unchecked) == 1 and "page cap" in unchecked[0]["reason"] and exit_code(status, signals) == 4, (status, unchecked)
     print("ok   page-cap truncation without a signal: run partial, coverage gap recorded per DOI and source, exit 4")
-    status, counters, signals, unchecked = run(refs, (("crossref_record", clean), ("crossref_incoming", lambda d: crossref_incoming(d, fetch=pages(PAGE * MAX_PAGES + 1, matching=True))), ("openalex", oa)))
+    status, counters, signals, unchecked, _out = run(refs, (("crossref_record", clean), ("crossref_incoming", lambda d: crossref_incoming(d, fetch=pages(PAGE * MAX_PAGES + 1, matching=True))), ("openalex", oa)))
     assert status == "partial" and len(signals) == 1 and signals[0]["crossref_incoming_truncated"] and len(unchecked) == 1 and exit_code(status, signals) == 3
     print("ok   page-cap truncation with a signal: signal kept, coverage gap still recorded, run partial, exit 3")
-    status, counters, signals, unchecked = run(refs, (("crossref_record", clean), ("crossref_incoming", lambda d: crossref_incoming(d, fetch=pages(PAGE * 2))), ("openalex", oa)))
+    status, counters, signals, unchecked, _out = run(refs, (("crossref_record", clean), ("crossref_incoming", lambda d: crossref_incoming(d, fetch=pages(PAGE * 2))), ("openalex", oa)))
     assert status == "complete" and not unchecked and exit_code(status, signals) == 0, (status, unchecked)
     print("ok   two full pages within the cap: complete, exit 0")
-    status, counters, signals, unchecked = run(refs, (("crossref_record", lambda d: (None, "http 429, retry-after 30000s (budget exhausted); source deferred")), ("crossref_incoming", lambda d: crossref_incoming(d, fetch=pages(PAGE))), ("openalex", oa)))
+    status, counters, signals, unchecked, _out = run(refs, (("crossref_record", lambda d: (None, "http 429, retry-after 30000s (budget exhausted); source deferred")), ("crossref_incoming", lambda d: crossref_incoming(d, fetch=pages(PAGE))), ("openalex", oa)))
     assert status == "partial" and unchecked[0]["source"] == "crossref_record" and exit_code(status, signals) == 4
     print("ok   a deferred source is unchecked, run partial, exit 4")
     status, *_ = run(refs, (("crossref_record", lambda d: (None, "x")), ("crossref_incoming", lambda d: (None, "x")), ("openalex", lambda d: (None, "x"))))
     assert status == "failed" and exit_code(status, []) == 5
     print("ok   every source failing: failed, exit 5")
+    nf = lambda d: (None, "http 404: Not Found")
+    inc = lambda d: crossref_incoming(d, fetch=pages(PAGE))
+    status, counters, signals, unchecked, outside = run(refs, (("crossref_record", nf), ("crossref_incoming", inc), ("openalex", oa)), agency=lambda d: ("DataCite", None))
+    assert status == "complete" and not unchecked and exit_code(status, signals) == 0, (status, unchecked)
+    assert [o["doi"] for o in outside] == ["10.1/target"] and "not a Crossref DOI (registered with DataCite), cannot be checked at Crossref" in outside[0]["reason"] and outside[0]["cited_by"] == refs["10.1/target"]
+    assert counters["crossref_record"]["not_crossref"] == 1 and counters["crossref_record"]["failed"] == 0
+    assert "10.1/target (DataCite)" in summary_line(status, refs, signals, unchecked, outside)
+    print("ok   a DataCite DOI: listed as not a Crossref DOI with the records citing it and named in the run's summary line, not counted as a failure, run complete, exit 0")
+    status, counters, signals, unchecked, outside = run(refs, (("crossref_record", nf), ("crossref_incoming", inc), ("openalex", oa)), agency=lambda d: ("Crossref", None))
+    assert status == "partial" and not outside and "doi.org names Crossref" in unchecked[0]["reason"] and exit_code(status, signals) == 4, unchecked
+    print("ok   a Crossref DOI that Crossref answers 404 for stays unchecked: partial, exit 4")
+    status, counters, signals, unchecked, outside = run(refs, (("crossref_record", nf), ("crossref_incoming", inc), ("openalex", oa)), agency=lambda d: registration_agency(d, fetch=lambda u: (None, "exhausted retries")))
+    assert status == "partial" and not outside and "registration agency lookup failed" in unchecked[0]["reason"], unchecked
+    print("ok   a failed agency lookup stays unchecked with its reason: partial")
+    assert registration_agency("10.5255/x", fetch=lambda u: ([{"DOI": "10.5255/x", "RA": "DataCite"}], None)) == ("DataCite", None)
+    assert registration_agency("10.5255/x", fetch=lambda u: ([{"DOI": "10.5255/x", "status": "DOI does not exist"}], None))[0] is None
+    print("ok   the agency is read from doi.org's list answer; an answer without an agency is not taken as one")
     print("self-test passed")
 
 
@@ -203,13 +252,13 @@ def main():
     if a.self_test: return self_test()
     data = json.loads(Path(a.dataset).read_text(encoding="utf-8"))
     refs = cited_by(data)
-    status, counters, signals, unchecked = run(refs, (("crossref_record", crossref_own), ("crossref_incoming", crossref_incoming), ("openalex", openalex_flag)))
-    out = {"status": status, "dataset": Path(a.dataset).name, "dois_checked": len(refs), "sources": counters, "signals": signals, "unchecked": unchecked,
+    status, counters, signals, unchecked, outside = run(refs, (("crossref_record", crossref_own), ("crossref_incoming", crossref_incoming), ("openalex", openalex_flag)), agency=registration_agency)
+    out = {"status": status, "dataset": Path(a.dataset).name, "dois_checked": len(refs), "sources": counters, "signals": signals, "unchecked": unchecked, "outside_crossref": outside,
            "citation_mapping": "typed references only: precondition_evidence[].citation and retest[].citation matched on citation key",
            "note": "A signal is a Crossref update notice pointing at the work, the work being itself a notice, or an OpenAlex retraction flag. Read the notice: a correction is not a retraction. An unchecked source is unchecked, not clean; a truncated paged check is listed there as incomplete coverage. Nothing here changes the registry."}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"run {status}: {len(refs)} DOIs, {len(signals)} with a signal, {len(unchecked)} source checks not made or not complete")
+    print(summary_line(status, refs, signals, unchecked, outside))
     sys.exit(exit_code(status, signals))
 
 

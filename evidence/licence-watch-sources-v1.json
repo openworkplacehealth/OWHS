@@ -1,7 +1,7 @@
 {
  "kind": "owhs_licence_watch_source_plan",
- "version": "1",
- "note": "One planned acquisition per transport URL, fanned out to every instrument that cites it. Counters name their denominator: a URL is not an instrument-source relationship. A planned source that fails is unchecked, never unchanged, and no alternative page is substituted for it.",
+ "version": "1.1",
+ "note": "One planned acquisition per transport URL, fanned out to every instrument that cites it. Counters name their denominator: a URL is not an instrument-source relationship. A planned source that fails is unchecked, never unchanged, and no alternative page is substituted for it. An entry may carry a fetch block declaring that the page refuses automated requests (the error codes observed, the date first observed and what was seen). Such a page is still requested every week; when it fails with a declared code it is reported as blocked to automation and listed as needing a person, never as unchanged or verified, and a failure with any other code is a failure.",
  "dataset": "instrument-evidence-base-v0.9.0.json",
  "sources": [
   {
@@ -76,6 +76,14 @@
    "reviewed_addition": {
     "added_by_review": "source review of the developer and publisher pages",
     "primary_source_basis": "the general downloadable-material terms the published data page links to"
+   },
+   "fetch": {
+    "status": "blocked-to-automation",
+    "observed": [
+     "http_403"
+    ],
+    "first_observed": "2026-09-14",
+    "note": "Answered http 403 to the watcher on every weekly run from 14 September to 16 November 2026."
    }
   },
   {
@@ -90,7 +98,15 @@
    "extraction_profile_version": "1.0.0",
    "required_linked_document_ids": [],
    "archived_reference": "http://web.archive.org/web/20251006070814/https://maps.org.uk/en/publications/research/working-with-our-survey-data",
-   "reviewed_addition": null
+   "reviewed_addition": null,
+   "fetch": {
+    "status": "blocked-to-automation",
+    "observed": [
+     "http_403"
+    ],
+    "first_observed": "2026-09-07",
+    "note": "Answered http 403 to the watcher on every weekly run from 7 September to 16 November 2026."
+   }
   },
   {
    "source_id": "SRC-007",
@@ -160,7 +176,15 @@
    "extraction_profile_version": "1.0.0",
    "required_linked_document_ids": [],
    "archived_reference": "https://web.archive.org/web/20260901212745/https://support.gl-assessment.co.uk/knowledge-base/assessments/general-health-questionnaire-support/about-the-general-health-questionnaire/faqs",
-   "reviewed_addition": null
+   "reviewed_addition": null,
+   "fetch": {
+    "status": "blocked-to-automation",
+    "observed": [
+     "http_403"
+    ],
+    "first_observed": "2026-11-02",
+    "note": "Fetched normally on every weekly run from 14 September to 26 October 2026, then http 403 on 2, 9 and 16 November 2026. A person should check whether the page has moved behind a sign-in as well as whether its wording changed."
+   }
   },
   {
    "source_id": "SRC-012",
@@ -217,7 +241,15 @@
    "extraction_profile_version": "1.0.0",
    "required_linked_document_ids": [],
    "archived_reference": "https://web.archive.org/web/20260901213041/https://www.baua.de/EN/Topics/Prevention/Mental-health/Work-Ability-Index",
-   "reviewed_addition": null
+   "reviewed_addition": null,
+   "fetch": {
+    "status": "blocked-to-automation",
+    "observed": [
+     "http_403"
+    ],
+    "first_observed": "2026-09-07",
+    "note": "Answered http 403 to the watcher on every weekly run from 7 September to 16 November 2026 except 2 November, when it was fetched."
+   }
   },
   {
    "source_id": "SRC-016",
@@ -259,7 +291,15 @@
    "extraction_profile_version": "1.0.0",
    "required_linked_document_ids": [],
    "archived_reference": "http://web.archive.org/web/20250828041157/https://www.eurofound.europa.eu/en/surveys/about-eurofounds-surveys/data-availability",
-   "reviewed_addition": null
+   "reviewed_addition": null,
+   "fetch": {
+    "status": "blocked-to-automation",
+    "observed": [
+     "http_429"
+    ],
+    "first_observed": "2026-09-07",
+    "note": "Answered http 429 (too many requests) to the watcher's single weekly request on every run from 7 September to 16 November 2026."
+   }
   },
   {
    "source_id": "SRC-019",
@@ -329,7 +369,15 @@
    "extraction_profile_version": "1.0.0",
    "required_linked_document_ids": [],
    "archived_reference": "https://web.archive.org/web/20260308233203/https://www.hcp.med.harvard.edu/ncs/k6_scales.php",
-   "reviewed_addition": null
+   "reviewed_addition": null,
+   "fetch": {
+    "status": "blocked-to-automation",
+    "observed": [
+     "http_503"
+    ],
+    "first_observed": "2026-09-07",
+    "note": "Answered http 503 to the watcher on every weekly run from 7 September to 16 November 2026."
+   }
   },
   {
    "source_id": "SRC-024",
