@@ -8,6 +8,8 @@
 <link rel="canonical" href="https://openworkplacehealth.org/">
 <!-- auto -->
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/atom+xml" title="OWHS changelog: all changes" href="/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="OWHS evidence sweep reports" href="/feed-sweeps.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Open Workplace Health Standard">
 <meta property="og:url" content="https://openworkplacehealth.org/">
@@ -52,6 +54,7 @@ header{border-bottom:1px solid var(--line);padding:18px 0}
 .status{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--accent);background:var(--accent-soft);padding:5px 12px;border-radius:4px;margin-bottom:22px}
 .hero h1{font-size:clamp(32px,5.4vw,52px);font-weight:700;letter-spacing:-0.02em;max-width:760px}
 .hero .lede{font-size:20px;margin-top:20px;max-width:700px}
+.hero .who{font-size:16px;margin-top:14px;max-width:700px;color:var(--ink)}
 .cta-row{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
 .btn{display:inline-block;padding:12px 22px;border-radius:6px;font-weight:600;font-size:15.5px;text-decoration:none}
 .btn.primary{background:var(--accent);color:#fff}
@@ -60,6 +63,12 @@ header{border-bottom:1px solid var(--line);padding:18px 0}
 .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
 
 section{padding:56px 0;border-bottom:1px solid var(--line)}
+section#latest{padding:34px 0 30px}
+.latest{list-style:none;margin:12px 0 8px;padding:0;max-width:760px}
+.latest li{margin:0;padding:10px 0;border-top:1px solid var(--line);font-size:15.5px}
+.latest li:first-child{border-top:0}
+.latest .when{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:block}
+.latest .tab{font-family:var(--mono);font-size:11.5px;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:3px;margin-right:6px}
 .quote{background:var(--wash);border-left:4px solid var(--accent);padding:26px 30px;margin:26px 0;max-width:720px}
 .quote p{font-size:19px;color:var(--ink);font-weight:500;margin:0}
 .quote cite{display:block;margin-top:12px;font-style:normal;font-size:14px;color:var(--muted)}
@@ -134,11 +143,24 @@ ul,ol{max-width:760px}
   <span class="status">OWHS v0.2 draft · early open specification · open to review</span>
   <h1>An open data standard and a permanent open catalogue for workplace health.</h1>
   <p class="lede">Common definitions for sickness absence, return to work, wellbeing measurement and benefit provision, and a lasting record of the instruments and survey items behind them, with their evidence, provenance and rights. Private by design. Free for anyone to use.</p>
+  <p class="who">Who it is for: HR, occupational health and wellbeing teams; people who build HR, health or benefits software; researchers; and policy teams. Nothing here is for sale.</p>
   <div class="cta-row">
     <a class="btn primary" href="how-it-works.html">Start here: how it works</a>
     <a class="btn ghost" href="spec/index.html">Read the draft specification</a>
   </div>
 </div></div>
+
+<section id="latest"><div class="wrap">
+  <h2>Latest</h2>
+<!-- latest -->
+<ul class="latest">
+  <li><span class="when">19 November 2026</span><span class="tab">Site</span>A status page at status.html says what runs and when. <a href="changelog.html">Changelog</a></li>
+  <li><span class="when">19 November 2026</span><span class="tab">Site</span>Atom feeds of the changelog are now published: all changes, and one each for the registry, the specification and the site tabs, plus one for the monthly sweep reports. <a href="changelog.html">Changelog</a></li>
+  <li><span class="when">19 November 2026</span><span class="tab">Site</span>A how to cite page gives citation text for the specification, the registry dataset and the question bank, each with its version, date, address and licence, and the ... <a href="changelog.html">Changelog</a></li>
+</ul>
+<p class="small"><a href="changelog.html">Every change</a> · <a href="feed.xml">Atom feed</a> · <a href="status.html">Is it maintained?</a></p>
+<!-- /latest -->
+</div></section>
 
 <section id="two"><div class="wrap">
   <h2>Two things, one project</h2>
@@ -254,7 +276,7 @@ ul,ol{max-width:760px}
     <span>Licence: CC-BY 4.0 (spec) · Apache 2.0 (schemas &amp; tools)</span>
   </div>
   <p class="small">UK English throughout. Definitions anchor to ONS, HSE, the statutory fit note and SSP; sources are cited in the specification. Version 0.2, September 2026.</p>
-<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)"><a href="/status.html">Is it maintained?</a> · <a href="/status.html#follow">Follow</a> · <a href="/feed.xml">Feed</a> · <a href="/cite.html">How to cite</a> · <a href="/using-owhs.html">Who uses OWHS</a> · <a href="/governance.html#maintainers">Who maintains this</a></p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
 </div></footer>
 
 </body>

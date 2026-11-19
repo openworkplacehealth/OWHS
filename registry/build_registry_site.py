@@ -762,6 +762,7 @@ grades with provenance, licence status verified against current steward terms, a
 maintained under the Open Workplace Health Standard, distinct from the normative specification. It describes instruments;
 it never reproduces them. It grades evidence about instruments, never evidence about interventions.</p>
 <p class="purpose">{PURPOSE}</p>
+<p class="meta"><a href="../cite.html">How to cite this registry</a>: version, date, licence and the single-rater caveat, with no DOI claimed.</p>
 
 <div class="callout"><b>What the current matrix records.</b> Across the {len(GRADED)} instruments,
 {TRT_HIGH} reach a High grade for test-retest reliability and {TRT_WEAK} are graded Absent, Very low or Low.
@@ -1207,6 +1208,7 @@ What changed between versions is on the <a href="corrections.html">corrections p
 <div class="callout">Open Workplace Health Standard, Instrument Registry, dataset v{esc(D["version"])} ({esc(REVIEW_DATE)}).
 Available at openworkplacehealth.org. Grades are editorial assessments of published evidence for a working-adult
 audience; see the methodology page for the grading conventions.</div>
+<p>Fuller citation text for the registry, the specification and the question bank, with BibTeX, is on the <a href="../cite.html">how to cite page</a>.</p>
 <h2>Licensing</h2>
 <p>Registry text is licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; the dataset structure is
 licensed <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>. Instrument item text is never reproduced in

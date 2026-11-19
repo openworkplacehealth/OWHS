@@ -1753,3 +1753,22 @@ Whether the organisation acts on, signposts and normalises support for health an
 - Confidence discussing mental health at work [mh-confidence-discuss] (wording not reproduced; licence: permission required; none requested; source: OECD Guidelines on Measuring Subjective Well-being).
 - Would recommend as a place to work [csps-recommend-workplace] (wording verified verbatim; licence: OGL; source: Civil Service People Survey). Wording: "I would recommend [my organisation] as a great place to work" Response scale: Strongly agree / Agree / Neither agree nor disagree / Disagree / Strongly disagree
 
+
+# How to cite
+
+Versions are identified by version number and address. No DOI has been issued. Add the date you accessed the page. The same text is at https://openworkplacehealth.org/cite.html.
+
+## The specification
+Open Workplace Health Standard (2026). Open Workplace Health Standard (OWHS) v0.2, draft specification. Version 0.2-draft, 7 September 2026. https://openworkplacehealth.org/spec/
+Licence: CC BY 4.0 for the specification text; Apache 2.0 for the schemas, code lists, examples and tools.
+
+## The instrument registry dataset
+Open Workplace Health Standard (2026). OWHS Instrument Evidence Base. Version 0.9.0, 3 September 2026. https://openworkplacehealth.org/instrument-registry/
+Licence: CC BY 4.0 for the text; Apache 2.0 for the dataset structure.
+Every grade was assigned by one rater employed by the steward (1 rater, 0 independent raters), and grades and statuses are frozen until two named psychometric raters who are not employees of the steward have joined. Grades are not a recommendation and are not comparable across instruments.
+Version 0.9.0 was changed in place (latest 2026-11-19), so the version number alone does not fix the content.
+
+## The question bank
+Open Workplace Health Standard (2026). Open Workplace Health Standard: Workplace Wellbeing Question Bank. Version 0.2.0, 3 September 2026. https://openworkplacehealth.org/question-bank/
+Licence: CC BY 4.0 for the guidance text; Apache 2.0 for the dataset structure; the wording of each item stays with its primary source under the licence recorded per item.
+

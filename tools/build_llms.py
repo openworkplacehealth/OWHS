@@ -23,6 +23,7 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 import site_data as sd
+import build_cite as bcite
 
 SITE = ROOT / "site"
 BASE = sd.BASE
@@ -161,6 +162,20 @@ def question_section(q):
     return "\n".join(out)
 
 
+def cite_section():
+    c = sd.cite_works()
+    out = ["# How to cite", "", "Versions are identified by version number and address. No DOI has been issued. Add the date you accessed the page. The same text is at " + BASE + "cite.html.", ""]
+    for k, h in (("specification", "The specification"), ("registry", "The instrument registry dataset"), ("question_bank", "The question bank")):
+        w = c[k]
+        out += [f"## {h}", bcite.plain(w), f"Licence: {w['licence']}."]
+        if k == "registry":
+            out.append(w["caveat"])
+            if w["in_place"]:
+                out.append(f"Version {w['version']} was changed in place (latest {w['in_place'][-1]}), so the version number alone does not fix the content.")
+        out.append("")
+    return "\n".join(out)
+
+
 def build_full():
     d, q = sd.load_dataset(), sd.load_bank()
     spec = (SITE / "spec" / "OWHS-v0.2-draft.md").read_text(encoding="utf-8").rstrip()
@@ -168,7 +183,7 @@ def build_full():
             "> Everything in this file is published on openworkplacehealth.org and is generated from the same sources as the pages: the specification markdown, the registry dataset "
             "and the question bank. The shorter index is at " + BASE + "llms.txt. The specification text is licensed CC BY 4.0; the registry text is CC BY 4.0; "
             "dataset structure, schemas and code lists are Apache 2.0. Instrument and survey-item wording is never ours to license and stays with its source under the terms recorded per item.\n")
-    return "\n\n".join([head, "# The specification (v0.2 draft)\n\n" + spec, registry_section(d), question_section(q)]) + "\n"
+    return "\n\n".join([head, "# The specification (v0.2 draft)\n\n" + spec, registry_section(d), question_section(q), cite_section()]) + "\n"
 
 
 OUTPUTS = {"llms.txt": build_index, "llms-full.txt": build_full}
@@ -203,13 +218,15 @@ def self_test():
       "a withheld item's wording is present")
     rendered = [i for i in q["items"] if i.get("render") and i.get("wording")]
     t("every rendered item's wording appears verbatim", all(i["wording"] in full for i in rendered))
+    t("the full file carries the citation text and says no DOI exists", "# How to cite" in full and "No DOI has been issued" in full and sd.cite_works()["registry"]["version"] in full.split("# How to cite")[1])
+    t("the index lists the status, cite and register pages and the feeds", all(x in idx for x in ("/status.html", "/cite.html", "/using-owhs.html", "/feed.xml", "/feed-sweeps.xml")))
     t("the specification is included whole", (SITE / "spec" / "OWHS-v0.2-draft.md").read_text(encoding="utf-8").strip() in full)
     t("a text extraction keeps paragraph breaks", text_of("<p>a</p><p>b &amp; c</p>") == "a\nb & c")
     t("a block is found by balanced divs", block('<div class="x"><div>in</div>tail</div>after', "x") == "<div>in</div>tail")
     t("no em or en dash is introduced by this tool's own text", chr(8212) not in idx.split("## The standard")[0] or True)
     if fails:
         print("self-test FAILED:\n  " + "\n  ".join(fails)); sys.exit(1)
-    print(f"self-test ok: 9 cases (every record indexed, no withheld wording, every rendered item verbatim, spec whole, single-rater statement carried)")
+    print(f"self-test ok: 11 cases (every record indexed, no withheld wording, every rendered item verbatim, spec whole, single-rater statement carried)")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-GB">
+  <title>OWHS changelog: registry</title>
+  <link rel="self" type="application/atom+xml" href="https://openworkplacehealth.org/feed-registry.xml"/>
+  <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+  <id>https://openworkplacehealth.org/feed-registry.xml</id>
+  <updated>2026-11-19T00:00:00Z</updated>
+  <author><name>Open Workplace Health Standard</name></author>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-11-19-registry-evidence-screening-2026-11</id>
+    <title>Registry v0.9.0 (citations appended in place, version unchanged): Five citations appended to the v0.9.0 dataset in place: two on PHQ-9, two on UWES-9 and one on CBI, each ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-11-19T00:00:00Z</published>
+    <updated>2026-11-19T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;19 November 2026.&lt;/p&gt;&lt;p&gt;Five citations appended to the v0.9.0 dataset in place: two on PHQ-9, two on UWES-9 and one on CBI, each checked against Crossref and read at abstract level. Review due is set on thirteen cells of those three records. No grade, status, licence field, review date or version number changed and nothing was deleted. See the &lt;a href=&quot;https://openworkplacehealth.org/sweeps/2026-11.html&quot;&gt;November sweep&lt;/a&gt;.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-11-19-registry-page-generator-licence-first</id>
+    <title>Registry Page generator (v0.9.0 unchanged): Instrument record pages now lead with the licence answer and carry it in the title and description; headings ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-11-19T00:00:00Z</published>
+    <updated>2026-11-19T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;19 November 2026.&lt;/p&gt;&lt;p&gt;Instrument record pages now lead with the licence answer and carry it in the title and description; headings are clean text with the badges beside them; each record links to its related pages; dates are machine-readable. Grades, statuses, evidence forms, licence classes, the dataset and its version number are unchanged.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-29-registry-page-titles-and-descriptions</id>
+    <title>Registry Page generator (v0.9.0 unchanged): Shorter page titles and search descriptions on the registry overview and twelve instrument record pages, led ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-29T00:00:00Z</published>
+    <updated>2026-09-29T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;29 September 2026.&lt;/p&gt;&lt;p&gt;Shorter page titles and search descriptions on the registry overview and twelve instrument record pages, led by the instrument&#x27;s common abbreviation where it has one, so they fit in a search result. Record headings, full instrument names, grades, statuses, licence classes and citations are unchanged.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-07-registry-corrections-anchors-and-links</id>
+    <title>Registry 0.9.0: Corrections page: each numbered correction now carries a stable anchor, so a public notice can cite one ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-07T00:00:00Z</published>
+    <updated>2026-09-07T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;7 September 2026.&lt;/p&gt;&lt;p&gt;Corrections page: each numbered correction now carries a stable anchor, so a public notice can cite one directly, and the section headings are addressable. The submission callout links the correction form and the contact address rather than describing them, and states that reporting a problem does not itself change a grade, status or licence class.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-07-registry-founding-finding-computed</id>
+    <title>Registry 0.9.0: The registry summary now states counts derived from the published matrix: test-retest High and Absent, Very ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-07T00:00:00Z</published>
+    <updated>2026-09-07T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;7 September 2026.&lt;/p&gt;&lt;p&gt;The registry summary now states counts derived from the published matrix: test-retest High and Absent, Very low or Low grades, and organisational criterion Absent and Low or Very low grades. These are descriptions of the current registered assessments. The earlier field-wide weakness and use-prevalence claims are withdrawn; the separate thin status is not a grade count.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-07-registry-matrix-summary-claims-withdrawn</id>
+    <title>Registry 0.9.0: The registry summary and current reading guidance withdraw conclusions about a field-wide weakest property ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-07T00:00:00Z</published>
+    <updated>2026-09-07T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;7 September 2026.&lt;/p&gt;&lt;p&gt;The registry summary and current reading guidance withdraw conclusions about a field-wide weakest property, practitioners&#x27; expectations and instrument use prevalence. They describe counts from the current registered assessments, with grade categories distinguished from the separate thin status. A dated clarification corrects the current admission page&#x27;s scope description; the published policy source and admission rules are unchanged.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-06-registry-corrections-page-renders</id>
+    <title>Registry 0.9.0: Corrections page: six of the nine corrections rendered with an empty description and empty Was and Now.</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-06T00:00:00Z</published>
+    <updated>2026-09-06T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;6 September 2026.&lt;/p&gt;&lt;p&gt;Corrections page: six of the nine corrections rendered with an empty description and empty Was and Now. The generator read the summary array rather than the full one; it now merges both by id.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-06-registry-index-badge-names-v0-2-draft</id>
+    <title>Registry Page generator (v0.9.0 unchanged): The status line at the top of the registry index names the specification draft the registry sits beside as ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-06T00:00:00Z</published>
+    <updated>2026-09-06T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;6 Sep 2026.&lt;/p&gt;&lt;p&gt;The status line at the top of the &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/&quot;&gt;registry index&lt;/a&gt; names the specification draft the registry sits beside as v0.2 draft, where it said v0.1; the &lt;a href=&quot;https://openworkplacehealth.org/question-bank/&quot;&gt;question bank&lt;/a&gt; index carries the same change. No grade, status, licence class or dataset value changes.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-06-registry-maintenance-workflows-added-registry-none</id>
+    <title>Registry Maintenance tooling (v0.9.0 unchanged): Maintenance workflows added to the registry, none of which changes a dataset, a grade, a status or a licence ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-06T00:00:00Z</published>
+    <updated>2026-09-06T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;6 Sep 2026.&lt;/p&gt;&lt;p&gt;Maintenance workflows added to the registry, none of which changes a dataset, a grade, a status or a licence class: a harvester that queries Europe PMC, OpenAlex and Crossref for every instrument and writes a candidate artefact for a person to screen; a weekly watcher that hashes the visible text of every licence page the registry cites and opens an issue when one changes; a monthly watcher that checks every cited DOI for retraction and update notices; and a tripwire that accepts a monthly cycle only when the run artefact is complete over the full inventory and named by an issue the workflow itself opened. Harvest runs are configured to write an artefact and open or update a review issue. Licence and retraction watchers upload their results and raise an issue when they report a change, signal or incomplete run. The tripwire opens an issue if it cannot verify the monthly cycle and no issue for that cycle already exists. A first dry run over 12 July to 5 September 2026 is recorded as an engineering result, not as evidence about retrieval.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-06-registry-registry-s-source-repository-every</id>
+    <title>Registry Source (v0.9.0 unchanged): The registry&#x27;s source is in the repository: every dataset version from v0.1 to v0.9.0, every rubric version ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-06T00:00:00Z</published>
+    <updated>2026-09-06T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;6 Sep 2026.&lt;/p&gt;&lt;p&gt;The registry&#x27;s source is in the &lt;a href=&quot;https://github.com/openworkplacehealth/OWHS/tree/main/registry&quot;&gt;repository&lt;/a&gt;: every dataset version from v0.1 to v0.9.0, every rubric version, both admission policies, the conformance gate and the generator that builds these pages, so a reader can rebuild them from the same inputs the steward uses. A check refuses a page that no longer matches the committed dataset, rubric and generator. The dataset files and downloads from v0.3.0 are public projections of the released versions: each omits one record-level stewardship field that was null in every version and says so in its own &lt;span class=&quot;mono&quot;&gt;public_projection&lt;/span&gt; block. No grade, status, evidence, citation or licence class changed.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-06-registry-review-passes-not-independent</id>
+    <title>Registry 0.9.0: Registry corrections and version history: the pre-publication passes are described as review passes, not ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-06T00:00:00Z</published>
+    <updated>2026-09-06T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;6 September 2026.&lt;/p&gt;&lt;p&gt;Registry corrections and version history: the pre-publication passes are described as review passes, not independent checks. No rater who is not an employee of the steward has yet seen the registry.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-06-registry-two-doi-links-cut-at-parenthesis</id>
+    <title>Registry Page generator (v0.9.0 unchanged): Corrected: on the MBI and ISI record pages, two cited DOIs that contain parentheses ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-06T00:00:00Z</published>
+    <updated>2026-09-06T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;6 Sep 2026.&lt;/p&gt;&lt;p&gt;Corrected: on the &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/mbi.html&quot;&gt;MBI&lt;/a&gt; and &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/isi.html&quot;&gt;ISI&lt;/a&gt; record pages, two cited DOIs that contain parentheses (&lt;span class=&quot;mono&quot;&gt;10.1016/s0140-6736(16)31279-x&lt;/span&gt; and &lt;span class=&quot;mono&quot;&gt;10.1016/s1389-9457(00)00065-4&lt;/span&gt;) were linked only as far as their first closing parenthesis, so the link did not resolve and the rest of the DOI appeared as stray text after the citation. The page generator now keeps a URL whole when it contains balanced parentheses, the two citations link to the right papers, and a check refuses a generator that cuts such a URL. No grade, status, licence class or dataset value changes; the dataset carried the full DOIs throughout.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-05-registry-isi-criterion-validity-against-reference</id>
+    <title>Registry Review notice (v0.9.0): ISI criterion validity against a reference standard is under re-adjudication.</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-05T00:00:00Z</published>
+    <updated>2026-09-05T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;5 Sep 2026.&lt;/p&gt;&lt;p&gt;ISI criterion validity against a reference standard is under re-adjudication. The community result in Morin et al. (2011) used a self-reported sleep-problem question, while the clinical sample used a diagnostic interview. The published High grade and well-established status remain unchanged. See the &lt;a href=&quot;https://github.com/openworkplacehealth/OWHS/issues/33&quot;&gt;review notice&lt;/a&gt; for the evidence and the conditions for resolving the review.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-03-registry-reconciliation-fifth-review-pass-v0</id>
+    <title>Registry v0.9.0: Reconciliation of the fifth review pass, of v0.8.0 and scoped to the changes 1.5 made, before first ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-03T00:00:00Z</published>
+    <updated>2026-09-03T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;3 Sep 2026.&lt;/p&gt;&lt;p&gt;Reconciliation of the fifth review pass, of v0.8.0 and scoped to the changes 1.5 made, before first publication; the check&#x27;s verdict was fit to publish with one grade to move first, and its three findings and two notes were all taken. &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/rubric.html&quot;&gt;Rubric v1.6&lt;/a&gt;: the norm rule is read as written, so a High grade on populations, languages and norms rests on a study that states a norm, cut-off, prevalence or reference value and not on a word that matches the test; section 10 says that precondition evidence sits only on a High cell or a High &lt;span class=&quot;mono&quot;&gt;previous&lt;/span&gt; block. One grade moved, COPSOQ III populations, languages and norms High to Moderate (the entry that met the rule names a shared-variance figure in the Czech screening version; the study that carries norms in substance states no value in its abstract, and the cell returns to High when those values are read from the full text, first on the check list). European Working Conditions Survey internal consistency changes status from well-established to thin, grade unchanged at Low. The K10 criterion-validity judgement is corrected in one clause (the two developer studies are two designs, not one programme), grade unchanged. The WHO-5 populations cell notes that its one norm-bearing entry is a cut-off validated in diabetes patients and holds on its working-adult entries. One statistic gains a population clause with its value unchanged. All 420 DOIs resolved on the conformance date. Schema 0.7 unchanged. Every changed cell keeps its 1.5 values in &lt;span class=&quot;mono&quot;&gt;previous&lt;/span&gt;. Logged as correction C-0009.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-03-registry-reconciliation-fourth-review-pass-v0</id>
+    <title>Registry v0.8.0: Reconciliation of the fourth review pass, of v0.7.0, before first publication; the check&#x27;s verdict was fit to ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-03T00:00:00Z</published>
+    <updated>2026-09-03T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;3 Sep 2026.&lt;/p&gt;&lt;p&gt;Reconciliation of the fourth review pass, of v0.7.0, before first publication; the check&#x27;s verdict was fit to publish and its ten findings were non-blocking, every one of them taken. &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/rubric.html&quot;&gt;Rubric v1.5&lt;/a&gt;: a High grade on populations, languages and norms rests on at least one counted study carrying a norm, cut-off, prevalence or explicitly reported reference value, and the build tests it (every current cell holds); criterion validity is two lists, so a correlation or regression coefficient counts only against organisational outcomes; the rubric&#x27;s statistic lists and the machine check are reconciled in both directions, a comma bounds a clause, and one entry&#x27;s statistic is reworded with its value unchanged; section 10 gains a row for every check the build already ran. One grade moved, European Working Conditions Survey internal consistency Moderate to Low (no reliability coefficient of the record&#x27;s own; the embedded WHO-5&#x27;s alpha belongs to the WHO-5 record). The K10 criterion-validity judgement is rewritten, grade unchanged. All 420 DOIs resolved on the conformance date. Schema 0.7 unchanged. Correction C-0008. Fifth pass, scoped to the diff, pending before the noindex lift.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-02-registry-reconciliation-third-review-pass-v0</id>
+    <title>Registry v0.7.0: Reconciliation of the third review pass, of v0.6.0, before first publication; the check found no grade ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-02T00:00:00Z</published>
+    <updated>2026-09-02T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;2 Sep 2026.&lt;/p&gt;&lt;p&gt;Reconciliation of the third review pass, of v0.6.0, before first publication; the check found no grade demonstrably wrong. &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/rubric.html&quot;&gt;Rubric v1.4&lt;/a&gt;: the High precondition names the statistics of each property and the build tests every cited study against its own property&#x27;s list (nine studies leave the tables on four cells; every one of those cells keeps two or more and stays High); &lt;span class=&quot;mono&quot;&gt;high_basis&lt;/span&gt; is renamed &lt;span class=&quot;mono&quot;&gt;precondition_evidence&lt;/span&gt;, the studies that meet the precondition, and a cell that drops from High keeps that evidence in its history; internal consistency on item sets and derived indices is stated; a flag descriptor may name a population by the survey, trial or organisation that sampled it; a direct reason lists a working-adult sample first; the rule that borrowed evidence never grades High is now checked; every rule names its check and the unchecked ones are listed. One High grade drops to Moderate (k10 criterion validity against a reference standard, on a credible published disagreement, the rater&#x27;s judgement written on the cell), two internal-consistency cells become Not-applicable (wpai, fcs-maps), two population tags and two evidence forms are corrected. All 420 DOIs resolved. Schema 0.7: eight-field &lt;span class=&quot;mono&quot;&gt;previous&lt;/span&gt; blocks. Logged as correction C-0007 with the rubric 1.3 values kept on each changed cell. No fresh literature search: as-of dates unchanged.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-02-registry-reconciliation-second-review-pass-v0</id>
+    <title>Registry v0.6.0: Reconciliation of the second review pass, of v0.5.0, before first publication.</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-02T00:00:00Z</published>
+    <updated>2026-09-02T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;2 Sep 2026.&lt;/p&gt;&lt;p&gt;Reconciliation of the second review pass, of v0.5.0, before first publication. &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/rubric.html&quot;&gt;Rubric v1.3&lt;/a&gt;: the evidence-form rule recodes a cell to the form its findings attribute instead of capping its grade, so a cell is &lt;span class=&quot;mono&quot;&gt;mixed&lt;/span&gt; only where the findings name two forms claim by claim; a High grade needs two cited studies with a sample size and a statistic of the property graded, and on a population-sensitive property at least one of them in a working-adult or general-population sample, with every cited study tagged by population; criterion validity against a reference standard joins the population-sensitive properties (diagnostic accuracy depends on the sample); every flag descriptor names a population. One Moderate returns to High (k10 internal consistency, capped in v0.5.0 on a coding error), five High cells drop to Moderate, four single-item invariance cells and one derived-index structure cell become Not-applicable, three flags move, 24 cells are recoded off &lt;span class=&quot;mono&quot;&gt;mixed&lt;/span&gt;, 29 cited studies leave the High-basis tables for want of a statistic of the property. Schema 0.6: &lt;span class=&quot;mono&quot;&gt;population&lt;/span&gt; on High-basis entries, two absence types, seven-field &lt;span class=&quot;mono&quot;&gt;previous&lt;/span&gt; blocks, structured abstract contradictions. One gate module now runs in both the migration and the site build. All logged as correction C-0006 with the rubric 1.2 values kept on each changed cell. No fresh literature search: as-of dates unchanged.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-02-registry-reconciliation-review-pass-v0-4</id>
+    <title>Registry v0.5.0: Reconciliation of the review pass of v0.4.0, before first publication.</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-02T00:00:00Z</published>
+    <updated>2026-09-02T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;2 Sep 2026.&lt;/p&gt;&lt;p&gt;Reconciliation of the review pass of v0.4.0, before first publication. &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/rubric.html&quot;&gt;Rubric v1.2&lt;/a&gt;: the indirectness flag has three values (direct, general, indirect), each cell states the studies its flag rests on, a grade never moves because a flag moved, and a High grade needs at least two cited studies with a sample size and a statistic, listed on the cell. The six C-0004 grade moves are reversed and six further High cells drop to Moderate (three for want of the numbers, two for indirect evidence on a population-sensitive property, one for a mixed cell that names no second form); 49 flags change; six criterion cells that had been graded on a reference standard the construct does not have become Absent (category error); four not-applicable cells become Absent and one Absent cell becomes not-applicable. Every Absent or Not-applicable cell names its absence type and carries no flag. Schema 0.5: &lt;span class=&quot;mono&quot;&gt;indirectness_basis&lt;/span&gt;, &lt;span class=&quot;mono&quot;&gt;absence_type&lt;/span&gt;, &lt;span class=&quot;mono&quot;&gt;high_basis&lt;/span&gt;, a &lt;span class=&quot;mono&quot;&gt;corresponds-with&lt;/span&gt; relation for single items whose only published link to an instrument is a correlation, and a generated integrity block. The site build now fails on any cell that breaks these rules. All logged as correction C-0005 with the rubric 1.1 values kept on each changed cell. No fresh literature search: as-of dates unchanged.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-02-registry-purpose-reset-before-first-publication</id>
+    <title>Registry v0.4.0: Purpose reset before first publication.</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-02T00:00:00Z</published>
+    <updated>2026-09-02T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;2 Sep 2026.&lt;/p&gt;&lt;p&gt;Purpose reset before first publication. The registry&#x27;s purpose is stated: the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing, scope the whole field by construct, the first 27 instruments stage one. &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/rubric.html&quot;&gt;Rubric v1.1&lt;/a&gt;: indirectness is defined by population type, never by country or language; every cell re-read, 92 flags changed and 6 grades moved (all upward, all occupational instruments), logged as correction C-0004 with the rubric 1.0 values kept on each cell. Schema 0.4: every indirectness flag carries its reason; &lt;span class=&quot;mono&quot;&gt;relations&lt;/span&gt; on every record link single items and short forms to the multi-item instruments they were validated against, each citing its study; new &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/single-items.html&quot;&gt;single-item measures&lt;/a&gt; page. Freeze dated from first publication. Search venues and strings published on the methods page. No fresh literature search: as-of dates unchanged.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-02-registry-schema-0-3-every-graded</id>
+    <title>Registry v0.3.0: Schema 0.3.</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-02T00:00:00Z</published>
+    <updated>2026-09-02T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;2 Sep 2026.&lt;/p&gt;&lt;p&gt;Schema 0.3. Every graded cell now carries an evidence state (assessed, assessed_absent, not_assessed, not_applicable), the rubric version it was graded under, the date its literature was last searched, the date its grade was last confirmed by a rater, and a review-due flag. Grading &lt;a href=&quot;https://openworkplacehealth.org/instrument-registry/rubric.html&quot;&gt;rubric v1.0&lt;/a&gt; published and linked from every cell. Licence figures replaced by a licence class for employer or vendor use, with archived copies of steward pages linked on each record. Single-rater disclosure recorded in the dataset: grades and statuses frozen from 1 Sep 2026 until two named non-employee raters join. Errata list and right-of-reply policy added. Steward-product disclosure field added, not yet populated. No grades moved. Migration script published beside the dataset.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-09-01-registry-september-evidence-sweep-applied-4</id>
+    <title>Registry v0.2.2: September evidence sweep applied: 4 citations added (WHO-5, GHQ-12, OLBI, WEMWBS), last-reviewed dates ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-09-01T00:00:00Z</published>
+    <updated>2026-09-01T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;1 Sep 2026.&lt;/p&gt;&lt;p&gt;September evidence sweep applied: 4 citations added (WHO-5, GHQ-12, OLBI, WEMWBS), last-reviewed dates refreshed on all 28 swept records, no grades moved, nothing deleted. First update filed through the automated sweep-and-review process. See the &lt;a href=&quot;https://openworkplacehealth.org/sweeps/2026-09.html&quot;&gt;September sweep&lt;/a&gt;.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-07-12-registry-ons-4-items-split-into</id>
+    <title>Registry v0.2.1: ONS-4 items split into four first-class item records with a parent record, per schema v0.2 rule 4.</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-07-12T00:00:00Z</published>
+    <updated>2026-07-12T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;12 Jul 2026.&lt;/p&gt;&lt;p&gt;ONS-4 items split into four first-class item records with a parent record, per schema v0.2 rule 4.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-07-12-registry-second-research-pass-evidence-records</id>
+    <title>Registry v0.2: Second research pass: evidence records deepened across all instruments, schema v0.2, licence positions ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-07-12T00:00:00Z</published>
+    <updated>2026-07-12T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;12 Jul 2026.&lt;/p&gt;&lt;p&gt;Second research pass: evidence records deepened across all instruments, schema v0.2, licence positions re-verified against steward pages.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-07-12-registry-initial-registry-27-instruments-graded</id>
+    <title>Registry v0.1: Initial registry: 27 instruments graded across 8 evidence properties from a full research pass, with ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-07-12T00:00:00Z</published>
+    <updated>2026-07-12T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;12 Jul 2026.&lt;/p&gt;&lt;p&gt;Initial registry: 27 instruments graded across 8 evidence properties from a full research pass, with citations, licence status and a public corrections process.&lt;/p&gt;</content>
+  </entry>
+</feed>

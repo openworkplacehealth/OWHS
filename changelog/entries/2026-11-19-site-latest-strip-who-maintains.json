@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 16,
+ "html": "The home page now shows the three most recent changelog entries, says in one line who the standard is for, and links to the status, feed, citation, register and maintainers pages from its footer. The governance page gains a short <a href=\"/governance.html#maintainers\">Who maintains this</a> passage that names the creator and the current steward as GOVERNANCE.md and the README do, with no new claims."
+}

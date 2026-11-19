@@ -170,6 +170,63 @@ def latest_changelog_date(tab):
     return max(ds) if ds else None
 
 
+CREATOR_LINE = re.compile(r"OWHS was created by (?:\[)?([A-Z][a-z]+ [A-Z][a-z]+)(?:\]\([^)]*\))? and is currently stewarded by (?:\[)?(\w+)")
+STEWARD_LEGAL = re.compile(r"currently stewarded by \*\*([^*]+)\*\* \(trading as (\w+)\)")
+
+
+def people():
+    """The creator and the current steward, named exactly as GOVERNANCE.md and README.md name them. Both files must agree."""
+    found = {}
+    for name in ("GOVERNANCE.md", "README.md"):
+        m = CREATOR_LINE.search((ROOT / name).read_text(encoding="utf-8"))
+        if not m:
+            raise SystemExit(f"tool error: {name} no longer says who created and who stewards OWHS in the expected sentence")
+        found[name] = m.groups()
+    if found["GOVERNANCE.md"] != found["README.md"]:
+        raise SystemExit(f"tool error: GOVERNANCE.md and README.md name the creator and steward differently: {found}")
+    legal = STEWARD_LEGAL.search((ROOT / "GOVERNANCE.md").read_text(encoding="utf-8"))
+    if not legal or legal.group(2) != found["GOVERNANCE.md"][1]:
+        raise SystemExit("tool error: GOVERNANCE.md does not give the steward's legal name and trading name as expected")
+    creator, steward = found["GOVERNANCE.md"]
+    given, family = creator.split(" ", 1)
+    return {"creator": creator, "given": given, "family": family, "steward": steward, "steward_legal": legal.group(1).strip()}
+
+
+def in_place_dates():
+    """Dates of registry changelog entries that record a change made inside a published version number."""
+    return sorted(e["date"] for e in changelog_entries("registry") if "in place" in e.get("version", "") and ISO.match(str(e["date"])))
+
+
+def cite_works():
+    """The three works a reader may cite, each with its version, date, licence, address and the caveat the source itself publishes.
+    The cite page, CITATION.cff, .zenodo.json and the structured data on the cite page all read this one function."""
+    d, q = load_dataset(), load_bank()
+    spec_md = (ROOT / "spec" / "OWHS-v0.2-draft.md").read_text(encoding="utf-8")
+    spec_title = spec_md.splitlines()[0].lstrip("# ").strip()
+    spec_date = latest_changelog_date("specification")
+    reg_name = current_dataset_name()
+    inplace = in_place_dates()
+    rd = d["rater_disclosure"]
+    return {
+        "specification": {"title": spec_title, "short": "OWHS specification", "version": "0.2-draft", "date": spec_date, "url": BASE + "spec/",
+                          "licence": "CC BY 4.0 for the specification text; Apache 2.0 for the schemas, code lists, examples and tools",
+                          "licence_ids": ["CC-BY-4.0", "Apache-2.0"],
+                          "status": "Draft, early open specification, published for review. Not a final or certified standard.",
+                          "date_meaning": "the date of the latest entry on the specification tab of the changelog"},
+        "registry": {"title": d["dataset"], "short": "OWHS instrument evidence base", "version": d["version"], "date": d["generated"], "url": BASE + "instrument-registry/",
+                     "file": BASE + "instrument-registry/" + reg_name, "schema_version": d["schema_version"], "rubric": d["rubric"]["version"],
+                     "licence": "CC BY 4.0 for the text; Apache 2.0 for the dataset structure", "licence_ids": ["CC-BY-4.0", "Apache-2.0"],
+                     "in_place": inplace, "date_meaning": "the date the dataset version was generated",
+                     "caveat": (f"Every grade was assigned by one rater employed by the steward ({rd['raters_total']} rater, {rd['independent_raters']} independent raters), "
+                                "and grades and statuses are frozen until two named psychometric raters who are not employees of the steward have joined. "
+                                "Grades are not a recommendation and are not comparable across instruments.")},
+        "question_bank": {"title": q["name"], "short": "OWHS question bank", "version": q["version"], "date": q["updated"], "url": BASE + "question-bank/",
+                          "file": BASE + "question-bank/question-bank.json", "counts": q["counts"],
+                          "licence": "CC BY 4.0 for the guidance text; Apache 2.0 for the dataset structure; the wording of each item stays with its primary source under the licence recorded per item",
+                          "licence_ids": ["CC-BY-4.0", "Apache-2.0"], "date_meaning": "the date the question bank was last updated, as it records itself"},
+    }
+
+
 def self_test():
     d = load_dataset()
     fails = []
@@ -197,6 +254,14 @@ def self_test():
     t("an unverified class gets the neutral form", record_title({"instrument_id": "x", "display_name": "Foo", "identity": {"licence_class": "unverified"}}) == "Foo: licence for employer use and evidence | OWHS")
     t("titles end in the site name", all(x.endswith(" | OWHS") for x in titles))
     t("latest dataset date is an ISO date", ISO.match(latest_dataset_date(d)) is not None)
+    p = people()
+    t("the creator and steward are named as GOVERNANCE.md and README.md name them", (p["creator"], p["steward"], p["steward_legal"]) == ("Zak Fenton", "Alltoogether", "All Toogether Ltd"), p)
+    gov = (ROOT / "site" / "governance.html").read_text(encoding="utf-8")
+    m = re.search(r'<h2 id="maintainers">Who maintains this</h2>\s*<p>(.*?)</p>', gov, re.S)
+    t("the governance page's maintainers passage names the creator and steward as GOVERNANCE.md does", bool(m) and p["creator"] in m.group(1) and p["steward_legal"] in m.group(1) and f"trading as {p['steward']}" in m.group(1))
+    c = cite_works()
+    t("every citable work has a version, an ISO date, an address and a licence", all(w["version"] and ISO.match(w["date"]) and w["url"].startswith(BASE) and w["licence"] for w in c.values()), c)
+    t("the registry citation carries the single-rater caveat from the dataset", "one rater" in c["registry"]["caveat"] and "frozen" in c["registry"]["caveat"])
     if fails:
         print("self-test FAILED: " + "; ".join(fails)); sys.exit(1)
     print(f"self-test ok: {len(d['records'])} records worded, {len(LICENCE_ANSWER)} licence classes covered")

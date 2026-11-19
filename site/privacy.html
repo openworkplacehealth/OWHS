@@ -7,6 +7,8 @@
 <link rel="canonical" href="https://openworkplacehealth.org/privacy.html">
 <!-- auto -->
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/atom+xml" title="OWHS changelog: all changes" href="/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="OWHS evidence sweep reports" href="/feed-sweeps.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Open Workplace Health Standard">
 <meta property="og:url" content="https://openworkplacehealth.org/privacy.html">
@@ -82,7 +84,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 
 <article><div class="wrap">
   <h1>Privacy</h1>
-  <p class="meta">privacy · updated 5 September 2026</p>
+  <p class="meta">privacy · updated 19 November 2026</p>
 
   <div class="quote">
     <p><strong>The short version.</strong></p>
@@ -96,6 +98,14 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <p>Each page load and each page exit is counted, with the page address, the page you came from if your browser passes it on, and your browser and device type. That is all. The counting mode we use does not derive a country from your connection.</p>
   <p>Your IP address is used for one purpose at the moment it arrives: together with your browser type, the site name and a secret value that changes every day, it is turned into a hash, and then discarded. The hash cannot be turned back into your address. Because the secret changes daily, the same visitor produces a different hash tomorrow, so visits cannot be linked across days and no profile of any person is ever built. Within one day, repeated views from the same address and browser count as one visitor; that is the whole extent of it. Nothing is placed on your device to recognise you when you return.</p>
   <p>The counting is done by PostHog, a service we use as a processor, on servers in the European Union. PostHog acts only on our instructions and may not use the data for its own purposes.</p>
+
+  <h2>What your browser contacts</h2>
+  <p>Besides this site, three outside services are contacted by a browser that opens its pages. Each receives your IP address and browser details, as any website you visit does.</p>
+  <ul>
+    <li><strong>PostHog</strong>, for the visit counting described above, on every page.</li>
+    <li><strong>Google Fonts</strong> (fonts.googleapis.com and the font files it points to), on every page, to load the typefaces. Google's own privacy statement applies to that request.</li>
+    <li><strong>GitHub's public API</strong> (api.github.com), on the <a href="status.html">status page only</a>, so that the page can show when each scheduled maintenance job last ran. We send no token and store nothing; if your browser blocks the request or GitHub does not answer, the page still works without those lines. GitHub's own privacy statement applies to that request.</li>
+  </ul>
 
   <h2>Why we count, and on what basis</h2>
   <p>We count so that we know which pages are read and whether the site is working. Our lawful basis is legitimate interests. We judged that interest against the effect on you: no cookies, no identifier that persists beyond a day, no marketing use, no sharing. We concluded the effect is minimal. You may object at any time by writing to the address above; because nothing identifies you, we cannot single out your visits, but we will consider the objection and answer it.</p>
@@ -124,7 +134,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 
 <footer><div class="wrap">
   <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
-<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)"><a href="/status.html">Is it maintained?</a> · <a href="/status.html#follow">Follow</a> · <a href="/feed.xml">Feed</a> · <a href="/cite.html">How to cite</a> · <a href="/using-owhs.html">Who uses OWHS</a> · <a href="/governance.html#maintainers">Who maintains this</a></p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
 </div></footer>
 </body>
 </html>

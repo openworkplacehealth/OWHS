@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 15,
+ "html": "The privacy page now lists the outside services a browser contacts when it opens a page: PostHog for visit counting on every page, Google Fonts for the typefaces on every page, and, on the status page only, GitHub's public API for the latest run of each job. Nothing about what is collected changed; the page had not listed the font and GitHub requests before."
+}

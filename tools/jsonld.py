@@ -21,6 +21,7 @@ Types by page kind:
   /schemas/                     CollectionPage listing each schema as a DigitalDocument; BreadcrumbList
   /codelists/                   one DefinedTermSet per code list with its DefinedTerms; BreadcrumbList
   sweep reports                 Report about the Dataset, dated from the report's own filing date; BreadcrumbList
+  cite page                     WebPage listing the specification (TechArticle), the registry Dataset and the question bank Dataset with their versions and dates; BreadcrumbList
   changelog                     WebPage dated from the latest changelog entry; BreadcrumbList
   every other page              WebPage; BreadcrumbList
 """
@@ -308,6 +309,13 @@ def blocks_for(rel, text, site):
         node.update({"@type": "CollectionPage"})
         extra = codelist_nodes()
         node["mainEntity"] = {"@type": "ItemList", "itemListElement": [{"@type": "ListItem", "position": i, "item": {"@id": n["@id"]}} for i, n in enumerate(extra, 1)]}
+    elif rel == "cite.html":
+        c = sd.cite_works()
+        sp_ = c["specification"]
+        spec_node = {"@type": "TechArticle", "@id": BASE + "spec/#specification", "name": sp_["title"], "version": sp_["version"], "creativeWorkStatus": "Draft",
+                     "dateModified": sp_["date"], "url": sp_["url"], "license": licence_urls("CC BY 4.0", "Apache 2.0"), "inLanguage": "en-GB", "creator": {"@id": PROJECT_ID}}
+        extra = [spec_node, registry_dataset_node(d, site), bank_dataset_node(sd.load_bank(site))]
+        node["mainEntity"] = {"@type": "ItemList", "itemListElement": [{"@type": "ListItem", "position": i, "item": {"@id": n["@id"]}} for i, n in enumerate(extra, 1)]}
     elif rel == "changelog.html":
         ds = [e["date"] for e in sd.changelog_entries() if sd.ISO.match(str(e.get("date", "")))]
         if ds:
@@ -403,11 +411,14 @@ def self_test():
     t("the registry Dataset date is a repository-recorded date", sd.ISO.match(registry_dataset_node(d, ROOT / "site")["dateModified"]) is not None)
     t("every code list becomes a DefinedTermSet with terms", all(n["hasDefinedTerm"] for n in codelist_nodes()))
     t("every schema in the catalogue becomes a DigitalDocument", len(schema_nodes()) >= 16)
+    cite = blocks_for("cite.html", "<title>How to cite OWHS | OWHS</title>", ROOT / "site")
+    t("the cite page defines the three works it lists, with their versions", {n["@id"] for n in cite if n.get("@type") in ("TechArticle", "Dataset")} == {BASE + "spec/#specification", REG_DATASET_ID, QB_DATASET_ID}
+      and next(n for n in cite if n["@id"] == REG_DATASET_ID)["version"] == d["version"])
     t("the 404 page carries none", blocks_for("404.html", "<title>x</title>", ROOT / "site") is None)
     t("an unknown licence name is refused", _refuses(lambda: licence_urls("Mystery 9")))
     if fails:
         print("self-test FAILED: " + "; ".join(fails)); sys.exit(1)
-    print("self-test ok: 10 cases (script-safe serialisation, breadcrumbs, dates, dataset, code lists, schemas, 404, unknown licence)")
+    print("self-test ok: 11 cases (script-safe serialisation, breadcrumbs, dates, dataset, code lists, schemas, 404, unknown licence)")
 
 
 def _refuses(fn):

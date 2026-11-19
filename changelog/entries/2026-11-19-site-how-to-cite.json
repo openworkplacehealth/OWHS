@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 18,
+ "html": "A <a href=\"/cite.html\">how to cite page</a> gives citation text for the specification, the registry dataset and the question bank, each with its version, date, address and licence, and the registry's single-rater caveat. It says plainly that no DOI has been issued and that registry version 0.9.0 was changed in place on 19 November 2026. The repository now has a CITATION.cff and a .zenodo.json built from the same source, so a future tagged release can be archived; neither claims a DOI."
+}

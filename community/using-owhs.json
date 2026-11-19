@@ -1,0 +1,5 @@
+{
+  "schema_version": "1.0",
+  "note": "The public register of organisations that say they use or map to OWHS. Self-declared, not certification, not endorsement. Rendered to site/using-owhs.html by tools/build_users.py. Empty means no organisation is listed yet.",
+  "organisations": []
+}

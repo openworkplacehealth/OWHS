@@ -119,3 +119,27 @@ jobs:
         run: python tools/build_llms.py --check
       - name: assistant-file generator behaves as documented
         run: python tools/build_llms.py --self-test
+      - name: the Atom feeds are a fresh build of the changelog entries and the sweep reports
+        run: python tools/build_feeds.py --check
+      - name: feed generator behaves as documented (well-formed Atom, stable ids, entry dates, absolute links)
+        run: python tools/build_feeds.py --self-test
+      - name: the status page is a fresh build of the workflow schedules, the watermark file and the sweep reports, and the privacy page says what it contacts
+        run: python tools/build_status.py --check
+      - name: status page generator behaves as documented
+        run: python tools/build_status.py --self-test
+      - name: the Latest strip on the home page shows the three most recent changelog entries
+        run: python tools/build_home_latest.py --check
+      - name: Latest strip generator behaves as documented
+        run: python tools/build_home_latest.py --self-test
+      - name: the cite page, CITATION.cff and .zenodo.json are a fresh build from one source
+        run: python tools/build_cite.py --check
+      - name: citation generator behaves as documented (no DOI claimed, creators as the repository names them)
+        run: python tools/build_cite.py --self-test
+      - name: the register of users is a fresh build of its data file, which is schema-checked
+        run: python tools/build_users.py --check
+      - name: register generator behaves as documented
+        run: python tools/build_users.py --self-test
+      - name: the shared page shell behaves as documented
+        run: python tools/site_pages.py --self-test
+      - name: CITATION.cff validates against the Citation File Format schema
+        run: pip install cffconvert==2.0.0 && cffconvert --validate

@@ -5,7 +5,7 @@ robots policy: the one word in ../robots-policy.txt (noindex | index) decides th
 The generators always emit noindex; this tool is what makes a build match the published posture, so a
 rebuild after the lift cannot quietly put noindex back. Also places the one managed footer line (trade mark
 and licence, and the no-cookies line) as the last element of every page footer, and the one managed visit-counting
-script before </head>, so every generator shares them. Also places the one managed structured-data block (schema.org JSON-LD, built
+script before </head>, so every generator shares them. Also adds the Atom feed links (tools/build_feeds.py) to every page head, and one line of project links (status, follow, feed, how to cite, who uses OWHS, who maintains this) to the managed footer lines. Also places the one managed structured-data block (schema.org JSON-LD, built
 by tools/jsonld.py from repository data only) before the visit-counting script. Idempotent. Run before any deploy."""
 import os, re, sys, pathlib
 BASE = "https://openworkplacehealth.org/"
@@ -18,7 +18,9 @@ POLICY = (ROOT / "robots-policy.txt").read_text(encoding="utf-8").strip().lower(
 if POLICY not in ("noindex", "index"):
     sys.exit(f"robots-policy.txt must say noindex or index, not {POLICY!r}")
 ROBOTS = '<meta name="robots" content="noindex, nofollow">' if POLICY == "noindex" else '<meta name="robots" content="index, follow">'
-MARK = ('<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS\u2122 is a trade mark of '
+MARK = ('<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)"><a href="/status.html">Is it maintained?</a> · <a href="/status.html#follow">Follow</a> · '
+        '<a href="/feed.xml">Feed</a> · <a href="/cite.html">How to cite</a> · <a href="/using-owhs.html">Who uses OWHS</a> · <a href="/governance.html#maintainers">Who maintains this</a></p>'
+        '<p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">OWHS\u2122 is a trade mark of '
         'All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p>'
         '<p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. '
         'Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->')
@@ -93,6 +95,8 @@ for p in sorted(SITE.rglob("*.html")):
     title = re.search(r"<title>(.*?)</title>", t2, re.S)
     desc = re.search(r'<meta name="description" content="([^"]*)"', t2)
     block = ['<!-- auto -->', '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
+             '<link rel="alternate" type="application/atom+xml" title="OWHS changelog: all changes" href="/feed.xml">',
+             '<link rel="alternate" type="application/atom+xml" title="OWHS evidence sweep reports" href="/feed-sweeps.xml">',
              '<meta property="og:type" content="website">', '<meta property="og:site_name" content="Open Workplace Health Standard">',
              f'<meta property="og:url" content="{url}">']
     if title: block.append(f'<meta property="og:title" content="{" ".join(title.group(1).split())}">')

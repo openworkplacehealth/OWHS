@@ -25,6 +25,9 @@ Two things, one project. The standard says what a workplace-health record is: en
 - https://openworkplacehealth.org/search.html : site search
 - https://openworkplacehealth.org/schemas/ : every JSON Schema with its identifier, the raw JSON and the specification section that defines it
 - https://openworkplacehealth.org/codelists/ : every code list with its version, its source and its codes
+- https://openworkplacehealth.org/status.html : what runs and when, the last month recorded as verified (none yet), the months that were missed, where to see live results, and how to follow changes
+- https://openworkplacehealth.org/cite.html : how to cite the specification, the registry dataset and the question bank, by version number and address; no DOI has been issued
+- https://openworkplacehealth.org/using-owhs.html : the public register of organisations that say they use or map to OWHS, with what a listing means; empty today
 
 ## The catalogue: instrument registry
 - https://openworkplacehealth.org/instrument-registry/ : the instrument evidence registry, the open synthesis of the published evidence on instruments used to measure workplace health and wellbeing, scope the whole field by construct (27 instruments graded so far, 31 records, stage one, across eight psychometric evidence properties in the matrix, with a ninth (populations, languages and norms) on each record, cited, versioned, licence class tracked with archived source pages; single-item measures linked in the data to the instruments they screen for). Dataset v0.9.0, schema 0.7, rubric 1.6.
@@ -97,6 +100,8 @@ Licence positions are the registry's record of the steward's terms at the date s
 - Question bank JSON (canonical), CSV and PDF: https://openworkplacehealth.org/question-bank/downloads.html
 - Specification bundle (Markdown, JSON Schemas, code lists, examples): https://openworkplacehealth.org/spec/
 - Sitemap: https://openworkplacehealth.org/sitemap.xml
+- Atom feeds of the changelog, for all changes and for each tab: https://openworkplacehealth.org/feed.xml , /feed-registry.xml , /feed-specification.xml , /feed-site.xml ; and of the monthly sweep reports: https://openworkplacehealth.org/feed-sweeps.xml
+- Citation metadata for the repository: CITATION.cff in https://github.com/openworkplacehealth/OWHS
 - The same material in one file for assistants, generated from the pages' own sources: https://openworkplacehealth.org/llms-full.txt
 
 Public repository: https://github.com/openworkplacehealth/OWHS
