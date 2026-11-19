@@ -3,7 +3,9 @@ name: retraction-watch
 # Monthly: every DOI the registry cites is checked for Crossref update notices pointing at it (correction,
 # expression of concern, retraction, withdrawal, reinstatement are different events), for being itself a
 # notice, and for OpenAlex's retraction flag. A signal opens one issue naming the work and every record and
-# cell that cites it. Nothing is removed or regraded by this workflow; a person reads the notice.
+# cell that cites it. A DOI another agency registered (DataCite, for instance), found by asking doi.org when Crossref
+# answers 404, is listed every run as not a Crossref DOI that cannot be checked at Crossref; it does not by itself
+# make the run partial. Nothing is removed or regraded by this workflow; a person reads the notice.
 
 on:
   schedule:
@@ -43,7 +45,7 @@ jobs:
           python - <<'PY' > /tmp/body.md
           import json
           d = json.load(open('evidence/retraction-signals.json'))
-          print(f"Run status **{d['status']}**: {d['dois_checked']} cited DOIs; per source attempted/succeeded: " + ", ".join(f"{k} {v['succeeded']}/{v['attempted']}" for k, v in d['sources'].items()) + ". An unchecked source is unchecked, not clean.\n")
+          print(f"Run status **{d['status']}**: {d['dois_checked']} cited DOIs; per source attempted/succeeded: " + ", ".join(f"{k} {v['succeeded']}/{v['attempted']}" + (f" ({v['not_crossref']} not Crossref DOIs)" if v.get('not_crossref') else "") for k, v in d['sources'].items()) + ". An unchecked source is unchecked, not clean.\n")
           if d['signals']:
               print("These works carry a Crossref update notice, are themselves a notice, or carry an OpenAlex retraction flag. Read each notice: a correction is not a retraction. Nothing has been changed in the registry.")
               for s in d['signals']:
@@ -55,5 +57,8 @@ jobs:
                   print(f"- **{s['doi']}**: " + "; ".join(parts) + f" | cited by {sorted({w['instrument_id'] for w in s['cited_by']})}" + (f" in cells {cells}" if cells else ""))
           if d['unchecked']:
               print(f"\n{len(d['unchecked'])} source checks could not be made this run (listed in the artefact).")
+          if d.get('outside_crossref'):
+              print(f"\n{len(d['outside_crossref'])} cited DOIs are not Crossref DOIs, so they cannot be checked at Crossref, and no retraction check is made at their own agency; only their OpenAlex flag is checked:")
+              for o in d['outside_crossref']: print(f"- {o['doi']} (registered with {o['registration_agency']}), cited by {sorted({w['instrument_id'] for w in o['cited_by']})}")
           PY
           gh issue create --title "Retraction watch $(date -u +%Y-%m): $(python -c "import json;print(json.load(open('evidence/retraction-signals.json'))['status'])") run, $(python -c "import json;print(len(json.load(open('evidence/retraction-signals.json'))['signals']))") signals" --label maintenance --body-file /tmp/body.md
