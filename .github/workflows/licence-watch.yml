@@ -1,9 +1,13 @@
 name: licence-watch
 
-# Weekly: fetch every licence page the registry cites, hash its visible text, compare with the recorded
-# baseline (evidence/licence-hashes.json). A change opens an issue naming the record, the page and the
-# archived copy the registry holds. The watcher never edits a licence class; a person reads the page.
-# Baselines are updated by committing evidence/licence-hashes.json through a pull request, never by the workflow.
+# Weekly: fetch every licence page the registry cites, build a representation of its visible text, link targets
+# and rights metadata, and compare it with the recorded baseline (evidence/licence-hashes.json). Pages the source
+# plan declares blocked to automation (they refuse automated requests) are still requested; when they fail again
+# with a declared code they are listed as needing a person, never as unchanged, and left out of the run status,
+# which counts what automation can check. The one standing issue gets a comment only when a page changed, when a
+# page automation can check failed, or, on the first run of a month, a short reminder listing the pages that need
+# a person. The watcher never edits a licence class; a person reads the page. Baselines are updated by committing
+# evidence/licence-hashes.json through a pull request, never by the workflow.
 
 on:
   schedule:
@@ -37,20 +41,28 @@ jobs:
         with:
           name: licence-source-report
           path: /tmp/licence-report.json
-      - name: open or update the one source-monitoring issue
-        if: steps.w.outcome == 'failure'
+      - name: comment on the one source-monitoring issue when a page changed, a checkable page failed, or the monthly reminder is due
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          REPORT: /tmp/licence-report.json
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           MARKER="<!-- owhs-licence-source-monitor -->"
-          python - <<'PY' > /tmp/body.md
+          if [ -f "$REPORT" ]; then
+            WHY=$(python -c "import json, os; print(json.load(open(os.environ['REPORT'])).get('notify') or '')")
+            if [ -z "$WHY" ]; then echo "no page changed, no checkable page failed, no reminder due: no comment this week"; exit 0; fi
+            python - <<'PY' > /tmp/body.md
           import json, os
-          d = json.load(open('/tmp/licence-report.json'))
+          d = json.load(open(os.environ["REPORT"]))
           print("<!-- owhs-licence-source-monitor -->")
-          print(d["issue_body"])
+          print(d["comment_body"])
           print()
-          print(f"Run: {os.environ.get('GITHUB_SERVER_URL','')}/{os.environ.get('GITHUB_REPOSITORY','')}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}")
+          print(f"Run: {os.environ['RUN_URL']}")
           PY
+          else
+            printf '%s\nThe licence watcher wrote no report this run, so nothing was checked. The run log says why.\n\nRun: %s\n' "$MARKER" "$RUN_URL" > /tmp/body.md
+          fi
           EXISTING=$(gh issue list --label licence --state open --search "$MARKER in:body" --json number --jq '.[0].number // empty')
           if [ -n "$EXISTING" ]; then
             gh issue comment "$EXISTING" --body-file /tmp/body.md
