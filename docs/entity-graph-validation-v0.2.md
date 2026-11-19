@@ -4,6 +4,9 @@
 declared to belong together do belong together. It is an optional check on a supplied set of records. It is not a release envelope,
 not a roster, not a privacy assessment and not a conformance certificate.
 
+To run it on a bundle without installing anything, paste the bundle into [Check a file](/check/). The page runs this same checker,
+unchanged, in your browser, and sends nothing anywhere.
+
 ## The envelope
 
 `schemas/bundles/EntityGraph-v0.2.json` is a closed object with every field required:

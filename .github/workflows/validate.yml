@@ -141,5 +141,12 @@ jobs:
         run: python tools/build_users.py --self-test
       - name: the shared page shell behaves as documented
         run: python tools/site_pages.py --self-test
+      - name: the browser checker at site/check/ is a fresh build of the tools, schemas and specification text it copies, and every vendored file matches its pinned hash
+        run: python tools/build_checker.py --check
+      - name: browser checker build check detects an edited tool, schema, rule statement, page or vendored file
+        run: python tools/build_checker.py --self-test
+      - name: the browser checker gives the command-line tools' verdicts and rules on every example and bundle case, and makes no request while checking (headless Chrome on the runner)
+        run: python tools/check_browser_checker.py
+      # Kept last: cffconvert 2.0.0 installs jsonschema 3.2 over the 4.x the validator needs, so no validator step may run after it.
       - name: CITATION.cff validates against the Citation File Format schema
         run: pip install cffconvert==2.0.0 && cffconvert --validate

@@ -50,11 +50,13 @@ VERSIONS = {
              "publish": v2_publish, "title": "Draft specification v0.2: schemas, code lists and examples",
              "bundle_contents": "specification with its entity diagram, sixteen JSON schemas with valid and invalid conformance examples, {lists} versioned codelists, the reference validator, the measurement-bundle and entity-graph checkers, the profile envelope, governance and decision log",
              "registry": ROOT / "codelists" / "_registry.json",
-             "note": 'This is the current draft (v0.2). The previous draft, v0.1, remains available: <a href="OWHS-v0.1-draft.html">page</a>, <a href="OWHS-v0.1-draft.md">markdown</a>, <a href="owhs-v0.1-bundle.zip">bundle</a>.'},
+             "note": 'This is the current draft (v0.2). The previous draft, v0.1, remains available: <a href="OWHS-v0.1-draft.html">page</a>, <a href="OWHS-v0.1-draft.md">markdown</a>, <a href="owhs-v0.1-bundle.zip">bundle</a>.',
+             "check": '<p><strong>Check a record against it</strong> in your browser, without installing anything or sending the file anywhere: <a href="../check/">Check a file</a> runs the reference validator on one v0.2 record or an entity-graph bundle and explains each failure.</p>'},
     "v0.1": {"canonical": CANONICAL, "md": MD, "out": OUT, "bundle": BUNDLE, "publish": None, "title": "Draft specification v0.1 (archived)",
              "bundle_contents": "specification with its entity diagram, JSON schemas with valid and invalid conformance examples, 24 versioned codelists, the reference validator, governance and decision log",
              "registry": None,
-             "note": 'This is the archived v0.1 draft, kept as published. The current draft is v0.2: <a href="index.html">read it here</a>.'},
+             "note": 'This is the archived v0.1 draft, kept as published. The current draft is v0.2: <a href="index.html">read it here</a>.',
+             "check": ""},
 }
 
 
@@ -137,6 +139,7 @@ def build(published_text=None, version="v0.1"):
     # the markdown's single h1 is the document's own title; the shell already has the page h1, so it becomes h2.doc-title
     body = re.sub(r'<h1 id="([^"]*)">(.*?)</h1>', r'<h2 class="doc-title" id="\1">\2</h2>', body, count=1, flags=re.S)
     tpl = TEMPLATE.read_text(encoding="utf-8")
+    tpl = tpl.replace("  {{CHECK_NOTE}}\n", "  " + v["check"] + "\n" if v["check"] else "")      # the browser checker is v0.2 only
     lists = registry_count(v["registry"]) if v["registry"] else None
     contents = v["bundle_contents"].format(lists=lists if lists is not None else "the")
     page = (tpl.replace("{{TOC}}", toc_html(body)).replace("{{BODY}}", body).replace("{{VERSION}}", version).replace("{{TITLE}}", v["title"])

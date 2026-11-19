@@ -23,6 +23,7 @@ Types by page kind:
   sweep reports                 Report about the Dataset, dated from the report's own filing date; BreadcrumbList
   cite page                     WebPage listing the specification (TechArticle), the registry Dataset and the question bank Dataset with their versions and dates; BreadcrumbList
   changelog                     WebPage dated from the latest changelog entry; BreadcrumbList
+  /check/ (browser checker)     WebPage whose main entity is a WebApplication with the checker's version from its generated data; BreadcrumbList
   every other page              WebPage; BreadcrumbList
 """
 import html, json, re, sys
@@ -320,6 +321,17 @@ def blocks_for(rel, text, site):
         ds = [e["date"] for e in sd.changelog_entries() if sd.ISO.match(str(e.get("date", "")))]
         if ds:
             node["dateModified"] = max(ds)
+    elif rel == "check/index.html":
+        data = site / "check" / "checker-data.json"
+        c = json.loads(data.read_text(encoding="utf-8"))["checker"] if data.exists() else {}
+        app = {"@type": "WebApplication", "@id": url + "#checker", "name": c.get("name", "OWHS browser checker"), "url": url,
+               "applicationCategory": "DeveloperApplication", "operatingSystem": "Any, in a web browser",
+               "browserRequirements": "Requires JavaScript and WebAssembly", "isAccessibleForFree": True, "license": APACHE,
+               "creator": {"@id": PROJECT_ID}, "inLanguage": "en-GB"}
+        if c.get("version"):
+            app["softwareVersion"] = c["version"]
+        node["mainEntity"] = {"@id": app["@id"]}
+        extra = [app]
     elif rel == "404.html":
         return None
 

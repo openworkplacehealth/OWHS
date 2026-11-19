@@ -7,6 +7,14 @@
   <updated>2026-11-19T00:00:00Z</updated>
   <author><name>Open Workplace Health Standard</name></author>
   <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-11-19-site-check-a-file-in-the-browser</id>
+    <title>Site: A new page, Check a file, checks one v0.2 record or an entity-graph bundle in the browser and explains each ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-11-19T00:00:00Z</published>
+    <updated>2026-11-19T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;19 November 2026.&lt;/p&gt;&lt;p&gt;A new page, &lt;a href=&quot;https://openworkplacehealth.org/check/&quot;&gt;Check a file&lt;/a&gt;, checks one v0.2 record or an entity-graph bundle in the browser and explains each failure: the field, the rule and what the specification says. It runs the repository&#x27;s own &lt;code&gt;tools/validate.py&lt;/code&gt; and &lt;code&gt;tools/check_entity_graph.py&lt;/code&gt;, unchanged, in Python compiled to WebAssembly, so its verdicts are the reference validator&#x27;s; a test runs all 147 example files through both and fails on any difference. The file is not uploaded or sent anywhere: the page fetches only its own files from this site, makes no request while it checks, and has no visit counter. The footer of every page and the home page&#x27;s door for software builders link to it, and the privacy page says it contacts no outside service. A pass means structurally conformant at Level 1. The page says that Level 2 and Level 3 are not checked.&lt;/p&gt;</content>
+  </entry>
+  <entry>
     <id>tag:openworkplacehealth.org,2026:changelog/2026-11-19-site-status-page</id>
     <title>Site: A status page at status.html says what runs and when.</title>
     <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>

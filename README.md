@@ -22,6 +22,16 @@ OWHS is an independent, open proposal for what standardised workplace-health dat
 | `GOVERNANCE.md` | Stewardship, the progressive-governance model, licences, the change process. |
 | `DECISIONS.md` | The public decision log, running since before release. |
 
+## Check a file in your browser
+
+[openworkplacehealth.org/check/](https://openworkplacehealth.org/check/) checks one v0.2 record, or an entity-graph bundle, without installing anything. It runs `tools/validate.py` and `tools/check_entity_graph.py` from this repository, unchanged, in Python compiled to WebAssembly (Pyodide 314.0.7, jsonschema 4.26.0), so a verdict there is the reference validator's verdict, and it explains each failure with the field, the rule and the specification's own wording.
+
+- **Nothing leaves the browser.** The page fetches only its own files from the site (about 14 MB, uncompressed, the first time Check is pressed), makes no request while it checks, carries no visit counter, and declares a Content-Security-Policy that confines it to its own origin. Everything it loads is vendored under `site/check/vendor/`, with sources, hashes and licences in `site/check/vendor/MANIFEST.json`.
+- **Same verdicts.** `python tools/check_browser_checker.py` runs every file in `examples/v0.2/` and every bundle case through the command-line tools and through the page in headless Chrome, and fails on any difference in verdict or in the rules reported. It also confirms that the page makes no request while checking and keeps working offline. It needs a Chrome or Chromium binary and nothing else beyond `requirements.txt`.
+- **Honest scope.** A pass is structurally conformant at Level 1. The page does not check Level 2 or Level 3.
+
+The page and its data are generated: `python tools/build_checker.py` then `python tools/stamp_canonical.py`; `--check` compares the committed files with a fresh build and verifies every vendored file against its pinned hash.
+
 ## The privacy profile, in one paragraph
 
 OWHS prohibits direct identifiers in its payloads. The current schemas reject undeclared properties, but identifiers inside permitted string values remain a producer obligation. Employer-visible aggregates have a floor of five respondents, or ten for severe-distress measures. The narrowly defined `individual-employer` fields are exempt from these floors where an independent legal basis permits disclosure. Individual instrument results are not employer-visible, and safeguarding-category signals are excluded from employer-visible output at every group size. Aggregates must carry completion and suppression metadata. These are conformance requirements: the reference validator currently implements Level 1 structural checks, including formats and named date-order rules, and does not verify Level 2 or Level 3.

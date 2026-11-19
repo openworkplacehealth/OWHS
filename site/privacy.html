@@ -102,10 +102,11 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
   <h2>What your browser contacts</h2>
   <p>Besides this site, three outside services are contacted by a browser that opens its pages. Each receives your IP address and browser details, as any website you visit does.</p>
   <ul>
-    <li><strong>PostHog</strong>, for the visit counting described above, on every page.</li>
-    <li><strong>Google Fonts</strong> (fonts.googleapis.com and the font files it points to), on every page, to load the typefaces. Google's own privacy statement applies to that request.</li>
+    <li><strong>PostHog</strong>, for the visit counting described above, on every page except the file checker.</li>
+    <li><strong>Google Fonts</strong> (fonts.googleapis.com and the font files it points to), on every page except the file checker, to load the typefaces. Google's own privacy statement applies to that request.</li>
     <li><strong>GitHub's public API</strong> (api.github.com), on the <a href="status.html">status page only</a>, so that the page can show when each scheduled maintenance job last ran. We send no token and store nothing; if your browser blocks the request or GitHub does not answer, the page still works without those lines. GitHub's own privacy statement applies to that request.</li>
   </ul>
+  <p>The <a href="check/">file checker</a> contacts none of these. Its code and fonts are served from this site, it counts no visits, and the file you check is read on the page and never sent anywhere.</p>
 
   <h2>Why we count, and on what basis</h2>
   <p>We count so that we know which pages are read and whether the site is working. Our lawful basis is legitimate interests. We judged that interest against the effect on you: no cookies, no identifier that persists beyond a day, no marketing use, no sharing. We concluded the effect is minimal. You may object at any time by writing to the address above; because nothing identifies you, we cannot single out your visits, but we will consider the objection and answer it.</p>
@@ -134,7 +135,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 56px;font-size:14px;color
 
 <footer><div class="wrap">
   <p>The Open Workplace Health Standard (OWHS) · early open specification · prose CC-BY 4.0, schemas and data Apache 2.0 · <a href="index.html">openworkplacehealth.org</a></p>
-<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)"><a href="/status.html">Is it maintained?</a> · <a href="/status.html#follow">Follow</a> · <a href="/feed.xml">Feed</a> · <a href="/cite.html">How to cite</a> · <a href="/using-owhs.html">Who uses OWHS</a> · <a href="/governance.html#maintainers">Who maintains this</a></p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)"><a href="/check/">Check a file</a> · <a href="/status.html">Is it maintained?</a> · <a href="/status.html#follow">Follow</a> · <a href="/feed.xml">Feed</a> · <a href="/cite.html">How to cite</a> · <a href="/using-owhs.html">Who uses OWHS</a> · <a href="/governance.html#maintainers">Who maintains this</a></p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
 </div></footer>
 </body>
 </html>
