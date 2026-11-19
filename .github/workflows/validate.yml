@@ -101,9 +101,52 @@ jobs:
         run: python tools/build_spec_v0_2.py --self-test
       - name: entity-graph checker (envelope, G01 to G10, retained measurement checks, profiles, strict input) through its own command line
         run: python tools/check_entity_graph.py --self-test
+      - name: shared site facts (licence wording covers every class, short names, repository-recorded dates)
+        run: python tools/site_data.py --self-test
+      - name: every page carries well-formed schema.org JSON-LD built from repository data, matching a fresh build
+        run: python tools/jsonld.py --check
+      - name: structured-data builder behaves as documented
+        run: python tools/jsonld.py --self-test
+      - name: the schemas and code-list reference pages are a fresh build, and every schema identifier still resolves to its file
+        run: python tools/build_reference_pages.py --check
+      - name: reference-page generator and the identifier routing rule behave as documented
+        run: python tools/build_reference_pages.py --self-test
+      - name: the sitemap lists every public page, each dated by the last change to its content
+        run: python tools/build_sitemap.py --check
+      - name: sitemap generator behaves as documented
+        run: python tools/build_sitemap.py --self-test
+      - name: llms.txt and llms-full.txt are a fresh build from the pages' own sources, with no withheld wording
+        run: python tools/build_llms.py --check
+      - name: assistant-file generator behaves as documented
+        run: python tools/build_llms.py --self-test
+      - name: the Atom feeds are a fresh build of the changelog entries and the sweep reports
+        run: python tools/build_feeds.py --check
+      - name: feed generator behaves as documented (well-formed Atom, stable ids, entry dates, absolute links)
+        run: python tools/build_feeds.py --self-test
+      - name: the status page is a fresh build of the workflow schedules, the watermark file and the sweep reports, and the privacy page says what it contacts
+        run: python tools/build_status.py --check
+      - name: status page generator behaves as documented
+        run: python tools/build_status.py --self-test
+      - name: the Latest strip on the home page shows the three most recent changelog entries
+        run: python tools/build_home_latest.py --check
+      - name: Latest strip generator behaves as documented
+        run: python tools/build_home_latest.py --self-test
+      - name: the cite page, CITATION.cff and .zenodo.json are a fresh build from one source
+        run: python tools/build_cite.py --check
+      - name: citation generator behaves as documented (no DOI claimed, creators as the repository names them)
+        run: python tools/build_cite.py --self-test
+      - name: the register of users is a fresh build of its data file, which is schema-checked
+        run: python tools/build_users.py --check
+      - name: register generator behaves as documented
+        run: python tools/build_users.py --self-test
+      - name: the shared page shell behaves as documented
+        run: python tools/site_pages.py --self-test
       - name: the browser checker at site/check/ is a fresh build of the tools, schemas and specification text it copies, and every vendored file matches its pinned hash
         run: python tools/build_checker.py --check
       - name: browser checker build check detects an edited tool, schema, rule statement, page or vendored file
         run: python tools/build_checker.py --self-test
       - name: the browser checker gives the command-line tools' verdicts and rules on every example and bundle case, and makes no request while checking (headless Chrome on the runner)
         run: python tools/check_browser_checker.py
+      # Kept last: cffconvert 2.0.0 installs jsonschema 3.2 over the 4.x the validator needs, so no validator step may run after it.
+      - name: CITATION.cff validates against the Citation File Format schema
+        run: pip install cffconvert==2.0.0 && cffconvert --validate

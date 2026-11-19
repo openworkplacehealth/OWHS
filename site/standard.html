@@ -7,10 +7,12 @@
 <link rel="canonical" href="https://openworkplacehealth.org/standard.html">
 <!-- auto -->
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/atom+xml" title="OWHS changelog: all changes" href="/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="OWHS evidence sweep reports" href="/feed-sweeps.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Open Workplace Health Standard">
 <meta property="og:url" content="https://openworkplacehealth.org/standard.html">
-<meta property="og:title" content="Inside the standard · OWHS">
+<meta property="og:title" content="Inside the standard | OWHS">
 <meta property="og:description" content="The Open Workplace Health Standard at a glance: the entities, a real record, the four privacy classes and the three conformance levels.">
 <meta property="og:image" content="https://openworkplacehealth.org/owhs-card.png">
 <meta property="og:image:width" content="1200">
@@ -19,7 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://openworkplacehealth.org/owhs-card.png">
 <!-- /auto -->
-<title>Inside the standard · OWHS</title>
+<title>Inside the standard | OWHS</title>
 <meta name="description" content="The Open Workplace Health Standard at a glance: the entities, a real record, the four privacy classes and the three conformance levels.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -80,6 +82,8 @@ pre{white-space:pre-wrap;word-break:break-word}
 .legend i.r{background:var(--paper);border:1px dashed #9aa3ab}
 ul,ol{max-width:760px}
 </style>
+<!-- mobile --><style>@media (max-width:640px){.nav-links{column-gap:16px;row-gap:2px;font-size:14.5px;line-height:1.4}.nav-links a{padding:5px 0}.subnav .wrap{column-gap:16px;row-gap:2px}.subnav a{padding:4px 0}table:not(.matrix){display:block;max-width:100%;overflow-x:auto}p,li,dd,a,:not(pre)>code{overflow-wrap:anywhere}td p,td li,td a,td code,th a{overflow-wrap:normal}}</style><!-- /mobile -->
+<!-- jsonld --><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://openworkplacehealth.org/standard.html","url":"https://openworkplacehealth.org/standard.html","name":"Inside the standard","description":"The Open Workplace Health Standard at a glance: the entities, a real record, the four privacy classes and the three conformance levels.","inLanguage":"en-GB","isPartOf":{"@type":"WebSite","@id":"https://openworkplacehealth.org/#website","name":"Open Workplace Health Standard","url":"https://openworkplacehealth.org/"},"breadcrumb":{"@id":"https://openworkplacehealth.org/standard.html#breadcrumb"}},{"@type":"BreadcrumbList","@id":"https://openworkplacehealth.org/standard.html#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://openworkplacehealth.org/"},{"@type":"ListItem","position":2,"name":"Inside the standard","item":"https://openworkplacehealth.org/standard.html"}]}]}</script><!-- /jsonld -->
 <!-- analytics --><script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_UBxs6DIFwK73c1QzudH8AWR6HHZtNAkqhpbz3lCcPfg',{api_host:'https://eu.i.posthog.com',ui_host:'https://eu.posthog.com',defaults:'2026-05-30',cookieless_mode:'always',person_profiles:'never',autocapture:false,capture_pageview:true,capture_pageleave:true,disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});</script><!-- /analytics -->
 </head>
 <body>
@@ -305,14 +309,14 @@ ul,ol{max-width:760px}
 
   <h2>Read the whole thing</h2>
 
-  <p>The full specification, schemas, examples, code lists and the honesty pass (our own list of the decisions most worth disputing) are <a href="spec/index.html">published here</a>, with an open change process at <a href="https://github.com/openworkplacehealth/OWHS">github.com/openworkplacehealth/OWHS</a>. Two of the specification's siblings are already live on this site: the <a href="instrument-registry/index.html">instrument registry</a> and the <a href="question-bank/index.html">question bank</a>. The Measurement Companion (construct definitions, the framework crosswalk, comparability rules) is available on request from <a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a>.</p>
+  <p>The full specification, schemas, examples, code lists and the honesty pass (our own list of the decisions most worth disputing) are <a href="spec/index.html">published here</a>; the machine-readable parts also have their own listings, one for the <a href="schemas/index.html">JSON Schemas</a> and one for the <a href="codelists/index.html">code lists</a>. There is an open change process at <a href="https://github.com/openworkplacehealth/OWHS">github.com/openworkplacehealth/OWHS</a>. Two of the specification's siblings are already live on this site: the <a href="instrument-registry/index.html">instrument registry</a> and the <a href="question-bank/index.html">question bank</a>. The Measurement Companion (construct definitions, the framework crosswalk, comparability rules) is available on request from <a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a>.</p>
 
   <p><a class="cta" href="spec/index.html">Read the draft specification</a></p>
 </div></article>
 
 <footer><div class="wrap">
   <p>The Open Workplace Health Standard (OWHS) · stewarded by <a href="https://www.alltoogether.com">Alltoogether</a> · early open specification · CC-BY 4.0 · <a href="index.html">openworkplacehealth.org</a></p>
-<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)"><a href="/check/">Check a file</a> · <a href="/status.html">Is it maintained?</a> · <a href="/status.html#follow">Follow</a> · <a href="/feed.xml">Feed</a> · <a href="/cite.html">How to cite</a> · <a href="/using-owhs.html">Who uses OWHS</a> · <a href="/governance.html#maintainers">Who maintains this</a></p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
 </div></footer>
 
 </body>

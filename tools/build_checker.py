@@ -276,10 +276,8 @@ def self_test():
     def probe(label, mutate, must):
         nonlocal failures
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / "repo"; root.mkdir()
-            for d in ("tools", "schemas", "profiles", "examples", "spec", "docs", "site"): shutil.copytree(ROOT / d, root / d, ignore=shutil.ignore_patterns("*.wasm", "*.zip") if d == "site" else None)
-            for f in ("robots-policy.txt",):
-                if (ROOT / f).exists(): shutil.copy(ROOT / f, root / f)
+            root = Path(tmp) / "repo"                          # the whole repository: the stamp's structured data reads the registry, changelog and more
+            shutil.copytree(ROOT, root, ignore=shutil.ignore_patterns(".git", ".venv", "__pycache__", "*.wasm", "*.zip"))
             for big in ("pyodide/pyodide.asm.wasm", "pyodide/python_stdlib.zip"):          # large files linked, not copied
                 os.symlink(VENDOR / big, root / "site" / "check" / "vendor" / big)
             mutate(root)

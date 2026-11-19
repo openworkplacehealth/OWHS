@@ -3851,7 +3851,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "Norwegian occupational groups",
      "Portuguese rescue workers",
@@ -3870,7 +3870,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": []
    },
    "criterion_validity_reference_standard": {
@@ -3921,7 +3921,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "Scandinavian haemodialysis nurses",
      "Vietnamese nurses",
@@ -3972,7 +3972,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "evidence_form": "canonical",
     "indirectness_basis": [
      "Vietnamese nurse subsample"
@@ -3989,7 +3989,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "Portuguese and Brazilian workers",
      "Portuguese rescue workers",
@@ -4019,7 +4019,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "Serbian employees",
      "Brazilian and Portuguese workers",
@@ -4273,6 +4273,24 @@
      "journal": "Occupational Health Psychology Unit, Utrecht University (test manual, grey literature)",
      "doi": "",
      "url": "https://www.wilmarschaufeli.nl/publications/Schaufeli/Test%20Manuals/Test_manual_UWES_English.pdf"
+    },
+    {
+     "key": "Heveri2025",
+     "authors": "Heveri M, Novak L, Solcova IP, Tavel P",
+     "year": "2025",
+     "title": "Validation of the Utrecht work engagement scale (UWES-9) in the Czech Republic",
+     "journal": "Scientific Reports",
+     "doi": "10.1038/s41598-025-26907-z",
+     "url": "https://doi.org/10.1038/s41598-025-26907-z"
+    },
+    {
+     "key": "Nosalova2026",
+     "authors": "Nosáľová E, Dudová S",
+     "year": "2026",
+     "title": "Psychometric Evaluation of the Slovak Version of the 9-Item Utrecht Work Engagement Scale (UWES-9)",
+     "journal": "Studia Psychologica",
+     "doi": "10.31577/sp.2026.03.948",
+     "url": "https://doi.org/10.31577/sp.2026.03.948"
     }
    ],
    "record_notes": "[Upgraded from v0.1 to v0.2 structure in pass two; criterion field split, licence re-verified 2026-07-12.] Overall confidence: internal consistency is High; structural validity, convergent/discriminant validity and measurement invariance are Moderate but each carries a genuine, cited contradiction rather than clean support; criterion validity is Low; test-retest is Low with the absence itself a finding; responsiveness/MIC is Very low (effectively absent). Points the schema made hard to record honestly: (1) The one-factor versus three-factor debate is not a defect to be resolved to a single 'confidence' but a standing feature of the evidence; the 'structural_validity' field forces a single grade onto directly contradictory findings, so 'Moderate' here means 'extensively studied but unresolved', not 'moderately good'. (2) 'constructs_claimed' presents three subscales, yet a substantial strand of evidence argues the subscales are not empirically separable and only the total should be used; the field cannot easily flag that the claimed structure is itself contested. (3) Several strong stability and invariance findings pertain to the 17-item UWES, not the 9-item form; the schema does not distinguish evidence transferred from the parent instrument from evidence earned by the UWES-9 directly, and I have flagged this inline where it applies. (4) Test-retest and MIC are near-absent for the 9-item form specifically despite the instrument's popularity, which is a more important finding than a coefficient would have been. (5) UK-specific norms were not located as a representative benchmark; the 'Productive Ward' study is UK/Ireland health-service context but is a study sample, not a norm, and the only reference norms are the authors' international test manual. (6) Per the registry rule on 'clinical': the UWES-9 has been deployed in patient-rehabilitation samples (for example haematological malignancy patients), but it is a work-engagement instrument, not a clinical screener, and none of its validation was earned in a diagnostic setting; workplace deployment should be read as a non-clinical context throughout.",
@@ -4314,7 +4332,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "Korean nationally representative data",
      "Brazilian university students",
@@ -4406,7 +4424,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "Chinese general population",
      "students",
@@ -4628,7 +4646,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "Korean nationally representative sample",
      "Italian coronary heart disease cohort",
@@ -4671,7 +4689,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "clinical, general-population and disease-specific samples",
      "large national surveys",
@@ -4926,6 +4944,24 @@
      "journal": "Environmental Health and Preventive Medicine",
      "doi": "10.1265/ehpm.23-00372",
      "url": "https://doi.org/10.1265/ehpm.23-00372"
+    },
+    {
+     "key": "floreskanter2026",
+     "authors": "Flores-Kanter PE, Moretti L, Muñoz-Navarro R, et al",
+     "year": "2026",
+     "title": "Internal structure and factorial invariance of the Patient Health Questionnaire −9 (PHQ-9) in a large Argentinean sample",
+     "journal": "BMC Psychiatry",
+     "doi": "10.1186/s12888-026-07820-9",
+     "url": "https://doi.org/10.1186/s12888-026-07820-9"
+    },
+    {
+     "key": "greskovicova2026",
+     "authors": "Greškovičová K, Krizova K, Šoková B, Halamová J",
+     "year": "2026",
+     "title": "Psychometric evaluation of the patient health questionnaire-9 in helping professionals: factor structure, gender invariance, and construct validity",
+     "journal": "Scientific Reports",
+     "doi": "10.1038/s41598-026-47525-3",
+     "url": "https://doi.org/10.1038/s41598-026-47525-3"
     }
    ],
    "record_notes": "[Upgraded from v0.1 to v0.2 structure in pass two; criterion field split, licence re-verified 2026-07-12.] Overall confidence: the PHQ-9 is the confidence-grading high-water mark. Structural validity, diagnostic criterion validity and internal consistency are High, anchored on the Levis/Thombs individual participant data programme and a reliability-generalisation meta-analysis; responsiveness and the somatic-confounding and cut-point critiques are well evidenced. The genuinely weaker or absent cells are test-retest (present but from few studies, none occupational), measurement invariance (scattered, no occupational coverage, weak over-time evidence), criterion validity against organisational outcomes (absent), and workplace-specific psychometrics (absent). Schema stress-test notes: (1) The single 'criterion_validity' field conflates two very different evidence bases, diagnostic criterion validity (High) versus criterion validity against organisational outcomes (Absent). I graded it as split and said so in the findings, but a schema that forced one grade would misrepresent the instrument; the field should ideally be divided. (2) 'confidence' is a single scalar per property, yet for several properties the honest grade differs by sub-question (e.g. invariance is scalar-level across age but untested across occupation). I encoded the dominant grade and qualified it in the justification. (3) The clinical-origin versus workplace-deployment gap is the most important caveat for this registry and does not have a dedicated field; I carried it in criticisms_controversies and flagged it in constructs_claimed and criterion_validity, but it risks being lost if a reader scans only the property grades. (4) Licence status is factually clear (public domain, Pfizer-released) but I could not attach a DOI-bearing primary source to the licensing act itself, only to the original validation paper; I flagged this rather than attach a non-resolvable citation. (5) 'Absent' was used strictly for organisational criterion validity and workplace psychometrics; test-retest was deliberately NOT graded Absent because evidence exists, only sparsely, which the scale's wording ('barely-studied') made a close call between Low and Moderate.",
@@ -8175,7 +8211,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "US hospital nurses",
      "US academic-health-centre employees",
@@ -8281,7 +8317,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "previous": {
      "rubric_version": "1.0",
      "grade": "High",
@@ -8396,7 +8432,7 @@
     "rubric_version": "1.6",
     "as_of": "2026-09-01",
     "grade_last_confirmed": "2026-09-03",
-    "review_due": false,
+    "review_due": true,
     "indirectness_basis": [
      "US nurses",
      "US academic staff",
@@ -8481,6 +8517,15 @@
      "journal": "Epidemiology and Psychiatric Sciences",
      "doi": "10.1017/s2045796020001134",
      "url": "https://doi.org/10.1017/s2045796020001134"
+    },
+    {
+     "key": "cbi_co2026",
+     "authors": "Amaya-Arias A.",
+     "year": "2026",
+     "title": "Assessing burnout in Colombian healthcare professionals: Psychometric properties of the Copenhagen Burnout Inventory (CBI)",
+     "journal": "Journal of Health Psychology",
+     "doi": "10.1177/13591053251387819",
+     "url": "https://doi.org/10.1177/13591053251387819"
     }
    ],
    "record_notes": "Overall confidence: internal consistency High and well-established; organisational criterion validity Moderate and a relative strength (prospective self-reported sickness absence, PUMA/Borritz), with the caveat that the absence outcome was self-reported rather than register-based; structural validity Moderate; measurement invariance Low with scalar invariance unestablished; reference-standard criterion validity Absent; test-retest Absent (no coefficient located, recorded as the finding). The v0.2 schema handled this record well; the honesty-critical points are the genuinely Absent test-retest and reference-standard fields, the self-reported (not register-based) nature of the absence outcome, and the licence field, where the steward provides a free download without an explicit named open licence, which I recorded precisely rather than upgrading to 'public domain' or 'CC' on the basis of the founding paper.",

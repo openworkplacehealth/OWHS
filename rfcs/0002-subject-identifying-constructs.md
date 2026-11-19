@@ -46,4 +46,4 @@ Whether any particular leadership or supervisor instrument enters the registry. 
 
 ## Comments
 
-Open a comment on this RFC's issue once the repository is public; until then, email hello@openworkplacehealth.org. Please declare any financial or professional interest in an instrument, product or organisation your comment touches.
+Open a comment on this RFC's issue, or email hello@openworkplacehealth.org. Please declare any financial or professional interest in an instrument, product or organisation your comment touches.

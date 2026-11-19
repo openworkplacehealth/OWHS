@@ -20,7 +20,8 @@ It also checks, on the same page:
   - after the first check has loaded the engine, the browser is switched offline and every later check still runs;
   - the browser records no request after that point, the local server receives none, and no request at any point goes
     anywhere but the page's own origin;
-  - the page's Content-Security-Policy reports no violation, and the page has no visit-counting script;
+  - the page's Content-Security-Policy reports no violation (its structured-data block is data, not script), and the page has no
+    visit-counting script and no other inline script;
   - the policy is in force: a deliberate request to another origin, made at the end, is refused and reported.
 
 Needs only the Python standard library, the packages in requirements.txt and a Chrome or Chromium binary (found on PATH,
@@ -278,7 +279,9 @@ def main(argv):
         if after_server: fail(f"the server received {len(after_server)} request(s) while files were checked: {after_server[:5]}")
         csp = page.js("window.__csp")
         if csp: fail(f"Content-Security-Policy violations: {csp[:5]}")
-        if page.js("typeof window.posthog") != "undefined" or page.js("!!document.querySelector('script:not([src])')"): fail("the page carries an inline or visit-counting script")
+        if page.js("typeof window.posthog") != "undefined" or page.js("!!document.querySelector('script:not([src]):not([type=\"application/ld+json\"])')"): fail("the page carries an inline or visit-counting script")
+        ld = page.js("Array.from(document.querySelectorAll('script[type=\"application/ld+json\"]')).map(s => { try { return JSON.parse(s.textContent)['@graph'].map(n => n['@type']).join(','); } catch (e) { return 'unreadable'; } })")
+        if not ld or "unreadable" in ld: fail(f"the page's structured data is missing or unreadable: {ld}")
         if page.errors: fail(f"console errors: {page.errors[:5]}")
         refused = page.js("fetch('https://example.org/owhs-csp-probe').then(() => 'fetched', () => 'refused')")
         probe = page.js("window.__csp")

@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 19,
+ "html": "Atom feeds of the changelog are now published: <a href=\"/feed.xml\">all changes</a>, and one each for the registry, the specification and the site tabs, plus one for the monthly sweep reports. Every entry carries the date the changelog or the report gives it and an id that does not change when the text is corrected. The feeds are linked from every page's head, from the home page and from the status page, and listed in llms.txt."
+}

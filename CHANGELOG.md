@@ -20,10 +20,19 @@ verdict or in the rules reported; on 19 November all 82 single-record examples a
 page means structurally conformant at Level 1, as on the command line. Level 2 and Level 3 are still not verified by any
 tool, and the page says so. The README describes the page.
 
-`requirements.txt` now installs `jsonschema[format-nongpl]` instead of `jsonschema[format]`, so the `uri` format (used
-only by the profile envelope schema) is checked by rfc3986-validator, which is MIT-licensed, instead of rfc3987, which is
-GPL-licensed. The browser checker vendors the same package. Every committed example, all 157 single-record, bundle and
+`requirements.txt` no longer installs `jsonschema[format]`. It lists jsonschema and the format packages of its
+`[format-nongpl]` extra by name, without rfc3987-syntax, so the `uri` format (used only by the profile envelope schema) is
+checked by rfc3986-validator, which is MIT-licensed, instead of rfc3987, which is GPL-licensed. rfc3987-syntax checks only
+the iri formats, which no schema uses, and built a parser on every import of jsonschema. The browser checker vendors the same package. Every committed example, all 157 single-record, bundle and
 profile-envelope runs, gives the same output under both, and `examples/validation_report.json` is unchanged.
+
+### Fixed: the README and both RFCs still said comments open once the repository is public
+
+The repository is public. The README said issues and RFCs were open to anyone
+"once this repository is public", and RFCs 0001 and 0002 told readers to comment on the RFC's issue once
+the repository was public and to email until then. Both now say plainly that issues are open and that a
+comment can go on the RFC's issue or by email. Nothing else in either RFC changed, including its status,
+comment window and decision.
 
 ## 7 September 2026
 

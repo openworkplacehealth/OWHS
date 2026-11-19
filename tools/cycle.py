@@ -475,8 +475,17 @@ def fetch_live(cycle_id, repo, gh_json=None, download=None):
         got = (download or _download_artefact)(r["github_run_id"], repo, cycle_id)
         if got: artefacts[r["github_run_id"]] = got            # (envelope, sha256), or (None, reason) which verify reports by name
     issues = json.loads(gh_json("issue", "list", "--repo", repo, "--label", "evidence-sweep", "--state", "all", "--search", f'"Evidence harvest {cycle_id}" in:title', "--json", "author,body"))
-    issues = [{"author": ("app/" + i["author"]["login"]) if i["author"].get("is_bot") else i["author"]["login"], "body": i["body"]} for i in issues]
+    issues = [{"author": issue_author(i.get("author") or {}), "body": i["body"]} for i in issues]
     return runs, artefacts, issues
+
+
+def issue_author(a):
+    """The author identity verify() compares with "app/github-actions". gh reports the workflow's bot as login "app/github-actions"
+    with is_bot true, so the prefix is added only when it is missing; prefixing it again gave "app/app/github-actions", which no issue
+    could ever match. A person's login (never containing "/") is returned unchanged and so can never pass for the bot."""
+    login = str(a.get("login") or "")
+    if not a.get("is_bot"): return login
+    return login if login.startswith("app/") else "app/" + login
 
 
 def _no_dupes(pairs):
@@ -558,8 +567,11 @@ def advance_problems(env, tp, queries_path=None, artefact_sha=None, expected_sha
     for k, want in binds.items():
         if k == "run_id" and not (isinstance(want, str) and want): continue          # already reported; two nulls are never a binding
         if prop.get(k) != want: p.append(f"proposal {k} {prop.get(k)!r} is not the trusted {want!r}")
-    complete = sum(1 for c in env.get("channels", []) if isinstance(c, dict) and c.get("outcome") == "complete")
-    if prop.get("channels_complete") != complete: p.append(f"proposal channels_complete {prop.get('channels_complete')!r} is not the {complete} complete channels in the artefact")
+    # channels_complete counts the plan's channels that met it, as harvest.py writes it (len(expected_channels) once none is missing):
+    # complete, or unavailable where the plan itself declares the channel unavailable, as channels_not_complete() judges them
+    typed = [c for c in env.get("channels", []) if isinstance(c, dict) and isinstance(c.get("channel_id"), str)]
+    met = len(plan_ch) - len(channels_not_complete(plan_ch, typed))
+    if prop.get("channels_complete") != met: p.append(f"proposal channels_complete {prop.get('channels_complete')!r} is not the {met} channels in the artefact that met the trusted plan (complete, or unavailable where the plan declares it)")
     try: datetime.date.fromisoformat(str(prop.get("last_complete_to")))
     except ValueError: p.append("proposal last_complete_to is not a valid date")
     return p
@@ -718,12 +730,18 @@ def self_test():
         e = env_live(expected, channels, q=QH, date_bases={"publication": {"from": "2026-09-01", "to": "2026-10-01"}, "first_indexed": {"from": "2026-07-03", "to": "2026-10-01"}, "full_history": True},
                      registry_commit=HEAD, started_at="2026-10-01T06:02:40+00:00")
         e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
-    def live_with(envelope, runs=runs_json, reader=None, lister=None, cycle="2026-10", run_id="100"):
+    GH_BOT = {"is_bot": True, "login": "app/github-actions"}     # exactly what `gh issue list --json author` returns for a workflow-authored issue
+    def live_with(envelope, runs=runs_json, reader=None, lister=None, cycle="2026-10", run_id="100", author=GH_BOT):
         sha_ = hashlib.sha256(json.dumps(envelope).encode()).hexdigest()
-        issues = [{"author": {"login": "github-actions", "is_bot": True}, "body": f"<!-- owhs-cycle cycle_id={cycle} kind=planned github_run_id={run_id} artefact_sha256={sha_} -->"}]
+        issues = [{"author": author, "body": f"<!-- owhs-cycle cycle_id={cycle} kind=planned github_run_id={run_id} artefact_sha256={sha_} status=complete full_inventory=true -->"}]
         try: return verify_live(cycle, "example/repo", gh_json=stub_gh_factory(runs, issues), download=lambda rid_, repo_, cyc: (envelope, sha_), cfg=cfg, qsha=QH, reader=reader or real_reader, lister=lister or real_lister)
         except Exception as ex: return None, [f"EXCEPTION {type(ex).__name__}: {ex}"]
     rid, why = live_with(env_trusted(plan_live, full_live)); t("live wrapper: an artefact matching the trusted plan read from the run's head in a real repository passes", rid == "100", why)
+    # issue author as gh reports it: the bot's login already carries "app/"; a bare bot login is accepted too; a person never is
+    rid, why = live_with(env_trusted(plan_live, full_live), author={"is_bot": True, "login": "github-actions"}); t("issue author: a bot login without the app/ prefix is the same workflow author", rid == "100", why)
+    rid, why = live_with(env_trusted(plan_live, full_live), author={"is_bot": False, "login": "github-actions"}); t("issue author: a person whose login reads github-actions is refused", rid is None and "no bot-authored issue" in why[0], why)
+    rid, why = live_with(env_trusted(plan_live, full_live), author={"is_bot": True, "login": "app/someone-else"}); t("issue author: another app's issue with the right marker is refused", rid is None and "no bot-authored issue" in why[0], why)
+    t("issue author: gh's own shape for the workflow bot maps to app/github-actions, never app/app/github-actions", issue_author(GH_BOT) == "app/github-actions", issue_author(GH_BOT))
     # five counterexamples: each departs from the trusted plan in one declaration and is refused
     nofh = env_trusted(expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False), [res(c) for c in expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)])
     nofh["date_bases"]["full_history"] = False
@@ -879,7 +897,10 @@ def self_test():
         wm = Path(tmp) / "w.json"; qfile = Path(tmp) / "instruments-v1.json"; qfile.write_bytes(CFG_BYTES)
         tp, why_tp = trusted_plan({"head_sha": HEAD, "started_at": "2026-10-01T06:00:12Z", "event": "schedule", "display_title": RUN_NAME}, real_reader, real_lister)
         t("advance: a trusted plan derives from the fixture run", tp is not None, why_tp)
-        prop = {"query_sha256": QH, "last_complete_to": "2026-10-01", "catch_from": "2026-07-03", "cycle_id": "2026-10", "run_id": "r1", "channels_complete": sum(1 for c in full_live if c["outcome"] == "complete")}
+        # the proposal exactly as harvest.py writes it: channels_complete is len(expected_channels), which includes the channels the plan
+        # declares unavailable (every real run has some: OpenAlex update-date filtering is off in the provider profile)
+        prop = {"query_sha256": QH, "last_complete_to": "2026-10-01", "catch_from": "2026-07-03", "cycle_id": "2026-10", "run_id": "r1", "channels_complete": len(plan_live)}
+        t("advance: the fixture plan declares some channels unavailable, as every real plan does", any(c["unavailable"] for c in plan_live))
         def env_adv(**kw):
             e = env_trusted(copy.deepcopy(plan_live), copy.deepcopy(full_live)); e["watermark_proposal"] = dict(prop); e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
         def refused(label, e, needle, tp_=tp, **kw):
@@ -892,6 +913,8 @@ def self_test():
         refused("advance: a proposal whose catch-up date is not the plan's is refused", env_adv(watermark_proposal=dict(prop, catch_from="2026-07-04")), "catch_from")
         refused("advance: a proposal whose end is not the plan's is refused", env_adv(watermark_proposal=dict(prop, last_complete_to="2040-01-01")), "last_complete_to")
         refused("advance: a proposal whose channel count is not the artefact's is refused", env_adv(watermark_proposal=dict(prop, channels_complete=1)), "channels_complete")
+        refused("advance: a proposal that leaves out the plan's declared-unavailable channels is not the harvester's count and is refused",
+                env_adv(watermark_proposal=dict(prop, channels_complete=sum(1 for c in full_live if c["outcome"] == "complete"))), "channels_complete")
         refused("advance: a proposal whose query hash is not the run's configuration is refused", env_adv(watermark_proposal=dict(prop, query_sha256="y" * 64)), "query_sha256")
         narrow_adv = env_adv(requested_window={"from": "2026-09-30", "to": "2026-10-01"}); narrow_adv["date_bases"]["publication"] = {"from": "2026-09-30", "to": "2026-10-01"}
         refused("advance: an artefact departing from the trusted plan is refused", narrow_adv, "trusted plan")

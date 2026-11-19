@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-GB">
+  <title>OWHS evidence sweep reports</title>
+  <link rel="self" type="application/atom+xml" href="https://openworkplacehealth.org/feed-sweeps.xml"/>
+  <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/automation.html"/>
+  <id>https://openworkplacehealth.org/feed-sweeps.xml</id>
+  <updated>2026-11-19T00:00:00Z</updated>
+  <author><name>Open Workplace Health Standard</name></author>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:sweeps/2026-11</id>
+    <title>Evidence sweep: November 2026</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/sweeps/2026-11.html"/>
+    <published>2026-11-19T00:00:00Z</published>
+    <updated>2026-11-19T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;cycle 2026-11 · publication window from 1 October 2026 · filed 19 November 2026 · registry v0.9.0, citations appended in place.&lt;/p&gt;&lt;p&gt;This is the November 2026 report for the instrument registry. Headline: five citations added on three records (PHQ-9, UWES-9 and CBI), and thirteen cells marked for a rater&amp;#x27;s review. No grade moved. The five studies did not come from the harvest. They were found by a web-search sweep run by an assisted session in October and November, and each was checked against Crossref and read at abstract level on 19 November before it was added. The harvest&amp;#x27;s own candidates were not screened this month.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:sweeps/2026-10</id>
+    <title>Evidence sweep: October 2026</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/sweeps/2026-10.html"/>
+    <published>2026-11-19T00:00:00Z</published>
+    <updated>2026-11-19T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;cycle 2026-10 · no verified sweep · filed 19 November 2026 · registry v0.9.0, unchanged by this page.&lt;/p&gt;&lt;p&gt;No verified evidence sweep exists for October 2026. The planned harvest for cycle 2026-10 did not complete, so there is no candidates file for the month and nothing from the harvest was screened.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:sweeps/2026-09</id>
+    <title>Evidence sweep: September 2026</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/sweeps/2026-09.html"/>
+    <published>2026-09-01T00:00:00Z</published>
+    <updated>2026-09-01T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;window: roughly 20 July to 1 September 2026 · filed 1 September 2026 · registry v0.2.1 to v0.2.2.&lt;/p&gt;&lt;p&gt;Each month the registry sweeps the published literature for new psychometric evidence on the instruments it tracks, and files what it finds through the public change process. This is the September 2026 sweep, the first filed through the automated pipeline. Headline: four relevant new publications confirmed, one licence question investigated and resolved, seventeen of the twenty-one watchlist instruments silent. No grades moved, which is the expected outcome of a normal month.&lt;/p&gt;</content>
+  </entry>
+</feed>

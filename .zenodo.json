@@ -1,0 +1,37 @@
+{
+  "title": "Open Workplace Health Standard (OWHS) v0.2, draft specification",
+  "description": "<p>OWHS is an open data standard for UK workplace health, and an open catalogue of the instruments and survey items behind it. Private by design, free to use.</p><p>This record is a draft release: the specification is 0.2-draft, the instrument registry dataset is version 0.9.0 and the question bank is version 0.2.0. The specification text, registry text and guidance text are CC BY 4.0; the schemas, code lists, examples, dataset structure and tools are Apache 2.0. Grades in the registry are single-rater. The record is a snapshot of the repository at the release; the live site is https://openworkplacehealth.org/.</p>",
+  "upload_type": "dataset",
+  "version": "0.2-draft",
+  "access_right": "open",
+  "license": "cc-by-4.0",
+  "language": "eng",
+  "creators": [
+    {
+      "name": "Fenton, Zak"
+    },
+    {
+      "name": "All Toogether Ltd"
+    }
+  ],
+  "keywords": [
+    "workplace health",
+    "data standard",
+    "open data",
+    "psychometric instruments",
+    "survey questions",
+    "JSON Schema"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/openworkplacehealth/OWHS",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://openworkplacehealth.org/",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    }
+  ]
+}

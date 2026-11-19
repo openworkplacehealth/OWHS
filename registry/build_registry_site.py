@@ -13,6 +13,8 @@ import os, sys
 sys.dont_write_bytecode = True      # the build and the check leave no bytecode in the source tree
 HERE = Path(__file__).resolve().parent            # registry/: the dataset versions, rubrics, admission policy, gate
 ROOT = HERE.parent                                 # repository root
+sys.path.insert(0, str(ROOT / "tools"))
+import site_data as sd                              # shared wording of a licence position, short names, record titles and descriptions
 SITE_ROOT = Path(os.environ.get("OWHS_SITE_DIR", ROOT / "site"))   # overridable so --check can build into a copy
 SITE = SITE_ROOT / "instrument-registry"
 SITE.mkdir(parents=True, exist_ok=True)
@@ -284,6 +286,10 @@ td.g-unassessed{background:repeating-linear-gradient(45deg,#fafbfc,#fafbfc 4px,#
 .indnote{font-size:12.5px;color:var(--muted)}
 .prop{border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:14px 0}
 .prop h3{margin:2px 0 8px}
+.prophead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:2px 0 8px}
+.prophead h3{margin:0}
+.prophead .stat,.prophead .ef{margin-left:0}
+.answer{font-size:17px}
 .findings{font-size:14.5px;max-width:780px}
 .matrixwrap{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:8px}
 table.matrix{border-collapse:collapse;font-size:12.5px;min-width:980px;width:100%}
@@ -413,6 +419,10 @@ def class_line(ident):
     return (f'<span class="licclass">{esc(cls)}</span><b>{esc(LIC_LABEL.get(cls, cls))}</b> for employer or vendor use. '
             f'{md(note)}<br>')
 
+def timed(text):
+    """Wrap each ISO date in already-escaped text in a <time> element so the date is machine-readable."""
+    return re.sub(r"(\d{4}-\d{2}-\d{2})", r'<time datetime="\1">\1</time>', text)
+
 def licence_block(rec):
     ident = rec["identity"]
     lic = licence_display(ident.get("licence_status", ""))
@@ -426,7 +436,7 @@ def licence_block(rec):
                  + (f'<br><span class="meta">Verification attempted {esc(date)}; steward source: {md(src)}</span>' if src else "")
                  + archived_links(ident))
         return f'<div class="licbad">{inner}</div>'
-    inner = (class_line(ident) + f'<b>Licence status</b> (verified {esc(date)}): {md(lic)}'
+    inner = (class_line(ident) + f'<b>Licence status</b> (verified {timed(esc(date))}): {md(lic)}'
              + (f'<br><span class="meta">Source: {md(src)}</span>' if src else "")
              + archived_links(ident)
              + '<br><span class="meta">The registry records the licence class and the steward\'s page, never a price: fees change without notice and the archived page is the record of what was read.</span>')
@@ -435,8 +445,8 @@ def licence_block(rec):
 def prop_block(rec, key, label):
     p = rec.get(key)
     if not isinstance(p, dict): return ""
-    head = (f'<h3>{esc(label)} {grade_chip(p)}{status_chip(p.get("status"))}'
-            f'{ef_chip(p.get("evidence_form"))}</h3>')
+    head = (f'<div class="prophead"><h3>{esc(label)}</h3>{grade_chip(p)}{status_chip(p.get("status"))}'
+            f'{ef_chip(p.get("evidence_form"))}</div>')
     ind = f'<p style="margin:4px 0">{ind_chip(p.get("indirectness"), p.get("indirectness_basis"))}</p>' if p.get("indirectness") else ""
     if p.get("grade") in ("Absent", "Not-applicable") and p.get("absence_type"):
         ind += f'<p style="margin:4px 0"><span class="ind ind-note">absence type: {esc(p["absence_type"])}</span> <span class="indnote">{esc(ABSENCE_SHORT.get(p["absence_type"], ""))}</span></p>'
@@ -584,10 +594,10 @@ def verdict_box(rec):
     claim = first_sentence(rec.get("constructs_claimed"))
     p1 += f'. <b>What it claims to measure:</b> {esc(claim)}' + ("" if claim.endswith("...") else ".")
     cls = ident.get("licence_class")
-    if cls == "unverified":
-        p1 += ' <b>Licence for an employer or vendor:</b> could not be verified against the steward\'s current terms; no class is asserted.'
-    elif cls:
-        p1 += f' <b>Licence for an employer or vendor:</b> {esc(LIC_LABEL.get(cls, cls))}' + (f' (verified {esc(ident.get("licence_verified_date"))}).' if ident.get("licence_verified_date") else ".")
+    answer, when = sd.licence_clause(ident)
+    p0 = ""
+    if answer:   # the licence answer leads the box: it is what most readers arrive to find out
+        p0 = f'<p class="answer"><b>Licence for an employer or vendor:</b> {esc(sd.sentence_case(answer))}. {timed(esc(when))}</p>'
     parts = []
     if high: parts.append(f'The published evidence is strongest for {join_list(high)}')
     if mod: parts.append(('moderate' if high else 'The published evidence is moderate') + f' for {join_list(mod)}')
@@ -617,36 +627,53 @@ def verdict_box(rec):
         chips += f'<span class="chip {c}">{esc(SHORT[k])}: {esc(label)}</span>'
     if cls:
         chips += f'<span class="chip c-lic">Licence: {esc(cls)}</span>'
-    return (f'<div class="verdict"><h2>In plain English</h2><p>{p1}</p><p>{p2}</p><div class="facts">{chips}</div>'
+    return (f'<div class="verdict"><h2>In plain English</h2>{p0}<p>{p1}</p><p>{p2}</p><div class="facts">{chips}</div>'
             '<p class="caveat-line">Grades summarise the published evidence for this instrument on its own terms; they are not comparable '
             'across instruments, and this page makes no recommendation. Whether an instrument fits your workforce is a judgement this '
             'registry informs but cannot make. Full evidence, with citations, below. This summary is generated from the record\'s data, '
             'not written by hand.</p></div>')
 
-# Page title and description for the records whose full display name makes both too long for a search result.
-# None keeps the default built from the display name. The page heading and every other use of the name are unchanged.
-RECORD_META = {
-    "copsoq-iii": ("COPSOQ III: Copenhagen Psychosocial Questionnaire | OWHS",
-                   "Evidence record for COPSOQ III, the Copenhagen Psychosocial Questionnaire: graded psychometric properties with provenance, licence status and citations."),
-    "csps-wellbeing": ("Civil Service People Survey: wellbeing and engagement | OWHS",
-                       "Evidence record for the Civil Service People Survey wellbeing and engagement items: graded properties with provenance, licence status and citations."),
-    "eurofound-ewcs": ("EWCS/EQLS: Eurofound wellbeing and working conditions | OWHS",
-                       "Evidence record for Eurofound EWCS/EQLS wellbeing and working-conditions item sets: graded properties with provenance, licence status and citations."),
-    "fcs-maps": ("MaPS: Financial Capability / Wellbeing Survey items | OWHS",
-                 "Evidence record for the MaPS Financial Capability and Financial Wellbeing Survey items: graded properties with provenance, licence status and citations."),
-    "ipaq-sf": ("IPAQ-SF: International Physical Activity Questionnaire | OWHS",
-                "Evidence record for IPAQ-SF, the International Physical Activity Questionnaire short form: graded properties with provenance, licence status and citations."),
-    "mbi": ("MBI: Maslach Burnout Inventory, workplace forms | OWHS", None),
-    "perma": ("Workplace PERMA-Profiler (and PERMA-Profiler) | OWHS", None),
-    "single-job-satisfaction": ("Single-item overall job satisfaction (Wanous tradition) | OWHS", None),
-    "single-stress": ("SISQ: single-item perceived stress (Elo tradition) | OWHS",
-                      "Evidence record for single-item perceived stress (Elo tradition, SISQ): graded psychometric properties with provenance, licence status and citations."),
-    "uwes-9": ("UWES-9: Utrecht Work Engagement Scale (9-item) | OWHS", None),
-    "wemwbs": ("WEMWBS: Warwick-Edinburgh Mental Wellbeing Scale | OWHS",
-               "Evidence record for WEMWBS and its short form SWEMWBS: graded psychometric properties with provenance, licence status and citations."),
-    "wpai": ("WPAI: Work Productivity and Activity Impairment | OWHS",
-             "Evidence record for Work Productivity and Activity Impairment (WPAI): graded psychometric properties with provenance, licence status and citations."),
-}
+def sweep_pages():
+    """(page file name, page name, visible text) for each sweep report in the site copy being built."""
+    out = []
+    for f in sorted((SITE_ROOT / "sweeps").glob("*.html")):
+        raw = f.read_text(encoding="utf-8")
+        m = re.search(r"<title>(.*?)</title>", raw, re.S)
+        text = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style)\b.*?</\1>", " ", raw, flags=re.S)))
+        out.append((f.name, " ".join(m.group(1).split()).split(" | ")[0].split(" \u00b7 ")[0] if m else f.stem, text))
+    return out
+
+def related_block(rec):
+    """Links generated from the data: records that share a question-bank topic group, the question-bank topic groups, the rubric and
+    admission versions in force, and the sweep reports that name the instrument. No link is chosen by hand."""
+    rid = rec["instrument_id"]; items = []
+    groups = {}
+    for iid, topic, g in bank_links_for(rid):
+        groups.setdefault(g, topic)
+    gnames = {g["id"]: g["name"] for g in QB["groups"]}
+    if groups:
+        links = " &middot; ".join(f'<a href="../question-bank/group-{esc(g)}.html">{esc(gnames.get(g, g))}</a>' for g in groups)
+        items.append(f'<li><b>Question-bank topic groups for this instrument:</b> {links}</li>')
+        mates = []
+        for r in PARENTS:
+            if r["instrument_id"] == rid or r["instrument_id"] == rec.get("parent_id"): continue
+            if any(g in groups for _, _, g in bank_links_for(r["instrument_id"])):
+                mates.append(r)
+        if mates:
+            links = " &middot; ".join(f'<a href="{esc(r["instrument_id"])}.html">{esc(sd.short_name(r))}</a>' for r in mates)
+            items.append(f'<li><b>Other registry records with items in the same topic groups:</b> {links}</li>')
+    rv = esc(D.get("rubric", {}).get("version", ""))
+    av = re.search(r"v(\d+(?:\.\d+)*)\.md$", ADMISSION_MD.name).group(1)
+    items.append(f'<li><b>How this record was graded and admitted:</b> <a href="rubric.html">grading rubric v{rv}</a> &middot; '
+                 f'<a href="admission.html">admission rule v{esc(av)}</a> &middot; <a href="how-to-read.html">how to read a record</a> &middot; '
+                 f'<a href="corrections.html">corrections and right of reply</a></li>')
+    names = {sd.short_name(rec), rec["display_name"]}
+    hits = [(fn, nm) for fn, nm, txt in sweep_pages() if any(len(n) >= 3 and re.search(r"(?<![A-Za-z0-9-])" + re.escape(n) + r"(?![A-Za-z0-9-])", txt) for n in names)]
+    if hits:
+        links = " &middot; ".join(f'<a href="../sweeps/{esc(fn)}">{esc(nm)}</a>' for fn, nm in hits)
+        items.append(f'<li><b>Evidence sweep reports that name this instrument:</b> {links}</li>')
+    items.append('<li><b>The whole registry:</b> <a href="index.html">the grade matrix</a> &middot; <a href="downloads.html">the data as JSON, CSV and PDF</a></li>')
+    return '<h2>Related</h2><ul class="rels">' + "".join(items) + '</ul>'
 
 def record_page(rec):
     rid = rec["instrument_id"]; ident = rec["identity"]
@@ -657,10 +684,12 @@ def record_page(rec):
     lvd = str(ident.get("licence_verified_date") or "")
     lvd_disp = lvd if re.match(r"^\d{4}-\d{2}-\d{2}$", lvd) else "not yet verified"
     lr = rec.get("last_reviewed") or REVIEW_DATE
-    body = [f'{chips}<h1>{esc(rec["display_name"])}</h1>',
-            f'<p class="meta">Licence verified: {esc(lvd_disp)} &middot; literature last reviewed: {esc(lr)} &middot; grades last confirmed: {esc(CONFIRMED)} &middot; rubric v{esc(D.get("rubric", {}).get("version", ""))}</p>']
+    meta_line = (f'<p class="meta">Licence verified: {timed(esc(lvd_disp))} &middot; literature last reviewed: {timed(esc(lr))} &middot; '
+                 f'grades last confirmed: {timed(esc(CONFIRMED))} &middot; rubric v{esc(D.get("rubric", {}).get("version", ""))}</p>')
+    body = [f'{chips}<h1>{esc(rec["display_name"])}</h1>']
     if not rec.get("parent_id"):
         body.append(verdict_box(rec))
+    body.append(meta_line)   # the plain-English answer is the first text after the heading; the dates follow it
     body.append(freeze_banner())
     if rec.get("parent_id"):
         par = BY_ID[rec["parent_id"]]
@@ -714,10 +743,9 @@ def record_page(rec):
         body.append(f'<h2>References ({len(cits)})</h2><ol class="refs">{lis}</ol>')
     if rec.get("record_notes"):
         body.append(f'<h2>Record notes</h2><p class="findings">{md(rec["record_notes"])}</p>')
-    title, desc = RECORD_META.get(rid, (None, None))
+    body.append(related_block(rec))
     (SITE / f"{rid}.html").write_text(
-        page(title or f'{rec["display_name"]} | OWHS Instrument Registry', "\n".join(body),
-             desc or f'Evidence record for {rec["display_name"]}: graded psychometric properties with provenance, licence status and citations.'),
+        page(sd.record_title(rec), "\n".join(body), sd.record_description(rec, on_watchlist=_on_watchlist(rec))),
         encoding="utf-8")
 
 def build_index():
@@ -734,6 +762,7 @@ grades with provenance, licence status verified against current steward terms, a
 maintained under the Open Workplace Health Standard, distinct from the normative specification. It describes instruments;
 it never reproduces them. It grades evidence about instruments, never evidence about interventions.</p>
 <p class="purpose">{PURPOSE}</p>
+<p class="meta"><a href="../cite.html">How to cite this registry</a>: version, date, licence and the single-rater caveat, with no DOI claimed.</p>
 
 <div class="callout"><b>What the current matrix records.</b> Across the {len(GRADED)} instruments,
 {TRT_HIGH} reach a High grade for test-retest reliability and {TRT_WEAK} are graded Absent, Very low or Low.
@@ -800,8 +829,8 @@ public commons with per-item provenance and licensing; where an instrument here 
 cross-link. Corrections to any published record are logged publicly on the
 <a href="corrections.html">corrections and verifications page</a>.</p>
 """
-    (SITE / "index.html").write_text(page("Instrument Registry | Open Workplace Health Standard", body,
-        "The open synthesis of published evidence on workplace health and wellbeing instruments: graded properties with provenance, licence status, corrections log.",
+    (SITE / "index.html").write_text(page("Instrument evidence registry: licences and graded evidence | OWHS", body,
+        f"Graded psychometric evidence and the recorded employer or vendor licence position for {len(GRADED)} instruments used to measure workplace health and wellbeing, with provenance, citations and a public corrections log.",
         here="index"), encoding="utf-8")
 
 def build_how():
@@ -940,7 +969,7 @@ measure, and it never reproduces instrument item text. It grades evidence about 
 interventions. It describes the published evidence so that whoever chooses can choose with their eyes open. How an
 instrument comes to be here at all is a separate rule: <a href="admission.html">how an instrument enters this registry</a>.</p>
 """
-    (SITE / "how-to-read.html").write_text(page("How to read this registry | OWHS Instrument Registry", body,
+    (SITE / "how-to-read.html").write_text(page("How to read this registry | OWHS", body,
         "The registry's method: grade scale, status tokens, indirectness, evidence-form provenance, licence currency, corrections policy.",
         here="how"), encoding="utf-8")
 
@@ -993,7 +1022,7 @@ single items have exactly the measurement-property literature the rule asks for.
 <p class="meta">The four ONS-4 items are single items administered as a set; they are recorded as item records of
 <a href="ons-4.html">ONS-4</a> and carry their evidence at the set level.</p>
 """
-    (SITE / "single-items.html").write_text(page("Single-item measures | OWHS Instrument Registry", body,
+    (SITE / "single-items.html").write_text(page("Single-item measures | OWHS", body,
         "Every single-item measure in the registry, what each has been shown to screen for, and the published correspondence with the full instrument.",
         here="single"), encoding="utf-8")
 
@@ -1062,7 +1091,7 @@ process, by a human.</p>
 <div class="rubric">{md_to_html(text)}</div>
 <p class="meta">Source: <a href="RUBRIC-v{esc(D.get("rubric", {}).get("version", ""))}.md">RUBRIC-v{esc(D.get("rubric", {}).get("version", ""))}.md</a> in the dataset bundle. CC BY 4.0.</p>
 """
-    (SITE / "rubric.html").write_text(page("Grading rubric | OWHS Instrument Registry", body,
+    (SITE / "rubric.html").write_text(page("Grading rubric | OWHS", body,
         "The registry's grading rubric: grade scale, status tokens, evidence states, indirectness, how a cell is derived, what may move a grade, the role of AI.",
         here="rubric"), encoding="utf-8")
 
@@ -1091,7 +1120,7 @@ assigns a grade.</p>
 Registry text; the construct-domain admission rule for the standard itself is decided by RFC under the
 <a href="../governance.html">governance page</a>, not here.</p>
 """
-    (SITE / "admission.html").write_text(page("How an instrument enters this registry | OWHS Instrument Registry", body,
+    (SITE / "admission.html").write_text(page("How an instrument enters this registry | OWHS", body,
         "The registry's admission rule: three doors, what a proposal must contain, the clerical check, watchlist, queue, decline reasons, conflict of interest.",
         here="admission"), encoding="utf-8")
 
@@ -1127,9 +1156,9 @@ def build_corrections():
 </div>""")
     chg = []
     for c in reversed(D.get("changelog", [])):
-        chg.append(f'<div class="prop"><h3>Dataset {esc(c.get("version"))} <span class="meta">{esc(c.get("date"))}</span></h3><p class="findings">{md(c.get("change",""))}</p></div>')
+        chg.append(f'<div class="prop"><div class="prophead"><h3>Dataset {esc(c.get("version"))}</h3><span class="meta">{timed(esc(c.get("date")))}</span></div><p class="findings">{md(c.get("change",""))}</p></div>')
     errata = D.get("errata") or []
-    err = "".join(f'<div class="prop"><h3>{esc(e.get("id"))} <span class="meta">{esc(e.get("date",""))}</span></h3><p class="findings">{md(e.get("description",""))}</p></div>' for e in errata) \
+    err = "".join(f'<div class="prop"><div class="prophead"><h3>{esc(e.get("id"))}</h3><span class="meta">{timed(esc(e.get("date","")))}</span></div><p class="findings">{md(e.get("description",""))}</p></div>' for e in errata) \
           or '<p class="findings">No errata have been published for this dataset version. An erratum is a statement of an error in a published version that could have misled a reader, filed here on discovery and linked from the correction that fixes it.</p>'
     ror = D.get("right_of_reply") or {}
     replies = ror.get("responses") or []
@@ -1153,7 +1182,7 @@ public, newest first.</p>
 <h2 id="dataset-changes">Dataset changes</h2>
 {''.join(chg)}
 """
-    (SITE / "corrections.html").write_text(page("Corrections, errata and right of reply | OWHS Instrument Registry", body,
+    (SITE / "corrections.html").write_text(page("Corrections, errata and right of reply | OWHS", body,
         "The registry's public corrections log, errata and right-of-reply responses: old value, new value, and the source that settled it.",
         here="corrections"), encoding="utf-8")
 
@@ -1179,13 +1208,14 @@ What changed between versions is on the <a href="corrections.html">corrections p
 <div class="callout">Open Workplace Health Standard, Instrument Registry, dataset v{esc(D["version"])} ({esc(REVIEW_DATE)}).
 Available at openworkplacehealth.org. Grades are editorial assessments of published evidence for a working-adult
 audience; see the methodology page for the grading conventions.</div>
+<p>Fuller citation text for the registry, the specification and the question bank, with BibTeX, is on the <a href="../cite.html">how to cite page</a>.</p>
 <h2>Licensing</h2>
 <p>Registry text is licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; the dataset structure is
 licensed <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>. Instrument item text is never reproduced in
 this registry; each instrument's own licence status is recorded on its page, verified against the steward's current terms
 where possible.</p>
 """
-    (SITE / "downloads.html").write_text(page("Downloads | OWHS Instrument Registry", body,
+    (SITE / "downloads.html").write_text(page("Downloads | OWHS", body,
         "Download the registry as JSON, CSV, or PDF.", here="downloads"), encoding="utf-8")
 
 def build_pdf():
