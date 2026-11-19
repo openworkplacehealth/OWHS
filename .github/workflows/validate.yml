@@ -107,3 +107,7 @@ jobs:
         run: python tools/jsonld.py --check
       - name: structured-data builder behaves as documented
         run: python tools/jsonld.py --self-test
+      - name: the schemas and code-list reference pages are a fresh build, and every schema identifier still resolves to its file
+        run: python tools/build_reference_pages.py --check
+      - name: reference-page generator and the identifier routing rule behave as documented
+        run: python tools/build_reference_pages.py --self-test

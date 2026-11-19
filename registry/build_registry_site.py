@@ -1155,9 +1155,9 @@ def build_corrections():
 </div>""")
     chg = []
     for c in reversed(D.get("changelog", [])):
-        chg.append(f'<div class="prop"><h3>Dataset {esc(c.get("version"))} <span class="meta">{esc(c.get("date"))}</span></h3><p class="findings">{md(c.get("change",""))}</p></div>')
+        chg.append(f'<div class="prop"><div class="prophead"><h3>Dataset {esc(c.get("version"))}</h3><span class="meta">{timed(esc(c.get("date")))}</span></div><p class="findings">{md(c.get("change",""))}</p></div>')
     errata = D.get("errata") or []
-    err = "".join(f'<div class="prop"><h3>{esc(e.get("id"))} <span class="meta">{esc(e.get("date",""))}</span></h3><p class="findings">{md(e.get("description",""))}</p></div>' for e in errata) \
+    err = "".join(f'<div class="prop"><div class="prophead"><h3>{esc(e.get("id"))}</h3><span class="meta">{timed(esc(e.get("date","")))}</span></div><p class="findings">{md(e.get("description",""))}</p></div>' for e in errata) \
           or '<p class="findings">No errata have been published for this dataset version. An erratum is a statement of an error in a published version that could have misled a reader, filed here on discovery and linked from the correction that fixes it.</p>'
     ror = D.get("right_of_reply") or {}
     replies = ror.get("responses") or []
