@@ -29,6 +29,19 @@ LICENCE_ANSWER = {
     "unverified": "not verified against the steward's current terms, so no licence class is asserted",
 }
 
+# The same positions as a short answer for a page title: what an employer deploying the instrument needs to know first. One entry per class, in
+# step with LICENCE_ANSWER (the self-test refuses a class with no entry). None means the title states no answer, because the registry asserts none
+# for that class; the title then uses the neutral form.
+LICENCE_TITLE = {
+    "open": "open licence for employer use",
+    "free-no-permission": "free for employers to use",
+    "free-non-commercial": "permission needed for employer use",
+    "free-with-registration": "registration needed for employer use",
+    "fee-bearing": "paid licence needed for employer use",
+    "no-formal-licence": "no formal licence for employer use",
+    "unverified": None,
+}
+
 # Short names for page titles. A record not listed falls back to a short parenthetical abbreviation, else its display name.
 SHORT_NAMES = {
     "ons-4": "ONS-4", "ons-4-life-satisfaction": "ONS-4 life satisfaction item", "ons-4-worthwhile": "ONS-4 worthwhile item",
@@ -101,12 +114,20 @@ def sentence_case(t):
     return t[:1].upper() + t[1:]
 
 
+TITLE_LIMIT = 74
+
+
 def record_title(rec):
+    """The title states the answer for the record's licence class, from LICENCE_TITLE: 'PHQ-9: free for employers to use. Licence and evidence | OWHS'.
+    A class with no stated answer (unverified) gets the neutral form. When the full form is over TITLE_LIMIT, the answer is kept and the tail is dropped,
+    and only then the answer is replaced by the neutral wording."""
     s = short_name(rec)
-    t = f"{s}: free for employers to use? Licence and evidence | OWHS"
-    if len(t) > 72:
-        t = f"{s}: employer licence and evidence | OWHS"
-    return t
+    phrase = LICENCE_TITLE.get(rec["identity"].get("licence_class"))
+    if phrase is None:
+        forms = [f"{s}: licence for employer use and evidence | OWHS", f"{s}: employer licence and evidence | OWHS"]
+    else:
+        forms = [f"{s}: {phrase}. Licence and evidence | OWHS", f"{s}: {phrase} | OWHS", f"{s}: employer licence and evidence | OWHS"]
+    return next((t for t in forms if len(t) <= TITLE_LIMIT), forms[-1])
 
 
 def record_description(rec, on_watchlist=False):
@@ -152,19 +173,28 @@ def latest_changelog_date(tab):
 def self_test():
     d = load_dataset()
     fails = []
-    def t(name, ok):
+    def t(name, ok, detail=""):
         if not ok:
-            fails.append(name)
+            fails.append(f"{name} {detail}".strip())
     t("every licence class in the dataset has wording", set(d["licence_classes"]) == set(LICENCE_ANSWER))
     t("every record has a short name", all(short_name(r) for r in d["records"]))
     t("no derived short name is a parenthetical fragment", all("(" not in short_name(r) for r in d["records"] if r["instrument_id"] not in SHORT_NAMES))
     t("every listed short name belongs to a record", set(SHORT_NAMES) <= {r["instrument_id"] for r in d["records"]})
+    t("every licence class has title wording or an explicit neutral form", set(d["licence_classes"]) == set(LICENCE_TITLE))
     t("every record's licence class has wording", all(r["identity"].get("licence_class") in LICENCE_ANSWER for r in d["records"]))
     t("a prose licence date is never printed as a date", licence_clause({"licence_class": "unverified", "licence_verified_date": "not verified this session"})[1] == "")
     t("a date followed by prose is flagged, not asserted as verified", "basis is stated" in licence_clause({"licence_class": "free-non-commercial", "licence_verified_date": "2026-07-12 (secondary)"})[1])
     t("a strict date is verified", licence_clause({"licence_class": "open", "licence_verified_date": "2026-07-12"})[1] == "Verified 2026-07-12.")
     titles = [record_title(r) for r in d["records"]]
     t("record titles are unique", len(set(titles)) == len(titles))
+    long_ok = [x for x in titles if len(x) > TITLE_LIMIT and not x.endswith(": employer licence and evidence | OWHS")]
+    t("a title over the length limit is only one whose own name leaves no room, and it then uses the shortest form", not long_ok, long_ok)
+    ex = {r["instrument_id"]: record_title(r) for r in d["records"]}
+    t("a free instrument's title says so", ex["phq-9"] == "PHQ-9: free for employers to use. Licence and evidence | OWHS", ex["phq-9"])
+    t("a fee-bearing instrument's title says a paid licence is needed", ex["wemwbs"] == "WEMWBS: paid licence needed for employer use. Licence and evidence | OWHS", ex["wemwbs"])
+    t("a non-commercial instrument's title says permission is needed", ex["uwes-9"] == "UWES-9: permission needed for employer use. Licence and evidence | OWHS", ex["uwes-9"])
+    t("a title never asks a question", not any("?" in x for x in titles))
+    t("an unverified class gets the neutral form", record_title({"instrument_id": "x", "display_name": "Foo", "identity": {"licence_class": "unverified"}}) == "Foo: licence for employer use and evidence | OWHS")
     t("titles end in the site name", all(x.endswith(" | OWHS") for x in titles))
     t("latest dataset date is an ISO date", ISO.match(latest_dataset_date(d)) is not None)
     if fails:
