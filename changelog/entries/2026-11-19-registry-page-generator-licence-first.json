@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "registry",
+ "version": "Page generator (v0.9.0 unchanged)",
+ "html": "Instrument record pages now lead with the licence answer and carry it in the title and description; headings are clean text with the badges beside them; each record links to its related pages; dates are machine-readable. Grades, statuses, evidence forms, licence classes, the dataset and its version number are unchanged."
+}

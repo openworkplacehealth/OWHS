@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 6,
+ "html": "The sitemap is now generated, lists every public page (80), and dates each page by the day its content last changed, recorded in a ledger the build checks, instead of one date copied across almost every URL."
+}

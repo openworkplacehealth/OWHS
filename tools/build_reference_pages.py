@@ -34,7 +34,7 @@ CSS = """
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;color:var(--body);background:var(--paper);line-height:1.7;font-size:16.5px}
 .wrap{max-width:980px;margin:0 auto;padding:0 24px 30px}
-a{color:var(--accent);text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
 a:hover{color:var(--ink)}
 h1,h2,h3{color:var(--ink);line-height:1.25}
 h1{font-size:clamp(26px,4.5vw,38px);font-weight:700;letter-spacing:-0.02em;margin:8px 0 10px}
@@ -49,7 +49,7 @@ p,li{margin:12px 0;overflow-wrap:anywhere}ul{padding-left:20px;max-width:760px}
 table.ref{border-collapse:collapse;width:100%;font-size:14px;min-width:640px}
 table.ref th{text-align:left;background:var(--wash);padding:8px 10px;border-bottom:2px solid var(--ink);font-size:12.5px;color:var(--ink)}
 table.ref td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-table.ref td.id{font-family:var(--mono);font-size:12px;overflow-wrap:anywhere;min-width:220px}
+table.ref td.id{font-family:var(--mono);font-size:12px;min-width:220px}
 table.ref td.code{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
 details{border:1px solid var(--line);border-radius:8px;padding:6px 16px;margin:12px 0}
 details summary{cursor:pointer;font-weight:600;color:var(--ink);padding:6px 0}

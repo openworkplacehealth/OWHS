@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 7,
+ "html": "The JSON Schemas and the code lists now have human pages: <a href=\"schemas/index.html\">schemas</a> lists every schema with its identifier, the raw JSON, a one-line description from the schema itself and the specification section that defines it, and <a href=\"codelists/index.html\">code lists</a> lists every list with its version, source and codes. The bare address <code>/schemas/</code> used to return a 404 and now shows the schemas page; every schema identifier resolves to the same file as before."
+}

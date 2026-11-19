@@ -1,7 +1,7 @@
 {"note": "Fingerprint and date each page's content last changed; maintained by tools/build_sitemap.py, never by hand.",
 "pages": {
   "automation.html": ["d63603bde362566d", "2026-11-19"],
-  "changelog.html": ["184c4959c7c97176", "2026-11-19"],
+  "changelog.html": ["a9aa7207bbc895ee", "2026-11-19"],
   "codelists/index.html": ["267aac4143e571ff", "2026-11-19"],
   "contribute.html": ["5d53eb63a8c84dc5", "2026-11-19"],
   "design.html": ["d0baf961fa65919b", "2026-11-19"],

@@ -30,6 +30,20 @@ ANALYTICS = ('<!-- analytics --><script>' + '!function(t,e){var o,n,p,r;e.__SV||
              "disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});"
              '</script><!-- /analytics -->')
 
+# Small-screen fit shared by every page, because each page carries its own inline stylesheet. At phone width the navigation rows sit close
+# together (they were five tall rows) and any table that is wider than the screen scrolls inside itself instead of widening the page, and long unbroken strings (addresses, identifiers, inline code) wrap;
+# the registry matrix already has its own scroll container and is left alone.
+MOBILE = ('<!-- mobile --><style>@media (max-width:640px){.nav-links{column-gap:16px;row-gap:2px;font-size:14.5px;line-height:1.4}'
+          '.nav-links a{padding:5px 0}.subnav .wrap{column-gap:16px;row-gap:2px}.subnav a{padding:4px 0}'
+          'table:not(.matrix){display:block;max-width:100%;overflow-x:auto}'
+          'p,li,dd,a,:not(pre)>code{overflow-wrap:anywhere}td p,td li,td a,td code,th a{overflow-wrap:normal}}</style><!-- /mobile -->')
+
+def head_mobile(t):
+    t = re.sub(r"<!-- mobile -->.*?<!-- /mobile -->\n?", "", t, count=1, flags=re.S)
+    if "<!-- analytics -->" in t:
+        return t.replace("<!-- analytics -->", MOBILE + "\n<!-- analytics -->", 1)
+    return t.replace("</head>", MOBILE + "\n</head>", 1)
+
 def head_jsonld(t, rel):
     """One managed structured-data block before </head> (before the visit-counting script when that is present); rebuilt on every run."""
     graph = jsonld.blocks_for(rel, t, SITE)
@@ -95,7 +109,7 @@ for p in sorted(SITE.rglob("*.html")):
         t2 = re.sub(r"<!-- auto -->.*?<!-- /auto -->", lambda m: block, t2, count=1, flags=re.S)
     else:
         t2 = t2.replace(tag, tag + "\n" + block, 1)
-    t2 = head_jsonld(head_analytics(footer_mark(t2)), rel)
+    t2 = head_jsonld(head_mobile(head_analytics(footer_mark(t2))), rel)
     if t2 != orig:
         p.write_text(t2, encoding="utf-8"); n += 1
 print(f"canonical stamped or refreshed on {n} pages; robots policy {POLICY} applied")
