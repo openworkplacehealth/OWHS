@@ -101,3 +101,9 @@ jobs:
         run: python tools/build_spec_v0_2.py --self-test
       - name: entity-graph checker (envelope, G01 to G10, retained measurement checks, profiles, strict input) through its own command line
         run: python tools/check_entity_graph.py --self-test
+      - name: shared site facts (licence wording covers every class, short names, repository-recorded dates)
+        run: python tools/site_data.py --self-test
+      - name: every page carries well-formed schema.org JSON-LD built from repository data, matching a fresh build
+        run: python tools/jsonld.py --check
+      - name: structured-data builder behaves as documented
+        run: python tools/jsonld.py --self-test

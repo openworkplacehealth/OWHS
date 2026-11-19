@@ -5,10 +5,14 @@ robots policy: the one word in ../robots-policy.txt (noindex | index) decides th
 The generators always emit noindex; this tool is what makes a build match the published posture, so a
 rebuild after the lift cannot quietly put noindex back. Also places the one managed footer line (trade mark
 and licence, and the no-cookies line) as the last element of every page footer, and the one managed visit-counting
-script before </head>, so every generator shares them. Idempotent. Run before any deploy."""
+script before </head>, so every generator shares them. Also places the one managed structured-data block (schema.org JSON-LD, built
+by tools/jsonld.py from repository data only) before the visit-counting script. Idempotent. Run before any deploy."""
 import os, re, sys, pathlib
 BASE = "https://openworkplacehealth.org/"
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+sys.dont_write_bytecode = True
+import jsonld
 SITE = pathlib.Path(os.environ.get("OWHS_SITE_DIR", ROOT / "site"))   # overridable so registry/build_registry_site.py --check can stamp a copy
 POLICY = (ROOT / "robots-policy.txt").read_text(encoding="utf-8").strip().lower() if (ROOT / "robots-policy.txt").exists() else "noindex"
 if POLICY not in ("noindex", "index"):
@@ -25,6 +29,17 @@ ANALYTICS = ('<!-- analytics --><script>' + '!function(t,e){var o,n,p,r;e.__SV||
              "defaults:'2026-05-30',cookieless_mode:'always',person_profiles:'never',autocapture:false,capture_pageview:true,capture_pageleave:true,"
              "disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});"
              '</script><!-- /analytics -->')
+
+def head_jsonld(t, rel):
+    """One managed structured-data block before </head> (before the visit-counting script when that is present); rebuilt on every run."""
+    graph = jsonld.blocks_for(rel, t, SITE)
+    t = re.sub(r"<!-- jsonld -->.*?<!-- /jsonld -->\n?", "", t, count=1, flags=re.S)
+    if graph is None:
+        return t
+    block = jsonld.serialise(graph)
+    if "<!-- analytics -->" in t:
+        return t.replace("<!-- analytics -->", block + "\n<!-- analytics -->", 1)
+    return t.replace("</head>", block + "\n</head>", 1)
 
 def head_analytics(t):
     """One managed script block before </head>; rebuilt on every run, added where absent."""
@@ -80,7 +95,7 @@ for p in sorted(SITE.rglob("*.html")):
         t2 = re.sub(r"<!-- auto -->.*?<!-- /auto -->", lambda m: block, t2, count=1, flags=re.S)
     else:
         t2 = t2.replace(tag, tag + "\n" + block, 1)
-    t2 = head_analytics(footer_mark(t2))
+    t2 = head_jsonld(head_analytics(footer_mark(t2)), rel)
     if t2 != orig:
         p.write_text(t2, encoding="utf-8"); n += 1
 print(f"canonical stamped or refreshed on {n} pages; robots policy {POLICY} applied")
