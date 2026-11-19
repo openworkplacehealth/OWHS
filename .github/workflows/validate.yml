@@ -111,3 +111,7 @@ jobs:
         run: python tools/build_reference_pages.py --check
       - name: reference-page generator and the identifier routing rule behave as documented
         run: python tools/build_reference_pages.py --self-test
+      - name: the sitemap lists every public page, each dated by the last change to its content
+        run: python tools/build_sitemap.py --check
+      - name: sitemap generator behaves as documented
+        run: python tools/build_sitemap.py --self-test
