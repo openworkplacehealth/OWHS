@@ -291,7 +291,7 @@ def blocks_for(rel, text, site):
                 parents = (("Specification", "spec/index.html"),)
             else:
                 parents = ()
-            name = first if rel == "spec/index.html" else name
+            name = f"Draft specification v{ver}" + ("" if v2 else " (archived)")
             node["name"] = first
     elif sec == "sweeps":
         parents = (("Evidence maintenance", "automation.html"),)
