@@ -5,16 +5,22 @@ robots policy: the one word in ../robots-policy.txt (noindex | index) decides th
 The generators always emit noindex; this tool is what makes a build match the published posture, so a
 rebuild after the lift cannot quietly put noindex back. Also places the one managed footer line (trade mark
 and licence, and the no-cookies line) as the last element of every page footer, and the one managed visit-counting
-script before </head>, so every generator shares them. Idempotent. Run before any deploy."""
+script before </head>, so every generator shares them. Also adds the Atom feed links (tools/build_feeds.py) to every page head, and one line of project links (status, follow, feed, how to cite, who uses OWHS, who maintains this) to the managed footer lines. Also places the one managed structured-data block (schema.org JSON-LD, built
+by tools/jsonld.py from repository data only) before the visit-counting script. Idempotent. Run before any deploy."""
 import os, re, sys, pathlib
 BASE = "https://openworkplacehealth.org/"
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+sys.dont_write_bytecode = True
+import jsonld
 SITE = pathlib.Path(os.environ.get("OWHS_SITE_DIR", ROOT / "site"))   # overridable so registry/build_registry_site.py --check can stamp a copy
 POLICY = (ROOT / "robots-policy.txt").read_text(encoding="utf-8").strip().lower() if (ROOT / "robots-policy.txt").exists() else "noindex"
 if POLICY not in ("noindex", "index"):
     sys.exit(f"robots-policy.txt must say noindex or index, not {POLICY!r}")
 ROBOTS = '<meta name="robots" content="noindex, nofollow">' if POLICY == "noindex" else '<meta name="robots" content="index, follow">'
-MARK = ('<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)">OWHS\u2122 is a trade mark of '
+MARK = ('<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)"><a href="/status.html">Is it maintained?</a> · <a href="/status.html#follow">Follow</a> · '
+        '<a href="/feed.xml">Feed</a> · <a href="/cite.html">How to cite</a> · <a href="/using-owhs.html">Who uses OWHS</a> · <a href="/governance.html#maintainers">Who maintains this</a></p>'
+        '<p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">OWHS\u2122 is a trade mark of '
         'All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p>'
         '<p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. '
         'Visits are counted without identifying anyone. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->')
@@ -25,6 +31,31 @@ ANALYTICS = ('<!-- analytics --><script>' + '!function(t,e){var o,n,p,r;e.__SV||
              "defaults:'2026-05-30',cookieless_mode:'always',person_profiles:'never',autocapture:false,capture_pageview:true,capture_pageleave:true,"
              "disable_session_recording:true,capture_heatmaps:false,capture_performance:false,capture_dead_clicks:false,rageclick:false,disable_surveys:true});"
              '</script><!-- /analytics -->')
+
+# Small-screen fit shared by every page, because each page carries its own inline stylesheet. At phone width the navigation rows sit close
+# together (they were five tall rows) and any table that is wider than the screen scrolls inside itself instead of widening the page, and long unbroken strings (addresses, identifiers, inline code) wrap;
+# the registry matrix already has its own scroll container and is left alone.
+MOBILE = ('<!-- mobile --><style>@media (max-width:640px){.nav-links{column-gap:16px;row-gap:2px;font-size:14.5px;line-height:1.4}'
+          '.nav-links a{padding:5px 0}.subnav .wrap{column-gap:16px;row-gap:2px}.subnav a{padding:4px 0}'
+          'table:not(.matrix){display:block;max-width:100%;overflow-x:auto}'
+          'p,li,dd,a,:not(pre)>code{overflow-wrap:anywhere}td p,td li,td a,td code,th a{overflow-wrap:normal}}</style><!-- /mobile -->')
+
+def head_mobile(t):
+    t = re.sub(r"<!-- mobile -->.*?<!-- /mobile -->\n?", "", t, count=1, flags=re.S)
+    if "<!-- analytics -->" in t:
+        return t.replace("<!-- analytics -->", MOBILE + "\n<!-- analytics -->", 1)
+    return t.replace("</head>", MOBILE + "\n</head>", 1)
+
+def head_jsonld(t, rel):
+    """One managed structured-data block before </head> (before the visit-counting script when that is present); rebuilt on every run."""
+    graph = jsonld.blocks_for(rel, t, SITE)
+    t = re.sub(r"<!-- jsonld -->.*?<!-- /jsonld -->\n?", "", t, count=1, flags=re.S)
+    if graph is None:
+        return t
+    block = jsonld.serialise(graph)
+    if "<!-- analytics -->" in t:
+        return t.replace("<!-- analytics -->", block + "\n<!-- analytics -->", 1)
+    return t.replace("</head>", block + "\n</head>", 1)
 
 def head_analytics(t):
     """One managed script block before </head>; rebuilt on every run, added where absent."""
@@ -64,6 +95,8 @@ for p in sorted(SITE.rglob("*.html")):
     title = re.search(r"<title>(.*?)</title>", t2, re.S)
     desc = re.search(r'<meta name="description" content="([^"]*)"', t2)
     block = ['<!-- auto -->', '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
+             '<link rel="alternate" type="application/atom+xml" title="OWHS changelog: all changes" href="/feed.xml">',
+             '<link rel="alternate" type="application/atom+xml" title="OWHS evidence sweep reports" href="/feed-sweeps.xml">',
              '<meta property="og:type" content="website">', '<meta property="og:site_name" content="Open Workplace Health Standard">',
              f'<meta property="og:url" content="{url}">']
     if title: block.append(f'<meta property="og:title" content="{" ".join(title.group(1).split())}">')
@@ -80,7 +113,7 @@ for p in sorted(SITE.rglob("*.html")):
         t2 = re.sub(r"<!-- auto -->.*?<!-- /auto -->", lambda m: block, t2, count=1, flags=re.S)
     else:
         t2 = t2.replace(tag, tag + "\n" + block, 1)
-    t2 = head_analytics(footer_mark(t2))
+    t2 = head_jsonld(head_mobile(head_analytics(footer_mark(t2))), rel)
     if t2 != orig:
         p.write_text(t2, encoding="utf-8"); n += 1
 print(f"canonical stamped or refreshed on {n} pages; robots policy {POLICY} applied")

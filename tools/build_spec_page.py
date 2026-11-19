@@ -47,11 +47,11 @@ def registry_count(path):
 
 VERSIONS = {
     "v0.2": {"canonical": ROOT / "spec" / "OWHS-v0.2-draft.md", "md": ROOT / "site" / "spec" / "OWHS-v0.2-draft.md", "out": SPEC_DIR / "index.html", "bundle": ROOT / "site" / "spec" / "owhs-v0.2-bundle.zip",
-             "publish": v2_publish, "title": "The draft specification",
+             "publish": v2_publish, "title": "Draft specification v0.2: schemas, code lists and examples",
              "bundle_contents": "specification with its entity diagram, sixteen JSON schemas with valid and invalid conformance examples, {lists} versioned codelists, the reference validator, the measurement-bundle and entity-graph checkers, the profile envelope, governance and decision log",
              "registry": ROOT / "codelists" / "_registry.json",
              "note": 'This is the current draft (v0.2). The previous draft, v0.1, remains available: <a href="OWHS-v0.1-draft.html">page</a>, <a href="OWHS-v0.1-draft.md">markdown</a>, <a href="owhs-v0.1-bundle.zip">bundle</a>.'},
-    "v0.1": {"canonical": CANONICAL, "md": MD, "out": OUT, "bundle": BUNDLE, "publish": None, "title": "The draft specification, v0.1 (archived)",
+    "v0.1": {"canonical": CANONICAL, "md": MD, "out": OUT, "bundle": BUNDLE, "publish": None, "title": "Draft specification v0.1 (archived)",
              "bundle_contents": "specification with its entity diagram, JSON schemas with valid and invalid conformance examples, 24 versioned codelists, the reference validator, governance and decision log",
              "registry": None,
              "note": 'This is the archived v0.1 draft, kept as published. The current draft is v0.2: <a href="index.html">read it here</a>.'},

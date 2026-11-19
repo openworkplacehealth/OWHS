@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use OWHS, please cite it with the metadata in this file. Versions are identified by version number and address; no DOI has been issued."
+title: "Open Workplace Health Standard (OWHS) v0.2, draft specification"
+type: dataset
+abstract: "OWHS is an open data standard for UK workplace health, and an open catalogue of the instruments and survey items behind it. Private by design, free to use."
+authors:
+  - family-names: "Fenton"
+    given-names: "Zak"
+  - name: "All Toogether Ltd"
+version: "0.2-draft"
+date-released: "2026-09-07"
+license:
+  - CC-BY-4.0
+  - Apache-2.0
+repository-code: "https://github.com/openworkplacehealth/OWHS"
+url: "https://openworkplacehealth.org/"
+keywords:
+  - workplace health
+  - data standard
+  - open data
+  - psychometric instruments
+  - survey questions
+  - JSON Schema
+references:
+  - type: database
+    title: "OWHS Instrument Evidence Base"
+    version: "0.9.0"
+    date-released: "2026-09-03"
+    url: "https://openworkplacehealth.org/instrument-registry/"
+    authors:
+      - name: "Open Workplace Health Standard"
+  - type: database
+    title: "Open Workplace Health Standard: Workplace Wellbeing Question Bank"
+    version: "0.2.0"
+    date-released: "2026-09-03"
+    url: "https://openworkplacehealth.org/question-bank/"
+    authors:
+      - name: "Open Workplace Health Standard"

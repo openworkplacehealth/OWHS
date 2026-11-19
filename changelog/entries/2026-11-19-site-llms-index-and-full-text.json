@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 5,
+ "html": "<code>llms.txt</code> now defines each part of the site and gives every instrument a line with its recorded licence position for employer or vendor use, and a new <code>llms-full.txt</code> carries the specification, each registry record's plain-English summary and single-rater statement as its page prints them, and the question-bank wording only for the items whose licence permits redistribution. Both are generated from the pages' own sources."
+}

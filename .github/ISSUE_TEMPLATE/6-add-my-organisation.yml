@@ -1,0 +1,71 @@
+name: Add my organisation to the register of users
+description: Your organisation uses, or has mapped to, part of OWHS and is willing to be listed. A listing is a declaration by you. It is not certification and not endorsement.
+title: "[register] "
+labels: ["register", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The register at https://openworkplacehealth.org/using-owhs.html lists organisations that say they use or map to OWHS. No organisation is listed yet. An entry records what your organisation declares. It does not certify conformance, and it is not an endorsement by the project of you or by you of the project. Do not paste real records or personal data.
+  - type: input
+    id: organisation
+    attributes:
+      label: Organisation name
+    validations:
+      required: true
+  - type: input
+    id: website
+    attributes:
+      label: Website
+      description: The address to link to from the register.
+      placeholder: https://
+    validations:
+      required: true
+  - type: dropdown
+    id: uses
+    attributes:
+      label: What you use
+      options:
+        - "Mapped data to one or more OWHS entities"
+        - "Produce or consume OWHS-shaped data"
+        - "Use the instrument registry"
+        - "Use the question bank"
+        - "More than one of these, or something else, described below"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What you do with it, in a sentence or two
+      description: Plain words. Say which entities, code lists, instruments or items if you can. Link a public result, such as a validation report, if you have one; the register will show the link and will not treat it as a test of your claim.
+    validations:
+      required: true
+  - type: dropdown
+    id: interest
+    attributes:
+      label: Declaration of interest
+      description: Do you have a financial or professional interest in any instrument, product or organisation this entry touches, including selling a product that implements OWHS? An interest does not stop you being listed; an undeclared one does. The steward declares its own on every page of the site.
+      options:
+        - "No interest to declare"
+        - "Yes, and I describe it below"
+        - "Prefer to declare by email to hello@openworkplacehealth.org"
+    validations:
+      required: true
+  - type: textarea
+    id: interest_detail
+    attributes:
+      label: Interest, if any
+      description: One or two lines is enough. Employer, role, instrument authorship or rights, paid distribution, consultancy.
+    validations:
+      required: false
+  - type: checkboxes
+    id: authority
+    attributes:
+      label: Your authority to list
+      options:
+        - label: I am authorised to ask for my organisation to be listed, and I understand a listing is a declaration by the organisation, not certification or endorsement
+          required: true
+  - type: markdown
+    attributes:
+      value: |
+        Listing is public and the issue is public. If you would rather not raise this in public, email hello@openworkplacehealth.org instead. There is no response-time promise.

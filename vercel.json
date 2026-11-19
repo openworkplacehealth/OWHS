@@ -2,6 +2,7 @@
   "buildCommand": null,
   "outputDirectory": "site",
   "rewrites": [
+    { "source": "/schemas", "destination": "/schemas/index.html" },
     { "source": "/schemas/:path*", "destination": "/spec/schemas/:path*" }
   ]
 }
