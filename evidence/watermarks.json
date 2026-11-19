@@ -1,7 +1,32 @@
 {
   "schema_version": "1.0",
   "overlap_days": 14,
-  "entries": {},
+  "entries": {
+    "3cbfc06a7e9786f1ef495c71bb31e5d40697d68b3f73fd12cbf993918f9fc8eb": {
+      "query_sha256": "3cbfc06a7e9786f1ef495c71bb31e5d40697d68b3f73fd12cbf993918f9fc8eb",
+      "last_complete_to": "2026-11-19",
+      "catch_from": "2026-08-21",
+      "cycle_id": "2026-11",
+      "run_id": "d57a49bf280e777a",
+      "channels_complete": 289,
+      "advanced_on": "2026-11-19",
+      "date_bases": {
+        "publication": {
+          "from": "2026-10-01",
+          "to": "2026-11-19"
+        },
+        "first_indexed": {
+          "from": "2026-08-21",
+          "to": "2026-11-19"
+        },
+        "full_history": false
+      },
+      "run_head": "26cc754df4529b42cac3682b3042f2eb4df6363a",
+      "policy_version": "2026.09-1",
+      "github_run_id": "44581601008",
+      "artefact_sha256": "f0b2e0f72486097e7359e06f6bc6c2652c13e6545acce9e9d9cba340275d4a3a"
+    }
+  },
   "note": "Keyed by the SHA-256 of the query file. Advanced only through a merged pull request, after a complete full-inventory planned run, with tools/cycle.py advance, which checks the proposal against its envelope. overlap_days is subtracted from the watermark for the publication window; catch_up_days is the first-index catch-up before the window end. Empty means the next planned window starts on the first day of the previous month.",
   "catch_up_days": 90
 }

@@ -1,7 +1,7 @@
 {"note": "Fingerprint and date each page's content last changed; maintained by tools/build_sitemap.py, never by hand.",
 "pages": {
   "automation.html": ["d63603bde362566d", "2026-11-19"],
-  "changelog.html": ["f78adcceef66e660", "2026-11-19"],
+  "changelog.html": ["208a57edccd96432", "2026-11-19"],
   "cite.html": ["c64d45a16ed99808", "2026-11-19"],
   "codelists/index.html": ["267aac4143e571ff", "2026-11-19"],
   "contribute.html": ["5d53eb63a8c84dc5", "2026-11-19"],
@@ -77,10 +77,10 @@
   "spec/OWHS-v0.1-draft.html": ["31a9ea17d318b5d8", "2026-11-19"],
   "spec/index.html": ["4cb332d585c7569c", "2026-11-19"],
   "standard.html": ["64fcc1dedc5f63d0", "2026-11-19"],
-  "status.html": ["ca1b9845425e77f6", "2026-11-19"],
+  "status.html": ["9bb504ddbbab14a7", "2026-11-19"],
   "sweeps/2026-09.html": ["c9bb2f353acaaee5", "2026-11-19"],
   "sweeps/2026-10.html": ["f506db3d066b44c9", "2026-11-19"],
-  "sweeps/2026-11.html": ["d5c7e58537ef8515", "2026-11-19"],
+  "sweeps/2026-11.html": ["fecd83cda2c94ca7", "2026-11-19"],
   "using-owhs.html": ["54ea1db117276f62", "2026-11-19"],
   "why.html": ["4e927bf4cc732d36", "2026-11-19"]
 }}

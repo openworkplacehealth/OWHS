@@ -16,7 +16,7 @@ feed twice gives the same bytes. An entry's id is a tag URI made from its file n
 text is corrected. An entry dated to a month only is given the first of that month as its Atom date, because Atom needs a full date, and says so in its text.
 A feed's own updated time is the newest entry's date. Links in an entry are made absolute so a reader that shows the feed elsewhere still reaches the page.
 """
-import html, re, sys
+import html, json, re, sys
 from pathlib import Path
 from urllib.parse import urljoin
 from xml.etree import ElementTree as ET
@@ -157,9 +157,13 @@ def self_test():
     t("the sweep feed has one entry per report with the filing date the report gives", len(parsed["feed-sweeps.xml"].findall("a:entry", ns)) == len(list((SITE_ROOT / "sweeps").glob("*.html"))))
     t("a relative link is made absolute", absolute('<a href="sweeps/2026-11.html">x</a> <a href="https://e.org/">y</a>') == f'<a href="{BASE}sweeps/2026-11.html">x</a> <a href="https://e.org/">y</a>')
     t("a long first sentence is cut at a word", len(title_of({"tab": "site", "html": "word " * 60})) < 130)
+    vj = json.loads((SITE_ROOT.parent / "vercel.json").read_text(encoding="utf-8"))
+    rules = [h for h in vj.get("headers", []) if any(k.get("key", "").lower() == "content-type" and k.get("value") == "application/atom+xml; charset=utf-8" for k in h.get("headers", []))]
+    t("vercel.json serves the feeds as Atom: one rule, matching every feed file and nothing else", len(rules) == 1 and all(re.fullmatch(rules[0]["source"].lstrip("/"), f["file"]) for f in FEEDS) and not any(re.fullmatch(rules[0]["source"].lstrip("/"), n) for n in ("sitemap.xml", "feed-.xml", "feed.xml.bak")))
+    t("the rewrites are untouched by the header rule", [r["source"] for r in vj.get("rewrites", [])] == ["/schemas", "/schemas/:path*"])
     if fails:
         print("self-test FAILED:\n  " + "\n  ".join(fails)); sys.exit(1)
-    print("self-test ok: 15 cases (well-formed Atom, entry counts, stable ids, dates, ordering, absolute links, month-only wording, determinism)")
+    print("self-test ok: 17 cases (feeds served as Atom, well-formed Atom, entry counts, stable ids, dates, ordering, absolute links, month-only wording, determinism)")
 
 
 if __name__ == "__main__":
