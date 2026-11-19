@@ -70,7 +70,10 @@ class Chrome:
         to_chrome_r, self._w = os.pipe()
         self._r, from_chrome_w = os.pipe()
         def wire():
-            os.dup2(to_chrome_r, 3); os.dup2(from_chrome_w, 4)
+            # Chrome reads commands on fd 3 and writes on fd 4. Copy both ends above 4 first: a pipe end that already is fd 3 or 4
+            # would otherwise be dup2'd onto itself, which keeps its close-on-exec flag and leaves Chrome with nothing to read.
+            a, b = os.dup(to_chrome_r), os.dup(from_chrome_w)
+            os.dup2(a, 3); os.dup2(b, 4)
         args = [exe, "--headless=new", "--remote-debugging-pipe", f"--user-data-dir={self.profile}", "--no-first-run", "--no-default-browser-check",
                 "--disable-gpu", "--disable-extensions", "--disable-background-networking", "--disable-component-update", "--disable-sync",
                 "--metrics-recording-only", "--disable-default-apps", "--mute-audio", "--hide-scrollbars", "about:blank"]

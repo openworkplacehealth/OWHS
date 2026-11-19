@@ -5,7 +5,7 @@ const BASE = new URL("./", import.meta.url);
 let engine = null;
 
 async function fetchOk(url, as) {
-  const r = await fetch(url, { credentials: "omit", cache: "default" });
+  const r = await fetch(url);
   if (!r.ok) throw new Error(`could not load ${new URL(url).pathname} (${r.status})`);
   return as === "json" ? r.json() : r.text();
 }

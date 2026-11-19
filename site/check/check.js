@@ -14,9 +14,10 @@ let DATA = null;
 let fileBytes = null;      // the exact bytes of a chosen or dropped file, until the text is edited
 let fileName = null;
 let busy = false;
-const dataReady = fetch(new URL("checker-data.json", import.meta.url), { credentials: "omit" })
+const dataReady = fetch(new URL("checker-data.json", import.meta.url))
   .then((r) => { if (!r.ok) throw new Error("could not load checker-data.json"); return r.json(); })
   .then((d) => (DATA = d));
+dataReady.catch(() => { els.status.textContent = "The checker's data did not load. Reload the page to try again."; });
 
 // ---------- small helpers ----------
 const el = (tag, attrs = {}, ...kids) => {
