@@ -1,6 +1,6 @@
 # OWHS profile `owhs-uk-measures` 0.1.0: workforce health measures named by the UK government
 
-**Status:** proposed by [RFC 0003](../0003-uk-measures-profile.md). Draft, not yet opened for comment, not released. Not endorsed by any government department, by BSI or by the Keep Britain Working programme. UK English. Spec text CC-BY 4.0; schemas, code lists and examples Apache-2.0.
+**Status:** proposed by [RFC 0003](../0003-uk-measures-profile.md). Open for comment from 23 November 2026 to 8 January 2027, not released. Not endorsed by any government department, by BSI or by the Keep Britain Working programme. UK English. Spec text CC-BY 4.0; schemas, code lists and examples Apache-2.0.
 
 **What this is.** In September 2026 the government named five things it wants measured the same way everywhere: work ability, absence, sustained return, retention and disability participation [S1]. It has not yet published a definition for any of them. This profile writes one down for each, in the open, so that employers, providers and the people designing the national definitions have something concrete to test and to disagree with. It maps the measures named in the UK government's published Keep Britain Working documents, and nothing else.
 

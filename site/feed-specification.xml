@@ -4,8 +4,16 @@
   <link rel="self" type="application/atom+xml" href="https://openworkplacehealth.org/feed-specification.xml"/>
   <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
   <id>https://openworkplacehealth.org/feed-specification.xml</id>
-  <updated>2026-09-07T00:00:00Z</updated>
+  <updated>2026-11-23T00:00:00Z</updated>
   <author><name>Open Workplace Health Standard</name></author>
+  <entry>
+    <id>tag:openworkplacehealth.org,2026:changelog/2026-11-23-specification-rfc-0003-opened-comment-window</id>
+    <title>Specification 0.2: RFC 0003 opened for comment, with a window of 23 November 2026 to 8 January 2027 and an issue as the comment ...</title>
+    <link rel="alternate" type="text/html" href="https://openworkplacehealth.org/changelog.html"/>
+    <published>2026-11-23T00:00:00Z</published>
+    <updated>2026-11-23T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;23 November 2026.&lt;/p&gt;&lt;p&gt;RFC 0003 opened for comment, with a window of 23 November 2026 to 8 January 2027 and an issue as the comment thread: &lt;a href=&quot;https://github.com/openworkplacehealth/OWHS/blob/main/rfcs/0003-uk-measures-profile.md&quot;&gt;RFC 0003&lt;/a&gt;, a profile defining the five workforce health measures the UK government has named and not defined (work ability, absence, sustained return, retention and disability participation), a minimum group size rule that names the floors already in the privacy profile and sets out how small numbers are withheld or merged, and two proposed record types, &lt;span class=&quot;mono&quot;&gt;CommitmentEvent&lt;/span&gt; for the dated commitments and &lt;span class=&quot;mono&quot;&gt;ProviderReturn&lt;/span&gt; for a common group-level return from a provider to an employer. The three proposals can be decided separately. Nothing in the core changes until a decision is recorded, and none of it is endorsed by any government department, by BSI or by anyone else.&lt;/p&gt;</content>
+  </entry>
   <entry>
     <id>tag:openworkplacehealth.org,2026:changelog/2026-09-07-specification-comparability-claim-withdrawn</id>
     <title>Specification 0.2: Honesty pass item 5 no longer says a richer employer taxonomy would buy resolution at the cost of ...</title>

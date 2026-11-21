@@ -1,6 +1,6 @@
 # The OWHS minimum group size rule (`owhs-mgs`)
 
-**Status:** proposed by [RFC 0003](../0003-uk-measures-profile.md). Draft, not yet opened for comment, not released. UK English. CC-BY 4.0.
+**Status:** proposed by [RFC 0003](../0003-uk-measures-profile.md). Open for comment from 23 November 2026 to 8 January 2027, not released. UK English. CC-BY 4.0.
 
 **Cite as:** Open Workplace Health Standard, *Minimum group size rule* (`owhs-mgs@0.1.0`), draft of 15 November 2026.
 

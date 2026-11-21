@@ -7,6 +7,22 @@ behind it, the entry says so plainly rather than describing the fix as an improv
 Registry grade corrections are not here. They have their own numbered log at
 `site/instrument-registry/corrections.html`, and grades remain frozen.
 
+## 23 November 2026
+
+### Opened: RFC 0003 for comment
+
+RFC 0003 (a profile for the workforce health measures named by the UK government) read "Draft. Not yet
+opened for comment". It is now open, with a comment window of 23 November 2026 to 8 January 2027 and a
+numbered issue as the comment thread. It proposes three things that can be decided separately: a profile,
+`owhs-uk-measures` 0.1.0, with a definition for each measure; a named minimum group size rule, `owhs-mgs`
+0.1.0, which keeps the floors already in the privacy profile and sets out how small numbers are withheld or
+merged; and two new record types, `CommitmentEvent` and `ProviderReturn`. Every proposed file stays under
+`rfcs/0003-uk-measures-profile/` until a decision is recorded, so no schema, code list, example, profile or
+tool changes. The open review page now lists it beside RFCs 0001 and 0002.
+
+A window is the period before a decision is recorded. Comments arriving after it closes are still
+read.
+
 ## 19 November 2026
 
 ### Added: the reference validator runs in the browser, at /check/
