@@ -1,7 +1,7 @@
 {
   "profile_id": "owhs-uk-measures",
   "version": "0.1.0",
-  "description": "PROPOSED by RFC 0003; not released. Definitions for the workforce health measures named in the UK government's published Keep Britain Working documents, as AggregateReport metric codes. Narrows the core only: metricCode to the uk-measure list, the three disability measures to organisation level, disability-participation and disability-retention-12m withheld when n is nine or fewer (n is the group the report describes; for disability-participation that is the people who answered the question, not the number who said they are disabled), disability-declaration-rate left at the core floor of five, work ability to instrument-sourced results, and a declared minimum group size rule under ext.owhs-uk-measures. Definitions are in rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.md.",
+  "description": "PROPOSED by RFC 0003; not released. Definitions for the workforce health measures named in the UK government's published Keep Britain Working documents, as AggregateReport metric codes. Narrows the core only: metricCode to the uk-measure list, the three disability measures to organisation level, disability-participation and disability-retention-12m withheld when n is nine or fewer (n is, by the core definition, the distinct people contributing to the estimate: for disability-participation that is the people who answered the question, not the number who said they are disabled; for disability-retention-12m it is the people who said yes a year earlier, so there the ten falls on disabled people), disability-declaration-rate left at the core floor of five, work ability to instrument-sourced results, and a declared minimum group size rule under ext.owhs-uk-measures. Definitions are in rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.md.",
   "core_schema_ids": [
     "https://openworkplacehealth.org/schemas/v0.2/AggregateReport.json"
   ],
@@ -117,7 +117,7 @@
         }
       },
       {
-        "$comment": "disability-participation and disability-retention-12m: withheld when n is nine or fewer. The test is on n, the group the report describes (for disability-participation, the people who answered), not on the number of disabled people; that count is held to zero or at least five only by owhs-mgs R4, a Level 3 rule no tool checks. disability-declaration-rate keeps the core floor of five",
+        "$comment": "disability-participation and disability-retention-12m: withheld when n is nine or fewer. The test is on n, by the core definition the distinct people contributing to the estimate. For disability-participation n is the people who answered, not the number of disabled people; that count is held to zero or at least five only by owhs-mgs R4, a Level 3 rule no tool checks. For disability-retention-12m n is the people who said yes a year earlier, so there the ten is a floor on disabled people. disability-declaration-rate keeps the core floor of five",
         "if": {
           "properties": {
             "metricCode": {

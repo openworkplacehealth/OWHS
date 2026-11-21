@@ -62,7 +62,7 @@
       "verdict_matches_name": true,
       "errors": 0,
       "output": [
-        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 1c961ed2c7d5f62d2e90cd72ebfb8f372c0c0bc4281b872c8d0e0f4b046295fb))"
+        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9))"
       ]
     },
     {
@@ -72,7 +72,7 @@
       "verdict_matches_name": true,
       "errors": 0,
       "output": [
-        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 1c961ed2c7d5f62d2e90cd72ebfb8f372c0c0bc4281b872c8d0e0f4b046295fb))"
+        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9))"
       ]
     },
     {
@@ -82,7 +82,7 @@
       "verdict_matches_name": true,
       "errors": 0,
       "output": [
-        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 1c961ed2c7d5f62d2e90cd72ebfb8f372c0c0bc4281b872c8d0e0f4b046295fb))"
+        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9))"
       ]
     },
     {
@@ -93,7 +93,7 @@
       "errors": 1,
       "output": [
         "[profile:owhs-uk-measures@0.1.0] suppressed: True was expected",
-        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 1c961ed2c7d5f62d2e90cd72ebfb8f372c0c0bc4281b872c8d0e0f4b046295fb) checked"
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
       ]
     },
     {
@@ -104,7 +104,7 @@
       "errors": 1,
       "output": [
         "[profile:owhs-uk-measures@0.1.0] level: 'org' was expected",
-        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 1c961ed2c7d5f62d2e90cd72ebfb8f372c0c0bc4281b872c8d0e0f4b046295fb) checked"
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
       ]
     },
     {
@@ -115,7 +115,7 @@
       "errors": 1,
       "output": [
         "[profile:owhs-uk-measures@0.1.0] <root>: 'ext' is a required property",
-        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 1c961ed2c7d5f62d2e90cd72ebfb8f372c0c0bc4281b872c8d0e0f4b046295fb) checked"
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
       ]
     },
     {
@@ -126,7 +126,7 @@
       "errors": 1,
       "output": [
         "[profile:owhs-uk-measures@0.1.0] metricCode: 'absence-rate-fte' is not one of ['absence-rate', 'absence-days-per-worker', 'sustained-return-26wk', 'retention-26wk', 'health-related-exit-rate', 'disability-participation', 'disability-declaration-rate', 'disability-retention-12m', 'work-ability', 'commitment-met-rate']",
-        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 1c961ed2c7d5f62d2e90cd72ebfb8f372c0c0bc4281b872c8d0e0f4b046295fb) checked"
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
       ]
     },
     {
@@ -137,7 +137,7 @@
       "errors": 1,
       "output": [
         "[profile:owhs-uk-measures@0.1.0] measureKind: 'instrument' was expected",
-        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 1c961ed2c7d5f62d2e90cd72ebfb8f372c0c0bc4281b872c8d0e0f4b046295fb) checked"
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
       ]
     }
   ],
