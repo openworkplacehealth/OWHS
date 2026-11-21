@@ -1,0 +1,7 @@
+{
+ "tab": "site",
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "order": 2,
+ "html": "The <a href=\"automation.html\">maintenance page</a> now describes what runs: four scheduled workflows in the public repository, a harvest, a licence-source watcher, a retraction watcher and a tripwire. It also says that no harvest cycle has yet been verified complete: the 1 October run reached GitHub's six-hour limit and was cancelled with nothing written, and the 1 November run ended partial because OpenAlex, used without a key, refused to page past the first page of two citation searches. The page had described the failure monitor and the watchers as planned since 5 September."
+}

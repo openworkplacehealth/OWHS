@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 8,
+ "html": "Page titles now follow one pattern, <em>name | OWHS</em>, across the site. Each instrument page's title and description say the recorded licence position for employer or vendor use and when it was verified, generated from the record's own licence class, and the plain-English box now opens with that licence answer, with the metadata line below it. Grade, status and evidence-form badges sit beside the property headings instead of inside them, so the headings read as clean text. Each instrument page ends with a Related list: question-bank topic groups, the rubric and admission versions in force, and the sweep reports that name the instrument. No grade, status, licence class or citation changed."
+}

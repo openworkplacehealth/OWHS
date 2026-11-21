@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 9,
+ "html": "Instrument page titles now state the licence answer instead of asking a question. A title reads, for example, <em>PHQ-9: free for employers to use. Licence and evidence | OWHS</em>, <em>WEMWBS: paid licence needed for employer use. Licence and evidence | OWHS</em> or <em>UWES-9: permission needed for employer use. Licence and evidence | OWHS</em>, generated from the same per-class wording as the descriptions. Where a record's licence class is unverified, or the name is too long for the answer to fit, the title uses a neutral form that asserts nothing. No grade, status or licence class changed."
+}

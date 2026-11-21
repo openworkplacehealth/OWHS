@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 20,
+ "html": "A status page at <a href=\"/status.html\">status.html</a> says what runs and when. It lists the four scheduled maintenance jobs with their schedules read from the workflow files, states that no month has yet been recorded as verified because the watermark file is empty, links the October 2026 note on the month that was missed, and links the live run history and open issues on GitHub. In a browser it can also show each job's latest run from GitHub's public API; if that request fails the page is unchanged. The page is generated from committed files only and a check in CI refuses a stale one."
+}

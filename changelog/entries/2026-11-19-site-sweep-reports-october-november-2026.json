@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "html": "Two sweep reports added. <a href=\"sweeps/2026-10.html\">October 2026</a> says plainly that the planned harvest did not complete, that no verified sweep exists for the month and that it cannot be recovered. <a href=\"sweeps/2026-11.html\">November 2026</a> reports the partial harvest and the five studies added from a web-search sweep after checking against Crossref. The methods page links all three reports and the sitemap lists the new pages. Separately, the README no longer says issues open once the repository is public; the README copy inside the <a href=\"spec/owhs-v0.2-bundle.zip\">v0.2 download</a> is rebuilt to match, and no other file in the download changed."
+}

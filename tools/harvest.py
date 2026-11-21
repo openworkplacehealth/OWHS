@@ -25,12 +25,18 @@ because the abstract may be missing or the evidence may be described in other wo
 this tool except a title carrying one of the instrument's configured exclusion terms, and that drop is counted.
 The abbreviation route requires a property term server-side and locally, as the design states.
 
-Sources: Europe PMC REST for the names and abbreviation routes; OpenAlex for the cites route, and for the names and
-abbreviation routes as well when OPENALEX_API_KEY is set. Keyless OpenAlex use has a daily credit budget (1,000
-credits, 10 per search at the time of writing), which a full run of every route exceeds; the 24 citation lookups
-fit. Crossref for DOI verification and the update-to field. The mailto identifies the steward so a runaway
-script can be reported; it is not a secret. A key, if used, is read from the environment and never logged.
+Sources: Europe PMC REST for the names and abbreviation routes; OpenAlex for the cites route (the provider profile in
+the query file decides which routes use OpenAlex; a key never changes the plan). Without OPENALEX_API_KEY, OpenAlex
+answers the second page of a cursor-paged query with http 401 ("API key required for cursor paging"), so a citation
+channel with more than 200 results in its window ends partial, and keyless calls share a small daily budget per
+network address. The channel records the server's reason and the run prints one line saying the secret is the fix.
+Crossref for DOI verification and the update-to field. The mailto identifies the steward so a runaway script can be
+reported; it is not a secret. A key, if used, is read from the environment and never logged.
 Abstracts are read for matching and not stored: metadata APIs can carry copyrighted abstracts.
+
+Progress: one flushed line per channel on stderr as the run goes. --time-budget-minutes: after the budget no new
+page, channel or Crossref check starts; what was not reached is recorded with the reason, the file is still written
+and the run is partial. Windowed channels run first and the quarterly full-history channels last.
 """
 import argparse, datetime, hashlib, json, os, re, subprocess, sys, time, urllib.parse, urllib.request, urllib.error
 from pathlib import Path
@@ -45,6 +51,43 @@ PAGE_BUDGET = 25            # pages per channel; reaching it marks the channel p
 RETRY_BUDGET = 120          # seconds: the longest server-requested wait honoured inside a run; longer defers the channel
 POLICY_VERSION = "2026.09-1"      # planning policy shared with tools/cycle.py (window, catch-up, quarterly full history, channel set); the verifier binds a run to it at its head
 SCHEMA_VERSION = "1.1"          # 1.1 adds cycle, expected_channels, channels_not_complete, watermark_proposal
+DEADLINE = None             # time.monotonic() value after which no new page, channel or Crossref check starts (--time-budget-minutes); None: no budget
+BUDGET_REASON = "time budget reached"
+
+
+def past_deadline():
+    return DEADLINE is not None and time.monotonic() >= DEADLINE
+
+
+def progress(msg):
+    """One line on stderr, flushed, so the Actions log shows where a run is while it runs."""
+    print(msg, file=sys.stderr, flush=True)
+
+
+def http_error_text(e):
+    """'http CODE' plus the server's own short reason when it gives one (OpenAlex returns JSON with error and message). The key,
+    if any, is scrubbed, and the text is cut short: it goes into the artefact and the issue."""
+    text = f"http {e.code}"
+    detail = ""
+    try:
+        body = e.read(2000).decode("utf-8", "replace") if e.fp is not None else ""
+        j = json.loads(body) if body.strip().startswith("{") else {}
+        detail = ". ".join(str(j[k]).strip().rstrip(".") for k in ("error", "message") if isinstance(j, dict) and j.get(k))
+    except Exception:
+        detail = ""
+    detail = detail or (e.reason if isinstance(e.reason, str) else "")
+    if OPENALEX_KEY: detail = detail.replace(OPENALEX_KEY, "***")
+    detail = re.sub(r"\s+", " ", detail).strip()[:200]
+    return f"{text}: {detail}" if detail else text
+
+
+def openalex_401_line(error, key_set):
+    """The one plain line printed (and recorded as a warning) when OpenAlex answers 401."""
+    reason = error.split(":", 1)[1].strip() if ":" in error else "no reason given"
+    if key_set:
+        return f"OpenAlex refused a request made with a key (http 401: {reason}). Check that the OPENALEX_API_KEY repository secret is a valid key."
+    return (f"OpenAlex refused a request made without a key (http 401: {reason}). Keyless use cannot page past the first page of results "
+            "and shares one small daily budget per network address; setting the OPENALEX_API_KEY repository secret is the fix.")
 
 
 # ---------- read boundary ----------
@@ -103,6 +146,8 @@ class ReadBoundary:
 def get(url, tries=5):
     """GET JSON with a polite pause, Retry-After honoured, bounded backoff. Returns (data, error)."""
     for attempt in range(tries):
+        if attempt and past_deadline():
+            return None, f"{BUDGET_REASON} while retrying"
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=60) as r:
@@ -115,7 +160,7 @@ def get(url, tries=5):
                 if wait is not None and wait > RETRY_BUDGET:
                     return None, f"http {e.code}, retry-after {wait}s exceeds the run's wait budget; channel deferred"
                 time.sleep(wait if wait is not None else 3 * (attempt + 1)); continue
-            return None, f"http {e.code}"
+            return None, http_error_text(e)
         except Exception:
             time.sleep(3 * (attempt + 1))
     return None, "exhausted retries"
@@ -170,6 +215,7 @@ def openalex_channel(search, date_from, date_to, filter_extra=None):
          "per-page": 200, "mailto": MAILTO, "cursor": "*"}
     if OPENALEX_KEY: q["api_key"] = OPENALEX_KEY
     while q["cursor"]:
+        if pages and past_deadline(): err = f"{BUDGET_REASON} after {pages} page(s)"; break
         data, err = get("https://api.openalex.org/works?" + urllib.parse.urlencode(q))
         if err: break
         pages += 1
@@ -187,6 +233,7 @@ def europepmc_channel(query, date_from, date_to, date_field="FIRST_PDATE"):
     full = f"({query}) AND ({date_field}:[{date_from} TO {date_to}])" if date_from is not None else f"({query})"
     cursor = "*"
     while cursor:
+        if pages and past_deadline(): err = f"{BUDGET_REASON} after {pages} page(s)"; break
         q = {"query": full, "format": "json", "pageSize": 100, "resultType": "core", "cursorMark": cursor}
         data, err = get("https://www.ebi.ac.uk/europepmc/webservices/rest/search?" + urllib.parse.urlencode(q))
         if err: break
@@ -203,7 +250,7 @@ def europepmc_channel(query, date_from, date_to, date_field="FIRST_PDATE"):
 
 def crossref_check(doi):
     data, err = get(f"https://api.crossref.org/works/{urllib.parse.quote(doi, safe='')}?mailto={MAILTO}")
-    if err or not data: return {"resolves": False if err == "http 404" else None, "error": err}
+    if err or not data: return {"resolves": False if (err or "").startswith("http 404") else None, "error": err}
     m = data.get("message", {})
     return {"resolves": True, "type": m.get("type"), "update_to": m.get("update-to"), "updated_by": m.get("updated-by")}
 
@@ -335,19 +382,34 @@ def harvest(cfg, records, date_from, date_to, verify=True, now=None, catch_from=
         for k in ("doi", "pmid", "openalex", "language"):
             if not c[k] and w.get(k): c[k] = w[k]
 
-    for rec in records:
-        for desc, run in channels_for(rec, cfg, date_from, date_to, catch_from, full_history):
-            if run is None:      # a provider filter this configuration cannot use: logged as unavailable, never as run
-                channels.append({**desc, "pages": 0, "reported_hits": None, "collected_hits": 0, "outcome": "unavailable", "error": desc["unavailable"]}); continue
+    # Run order: the windowed channels first, then the untargeted channel, then the quarterly full-history pass, so a run that
+    # reaches its time budget loses the full-history channels before the monthly ones. The order changes no channel and no id.
+    work = [(rec["instrument_id"], desc, run) for rec in records for desc, run in channels_for(rec, cfg, date_from, date_to, catch_from, full_history)]
+    new_work = [(None, desc, run) for desc, run in new_instrument_channels(cfg, date_from, date_to)]
+    work = [w for w in work if w[1]["date_basis"] != "full_history"] + new_work + [w for w in work if w[1]["date_basis"] == "full_history"]
+    t0, said_401, not_started = time.monotonic(), False, 0
+    new_items = {}
+    for n, (rec_id, desc, run) in enumerate(work, 1):
+        if run is None:      # a provider filter this configuration cannot use: logged as unavailable, never as run
+            ch = {**desc, "pages": 0, "reported_hits": None, "collected_hits": 0, "outcome": "unavailable", "error": desc["unavailable"]}; hits = []
+        elif past_deadline():   # recorded as a channel that did not complete, with the reason; it stays in the denominator
+            ch = {**desc, "pages": 0, "reported_hits": None, "collected_hits": 0, "outcome": "failed", "error": f"{BUDGET_REASON} before this channel started"}; hits = []
+            not_started += 1
+        else:
             hits, pages, reported, err = run()
             ch = {**desc, "pages": pages, "reported_hits": reported, "collected_hits": len(hits),
                   "outcome": "complete" if not err else ("partial" if hits else "failed"), "error": err}
-            channels.append(ch)
-            for w in hits: absorb(rec["instrument_id"], desc["route"], w, ch)
-    new_items = {}
-    for desc, run in new_instrument_channels(cfg, date_from, date_to):
-        hits, pages, reported, err = run()
-        channels.append({**desc, "pages": pages, "reported_hits": reported, "collected_hits": len(hits), "outcome": "complete" if not err else ("partial" if hits else "failed"), "error": err})
+        channels.append(ch)
+        progress(f"[{n}/{len(work)}] {rec_id or 'untargeted'} {desc['route']} {desc['source']} {desc['date_basis']}: {ch['outcome']}"
+                 + ("" if ch["outcome"] == "unavailable" else f", {ch['pages']} page(s), {ch['collected_hits']} of {ch['reported_hits']} hits")
+                 + (f", {ch['error']}" if ch["error"] and ch["outcome"] != "unavailable" else "") + f" ({int(time.monotonic() - t0)}s)")
+        if desc["source"] == "openalex" and (ch["error"] or "").startswith("http 401") and not said_401:
+            said_401 = True
+            line = openalex_401_line(ch["error"], bool(OPENALEX_KEY)); progress(line)
+            warnings.append({"type": "openalex http 401", "detail": line})
+        if rec_id is not None:
+            for w in hits: absorb(rec_id, desc["route"], w, ch)
+            continue
         for w in hits:
             overlap = tracked_mentions(w["title"] + " " + w["abstract"])
             key = w["doi"] or (f"pmid:{w['pmid']}" if w["pmid"] else None) or f"title:{norm_title(w['title'])}"
@@ -378,9 +440,20 @@ def harvest(cfg, records, date_from, date_to, verify=True, now=None, catch_from=
                 candidates[other["doi"]] = candidates.pop(other["id"]); other["merged_from"].append(other["id"]); other["id"] = other["doi"]; by_title[nt] = other["doi"]
         else:
             by_title[nt] = key
+    if not_started:
+        warnings.append({"type": "time budget", "detail": f"{not_started} channels were not started because the run's time budget was reached; they are listed as failed with that reason"})
     if verify:
-        for c in candidates.values():
-            c["crossref"] = crossref_check(c["doi"]) if c["doi"] else {"resolves": None}
+        with_doi = [c for c in candidates.values() if c["doi"]]
+        progress(f"checking {len(with_doi)} candidate DOIs against Crossref ({int(time.monotonic() - t0)}s)")
+        skipped = 0
+        for i, c in enumerate(candidates.values(), 1):
+            if not c["doi"]: c["crossref"] = {"resolves": None}; continue
+            if past_deadline(): c["crossref"] = {"resolves": None, "error": f"not checked: {BUDGET_REASON}"}; skipped += 1; continue
+            c["crossref"] = crossref_check(c["doi"])
+            if i % 500 == 0: progress(f"  {i} of {len(candidates)} candidates checked ({int(time.monotonic() - t0)}s)")
+        if skipped:
+            warnings.append({"type": "time budget", "detail": f"{skipped} candidate DOIs were not checked against Crossref because the run's time budget was reached"})
+            progress(f"{skipped} candidate DOIs not checked against Crossref: {BUDGET_REASON}")
     items = sorted(candidates.values(), key=lambda c: (c["doi"] or "~", c["title"]))
     for c in items: c["instruments"].sort(); c["routes"].sort()
     new_list = sorted(new_items.values(), key=lambda c: (c["doi"] or "~", c["title"]))
@@ -394,6 +467,8 @@ def envelope(cfg, records, date_from, date_to, started, items, new_list, channel
         status = "failed"; warnings = warnings + [{"type": "configuration", "detail": "no retrieval channels were planned"}]
     else:
         status = "complete" if not failed else ("failed" if all(c["outcome"] == "failed" for c in ran) else "partial")
+    if status == "complete" and any(w.get("type") == "time budget" for w in warnings):
+        status = "partial"          # every channel ran, but the Crossref check of the candidates was cut short
     try: commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=ROOT).stdout.strip() or None
     except Exception: commit = None
     return {"schema_version": SCHEMA_VERSION, "harvester": "tools/harvest.py 0.2",
@@ -406,10 +481,148 @@ def envelope(cfg, records, date_from, date_to, started, items, new_list, channel
             "status": status, "sources": sources, "instruments": sorted(r["instrument_id"] for r in records),
             "channels": channels, "candidates": items, "new_instrument_candidates": new_list,
             "low_priority_counts": low, "warnings": warnings,
-            "note": "A candidate is a work retrieved by an instrument's names, abbreviation or citation route. screening_priority normal means a psychometric property term appears in its title or abstract; low means none was found, which may mean a missing abstract. Nothing here is a grade, a judgement or a registry change. status complete means every planned retrieval channel completed all its pages; it says nothing about screening."}
+            "note": "A candidate is a work retrieved by an instrument's names, abbreviation or citation route. screening_priority normal means a psychometric property term appears in its title or abstract; low means none was found, which may mean a missing abstract. Nothing here is a grade, a judgement or a registry change. status complete means every planned retrieval channel completed all its pages and, when verification was asked for, no Crossref check was cut short by the time budget; it says nothing about screening."}
+
+
+def next_action(env):
+    """The one action a person needs to take after this run, in plain words, or None when the run is complete. Used in the
+    cycle issue's title and first line, so it names the cause the run itself recorded rather than guessing."""
+    if env.get("status") == "complete": return None
+    from cycle import recovery_deadline, long_date
+    cyc = env.get("cycle") or {}
+    rerun = "re-run evidence-harvest (Run workflow, both window fields empty)"
+    if cyc.get("kind") == "planned" and re.fullmatch(r"\d{4}-\d{2}", str(cyc.get("id"))):
+        rerun += f" by {long_date(recovery_deadline(cyc['id']))} (UTC)"
+    elif cyc.get("kind") == "manual":
+        rerun = "re-run the same manual window"
+    bad = [c for c in env.get("channels", []) if c.get("outcome") not in ("complete", "unavailable")]
+    if any(c.get("source") == "openalex" and str(c.get("error") or "").startswith("http 401") for c in bad):
+        if any("authenticated" in str(s) for s in env.get("sources", [])):
+            return f"Check that the OPENALEX_API_KEY repository secret is a valid key, then {rerun}."
+        return f"Set the OPENALEX_API_KEY repository secret, then {rerun}."
+    if (env.get("time_budget") or {}).get("reached"):
+        if (env.get("date_bases") or {}).get("full_history"):
+            return "Decide how the quarterly full-history pass should run: it does not fit in one run's time budget, so a re-run stops in the same place (evidence/README.md)."
+        return f"{rerun[0].upper() + rerun[1:]}; if it stops at the time budget again, the run log shows which channels were slow."
+    return f"{rerun[0].upper() + rerun[1:]}; if the same channels fail again, their errors are listed below."
 
 
 # ---------- self test ----------
+
+def budget_and_progress_checks(cfg):
+    """Offline, with the network layer stubbed: progress lines per channel, the time budget (channels not started, a page loop
+    stopped, the Crossref check cut short, full-history channels last), the OpenAlex 401 line, error text and next_action."""
+    global get, DEADLINE, OPENALEX_KEY
+    import io, contextlib
+    real_get, saved_key = get, OPENALEX_KEY
+    OPENALEX_KEY = None                      # the checks describe a keyless run whatever the environment holds
+    cfg2 = {**cfg, "records": [{**cfg["records"][0], "citation_seeds": [{"openalex_id": "W1"}]},
+                               {"instrument_id": "b", "names": ["Beta Index"], "abbreviations": [], "abbreviation_context": [], "citation_seeds": [{"openalex_id": "W2"}]}]}
+    calls = {"n": 0, "stop_after": None}
+    def stub(url, tries=5):
+        calls["n"] += 1
+        if calls["stop_after"] is not None and calls["n"] >= calls["stop_after"]:
+            globals()["DEADLINE"] = time.monotonic() - 1                 # the budget runs out during this request
+        if "openalex" in url:
+            return None, "http 401: API key required for cursor paging Paging past the first page with cursor= needs a free API key."
+        if "crossref" in url:
+            return {"message": {"type": "journal-article"}}, None
+        n = calls["n"]
+        return {"hitCount": 1, "resultList": {"result": [{"doi": f"10.1/x{n}", "title": f"Alpha Scale validation {n}"}]}, "nextCursorMark": None}, None
+    def run_stubbed(full_history=False, verify=False):
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            out = harvest(cfg2, cfg2["records"], "2026-01-01", "2026-01-31", verify=verify, now="t", catch_from="2025-11-02", full_history=full_history)
+        return out, err.getvalue()
+    get = stub
+    try:
+        DEADLINE = None
+        (items, _n, chs, _l, warns), log = run_stubbed(verify=True)
+        lines = [x for x in log.splitlines() if x.startswith("[")]
+        assert len(lines) == len(chs) and lines[0].startswith(f"[1/{len(chs)}]") and lines[-1].startswith(f"[{len(chs)}/{len(chs)}]"), "one progress line per channel, numbered"
+        assert sum("OPENALEX_API_KEY" in x for x in log.splitlines()) == 1, "the 401 line is printed once, however many OpenAlex channels fail"
+        w401 = [w for w in warns if w["type"] == "openalex http 401"]
+        assert len(w401) == 1 and "API key required for cursor paging" in w401[0]["detail"] and "setting the OPENALEX_API_KEY repository secret is the fix" in w401[0]["detail"], w401
+        oa = [c for c in chs if c["source"] == "openalex" and c["outcome"] != "unavailable"]
+        assert oa and all(c["outcome"] == "failed" and c["error"].startswith("http 401: API key required") for c in oa), "the server's reason is kept in the channel outcome"
+        assert "a key" in openalex_401_line("http 401: x", True) and "valid key" in openalex_401_line("http 401: x", True)
+        # the budget runs out during the third request: later channels are not started, full-history ones are last, the file still has every channel
+        DEADLINE = None; calls.update(n=0, stop_after=3)
+        (items, _n, chs, _l, warns), log = run_stubbed(full_history=True)
+        ran = [c for c in chs if c["outcome"] != "unavailable"]
+        skipped = [c for c in ran if (c["error"] or "").endswith("before this channel started")]
+        first_skip = next(i for i, c in enumerate(ran) if c in skipped)
+        assert skipped and all(c["outcome"] == "failed" and c["pages"] == 0 for c in skipped), "a channel never started is failed with the reason, not missing"
+        assert all(c in skipped for c in ran[first_skip:]), "once the budget is reached no further channel starts"
+        assert [c["date_basis"] == "full_history" for c in ran] == sorted(c["date_basis"] == "full_history" for c in ran), "every full-history channel comes after every windowed channel"
+        assert any(w["type"] == "time budget" for w in warns)
+        st = envelope(cfg2, cfg2["records"], "2026-01-01", "2026-01-31", "t", items, [], chs, {}, warns, ["s"])
+        assert st["status"] == "partial", st["status"]
+        # every channel completes, then the budget runs out before the Crossref check: the run is partial, the unchecked DOIs say why
+        cfg3 = {**cfg, "records": [cfg["records"][0]]}
+        DEADLINE = None; calls.update(n=0, stop_after=None)
+        err = io.StringIO()
+        def stub_last(url, tries=5):
+            r = stub(url, tries)
+            if "europepmc" in url and calls["n"] >= 2: globals()["DEADLINE"] = time.monotonic() - 1     # after the second and last channel
+            return r
+        get = stub_last
+        with contextlib.redirect_stderr(err):
+            items, _n, chs, _l, warns = harvest(cfg3, cfg3["records"], "2026-01-01", "2026-01-31", verify=True, now="t", catch_from="2025-11-02")
+        assert all(c["outcome"] in ("complete", "unavailable") for c in chs), [c["outcome"] for c in chs]
+        assert items and all(c["crossref"].get("error") == f"not checked: {BUDGET_REASON}" for c in items), [c["crossref"] for c in items]
+        assert envelope(cfg3, cfg3["records"], "2026-01-01", "2026-01-31", "t", items, [], chs, {}, warns, ["s"])["status"] == "partial", "a Crossref check cut short is not a complete run"
+        # a page loop stops at the budget between pages and says after how many
+        DEADLINE = None
+        def two_pages(url, tries=5):
+            globals()["DEADLINE"] = time.monotonic() - 1
+            return {"hitCount": 300, "resultList": {"result": [{"doi": "10.1/p", "title": "t"}]}, "nextCursorMark": "next"}, None
+        get = two_pages
+        hits, pages, reported, e = europepmc_channel("x", "2026-01-01", "2026-01-31")
+        assert pages == 1 and e == f"{BUDGET_REASON} after 1 page(s)", (pages, e)
+        # the real command line: the artefact a planned cycle writes carries the action, the recovery date and the 401 line
+        DEADLINE = None; get = lambda url, tries=5: ((None, "http 401: API key required for cursor paging") if "openalex" in url else
+                                                    ({"hitCount": 0, "resultList": {"result": []}, "nextCursorMark": None}, None))
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            outp = Path(tmp) / "2026-11.json"
+            argv = sys.argv
+            sys.argv = ["harvest.py", "--from", "2026-10-01", "--to", "2026-11-01", "--catch-from", "2026-08-03", "--cycle-id", "2026-11", "--cycle-kind", "planned", "--no-verify", "--time-budget-minutes", "240", "--out", str(outp)]
+            try:
+                with contextlib.redirect_stderr(io.StringIO()): main()
+                code = 0
+            except SystemExit as ex: code = ex.code
+            finally: sys.argv = argv
+            art = json.loads(outp.read_text(encoding="utf-8"))
+        assert code == 2 and art["status"] == "partial" and art["time_budget"] == {"minutes": 240, "reached": False}, (code, art["status"], art.get("time_budget"))
+        assert art["next_action"] == "Set the OPENALEX_API_KEY repository secret, then re-run evidence-harvest (Run workflow, both window fields empty) by 30 November 2026 (UTC).", art["next_action"]
+        assert [w["type"] for w in art["warnings"]].count("openalex http 401") == 1
+    finally:
+        get = real_get; DEADLINE = None
+    # the server's reason survives into the error text, the key never does
+    import urllib.error as ue
+    try:
+        OPENALEX_KEY = "sekret-key"
+        body = json.dumps({"error": "API key required for cursor paging", "message": "bad key sekret-key"}).encode()
+        txt = http_error_text(ue.HTTPError("https://x", 401, "Unauthorized", {}, io.BytesIO(body)))
+        assert txt.startswith("http 401: API key required for cursor paging") and "sekret-key" not in txt and "***" in txt, txt
+        assert http_error_text(ue.HTTPError("https://x", 404, "Not Found", {}, None)) == "http 404: Not Found"
+    finally:
+        OPENALEX_KEY = saved_key
+    get = lambda url, tries=5: (None, "http 404: Not Found")
+    try: assert crossref_check("10.1/none")["resolves"] is False, "a 404 with its reason still means the DOI does not resolve"
+    finally: get = real_get
+    # next_action names the cause the run recorded
+    base = {"status": "partial", "cycle": {"id": "2026-11", "kind": "planned"}, "sources": ["openalex (cites only; keyless)"], "date_bases": {"full_history": False}, "time_budget": {"reached": False}}
+    c401 = [{"source": "openalex", "outcome": "partial", "error": "http 401: API key required"}]
+    assert next_action({**base, "status": "complete"}) is None
+    assert next_action({**base, "channels": c401}) == "Set the OPENALEX_API_KEY repository secret, then re-run evidence-harvest (Run workflow, both window fields empty) by 30 November 2026 (UTC)."
+    assert next_action({**base, "sources": ["openalex (cites only; authenticated)"], "channels": c401}).startswith("Check that the OPENALEX_API_KEY repository secret is a valid key")
+    fh = next_action({**base, "channels": [{"source": "europepmc", "outcome": "failed", "error": "time budget reached before this channel started"}], "date_bases": {"full_history": True}, "time_budget": {"reached": True}})
+    assert fh.startswith("Decide how the quarterly full-history pass should run"), fh
+    assert next_action({**base, "channels": [{"source": "europepmc", "outcome": "failed", "error": "http 500"}]}).startswith("Re-run evidence-harvest")
+    print("budget and progress checks passed: a numbered line per channel, the 401 reason kept and one fix line printed, channels after the budget recorded as not started with full history last, a cut Crossref check makes the run partial, a page loop stops between pages, the key is scrubbed, next_action names the cause")
+
 
 def self_test():
     """Offline checks of the pure functions: DOI canonicalisation, term matching, status logic, query file shape."""
@@ -432,7 +645,8 @@ def self_test():
     def stub_get(url, tries=5): return {"hitCount": 0, "resultList": {"result": []}, "nextCursorMark": None, "results": [], "meta": {"count": 0}}, None
     get = stub_get
     try:
-        with ReadBoundary() as g:
+        import io as _io_quiet, contextlib as _cl
+        with ReadBoundary() as g, _cl.redirect_stderr(_io_quiet.StringIO()):
             _items, _new, _chs, _low, _warn = harvest(cfg, cfg["records"], "2026-01-01", "2026-01-31", verify=False, now="t")
         assert g.record()["files_attempted"] == [] and g.record()["files_refused"] == [] and g.record()["files_opened"] == [], f"the stubbed discovery run attempted reads: {g.record()}"
         assert g.record()["interval"] == READ_BOUNDARY_INTERVAL and g.record()["api_coverage"] == READ_BOUNDARY_APIS
@@ -453,6 +667,7 @@ def self_test():
             assert g3.record()["files_opened"] == [str(gold.resolve())] and g3.record()["files_refused"] == [], "an allowed read is recorded as opened, not refused"
     finally:
         get = real_get
+    budget_and_progress_checks(cfg)
     from cycle import expected_channels, channels_not_complete
     q = json.loads(QUERIES.read_text(encoding="utf-8"))
     assert "providers" in q and "openalex" in q["providers"] and isinstance(q["providers"]["openalex"].get("search_routes"), bool), "the provider profile is pinned in the query file"
@@ -497,6 +712,7 @@ def main():
     ap.add_argument("--evaluation-id", help="the predeclared id of a retrieval-evaluation lock this run serves; recorded in the artefact so the evaluator can bind it")
     ap.add_argument("--catch-from", help="start of the ingestion catch-up window (first-index date, Europe PMC); from tools/cycle.py window")
     ap.add_argument("--full-history", action="store_true", help="quarterly: names and citation links with no date filter, beside the windowed channels")
+    ap.add_argument("--time-budget-minutes", type=int, help="after this many minutes no new page, channel or Crossref check starts; what did not run is recorded with the reason and the file is still written")
     a = ap.parse_args()
     if a.self_test: return self_test()
     if not (a.date_from and a.date_to): sys.exit("--from and --to are required (YYYY-MM-DD)")
@@ -516,13 +732,21 @@ def main():
         try: cf = datetime.date.fromisoformat(a.catch_from)
         except ValueError: sys.exit("configuration error: --catch-from must be YYYY-MM-DD")
         if cf > d1: sys.exit("configuration error: --catch-from after --to")
-    with ReadBoundary() as guard:          # the run itself opens no file: configuration is already in memory, the indexes are over the network
+    global DEADLINE
+    if a.time_budget_minutes is not None:
+        if a.time_budget_minutes <= 0: sys.exit("configuration error: --time-budget-minutes must be positive")
+        DEADLINE = time.monotonic() + 60 * a.time_budget_minutes
+    progress(f"harvest {a.cycle_id or 'manual'}: {len(records)} instruments, window {a.date_from} to {a.date_to}"
+             + (f", catch-up from {a.catch_from}" if a.catch_from else "") + (", full history" if a.full_history else "")
+             + (f", time budget {a.time_budget_minutes} min" if a.time_budget_minutes else ", no time budget") + (", OpenAlex key set" if OPENALEX_KEY else ", no OpenAlex key"))
+    with ReadBoundary() as guard:         # the run itself opens no file: configuration is already in memory, the indexes are over the network
         items, new_list, channels, low, warnings = harvest(cfg, records, a.date_from, a.date_to, verify=not a.no_verify, now=started, catch_from=a.catch_from, full_history=a.full_history)
     prov = cfg.get("providers") or {}
     sources = ["europepmc", "openalex (" + ("cites, names, abbreviation" if prov.get("openalex", {}).get("search_routes") else "cites only, per the provider profile") + ("; authenticated" if OPENALEX_KEY else "; keyless") + ")"] + (["crossref"] if not a.no_verify else [])
     if a.evaluation_id and not re.fullmatch(r"[A-Za-z0-9_.:-]{4,80}", a.evaluation_id): sys.exit("configuration error: --evaluation-id is 4 to 80 characters of letters, digits, _ . : -")
     out = envelope(cfg, records, a.date_from, a.date_to, started, items, new_list, channels, low, warnings, sources, a.evaluation_id)
     out["read_boundary"] = guard.record()
+    out["time_budget"] = {"minutes": a.time_budget_minutes, "reached": any(w.get("type") == "time budget" for w in warnings)}
     out["full_inventory"] = not a.instrument       # a manual one-instrument run is not a monthly cycle
     if a.instrument and a.cycle_kind == "planned": sys.exit("configuration error: a planned cycle covers the full inventory; use no --cycle-kind or manual for a one-instrument run")
     out["cycle"] = {"id": a.cycle_id or f"manual-{a.date_from}-{a.date_to}", "kind": a.cycle_kind or "manual",
@@ -537,6 +761,7 @@ def main():
                                      "note": "apply with tools/cycle.py advance --artefact FILE in the screening pull request; nothing advances automatically"}
     else:
         out["watermark_proposal"] = None
+    out["next_action"] = next_action(out)          # after cycle, date bases and status are all in place
     text = json.dumps(out, indent=2, ensure_ascii=False) + "\n"
     if a.out: Path(a.out).parent.mkdir(parents=True, exist_ok=True); Path(a.out).write_text(text, encoding="utf-8")
     else: sys.stdout.write(text)

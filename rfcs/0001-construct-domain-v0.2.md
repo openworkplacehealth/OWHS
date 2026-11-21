@@ -97,4 +97,4 @@ Schemas that pin `construct-domain@0.1.0` continue to validate. Producers may ad
 
 ## Comments
 
-Open a comment on this RFC's issue once the repository is public; until then, email hello@openworkplacehealth.org. Please declare any financial or professional interest in an instrument, product or organisation your comment touches.
+Open a comment on this RFC's issue, or email hello@openworkplacehealth.org. Please declare any financial or professional interest in an instrument, product or organisation your comment touches.

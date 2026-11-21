@@ -1,0 +1,7 @@
+{
+ "date": "2026-11-19",
+ "shown": "19 November 2026",
+ "tab": "site",
+ "order": 9,
+ "html": "Every page now carries schema.org structured data (JSON-LD) built from the repository's own data: the home page as a <code>WebSite</code> and <code>Organization</code>; the registry and the question bank as a <code>Dataset</code> with their licences, versions and the JSON, CSV and PDF downloads; each instrument page as a <code>WebPage</code> about the instrument with its cited studies; the specification as a <code>TechArticle</code> with its version and status; the code lists as <code>DefinedTermSet</code>s; and a breadcrumb trail on every page but the home page. Dates are the dates the repository records, and a page that records none carries none. A check in CI refuses malformed or stale JSON-LD."
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Check a file | OWHS</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://openworkplacehealth.org/check/">
+<!-- auto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/atom+xml" title="OWHS changelog: all changes" href="/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="OWHS evidence sweep reports" href="/feed-sweeps.xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Open Workplace Health Standard">
+<meta property="og:url" content="https://openworkplacehealth.org/check/">
+<meta property="og:title" content="Check a file | OWHS">
+<meta property="og:description" content="Check an OWHS v0.2 record or bundle against the standard's Level 1 structural rules in your browser, with each failure explained. The file is not uploaded or sent anywhere.">
+<meta property="og:image" content="https://openworkplacehealth.org/owhs-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Open Workplace Health Standard: an open data standard for UK workplace health">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://openworkplacehealth.org/owhs-card.png">
+<!-- /auto -->
+<meta name="description" content="Check an OWHS v0.2 record or bundle against the standard's Level 1 structural rules in your browser, with each failure explained. The file is not uploaded or sent anywhere.">
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400 700;font-display:swap;src:url(/check/vendor/fonts/inter-latin.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(/check/vendor/fonts/plexmono-400-latin.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(/check/vendor/fonts/plexmono-500-latin.woff2) format('woff2')}
+:root{
+  color-scheme:light;
+  --ink:#101418; --body:#33393f; --muted:#5c646c; --line:#e3e6e9;
+  --accent:#0b6e5f; --accent-deep:#095548; --accent-mid:#6fb0a4; --accent-soft:#e6f2f0; --accent-tint:#f2f8f7;
+  --paper:#ffffff; --wash:#f6f7f8; --on-accent:#ffffff;
+  --bad:#a3361f; --bad-soft:#fbeeea; --bad-line:#e9c3b8;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace; --sans:'Inter',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--body);background:var(--paper);line-height:1.55;font-size:15.5px;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+code{font-family:var(--mono);font-size:.9em;background:var(--wash);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--line);padding:18px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:0 auto;padding:0 24px}
+.mark{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;gap:22px;font-size:15px;flex-wrap:wrap}
+.nav-links a{text-decoration:none;color:var(--body)}
+.nav-links a:hover,.nav-links a[aria-current]{color:var(--accent)}
+
+.hero{padding:44px 0 26px}
+.status{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--accent);background:var(--accent-soft);padding:5px 12px;border-radius:4px;margin-bottom:18px}
+.hero h1{color:var(--ink);font-size:clamp(30px,4.6vw,44px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;max-width:760px;text-wrap:balance}
+.hero .lede{font-size:18px;margin-top:16px;max-width:680px}
+
+.privacy{background:var(--accent-tint);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:16px 20px;margin-top:4px}
+.band .privacy h2{font-size:16px;color:var(--ink);font-weight:600}
+.privacy ul{margin:8px 0 0 18px;font-size:14.5px}
+.privacy li{margin-top:4px}
+
+section.band{padding:34px 0;border-top:1px solid var(--line)}
+section.band.first{border-top:0;padding-top:0}
+.band h2{color:var(--ink);font-size:22px;font-weight:700;line-height:1.25;text-wrap:balance}
+.band h3{color:var(--ink);font-size:16px;font-weight:600}
+.band p+p{margin-top:10px}
+
+.tool{border:1px solid var(--line);border-radius:8px;background:var(--paper);margin-top:22px;overflow:hidden}
+.tool .cap{background:var(--wash);border-bottom:1px solid var(--line);padding:10px 18px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.tool .bd{padding:18px}
+.field-row{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+label.lbl{font-weight:600;color:var(--ink);font-size:14.5px}
+select,textarea,button{font:inherit}
+select{border:1px solid #c9cfd4;border-radius:6px;padding:7px 10px;background:var(--paper);color:var(--ink);font-size:14.5px;max-width:100%}
+.drop{position:relative;margin-top:6px}
+textarea{display:block;width:100%;min-height:230px;resize:vertical;border:1px solid #c9cfd4;border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.5;color:var(--ink);background:var(--paper);tab-size:2}
+.drop.over textarea{border-color:var(--accent);background:var(--accent-tint);outline:2px dashed var(--accent-mid);outline-offset:-6px}
+.hint{font-size:13.5px;color:var(--muted);margin-top:8px}
+.filebtn{color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer;position:relative}
+.filebtn input{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden;left:0;top:0}
+.filebtn:focus-within{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+button{cursor:pointer;border-radius:6px;padding:9px 16px;font-size:14.5px;font-weight:500;border:1px solid #c9cfd4;background:var(--paper);color:var(--ink)}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);padding:9px 22px}
+button.primary:hover{background:var(--accent-deep);color:var(--on-accent)}
+button[disabled]{opacity:.6;cursor:progress}
+button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#status{font-size:13.5px;color:var(--muted)}
+.fine{font-size:13px;color:var(--muted);margin-top:12px}
+
+.samples{margin-top:18px}
+.samples ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.samples button.sample{width:100%;text-align:left;font-size:13.5px;padding:8px 12px;display:flex;gap:10px;align-items:baseline;background:var(--paper)}
+.sample-kind{font-family:var(--mono);font-size:11px;padding:1px 6px;border-radius:3px;flex:none}
+.sample-pass{background:var(--accent-soft);color:var(--accent)}
+.sample-fail{background:var(--bad-soft);color:var(--bad)}
+.samples .fine{margin-top:8px}
+
+.result{outline:none}
+.verdict{border-radius:8px;padding:18px 20px;border:1px solid var(--line);border-left-width:6px}
+.verdict.pass{background:var(--accent-tint);border-left-color:var(--accent)}
+.verdict.fail{background:var(--bad-soft);border-color:var(--bad-line);border-left-color:var(--bad)}
+.verdict.neutral{background:var(--wash);border-left-color:var(--muted)}
+.verdict .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--muted)}
+.verdict.pass .kicker{color:var(--accent)}
+.verdict.fail .kicker{color:var(--bad)}
+.verdict h2{margin-top:4px;font-size:22px}
+.verdict p{margin-top:8px;font-size:14.5px;max-width:720px}
+.findings{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:12px;counter-reset:f}
+.finding{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.finding .fh{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;background:var(--wash);padding:10px 16px;border-bottom:1px solid var(--line)}
+.finding .rule{font-family:var(--mono);font-size:12px;background:var(--bad-soft);color:var(--bad);padding:2px 7px;border-radius:3px}
+.finding .rule.review{background:var(--accent-soft);color:var(--accent)}
+.finding .where{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:500;overflow-wrap:anywhere}
+.finding .fb{padding:12px 16px 14px;font-size:14.5px}
+.finding .plain{color:var(--ink)}
+.finding dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin-top:10px;font-size:13.5px}
+.finding dt{color:var(--muted)}
+.finding dd{overflow-wrap:anywhere}
+.finding .raw{font-family:var(--mono);font-size:12.5px;color:var(--body)}
+.notes{margin-top:14px;font-size:14px}
+.notes li{margin:4px 0 0 18px}
+.report{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+.report pre{margin-top:10px;background:var(--wash);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:12px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;max-height:360px;overflow:auto}
+.report summary{cursor:pointer;margin-top:12px;font-size:14px;color:var(--accent)}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.two ul{margin:10px 0 0 18px;font-size:14.5px}
+.two li{margin-top:6px}
+.note{font-size:14px;color:var(--muted)}
+.two .note{margin-top:12px}
+
+footer{padding:34px 0 52px;font-size:13.5px;color:var(--muted);border-top:1px solid var(--line)}
+footer .fgrid{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:start}
+footer p{max-width:760px}
+footer .mark{font-size:15px;margin-bottom:10px}
+.foot-links{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:12.5px;text-align:right}
+footer .fgrid>.tm{grid-column:1/-1}
+
+@media (max-width:760px){.two,.samples ul{grid-template-columns:1fr}footer .fgrid{grid-template-columns:1fr}.foot-links{text-align:left}.finding dl{grid-template-columns:1fr;gap:2px}.finding dd{margin-bottom:6px}.hero{padding-top:32px}}
+@media (prefers-reduced-motion:no-preference){.verdict{animation:in .18s ease-out}@keyframes in{from{opacity:0;transform:translateY(4px)}}}
+@media print{header,.nav-links,.tool,.samples,.report .actions{display:none}}
+</style>
+<script type="module" src="/check/check.js"></script>
+<!-- mobile --><style>@media (max-width:640px){.nav-links{column-gap:16px;row-gap:2px;font-size:14.5px;line-height:1.4}.nav-links a{padding:5px 0}.subnav .wrap{column-gap:16px;row-gap:2px}.subnav a{padding:4px 0}table:not(.matrix){display:block;max-width:100%;overflow-x:auto}p,li,dd,a,:not(pre)>code{overflow-wrap:anywhere}td p,td li,td a,td code,th a{overflow-wrap:normal}}</style><!-- /mobile -->
+<!-- jsonld --><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://openworkplacehealth.org/check/","url":"https://openworkplacehealth.org/check/","name":"Check a file","description":"Check an OWHS v0.2 record or bundle against the standard's Level 1 structural rules in your browser, with each failure explained. The file is not uploaded or sent anywhere.","inLanguage":"en-GB","isPartOf":{"@type":"WebSite","@id":"https://openworkplacehealth.org/#website","name":"Open Workplace Health Standard","url":"https://openworkplacehealth.org/"},"mainEntity":{"@id":"https://openworkplacehealth.org/check/#checker"},"breadcrumb":{"@id":"https://openworkplacehealth.org/check/#breadcrumb"}},{"@type":"WebApplication","@id":"https://openworkplacehealth.org/check/#checker","name":"OWHS browser checker","url":"https://openworkplacehealth.org/check/","applicationCategory":"DeveloperApplication","operatingSystem":"Any, in a web browser","browserRequirements":"Requires JavaScript and WebAssembly","isAccessibleForFree":true,"license":"https://www.apache.org/licenses/LICENSE-2.0","creator":{"@type":"Organization","@id":"https://openworkplacehealth.org/#project","name":"Open Workplace Health Standard","url":"https://openworkplacehealth.org/"},"inLanguage":"en-GB","softwareVersion":"1.0.0"},{"@type":"BreadcrumbList","@id":"https://openworkplacehealth.org/check/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://openworkplacehealth.org/"},{"@type":"ListItem","position":2,"name":"Check a file","item":"https://openworkplacehealth.org/check/"}]}]}</script><!-- /jsonld -->
+</head>
+<body>
+<header><div class="nav">
+  <a class="mark" href="/index.html"><span class="dot"></span>OWHS</a>
+  <nav class="nav-links">
+    <a href="/index.html">Home</a>
+    <a href="/why.html">The case</a>
+    <a href="/how-it-works.html">How it works</a>
+    <a href="/standard.html">Inside the standard</a>
+    <a href="/question-bank/index.html">Question bank</a>
+    <a href="/instrument-registry/index.html">Instrument registry</a>
+    <a href="/methods.html">How we grade</a>
+    <a href="/governance.html">Governance</a>
+    <a href="/changelog.html">Changelog</a>
+    <a href="/search.html">Search</a>
+  </nav>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <span class="status">OWHS v0.2 · Level 1 structural check · runs in your browser</span>
+  <h1>Check a file against the standard</h1>
+  <p class="lede">Paste or drop one OWHS v0.2 record, or an entity-graph bundle of records. The repository's reference validator runs on this page and tells you whether the file is structurally conformant (Level 1) and, where it is not, which field broke which rule.</p>
+</div></section>
+
+<section class="band first"><div class="wrap">
+  <div class="privacy" role="note" aria-labelledby="privacy-title">
+    <h2 id="privacy-title">Your file stays in this browser</h2>
+    <ul>
+      <li>The file is read and checked on this page. It is not uploaded, stored or sent anywhere, and this page has no visit counter.</li>
+      <li>The page's security policy lets it fetch only from openworkplacehealth.org, and the only things it fetches are its own files: the page itself, then the checker the first time you press Check. After that it makes no requests at all, so it keeps working with your connection switched off. Your browser's network panel will show this.</li>
+      <li>Even so, use synthetic or test records. Do not paste real personal data.</li>
+    </ul>
+  </div>
+
+  <div class="tool ph-no-capture" id="tool">
+    <div class="cap">checker 1.0.0 · schema v0.2 · reference validator tools/validate.py</div>
+    <div class="bd">
+      <div class="field-row">
+        <label class="lbl" for="kind">Record type</label>
+        <select id="kind">
+          <option value="auto">Detect from the fields</option>
+          <option value="bundle">Entity-graph bundle</option>
+          <optgroup label="One record">
+          <option value="Organisation">Organisation</option>
+          <option value="OrgUnit">OrgUnit</option>
+          <option value="WorkerPseudonym">WorkerPseudonym</option>
+          <option value="AbsenceEpisode">AbsenceEpisode</option>
+          <option value="ReturnToWorkOutcome">ReturnToWorkOutcome</option>
+          <option value="OHEpisode">OHEpisode</option>
+          <option value="ReasonableAdjustment">ReasonableAdjustment</option>
+          <option value="BenefitEntitlement">BenefitEntitlement</option>
+          <option value="BenefitUtilisation">BenefitUtilisation</option>
+          <option value="DisabilityParticipation">DisabilityParticipation</option>
+          <option value="MeasurementContext">MeasurementContext</option>
+          <option value="WellbeingObservation">WellbeingObservation</option>
+          <option value="InstrumentAdministration">InstrumentAdministration</option>
+          <option value="AggregateReport">AggregateReport</option>
+          <option value="BenchmarkRelease">BenchmarkRelease</option>
+          <option value="Crosswalk">Crosswalk</option>
+          </optgroup>
+        </select>
+      </div>
+      <label class="lbl" for="input">The JSON to check</label>
+      <div class="drop" id="drop">
+        <textarea id="input" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-describedby="input-hint" placeholder='{ "episodeId": "abs-2026-000123", "pseudonymId": "owhs:pseudo:a1b2c3d4e5f60718", ... }'></textarea>
+      </div>
+      <p class="hint" id="input-hint">Paste the JSON, drop a .json file on the box, or <label class="filebtn">choose a file<input type="file" id="file" accept=".json,application/json"></label>. One record or one bundle at a time.</p>
+      <div class="actions">
+        <button type="button" class="primary" id="run">Check</button>
+        <button type="button" id="clear">Clear</button>
+        <span id="status" role="status" aria-live="polite"></span>
+      </div>
+      <p class="fine">The first check downloads the checker from this site, about 14 MB before compression. Your browser keeps it for later visits. Your file is never part of any download or request.</p>
+    </div>
+  </div>
+
+  <div class="samples">
+    <h3>Or try a synthetic example</h3>
+    <ul>
+        <li><button type="button" class="sample" data-sample="0"><span class="sample-kind sample-pass">passes</span>Absence episode that passes</button></li>
+        <li><button type="button" class="sample" data-sample="1"><span class="sample-kind sample-fail">fails</span>Absence episode with four problems</button></li>
+        <li><button type="button" class="sample" data-sample="2"><span class="sample-kind sample-pass">passes</span>Aggregate report that passes</button></li>
+        <li><button type="button" class="sample" data-sample="3"><span class="sample-kind sample-fail">fails</span>Aggregate report of four people, not suppressed</button></li>
+        <li><button type="button" class="sample" data-sample="4"><span class="sample-kind sample-fail">fails</span>OH episode with a clinical key</button></li>
+        <li><button type="button" class="sample" data-sample="5"><span class="sample-kind sample-fail">fails</span>Unit that is its own parent</button></li>
+        <li><button type="button" class="sample" data-sample="6"><span class="sample-kind sample-pass">passes</span>Bundle of all sixteen record types that passes</button></li>
+        <li><button type="button" class="sample" data-sample="7"><span class="sample-kind sample-fail">fails</span>Bundle with a return before its absence began</button></li>
+    </ul>
+    <p class="fine">Copied from the repository's <a href="https://github.com/openworkplacehealth/OWHS/tree/main/examples">examples</a>. They are made up and identify no one.</p>
+  </div>
+</div></section>
+
+<section class="band result ph-no-capture" id="result" tabindex="-1" aria-labelledby="result-title" hidden><div class="wrap">
+  <div class="verdict" id="verdict">
+    <div class="kicker" id="result-kicker"></div>
+    <h2 id="result-title"></h2>
+    <div id="result-summary"></div>
+  </div>
+  <ol class="findings" id="findings"></ol>
+  <div class="notes" id="notes"></div>
+  <div class="report">
+    <h3>Report</h3>
+    <p class="note">It names the checker version, the schema version and the time of the check. Copying it puts it on your clipboard; nothing is sent.</p>
+    <div class="actions">
+      <button type="button" id="copy-text">Copy as text</button>
+      <button type="button" id="copy-json">Copy as JSON</button>
+      <button type="button" id="save-json">Save as JSON</button>
+      <span id="copy-status" role="status" aria-live="polite" class="note"></span>
+    </div>
+    <details><summary>Show the report</summary><pre id="report-text"></pre></details>
+    <pre id="report-json" hidden></pre>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap two">
+  <div>
+    <h2>What a pass means</h2>
+    <p>A pass means the file is <strong>structurally conformant</strong>: it meets <a href="/spec/#level-1-schema-valid">Level 1</a> of the specification's three conformance levels. It is not a compliance finding, a certificate or a privacy assessment. For one record the check is:</p>
+    <ul>
+      <li>the record against its v0.2 JSON Schema: required fields, types, patterns, code values written into the schema, and no field the schema does not declare;</li>
+      <li>every <code>format</code> asserted, so a date has to be a real date;</li>
+      <li>the restrictions on extension keys inside <code>ext</code>, including the ban on identifier and clinical key names;</li>
+      <li>the named within-record rules <a href="/spec/#named-within-record-rules">C1 to C18</a> that apply to its type.</li>
+    </ul>
+    <p class="note">For a bundle, the entity-graph checker runs the same checks on every record, then the relationship checks G01 to G10 and the measurement checks described in the <a href="/entity-graph-validation.html">entity-graph guide</a>, and lists what it could not establish.</p>
+  </div>
+  <div>
+    <h2>What it does not check</h2>
+    <ul>
+      <li><a href="/spec/#level-2-code-lists">Level 2</a>: whether each coded value resolves to a current code-list version.</li>
+      <li><a href="/spec/#level-3-privacy-profile">Level 3</a>: the privacy obligations. Whether an output is safe to disclose, whether a declared count is true, whether a value withheld by omission should have been suppressed, and whether a field reaches only the people its visibility class allows. The specification says plainly that no tool can verify these from a file alone.</li>
+      <li>Identifiers or sensitive meaning hidden inside permitted text values.</li>
+      <li>References to records that are not in the file, and what an extension profile requires when no profile is supplied.</li>
+    </ul>
+    <p class="note">The <a href="/spec/#the-privacy-profile-normative">privacy profile</a> sets out the obligations a producer carries whatever this page says.</p>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>The same code as the reference validator</h2>
+  <p>This page does not reimplement the rules. It runs <code>tools/validate.py</code> and <code>tools/check_entity_graph.py</code> from the repository, unchanged, in Python 3.14.2 compiled to WebAssembly (Pyodide 314.0.7) with jsonschema 4.26.0. The Python tools are the reference; this page is a way to run them without installing anything. A test in the repository runs all 147 example files (82 single records and 65 bundles) through the command-line tools and through this page in a headless browser, and fails on any difference in the verdict or in the rules reported.</p>
+  <p>To run the same check on your own machine: <code>python tools/validate.py schemas/v0.2/AbsenceEpisode.json your-file.json</code>. Every file this page loads, with its source and licence, is listed in <a href="/check/vendor/MANIFEST.json">the vendor manifest</a>. Reference validator SHA-256 begins <code>41bdc4c03ccb</code>.</p>
+</div></section>
+</main>
+
+<footer><div class="wrap fgrid">
+  <div>
+    <a class="mark" href="/index.html"><span class="dot"></span>OWHS</a>
+    <p>The Open Workplace Health Standard is an early open specification, created by <a href="https://www.linkedin.com/in/zak-fenton-a433624b/">Zak Fenton</a> and currently stewarded by Alltoogether, which builds products that may implement it. It is open to inspect, use, challenge and improve. If it earns independent use and recurring contribution, its governance will move to a multi-stakeholder structure so that no single commercial organisation controls its future.</p>
+  </div>
+  <div class="foot-links">
+    <a href="https://openworkplacehealth.org">openworkplacehealth.org</a>
+    <a href="mailto:hello@openworkplacehealth.org">hello@openworkplacehealth.org</a>
+    <span>spec v0.2 draft · checker 1.0.0</span>
+  </div>
+<!-- mark --><p class="tm" style="margin-top:12px;font-size:13px;color:var(--muted,#5c646c)"><a href="/check/">Check a file</a> · <a href="/status.html">Is it maintained?</a> · <a href="/status.html#follow">Follow</a> · <a href="/feed.xml">Feed</a> · <a href="/cite.html">How to cite</a> · <a href="/using-owhs.html">Who uses OWHS</a> · <a href="/governance.html#maintainers">Who maintains this</a></p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">OWHS™ is a trade mark of All Toogether Ltd (UK application pending). For licences and third-party wording, see the <a href="/legal.html">legal page</a>.</p><p class="tm" style="margin-top:6px;font-size:13px;color:var(--muted,#5c646c)">No cookies, no advertising, no marketing. This page counts no visits and sends nothing anywhere. <a href="/privacy.html">Privacy</a> · <a href="/legal.html">Legal</a></p><!-- /mark -->
+</div></footer>
+</body>
+</html>

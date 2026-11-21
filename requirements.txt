@@ -1,11 +1,28 @@
 # Runtime dependencies of the reference validator and the build tools.
 # Pinned to major versions only: the tools use stable public APIs.
 #
-# jsonschema provides the Draft 2020-12 validator. Its `[format]` extra installs the
-# packages that make `format` assertable: without them jsonschema registers no checker
-# for a format and accepts any value for it, which is why tools/validate.py refuses to
-# run rather than report a pass it cannot stand behind.
-jsonschema[format]>=4.18
+# jsonschema provides the Draft 2020-12 validator. The packages below make `format`
+# assertable: without them jsonschema registers no checker for a format and accepts any
+# value for it, which is why tools/validate.py refuses to run rather than report a pass it
+# cannot stand behind. The formats the schemas use are date (checked by jsonschema
+# itself), date-time (rfc3339-validator) and uri (rfc3986-validator, MIT).
+#
+# The list is jsonschema's `[format-nongpl]` extra without rfc3987-syntax, written out.
+# The `[format]` extra would check uri with rfc3987, which is GPL-licensed; the browser
+# checker at site/check/ vendors the packages this file installs for the formats used, so
+# this keeps GPL code out of the site. rfc3987-syntax (iri and iri-reference only, which no
+# schema uses) builds a parser when jsonschema is imported, which added about half a
+# second to every validator run and several minutes to CI. If rfc3987 is installed
+# anyway, jsonschema prefers it for uri; every committed example gives the same result.
+jsonschema>=4.18
+rfc3339-validator
+rfc3986-validator>0.1.0
+fqdn
+idna
+isoduration
+jsonpointer>1.13
+uri-template
+webcolors>=24.6.0
 
 # The registry site generator writes a printable PDF of the grade matrix.
 reportlab>=4

@@ -5,6 +5,10 @@
     python tools/cycle.py verify  --cycle 2026-10             read-only: correlates run, artefact and issue through gh
     python tools/cycle.py advance --cycle 2026-10 --repo R    verifies the cycle through gh, then writes the accepted run's watermark proposal
                                   [--artefact FILE]          (the file must be byte-identical to the artefact downloaded from that run)
+    python tools/cycle.py alert   --cycle 2026-10 --title-out F --body-out F [--rc N] [--verify-output F] [--today D]
+                                                              the tripwire's issue title and body: the one action, the recovery date, or
+                                                              that the month can no longer be recovered
+    python tools/cycle.py previous --cycle 2026-10            prints 2026-09
     python tools/cycle.py --self-test                         offline contract suite, no network, no gh
 
 Cycle identity. A planned cycle is named by the month the run happens in: the run on 1 October is cycle 2026-10,
@@ -47,7 +51,8 @@ POLICY_VERSION = "2026.09-1"      # the planning policy (window, catch-up, quart
 POLICY_FILES = ("tools/harvest.py", "tools/cycle.py")
 POLICY_RE = re.compile(r'^POLICY_VERSION\s*=\s*"([^"]+)"', re.M)
 RUN_NAME_RE = re.compile(r"^evidence-harvest (schedule|workflow_dispatch) from=\[(.*?)\] to=\[(.*?)\]$")
-HARVEST_START_BOUND = datetime.timedelta(hours=6)   # the harvest step starts after checkout and setup, within the job's default 360-minute timeout
+HARVEST_START_BOUND = datetime.timedelta(hours=6)   # the harvest step starts after checkout and setup, within the job's timeout (300 minutes in harvest.yml, never above GitHub's 360)
+ALERT_ASSIGNEE = "zak-fenton"     # the steward the tripwire and an incomplete harvest assign and mention, so GitHub emails a person
 WATERMARKS_PATH = "evidence/watermarks.json"
 QUERIES_PATH = "evidence/queries/instruments-v1.json"
 
@@ -119,6 +124,61 @@ def plan(event, in_from, in_to, today, marks, qsha):
     catch_from = t - datetime.timedelta(days=CATCH_UP_DAYS)
     quarterly = kind == "planned" and today.month in QUARTER_MONTHS
     return {"cycle_id": cycle_id, "kind": kind, "from": f, "to": t, "catch_from": catch_from, "full_history": quarterly}
+
+
+def recovery_deadline(cycle_id):
+    """The last day (UTC) on which a run can still complete a planned cycle. A planned cycle is named by the month a run starts in,
+    so once that month has ended no run can produce it again."""
+    y, m = (int(x) for x in cycle_id.split("-"))
+    first_next = datetime.date(y + (m == 12), m % 12 + 1, 1)
+    return first_next - datetime.timedelta(days=1)
+
+
+def long_date(d):
+    return f"{d.day} {d.strftime('%B %Y')}"
+
+
+def previous_cycle(cycle_id):
+    y, m = (int(x) for x in cycle_id.split("-"))
+    return f"{y - (m == 1)}-{(m - 2) % 12 + 1:02d}"
+
+
+def missed_window_note(marks, qsha):
+    """What a missed month means for the search window, from the committed watermarks (never assumed)."""
+    entry = (marks.get("entries") or {}).get(qsha)
+    if entry:
+        return (f"The watermark for the current query file stands at {entry['last_complete_to']}, so the next complete planned run searches again "
+                f"from {int(marks.get('overlap_days', 14))} days before that date and covers the missed period.")
+    return ("No watermark has been set for the current query file, so each planned run searches from the first day of the previous month. "
+            "A missed month's publication window is therefore searched again only by a manual run with an explicit window (which never "
+            "satisfies a planned cycle), by the 90-day first-index catch-up and by the quarterly full-history pass.")
+
+
+def tripwire_alert(cycle_id, today, rc, verify_text, marks, qsha, assignee=ALERT_ASSIGNEE):
+    """(title, body) for the tripwire's maintenance issue, or for the note on a month that can no longer be recovered. The title
+    keeps the prefix 'No verified evidence sweep for CYCLE' that the workflow searches on; the body mentions the assignee once."""
+    deadline = recovery_deadline(cycle_id)
+    month = long_date(datetime.date(*(int(x) for x in cycle_id.split("-")), 1)).split(" ", 1)[1]
+    prefix = f"No verified evidence sweep for {cycle_id}"
+    if today > deadline:
+        title = f"{prefix}: missed, can no longer be recovered"
+        body = (f"@{assignee}, the evidence sweep for {month} (cycle {cycle_id}) was never verified, and it can no longer be recovered: a run "
+                f"belongs to the cycle of the month it starts in, and {month} ended on {long_date(deadline)}. This issue stays as the record "
+                f"of a missed month.\n\n{missed_window_note(marks, qsha)}")
+    else:
+        action = (f"re-run evidence-harvest (Actions, evidence-harvest, Run workflow, both window fields empty) by {long_date(deadline)}, "
+                  "after fixing the cause the harvest issue names")
+        title = f"{prefix}: re-run evidence-harvest by {long_date(deadline)}"
+        body = (f"@{assignee}, the evidence sweep for {month} (cycle {cycle_id}) has not been verified.\n\n"
+                f"**The one action:** {action}. The cause is in this cycle's harvest issue (label `evidence-sweep`, title starting "
+                f"\"Evidence harvest {cycle_id}\"), when the harvest got far enough to open one.\n\n"
+                f"This cycle can be recovered until {long_date(deadline)}, 23:59 UTC. After that no run can complete it, because a run belongs "
+                f"to the cycle of the month it starts in, and this issue becomes the record of a missed month. {missed_window_note(marks, qsha)}\n\n"
+                "tools/cycle.py verify could not correlate a successful evidence-harvest run, a complete full-inventory artefact for this cycle "
+                "built from the current query file, and a workflow-authored issue naming that run and artefact. A partial run, a manual "
+                "catch-up, an unrelated run or a hand-written issue does not count.\n\n"
+                f"Verifier exit {rc}. Output:\n```\n{verify_text.strip()}\n```")
+    return title, body
 
 
 def read_at_head(head_sha, path, root=None):
@@ -415,8 +475,17 @@ def fetch_live(cycle_id, repo, gh_json=None, download=None):
         got = (download or _download_artefact)(r["github_run_id"], repo, cycle_id)
         if got: artefacts[r["github_run_id"]] = got            # (envelope, sha256), or (None, reason) which verify reports by name
     issues = json.loads(gh_json("issue", "list", "--repo", repo, "--label", "evidence-sweep", "--state", "all", "--search", f'"Evidence harvest {cycle_id}" in:title', "--json", "author,body"))
-    issues = [{"author": ("app/" + i["author"]["login"]) if i["author"].get("is_bot") else i["author"]["login"], "body": i["body"]} for i in issues]
+    issues = [{"author": issue_author(i.get("author") or {}), "body": i["body"]} for i in issues]
     return runs, artefacts, issues
+
+
+def issue_author(a):
+    """The author identity verify() compares with "app/github-actions". gh reports the workflow's bot as login "app/github-actions"
+    with is_bot true, so the prefix is added only when it is missing; prefixing it again gave "app/app/github-actions", which no issue
+    could ever match. A person's login (never containing "/") is returned unchanged and so can never pass for the bot."""
+    login = str(a.get("login") or "")
+    if not a.get("is_bot"): return login
+    return login if login.startswith("app/") else "app/" + login
 
 
 def _no_dupes(pairs):
@@ -498,8 +567,11 @@ def advance_problems(env, tp, queries_path=None, artefact_sha=None, expected_sha
     for k, want in binds.items():
         if k == "run_id" and not (isinstance(want, str) and want): continue          # already reported; two nulls are never a binding
         if prop.get(k) != want: p.append(f"proposal {k} {prop.get(k)!r} is not the trusted {want!r}")
-    complete = sum(1 for c in env.get("channels", []) if isinstance(c, dict) and c.get("outcome") == "complete")
-    if prop.get("channels_complete") != complete: p.append(f"proposal channels_complete {prop.get('channels_complete')!r} is not the {complete} complete channels in the artefact")
+    # channels_complete counts the plan's channels that met it, as harvest.py writes it (len(expected_channels) once none is missing):
+    # complete, or unavailable where the plan itself declares the channel unavailable, as channels_not_complete() judges them
+    typed = [c for c in env.get("channels", []) if isinstance(c, dict) and isinstance(c.get("channel_id"), str)]
+    met = len(plan_ch) - len(channels_not_complete(plan_ch, typed))
+    if prop.get("channels_complete") != met: p.append(f"proposal channels_complete {prop.get('channels_complete')!r} is not the {met} channels in the artefact that met the trusted plan (complete, or unavailable where the plan declares it)")
     try: datetime.date.fromisoformat(str(prop.get("last_complete_to")))
     except ValueError: p.append("proposal last_complete_to is not a valid date")
     return p
@@ -560,6 +632,20 @@ def self_test():
     t("a changed query file has no watermark and falls back to the default window", f == D(2026, 10, 1))
     try: window("schedule", "2026-01-01", None, D(2026, 10, 1), marks0, "q1"); t("scheduled run with inputs refused", False)
     except SystemExit: t("scheduled run with window inputs is a configuration error", True)
+    t("recovery deadline is the last day of the cycle's month, December and February included",
+      (recovery_deadline("2026-11"), recovery_deadline("2026-12"), recovery_deadline("2027-02")) == (D(2026, 11, 30), D(2026, 12, 31), D(2027, 2, 28)))
+    t("the previous cycle rolls back over the year", (previous_cycle("2027-01"), previous_cycle("2026-11")) == ("2026-12", "2026-10"))
+    ti, bo = tripwire_alert("2026-11", D(2026, 11, 3), 1, "  run 1: conclusion failure\n", marks0, "q1")
+    t("tripwire issue in its month: the title keeps the searched prefix and names the month and the one action with its date",
+      ti == "No verified evidence sweep for 2026-11: re-run evidence-harvest by 30 November 2026", ti)
+    t("tripwire issue in its month: the body mentions the steward exactly once, says until when the month can be recovered and carries the verifier output",
+      bo.count("@") == 1 and bo.startswith(f"@{ALERT_ASSIGNEE},") and "can be recovered until 30 November 2026, 23:59 UTC" in bo and "run 1: conclusion failure" in bo and "Verifier exit 1" in bo, bo[:300])
+    ti2, bo2 = tripwire_alert("2026-11", D(2026, 12, 3), 1, "", marks0, "q1")
+    t("after the month has ended the title and body say plainly that the month can no longer be recovered",
+      ti2 == "No verified evidence sweep for 2026-11: missed, can no longer be recovered" and "can no longer be recovered" in bo2 and bo2.count("@") == 1, (ti2, bo2[:200]))
+    t("on the last day of the month the cycle is still recoverable", "re-run" in tripwire_alert("2026-11", D(2026, 11, 30), 1, "", marks0, "q1")[0])
+    t("the missed-window note reads the committed watermarks rather than assuming them",
+      "No watermark has been set" in missed_window_note(marks0, "q1") and "stands at 2026-10-01" in missed_window_note(marks1, "q1"))
 
     cfg = {"property_terms": ["validation"], "new_instrument_query": {"context_terms": ["work"], "object_terms": ["scale"], "evidence_terms": ["validation"]},
            "records": [{"instrument_id": "a", "names": ["Alpha Scale", "Alpha Inventory"], "abbreviations": ["A"], "abbreviation_context": ["c"], "citation_seeds": [{"openalex_id": "W1"}, {"openalex_id": "W2"}]},
@@ -644,12 +730,18 @@ def self_test():
         e = env_live(expected, channels, q=QH, date_bases={"publication": {"from": "2026-09-01", "to": "2026-10-01"}, "first_indexed": {"from": "2026-07-03", "to": "2026-10-01"}, "full_history": True},
                      registry_commit=HEAD, started_at="2026-10-01T06:02:40+00:00")
         e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
-    def live_with(envelope, runs=runs_json, reader=None, lister=None, cycle="2026-10", run_id="100"):
+    GH_BOT = {"is_bot": True, "login": "app/github-actions"}     # exactly what `gh issue list --json author` returns for a workflow-authored issue
+    def live_with(envelope, runs=runs_json, reader=None, lister=None, cycle="2026-10", run_id="100", author=GH_BOT):
         sha_ = hashlib.sha256(json.dumps(envelope).encode()).hexdigest()
-        issues = [{"author": {"login": "github-actions", "is_bot": True}, "body": f"<!-- owhs-cycle cycle_id={cycle} kind=planned github_run_id={run_id} artefact_sha256={sha_} -->"}]
+        issues = [{"author": author, "body": f"<!-- owhs-cycle cycle_id={cycle} kind=planned github_run_id={run_id} artefact_sha256={sha_} status=complete full_inventory=true -->"}]
         try: return verify_live(cycle, "example/repo", gh_json=stub_gh_factory(runs, issues), download=lambda rid_, repo_, cyc: (envelope, sha_), cfg=cfg, qsha=QH, reader=reader or real_reader, lister=lister or real_lister)
         except Exception as ex: return None, [f"EXCEPTION {type(ex).__name__}: {ex}"]
     rid, why = live_with(env_trusted(plan_live, full_live)); t("live wrapper: an artefact matching the trusted plan read from the run's head in a real repository passes", rid == "100", why)
+    # issue author as gh reports it: the bot's login already carries "app/"; a bare bot login is accepted too; a person never is
+    rid, why = live_with(env_trusted(plan_live, full_live), author={"is_bot": True, "login": "github-actions"}); t("issue author: a bot login without the app/ prefix is the same workflow author", rid == "100", why)
+    rid, why = live_with(env_trusted(plan_live, full_live), author={"is_bot": False, "login": "github-actions"}); t("issue author: a person whose login reads github-actions is refused", rid is None and "no bot-authored issue" in why[0], why)
+    rid, why = live_with(env_trusted(plan_live, full_live), author={"is_bot": True, "login": "app/someone-else"}); t("issue author: another app's issue with the right marker is refused", rid is None and "no bot-authored issue" in why[0], why)
+    t("issue author: gh's own shape for the workflow bot maps to app/github-actions, never app/app/github-actions", issue_author(GH_BOT) == "app/github-actions", issue_author(GH_BOT))
     # five counterexamples: each departs from the trusted plan in one declaration and is refused
     nofh = env_trusted(expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False), [res(c) for c in expected_channels(cfg, "2026-09-01", "2026-10-01", "2026-07-03", False)])
     nofh["date_bases"]["full_history"] = False
@@ -805,7 +897,10 @@ def self_test():
         wm = Path(tmp) / "w.json"; qfile = Path(tmp) / "instruments-v1.json"; qfile.write_bytes(CFG_BYTES)
         tp, why_tp = trusted_plan({"head_sha": HEAD, "started_at": "2026-10-01T06:00:12Z", "event": "schedule", "display_title": RUN_NAME}, real_reader, real_lister)
         t("advance: a trusted plan derives from the fixture run", tp is not None, why_tp)
-        prop = {"query_sha256": QH, "last_complete_to": "2026-10-01", "catch_from": "2026-07-03", "cycle_id": "2026-10", "run_id": "r1", "channels_complete": sum(1 for c in full_live if c["outcome"] == "complete")}
+        # the proposal exactly as harvest.py writes it: channels_complete is len(expected_channels), which includes the channels the plan
+        # declares unavailable (every real run has some: OpenAlex update-date filtering is off in the provider profile)
+        prop = {"query_sha256": QH, "last_complete_to": "2026-10-01", "catch_from": "2026-07-03", "cycle_id": "2026-10", "run_id": "r1", "channels_complete": len(plan_live)}
+        t("advance: the fixture plan declares some channels unavailable, as every real plan does", any(c["unavailable"] for c in plan_live))
         def env_adv(**kw):
             e = env_trusted(copy.deepcopy(plan_live), copy.deepcopy(full_live)); e["watermark_proposal"] = dict(prop); e.update(kw); e["channels_not_complete"] = channels_not_complete(e["expected_channels"], e["channels"]); return e
         def refused(label, e, needle, tp_=tp, **kw):
@@ -818,6 +913,8 @@ def self_test():
         refused("advance: a proposal whose catch-up date is not the plan's is refused", env_adv(watermark_proposal=dict(prop, catch_from="2026-07-04")), "catch_from")
         refused("advance: a proposal whose end is not the plan's is refused", env_adv(watermark_proposal=dict(prop, last_complete_to="2040-01-01")), "last_complete_to")
         refused("advance: a proposal whose channel count is not the artefact's is refused", env_adv(watermark_proposal=dict(prop, channels_complete=1)), "channels_complete")
+        refused("advance: a proposal that leaves out the plan's declared-unavailable channels is not the harvester's count and is refused",
+                env_adv(watermark_proposal=dict(prop, channels_complete=sum(1 for c in full_live if c["outcome"] == "complete"))), "channels_complete")
         refused("advance: a proposal whose query hash is not the run's configuration is refused", env_adv(watermark_proposal=dict(prop, query_sha256="y" * 64)), "query_sha256")
         narrow_adv = env_adv(requested_window={"from": "2026-09-30", "to": "2026-10-01"}); narrow_adv["date_bases"]["publication"] = {"from": "2026-09-30", "to": "2026-10-01"}
         refused("advance: an artefact departing from the trusted plan is refused", narrow_adv, "trusted plan")
@@ -878,6 +975,14 @@ def main():
         today = datetime.date.fromisoformat(opts["--today"]) if "--today" in opts else datetime.date.today()
         pl = plan(opts.get("--event", "workflow_dispatch"), opts.get("--from"), opts.get("--to"), today, load_watermarks(), query_sha())
         print(f"cycle_id={pl['cycle_id']}\nkind={pl['kind']}\nfrom={pl['from'].isoformat()}\nto={pl['to'].isoformat()}\ncatch_from={pl['catch_from'].isoformat()}\nfull_history={'true' if pl['full_history'] else 'false'}"); return
+    if a and a[0] == "previous":
+        print(previous_cycle(dict(zip(a[1::2], a[2::2]))["--cycle"])); return
+    if a and a[0] == "alert":
+        opts = dict(zip(a[1::2], a[2::2]))
+        today = datetime.date.fromisoformat(opts["--today"]) if "--today" in opts else datetime.datetime.now(datetime.timezone.utc).date()
+        text = Path(opts["--verify-output"]).read_text(encoding="utf-8") if "--verify-output" in opts else ""
+        title, body = tripwire_alert(opts["--cycle"], today, opts.get("--rc", "1"), text, load_watermarks(), query_sha())
+        Path(opts["--title-out"]).write_text(title + "\n", encoding="utf-8"); Path(opts["--body-out"]).write_text(body + "\n", encoding="utf-8"); return
     if a and a[0] == "verify":
         opts = dict(zip(a[1::2], a[2::2])); repo = opts.get("--repo") or os.environ.get("GITHUB_REPOSITORY") or "openworkplacehealth/OWHS"
         rid, why = verify_live(opts["--cycle"], repo)
