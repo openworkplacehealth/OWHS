@@ -34,7 +34,7 @@ The government's own data project describes the gap this profile addresses: it "
 ## 2. Rules that apply to every measure
 
 1. **Group level only.** Every measure leaves the employer as an `AggregateReport`. No individual record is part of any return under this profile.
-2. **Minimum group size.** Every figure obeys the OWHS minimum group size rule (`owhs-mgs`, in `owhs-mgs-0.1.0.md` in this folder): five, or ten for the two disability measures that rest on a count of disabled people. The v0.2 specification already sets ten for disability participation; the profile envelope (`owhs-uk-measures-0.1.0.json`) enforces it.
+2. **Minimum group size.** Every figure obeys the OWHS minimum group size rule (`owhs-mgs`, in `owhs-mgs-0.1.0.md` in this folder): five, or ten on `n` for `disability-participation` and `disability-retention-12m`; `disability-declaration-rate` stays at five. The v0.2 specification already sets a floor of ten for the `DisabilityParticipation` record; the profile envelope (`owhs-uk-measures-0.1.0.json`) enforces ten on the `n` of those two reports. That `n` is the group the report describes (for `disability-participation`, the people who answered; section 3.4), not the number of disabled people. The count of disabled people is held to zero or at least five only by `owhs-mgs` R4, a Level 3 rule that no tool checks.
 3. **Reporting level.** The organisation. A unit within it (`OrgUnit`) only where the unit clears the floor on every figure reported. Disability measures are organisation level only, as in the v0.2 specification; the profile envelope enforces it.
 4. **Period.** **PROPOSED:** a rolling 12 months ending on the last day of a calendar quarter, reported once a year at minimum. Reason: the published text says "annually" for the two measures it gives a frequency for, and 12 months removes the seasonal swing in absence. A producer may also report single quarters where the floor allows.
 5. **Who is counted.** **PROPOSED:** employees on the employer's payroll, counted as people, not full-time equivalents. Agency workers and contractors are out of scope unless the producer says otherwise in `MeasurementContext.knownLimitations`. The published text does not say who is in scope.
@@ -130,12 +130,14 @@ It differs from sustained return on purpose. Sustained return asks whether the r
 | Census date | The last day of the period |
 | Period | Annual |
 | Level | Organisation only |
-| Floor | Ten, enforced by the profile envelope. In the `AggregateReport`, `n` is the people who answered, `eligibleN` the people asked and `headcount` the people in scope. The producer-held `DisabilityParticipation` record keeps its banded count |
+| Floor | Ten on `n`, enforced by the profile envelope. In the `AggregateReport`, `n` is the people who answered, `eligibleN` the people asked and `headcount` the people in scope. The floor of ten therefore protects the people who answered, not the count of disabled people: a report with 200 answering and three disabled passes the envelope. Only `owhs-mgs` R4 (the count is zero or at least five) touches that count, and R4 is a Level 3 rule that no tool checks. The producer-held `DisabilityParticipation` record keeps its banded count |
 | OWHS fields | `DisabilityParticipation.disabledHeadcountBand`, `period` (producer-held); `AggregateReport` |
 
 **Must be reported with it: `disability-declaration-rate`.** The share of people in scope who answered the question at all, including "prefer not to say". Without it the main figure cannot be read: 4% from a workforce where everyone was asked means something different from 4% where a fifth were.
 
-**PROPOSED: `disability-retention-12m`.** Of the people whose answer was yes on the census date a year earlier, the share still employed on this census date. Reported beside the same figure for everyone else, so the two can be compared. Organisation level, floor of ten.
+**PROPOSED: `disability-retention-12m`.** Of the people whose answer was yes on the census date a year earlier, the share still employed on this census date. Reported beside the same figure for everyone else, so the two can be compared. Organisation level, floor of ten on `n`, enforced by the profile envelope. This profile does not say what `n` is for this measure.
+
+`disability-declaration-rate` is organisation level only and keeps the core floor of five.
 
 **What this profile does not fix, and why.** It does not fix the wording of the question. It requires the producer to state which question was asked, in `MeasurementContext.knownLimitations`, until a `questionRef` field exists. Choosing the question is the heart of the problem the government describes, and it should be settled by the people it concerns and by the bodies that set statistical standards, not by a data format. This draft has not reviewed any harmonised question standard and does not cite one.
 
@@ -212,7 +214,7 @@ One further published commitment, "Participation and retention measured annually
 
 The v0.2 specification (section 7) says a profile may add fields under `ext`, narrow core fields and add profile-scoped code lists, and may not add a new top-level field or widen a core list; anything else is a core change by RFC.
 
-- **Inside the profile rules:** the code lists `uk-measure`, `uk-commitment` and `commitment-status`; every measure definition, which uses existing core fields and `AggregateReport`; and the envelope `owhs-uk-measures-0.1.0.json`, which only narrows the v0.2 `AggregateReport`: `metricCode` to the `uk-measure` list, the disability measures to organisation level with a floor of ten, work ability to instrument results, and a required `ext.owhs-uk-measures` object naming the minimum group size rule.
+- **Inside the profile rules:** the code lists `uk-measure`, `uk-commitment` and `commitment-status`; every measure definition, which uses existing core fields and `AggregateReport`; and the envelope `owhs-uk-measures-0.1.0.json`, which only narrows the v0.2 `AggregateReport`: `metricCode` to the `uk-measure` list, the three disability measures to organisation level, `disability-participation` and `disability-retention-12m` withheld when `n` is nine or fewer (a test on the group the report describes, not on the number of disabled people), work ability to instrument results, and a required `ext.owhs-uk-measures` object naming the minimum group size rule.
 - **Needs a core change:** `CommitmentEvent` is a new record type (RFC 0003, proposal C). Absence-linked events could instead ride on `AbsenceEpisode` under `ext.owhs-uk-measures`, since the v0.2 core accepts `ext`, but three of the commitments are not tied to an absence at all.
 - Every gap this draft found in the core is listed in RFC 0003 section 6.
 

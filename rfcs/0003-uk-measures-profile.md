@@ -17,7 +17,7 @@ In its September 2026 update the UK government named five things it wants measur
 This RFC maps the measures named in the UK government's published Keep Britain Working documents, and proposes three things for open review:
 
 - **A. A profile, `owhs-uk-measures` 0.1.0.** A plain definition for each named measure, with numerator, denominator, period, reporting level and the OWHS fields it is computed from, carried as `AggregateReport` metric codes. An executable profile envelope narrows the v0.2 `AggregateReport` to these codes and their rules.
-- **B. A named minimum group size rule, `owhs-mgs` 0.1.0.** Five people, ten for the most sensitive figures, with the method for withholding or merging small numbers and for stopping a withheld figure being worked out from the ones around it.
+- **B. A named minimum group size rule, `owhs-mgs` 0.1.0.** Five people, ten for severe distress figures and ten on the group behind two of the disability measures, with the method for withholding or merging small numbers and for stopping a withheld figure being worked out from the ones around it.
 - **C. Two new record types.** `CommitmentEvent`, which records the dated commitments in the September 2026 update as events, and `ProviderReturn`, a common group-level return from an EAP, occupational health provider or insurer to an employer.
 
 Every definition is labelled PROPOSED with its reasoning. None of this is endorsed by any government department, by BSI or by anyone else. When the Workplace Health Intelligence Unit publishes its own definitions, this profile is deprecated in their favour, as GOVERNANCE.md commits. Nothing here uses the reserved `whiu:` namespace.
@@ -47,7 +47,7 @@ Source references are to the list at the end. Every quotation is exact.
 | Absence | "Sickness absence is measured in different ways." [S1] | The definition | `absence-rate`: the percentage of contracted working hours lost to sickness or injury, rolling 12 months, in the form ONS uses [S6]. Companion `absence-days-per-worker` |
 | Sustained return | "Sustained return measured at 6 months, not day one." [S1] | What counts as sustained; which absences are in scope; whether people who never return are in the denominator | `sustained-return-26wk`: of absences of 28 calendar days or more that ended in the cohort window, the share who returned and were still with the same employer 26 weeks later, with no new absence of 28 days or more. People who never returned, and unknowns, stay in the denominator |
 | Retention | Named in the list of five; "Participation and retention measured annually, using common definitions." [S1] | The definition, and the common definitions referred to | `retention-26wk`: of people whose absence reached 28 calendar days, the share still employed 26 weeks after it began. Companion `health-related-exit-rate` per 1,000 people |
-| Disability participation | Employers "struggle to measure" it because of "differences in the definition of disability along with how the question is asked, if at all" [S1] | Any definition of disability; the question | `disability-participation`: the share of people in scope who said they are disabled in a voluntary employer question, reported with `disability-declaration-rate` and `disability-retention-12m`. The question is deliberately not fixed. Organisation level only, floor of ten |
+| Disability participation | Employers "struggle to measure" it because of "differences in the definition of disability along with how the question is asked, if at all" [S1] | Any definition of disability; the question | `disability-participation`: the share of people in scope who said they are disabled in a voluntary employer question, reported with `disability-declaration-rate` and `disability-retention-12m`. The question is deliberately not fixed. Organisation level only, floor of ten on the people who answered |
 | Work ability | Named first in the list of five; the toolkit that would give a "work ability score" is "an early prototype" [S1] | Instrument, scale, threshold | `work-ability`: shape only. The group mean of a named instrument, with people completing and people invited. No instrument is chosen |
 | Small numbers | "Small-number results will be suppressed or combined where necessary." and "Employers receive only protected, aggregated insight above a suppression threshold, never individual answers" [S1] | The number, and the method | `owhs-mgs` 0.1.0 (Proposal B) |
 | Provider data | "No provider can compete reliably on outcomes, because comparable outcomes do not exist." and "providers could compete based on performance data, published in a common format." [S1] | Which figures, how often, what format, what floor | `ProviderReturn` (Proposal C) |
@@ -68,7 +68,7 @@ The definitions are in [`owhs-uk-measures-0.1.0.md`](0003-uk-measures-profile/ow
 The envelope [`owhs-uk-measures-0.1.0.json`](0003-uk-measures-profile/owhs-uk-measures-0.1.0.json) targets `https://openworkplacehealth.org/schemas/v0.2/AggregateReport.json` and only narrows it, as section 7 of the v0.2 specification allows:
 
 - `metricCode` must be one of the ten codes;
-- the three disability measures are organisation level only, and the two that rest on a count of disabled people (`disability-participation` and `disability-retention-12m`) must be withheld when `n` is nine or fewer;
+- the three disability measures are organisation level only, and `disability-participation` and `disability-retention-12m` must be withheld when `n` is nine or fewer. The test is on `n`, the group the report describes. For `disability-participation`, profile section 3.4 defines `n` as the people who answered, so the floor of ten protects the people who answered, not the count of disabled people: a report with 200 answering and three disabled passes the envelope. Only `owhs-mgs` R4 (the count is zero or at least five) touches that count, and R4 is a Level 3 rule that no tool checks. The profile does not say what `n` is for `disability-retention-12m`. `disability-declaration-rate` keeps the core floor of five;
 - `work-ability` must have `measureKind` `instrument`;
 - every report carries `ext.owhs-uk-measures.suppressionRule` set to `owhs-mgs@0.1.0`;
 - a breakdown by absence reason (`ext.owhs-uk-measures.breakdown`) is allowed on the two absence measures only;
@@ -82,9 +82,9 @@ python tools/validate.py schemas/v0.2/AggregateReport.json <report.json> --profi
 
 ## 3. Proposal B: the minimum group size rule `owhs-mgs` 0.1.0
 
-The rule is in [`owhs-mgs-0.1.0.md`](0003-uk-measures-profile/owhs-mgs-0.1.0.md), citable as `owhs-mgs@0.1.0`. It does not change the floors in P2. It names them and adds the working detail a producer needs.
+The rule is in [`owhs-mgs-0.1.0.md`](0003-uk-measures-profile/owhs-mgs-0.1.0.md), citable as `owhs-mgs@0.1.0`. It does not change the floors already in the specification (five, and ten for severe distress in P2; ten for the `DisabilityParticipation` record). It names them and adds the working detail a producer needs.
 
-In short: no figure about fewer than five people, or ten for severe distress and disability measures. It counts people, not contacts, calls, sessions or claims. It applies to both sides of a share: the group must be at least five, and the count and the remainder must each be zero or at least five. A figure that covers all of a group is withheld for a sensitive status. A failing figure is withheld (the row is sent, marked suppressed, with a reason) or merged with another category. A withheld figure must not be recoverable by subtraction within a table, across overlapping groups or across time. A higher floor is always allowed and a lower one never is. Safeguarding signals stay excluded at any size.
+In short: no figure about fewer than five people, or ten for severe distress measures; in the profile, ten on the group behind `disability-participation` and `disability-retention-12m`, as section 2 describes. It counts people, not contacts, calls, sessions or claims. It applies to both sides of a share: the group must be at least five, and the count and the remainder must each be zero or at least five. A figure that covers all of a group is withheld for a sensitive status. A failing figure is withheld (the row is sent, marked suppressed, with a reason) or merged with another category. A withheld figure must not be recoverable by subtraction within a table, across overlapping groups or across time. That rule, R7, is a proposed answer to part of the open issue [#18](https://github.com/openworkplacehealth/OWHS/issues/18), "Aggregation floors alone do not prevent disclosure by differencing": it specifies secondary suppression within a table and rules for overlapping groups and for successive periods. It does not settle #18. It does not say whether a producer must track what it has already released to a given recipient, which #18 also asks; how it works across time for very small employers is listed below as not settled; and it is a Level 3 rule that no tool checks. A higher floor is always allowed and a lower one never is. Safeguarding signals stay excluded at any size.
 
 Five is a convention, not a proof, and it does not make data anonymous. No official number was found to compare it with: no number appears in any of the documents opened. Section 4 of the rule gives the reasons for five.
 
@@ -100,7 +100,7 @@ If either record is accepted, its schema would move into the next schema version
 
 ## 5. What was checked on this branch
 
-The repository's own `tools/validate.py` was run, with `OWHS_ASSERT_NO_NETWORK=1`, over every example in the proposal folder. Full output is in `validation_report.json`. It was run again on 21 November 2026, after the branch was brought up to date with main, under Python 3.11 as in CI, and every verdict, error count and line of output was the same.
+The repository's own `tools/validate.py` was run, with `OWHS_ASSERT_NO_NETWORK=1`, over every example in the proposal folder. Full output is in `validation_report.json`. It was run again on 21 November 2026, after the branch was brought up to date with main and the profile envelope's description and comment were corrected, under Python 3.11 as in CI. Every verdict, error count and error message was the same; the only change in the output is the envelope's hash, which the report records.
 
 | Check | Result |
 |---|---|
@@ -113,7 +113,7 @@ The repository's own `tools/validate.py` was run, with `OWHS_ASSERT_NO_NETWORK=1
 | Codes in the worked provider return | Every breakdown code exists in the core list it names |
 | Cross-row rule on the worked provider return | Every hidden remainder is zero or at least five; no shown count leaves a remainder of one to four |
 
-No schema, code list, example, profile, specification text or tool is changed: nothing under `profiles/`, `schemas/`, `codelists/`, `examples/` or `spec/`, and no program under `tools/`. Outside `rfcs/`, opening this RFC adds a changelog entry, as for RFCs 0001 and 0002, and lists the RFC on the open review page (`docs/open-review.md`). The site files built from those two sources are regenerated by their own generators: the changelog page, the open review page, the home page's Latest strip, the Atom feeds, and the sitemap with its ledger, `tools/sitemap-lastmod.json`. The specification's citation date, which the cite page defines as the date of the latest entry on the specification tab of the changelog, moves to 23 November 2026 on the cite page, in `CITATION.cff`, in the specification page's structured data and in `llms-full.txt`. Every check in the repository's CI passes on this branch.
+No schema, code list, example, profile, specification text or tool is changed: nothing under `profiles/`, `schemas/`, `codelists/`, `examples/` or `spec/`, and no program under `tools/`. Outside this RFC's own files, opening it adds a changelog entry on the site tab and a dated entry in `CHANGELOG.md`, as for RFCs 0001 and 0002, and lists the RFC in `rfcs/README.md` and on the open review page (`docs/open-review.md`). The same change records, in those two places and in the headers of RFCs 0001 and 0002, that their comment windows closed on 17 October 2026 and that no decision is recorded yet. The site files built from those sources are regenerated by their own generators: the changelog page, the open review page, the home page's Latest strip, the Atom feeds, and the sitemap with its ledger, `tools/sitemap-lastmod.json`.
 
 ## 6. Gaps in the core this work found
 
@@ -145,7 +145,7 @@ The official definitions; any instrument or disability question; the registry's 
 
 ## 9. What is not settled
 
-These are the points most likely to be wrong, gathered from the honesty passes in the three proposal files.
+These are the points most likely to be wrong, gathered from the honesty passes in the three proposal files; point 14 was added in review.
 
 1. Four weeks as the threshold for sustained return and retention.
 2. Keeping people who never return, and unknowns, in the sustained return denominator.
@@ -160,6 +160,7 @@ These are the points most likely to be wrong, gathered from the honesty passes i
 11. Whether a group size below the floor may be shown on a withheld row (gap 6).
 12. Whether the broad domain `relationships` may be reported at a higher floor (gap 8).
 13. Whether to align to a national threshold if one is published. GOVERNANCE.md says align, do not compete, and R10 already allows a higher one.
+14. Whether the count of disabled people should itself need ten. The envelope's floor of ten tests `n`, which for `disability-participation` is the people who answered; the count of disabled people is held only to zero or at least five, by R4, which no tool checks. The profile also does not say what `n` is for `disability-retention-12m`.
 
 ## 10. Review invited
 
@@ -179,7 +180,7 @@ Please declare any financial or professional interest in a product, provider, in
 | # | Decision | Proposed resolution | Reasons |
 |---|---|---|---|
 | D8 | Publish definitions for the measures the UK government has named | Adopt profile `owhs-uk-measures` 0.1.0, every definition labelled proposed, deprecated when national definitions exist | The measures are named and undefined; an open draft gives people something to test |
-| D9 | Name and spell out the minimum group size rule | Adopt `owhs-mgs@0.1.0`: five, ten for the most sensitive figures, counted in people, both sides of a share, withhold or merge, no working it out | P2 gives the floors but not the method; published plans refer to a threshold without stating one |
+| D9 | Name and spell out the minimum group size rule | Adopt `owhs-mgs@0.1.0`: five, ten for severe distress figures and on the group behind two disability measures, counted in people, both sides of a share, withhold or merge, no working it out | The specification gives the floors but not the method; published plans refer to a threshold without stating one |
 | D10 | A common provider return, and commitments as events | Add `ProviderReturn` and `CommitmentEvent` as core record types | The published text asks for provider performance data "in a common format" and sets dated commitments; neither has a published format |
 
 ## Sources

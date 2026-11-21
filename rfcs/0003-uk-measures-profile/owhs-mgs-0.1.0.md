@@ -6,7 +6,7 @@
 
 **Short form.** No figure about fewer than five people. If a group is too small, the figure is withheld or the group is merged with another, and the report says so.
 
-This rule names, and spells out, what the OWHS privacy profile already requires in P2 and P5. It does not change the floors. It adds the working detail a producer needs: what the five counts, how to withhold, how to merge, and how to stop a withheld figure being worked out from the ones around it.
+This rule names, and spells out, what the OWHS specification already requires: the privacy profile's P2 and P5, and the floor of ten on the `DisabilityParticipation` record. It does not change the floors. It adds the working detail a producer needs: what the five counts, how to withhold, how to merge, and how to stop a withheld figure being worked out from the ones around it.
 
 ---
 
@@ -22,7 +22,7 @@ A threshold that is not written down cannot be checked. A provider can say its r
 
 **R1. The floor is five people.** A figure may be shown to an employer, or to anyone outside the organisation that produced it, only if it describes at least five distinct people.
 
-**R2. The floor is ten for the most sensitive figures.** Measures of severe distress and disability measures need at least ten, as the OWHS v0.2 specification already requires.
+**R2. The floor is ten for the most sensitive figures.** Measures of severe distress need at least ten, as the OWHS v0.2 specification already requires, and the v0.2 specification sets ten for the `DisabilityParticipation` record. In the `owhs-uk-measures` profile, `disability-participation` and `disability-retention-12m` need an `n` of at least ten. That `n` is the group the report describes (for `disability-participation`, the people who answered), not the number of disabled people; that count is held to zero or at least five by R4.
 
 **R3. It counts people.** Not contacts, calls, sessions, claims or survey responses. One person who rings a helpline six times is one person. A producer that cannot count distinct people cannot show the figure.
 
@@ -113,7 +113,7 @@ The reasons for five are practical.
 | The remainder of a share is zero or at least five (R4) | Level 3 check, specified here, not yet in the reference validator |
 | All-of-a-group figures withheld (R5) | Level 3 check, not yet in the reference validator |
 | No recovery by subtraction, overlap or time (R7) | Level 3 check across rows and across returns, not yet in the reference validator |
-| Floor of ten for the most sensitive figures (R2) | In schema for `AggregateReport` rows declared `severe-distress` (core) and for the two disability measures (the `owhs-uk-measures` envelope); otherwise a Level 3 check |
+| Floor of ten for the most sensitive figures (R2) | In schema for `AggregateReport` rows declared `severe-distress` (core) and on `n` for `disability-participation` and `disability-retention-12m` (the `owhs-uk-measures` envelope; `n` there is the group, not the number of disabled people); otherwise a Level 3 check |
 | An `AggregateReport` with `n` of four or fewer is withheld (R1) | In schema (core v0.2) |
 
 The reference validator runs Level 1 only. The Level 3 checks above are written so that a fuller validator can implement them; until then they rest on the producer.

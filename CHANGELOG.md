@@ -15,13 +15,20 @@ RFC 0003 (a profile for the workforce health measures named by the UK government
 opened for comment". It is now open, with a comment window of 23 November 2026 to 8 January 2027 and a
 numbered issue as the comment thread. It proposes three things that can be decided separately: a profile,
 `owhs-uk-measures` 0.1.0, with a definition for each measure; a named minimum group size rule, `owhs-mgs`
-0.1.0, which keeps the floors already in the privacy profile and sets out how small numbers are withheld or
+0.1.0, which keeps the floors already in the specification and sets out how small numbers are withheld or
 merged; and two new record types, `CommitmentEvent` and `ProviderReturn`. Every proposed file stays under
 `rfcs/0003-uk-measures-profile/` until a decision is recorded, so no schema, code list, example, profile or
 tool changes. The open review page now lists it beside RFCs 0001 and 0002.
 
 A window is the period before a decision is recorded. Comments arriving after it closes are still
 read.
+
+### Corrected: RFCs 0001 and 0002 still said "Open for comment"
+
+Their comment windows closed on 17 October 2026 and no decision has been recorded. Their headers,
+`rfcs/README.md` and the open review page said "Open for comment". They now say that the window closed
+on 17 October 2026, that the decision is not yet recorded, and that comments are still read. Nothing
+else in either RFC changed.
 
 ## 19 November 2026
 

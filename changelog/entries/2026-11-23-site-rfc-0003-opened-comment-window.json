@@ -1,0 +1,6 @@
+{
+ "tab": "site",
+ "date": "2026-11-23",
+ "shown": "23 November 2026",
+ "html": "RFC 0003 opened for comment, with a window of 23 November 2026 to 8 January 2027 and an issue as the comment thread: <a href=\"https://github.com/openworkplacehealth/OWHS/blob/main/rfcs/0003-uk-measures-profile.md\">RFC 0003</a>, a profile defining the five workforce health measures the UK government has named and not defined (work ability, absence, sustained return, retention and disability participation), a minimum group size rule that names the floors already in the specification and sets out how small numbers are withheld or merged, and two proposed record types, <span class=\"mono\">CommitmentEvent</span> for the dated commitments and <span class=\"mono\">ProviderReturn</span> for a common group-level return from a provider to an employer. The three proposals can be decided separately. Nothing in the specification changes until a decision is recorded, and none of it is endorsed by any government department, by BSI or by anyone else. The <a href=\"review.html\">open review page</a> lists it, and now says that the comment windows for RFCs 0001 and 0002 closed on 17 October 2026 with no decision yet recorded."
+}

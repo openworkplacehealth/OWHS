@@ -1759,7 +1759,7 @@ Whether the organisation acts on, signposts and normalises support for health an
 Versions are identified by version number and address. No DOI has been issued. Add the date you accessed the page. The same text is at https://openworkplacehealth.org/cite.html.
 
 ## The specification
-Open Workplace Health Standard (2026). Open Workplace Health Standard (OWHS) v0.2, draft specification. Version 0.2-draft, 23 November 2026. https://openworkplacehealth.org/spec/
+Open Workplace Health Standard (2026). Open Workplace Health Standard (OWHS) v0.2, draft specification. Version 0.2-draft, 7 September 2026. https://openworkplacehealth.org/spec/
 Licence: CC BY 4.0 for the specification text; Apache 2.0 for the schemas, code lists, examples and tools.
 
 ## The instrument registry dataset

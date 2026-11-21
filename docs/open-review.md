@@ -1,5 +1,5 @@
 # Open questions and corrections
-<!-- meta: public review · list checked 7 September 2026 · RFC 0003 added 23 November 2026 -->
+<!-- meta: public review · list checked 7 September 2026 · RFCs 0001 and 0002 rechecked 21 November 2026 · RFC 0003 added 23 November 2026 -->
 <!-- description: Help review OWHS: open questions about the specification, registry evidence needing re-examination, published corrections and ways to contribute. -->
 
 OWHS is open to correction. This page brings together questions where evidence or practical experience would help, concerns about how evidence has been interpreted, and the record of changes already made.
@@ -8,13 +8,13 @@ You can contribute a source, a counterexample or an implementation experience. Y
 
 [Questions about the standard](#questions) · [Evidence needing review](#evidence) · [Published corrections](#corrections) · [Contribute](#contribute)
 
-The list below was checked on **7 September 2026**, and RFC 0003 was added when it opened for comment on 23 November 2026. Follow each source for subsequent comments and decisions. An open question is not a confirmed error. This page lists selected public questions; the [methods and limitations](methods.html) and the [specification's open questions](spec/#the-honesty-pass-disputable-decisions-and-open-questions) provide further context.
+The list below was checked on **7 September 2026**. The entries for RFCs 0001 and 0002 were checked again on 21 November 2026, and RFC 0003 was added when it opened for comment on 23 November 2026. Follow each source for subsequent comments and decisions. An open question is not a confirmed error. This page lists selected public questions; the [methods and limitations](methods.html) and the [specification's open questions](spec/#the-honesty-pass-disputable-decisions-and-open-questions) provide further context.
 
 <h2 id="questions">Questions about the standard</h2>
 
 <h3 id="construct-domains">Which constructs should the vocabulary include?</h3>
 
-**RFC 0001: proposal open for comment.** Comment window: 7 September to 17 October 2026. Decision not yet taken at the date checked.
+**RFC 0001: comment window closed, decision not yet recorded.** Comment window: 7 September to 17 October 2026. No decision had been recorded when this was checked on 21 November 2026. Comments are still read.
 
 The proposal concerns the construct-domain code list, its safeguarding and visibility fields, and its mapping to question-bank topic groups. Input is particularly useful on whether proposed constructs are sufficiently distinct, what has been omitted, and where a visibility default belongs.
 
@@ -22,7 +22,7 @@ The proposal concerns the construct-domain code list, its safeguarding and visib
 
 <h3 id="identifiable-subjects">What if an aggregate describes an identifiable manager?</h3>
 
-**RFC 0002: proposal open for comment.** Comment window: 7 September to 17 October 2026. Decision not yet taken at the date checked.
+**RFC 0002: comment window closed, decision not yet recorded.** Comment window: 7 September to 17 October 2026. No decision had been recorded when this was checked on 21 November 2026. Comments are still read.
 
 The proposal asks how to handle outputs that describe a person other than the respondent, including team ratings of a manager. It seeks critique of the proposed protections, practical examples, and relevant data-protection and employment-law analysis. The proposed subject-count rule remains a proposal, not a demonstrated privacy guarantee. This decision must precede admission of subject-identifying codes under RFC 0001.
 

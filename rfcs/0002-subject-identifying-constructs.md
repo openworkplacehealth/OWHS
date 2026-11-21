@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | Open for comment |
+| Status | Comment window closed on 17 October 2026. Decision not yet recorded. Comments are still read |
 | Comment window | 7 September to 17 October 2026 |
 | Comment thread | [issue #25](https://github.com/openworkplacehealth/OWHS/issues/25) |
 | Affects | Privacy profile (P2, P3); `codelists/construct-domain.json` (a new field); spec section 3.3 open question 9 |

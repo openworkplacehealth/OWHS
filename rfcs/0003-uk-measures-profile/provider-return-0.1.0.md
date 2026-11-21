@@ -136,10 +136,10 @@ This table is a proposal drawn from the OWHS entities, not from any provider's p
 
 `examples/ProviderReturn.invalid.json` breaks the rules on purpose: a floor of three, counts of contacts, a list of cases with a pseudonym and a fitness opinion, an unsuppressed count of three, and a "suppressed" row that still carries its number. The validator raises seven errors.
 
-**To check a file:**
+**To check a file**, from the repository root:
 
 ```
-python tools/validate.py schemas/ProviderReturn.json examples/ProviderReturn.valid.json
+python tools/validate.py rfcs/0003-uk-measures-profile/schemas/ProviderReturn.json rfcs/0003-uk-measures-profile/examples/ProviderReturn.valid.json
 ```
 
 Run on 15 November 2026 on this branch with the repository's own `tools/validate.py` (formats asserted, `jsonschema` 4.26.0): the valid example returns `VALID`; the invalid example returns seven errors. Full output: `validation_report.json` in this folder.
@@ -150,7 +150,7 @@ Run on 15 November 2026 on this branch with the repository's own `tools/validate
 
 ## 4. How this fits the OWHS rules
 
-`ProviderReturn` is a new record type, so under the OWHS profile rules it is a **core change request**, not something a profile can add on its own. It is drafted as a standalone schema so that it can be validated and argued over before an RFC. It reuses core field names and meanings (`n`, `value`, `suppressed`, `suppressionReason` from `AggregateReport`; the distinct-people `n` of `BenefitUtilisation`) and core code lists unchanged. It differs from `AggregateReport` in one deliberate way: a withheld row carries no `n`, because in a return the count is usually the figure itself. It adds two lists: `provider-return-metric` and `provider-service-type`. Gaps it exposed in the core are in RFC 0003 section 6.
+`ProviderReturn` is a new record type, so under the OWHS profile rules it is a **core change request**, not something a profile can add on its own. It is proposed by RFC 0003 as a standalone schema under `rfcs/` so that it can be validated and argued over while the RFC is open, before any decision moves it into the core schemas. It reuses core field names and meanings (`n`, `value`, `suppressed`, `suppressionReason` from `AggregateReport`; the distinct-people `n` of `BenefitUtilisation`) and core code lists unchanged. It differs from `AggregateReport` in one deliberate way: a withheld row carries no `n`, because in a return the count is usually the figure itself. It adds two lists: `provider-return-metric` and `provider-service-type`. Gaps it exposed in the core are in RFC 0003 section 6.
 
 ---
 
