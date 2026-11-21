@@ -1,0 +1,55 @@
+{
+  "note": "PROPOSED by RFC 0003. Entries to append to codelists/_registry.json 'lists' if the RFC is accepted. Not applied.",
+  "lists": [
+    {
+      "name": "commitment-status",
+      "version": "0.1.0",
+      "file": "commitment-status.json",
+      "values": 6,
+      "anchor": "OWHS proposal (RFC 0003); status of a CommitmentEvent",
+      "versions": {
+        "0.1.0": "commitment-status.json"
+      }
+    },
+    {
+      "name": "provider-return-metric",
+      "version": "0.1.0",
+      "file": "provider-return-metric.json",
+      "values": 10,
+      "anchor": "OWHS proposal (RFC 0003); group-level metrics in a ProviderReturn",
+      "versions": {
+        "0.1.0": "provider-return-metric.json"
+      }
+    },
+    {
+      "name": "provider-service-type",
+      "version": "0.1.0",
+      "file": "provider-service-type.json",
+      "values": 8,
+      "anchor": "OWHS proposal (RFC 0003); type of service a ProviderReturn describes",
+      "versions": {
+        "0.1.0": "provider-service-type.json"
+      }
+    },
+    {
+      "name": "uk-commitment",
+      "version": "0.1.0",
+      "file": "uk-commitment.json",
+      "values": 10,
+      "anchor": "GOV.UK Keep Britain Working update, September 2026: commitments being tested",
+      "versions": {
+        "0.1.0": "uk-commitment.json"
+      }
+    },
+    {
+      "name": "uk-measure",
+      "version": "0.1.0",
+      "file": "uk-measure.json",
+      "values": 10,
+      "anchor": "GOV.UK Keep Britain Working update, September 2026: measures named; definitions are OWHS proposals",
+      "versions": {
+        "0.1.0": "uk-measure.json"
+      }
+    }
+  ]
+}

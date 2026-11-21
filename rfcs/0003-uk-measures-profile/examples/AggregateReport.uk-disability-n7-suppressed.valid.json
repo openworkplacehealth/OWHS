@@ -1,0 +1,22 @@
+{
+  "reportId": "rep-uk-3",
+  "orgId": "org-example-0042",
+  "level": "org",
+  "periodStart": "2025-10-01",
+  "periodEnd": "2026-09-30",
+  "n": 7,
+  "headcount": 12,
+  "eligibleN": 12,
+  "completionRate": 0.5833333333333334,
+  "metricCode": "disability-participation",
+  "measureKind": "other",
+  "releaseCategory": "ordinary",
+  "suppressed": true,
+  "contextId": "ctx-2026q3",
+  "ext": {
+    "owhs-uk-measures": {
+      "suppressionRule": "owhs-mgs@0.1.0"
+    }
+  },
+  "suppressionReason": "below-floor"
+}

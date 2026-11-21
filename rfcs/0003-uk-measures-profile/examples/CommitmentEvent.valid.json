@@ -1,0 +1,16 @@
+{
+  "eventId": "ce-2026-000311",
+  "orgId": "org-example-0042",
+  "pseudonymId": "owhs:pseudo:a1b2c3d4e5f60718",
+  "commitmentCode": "absence-contact",
+  "triggerDate": "2026-03-02",
+  "dueDate": "2026-03-04",
+  "completedDate": "2026-03-03",
+  "status": "met",
+  "linkedAbsenceEpisodeId": "abs-2026-000123",
+  "sourceProvenance": {
+    "sourceType": "hris",
+    "sourceProvider": "example-hris",
+    "sourceId": "EX-99812"
+  }
+}

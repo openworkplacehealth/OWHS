@@ -6,6 +6,7 @@ Substantive changes to the standard are made by public RFC: a written proposal, 
 |---|---|---|---|
 | [0001](0001-construct-domain-v0.2.md) | Construct-domain code list v0.2: five admissions, two safeguarding fields, topic-group mapping | Open for comment | 7 Sep to 17 Oct 2026 ([#24](https://github.com/openworkplacehealth/OWHS/issues/24)) |
 | [0002](0002-subject-identifying-constructs.md) | Subject-identifying constructs: whether and how a construct about an identified person enters the vocabulary | Open for comment | 7 Sep to 17 Oct 2026 ([#25](https://github.com/openworkplacehealth/OWHS/issues/25)) |
+| [0003](0003-uk-measures-profile.md) | A profile for the workforce health measures named by the UK government: measure definitions, a minimum group size rule, and two proposed record types | Draft | Not yet opened |
 
 An RFC that is a draft has not opened for comment. Comments on a draft are welcome by email to hello@openworkplacehealth.org and will be carried into the RFC's issue when it opens. An RFC that is open for comment has an issue linked above; comment there or by email, whichever suits. Comments arriving after a window closes are still read, and the window is the period before a decision is recorded rather than a deadline for being heard.
 
