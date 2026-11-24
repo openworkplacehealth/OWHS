@@ -1,0 +1,68 @@
+{
+  "codelist": "provider-return-metric",
+  "version": "0.1.0",
+  "anchor": "OWHS proposal (RFC 0003); group-level metrics in a ProviderReturn",
+  "notes": "Every metric counts people, never contacts or sessions. No metric carries clinical content. Definitions are OWHS proposals; no government or industry body has published a provider return format.",
+  "values": [
+    {
+      "code": "people-using",
+      "unit": "people",
+      "label": "Distinct people who used the service at least once in the period",
+      "owhsFields": "BenefitUtilisation.n (distinct people; usageCount counts events, not people)"
+    },
+    {
+      "code": "utilisation-rate",
+      "unit": "percent",
+      "label": "people-using divided by eligibleHeadcount, times 100",
+      "owhsFields": "BenefitUtilisation.n / eligibleHeadcount"
+    },
+    {
+      "code": "cases-opened",
+      "unit": "people",
+      "label": "New cases opened in the period. One case is one person; a person with two cases in the period is counted once",
+      "owhsFields": "distinct people with an OHEpisode.referralDate in the period (BenefitUtilisation.claimCount counts events, not people)"
+    },
+    {
+      "code": "first-contact-working-days-median",
+      "unit": "working-days",
+      "label": "Median working days from referral or first request to the provider's first contact with the person, for cases opened in the period",
+      "owhsFields": "OHEpisode.referralDate to first contact"
+    },
+    {
+      "code": "engaged-within-10wd-rate",
+      "unit": "percent",
+      "label": "Share of cases opened in the period where first contact was within 10 working days of referral",
+      "owhsFields": "uk-commitment: provision-engaged"
+    },
+    {
+      "code": "cases-closed",
+      "unit": "people",
+      "label": "Cases closed in the period",
+      "owhsFields": "OHEpisode"
+    },
+    {
+      "code": "absent-at-referral",
+      "unit": "people",
+      "label": "Cases opened in the period where the person was absent from work when the case opened",
+      "owhsFields": "OHEpisode.linkedAbsenceEpisodeId"
+    },
+    {
+      "code": "returned-to-work",
+      "unit": "people",
+      "label": "Of the people in the cohort who were absent when their case opened, those who returned to work (rtw-outcome full, phased or adjusted)",
+      "owhsFields": "ReturnToWorkOutcome.outcomeType"
+    },
+    {
+      "code": "sustained-return-26wk",
+      "unit": "people",
+      "label": "Of the people in the cohort who returned to work, those still at work 26 weeks later",
+      "owhsFields": "ReturnToWorkOutcome.sustainedAt (checkpointWeeks 26, status sustained)"
+    },
+    {
+      "code": "outcome-unknown",
+      "unit": "people",
+      "label": "Closed cases where the provider does not know the work outcome",
+      "owhsFields": "ReturnToWorkOutcome.sustainedAt status unknown; absent outcome record"
+    }
+  ]
+}

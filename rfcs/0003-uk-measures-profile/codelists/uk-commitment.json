@@ -1,0 +1,98 @@
+{
+  "codelist": "uk-commitment",
+  "version": "0.1.0",
+  "anchor": "Table of specific commitments in Keep Britain Working: a national growth opportunity, September 2026 (GOV.UK, updated 9 October 2026)",
+  "notes": "PROPOSED by RFC 0003, profile-scoped (owhs-uk-measures). The source describes these as commitments being tested and as early examples, not firm proposals. 'sourceText' quotes the published table. 'timer' is the published time limit where one is given; 'counting' is an OWHS proposal wherever the source does not say how to count. Record the dates; compute the status. If the counting rule changes, nothing needs collecting again.",
+  "values": [
+    {
+      "code": "joining-conversation",
+      "principle": "Act early",
+      "sourceText": "A work and health conversation offered within 8 weeks of joining.",
+      "timer": "8 weeks",
+      "trigger": "employment start date",
+      "completion": "date the conversation was offered",
+      "counting": "PROPOSED: 56 calendar days from the employment start date"
+    },
+    {
+      "code": "issue-conversation",
+      "principle": "Keep people in work",
+      "sourceText": "A conversation within 5 working days of an issue being raised",
+      "timer": "5 working days",
+      "trigger": "date the worker or manager raised the issue",
+      "completion": "date the conversation took place",
+      "counting": "PROPOSED: working days are Monday to Friday excluding public holidays in the worker's UK nation; the day the issue is raised is day zero"
+    },
+    {
+      "code": "stay-in-work-plan",
+      "principle": "Keep people in work",
+      "sourceText": "a stay-in-work plan with named actions, owners and review points",
+      "timer": null,
+      "trigger": "date the issue was raised",
+      "completion": "date the plan was agreed",
+      "counting": "no time limit published; dates recorded only"
+    },
+    {
+      "code": "adjustment-agreed",
+      "principle": "Keep people in work",
+      "sourceText": "Adjustments agreed promptly and put in place as quickly as practicable.",
+      "timer": null,
+      "trigger": "date the adjustment was requested or recommended",
+      "completion": "date the adjustment was agreed",
+      "counting": "no time limit published; dates recorded only"
+    },
+    {
+      "code": "adjustment-in-place",
+      "principle": "Keep people in work",
+      "sourceText": "Adjustments agreed promptly and put in place as quickly as practicable.",
+      "timer": null,
+      "trigger": "date the adjustment was agreed",
+      "completion": "date the adjustment was in place (ReasonableAdjustment.startDate)",
+      "counting": "no time limit published; dates recorded only"
+    },
+    {
+      "code": "absence-contact",
+      "principle": "Plan for sustained return",
+      "sourceText": "Contact on day one of absence where possible, and no later than day 3.",
+      "timer": "day 3",
+      "trigger": "AbsenceEpisode.startDate (day one)",
+      "completion": "date of first contact between employer and worker",
+      "counting": "PROPOSED: calendar days, counting the first day of absence as day one, so day 3 is startDate plus 2 days. The source does not say whether days are calendar or working days."
+    },
+    {
+      "code": "return-plan",
+      "principle": "Plan for sustained return",
+      "sourceText": "co-created for any absence and particularly those likely to pass 4 weeks or linked to underlying conditions",
+      "timer": "4 weeks (see counting)",
+      "trigger": "AbsenceEpisode.startDate",
+      "completion": "date the return-to-work plan was agreed with the worker",
+      "counting": "PROPOSED: for any absence that reaches 28 calendar days, a plan agreed on or before day 28. The source gives no deadline for the plan and 'likely to pass' is a judgement that cannot be recorded as a date."
+    },
+    {
+      "code": "provision-engaged",
+      "principle": "Plan for sustained return",
+      "sourceText": "with provision engaged within ten working days where needed",
+      "timer": "10 working days",
+      "trigger": "date the need for provision was recorded",
+      "completion": "date the provider was engaged (OHEpisode.referralDate where the provision is occupational health)",
+      "counting": "PROPOSED: working days as for issue-conversation. The source does not say what starts the clock."
+    },
+    {
+      "code": "touchpoints-agreed",
+      "principle": "Plan for sustained return",
+      "sourceText": "Regular touchpoints established with agreement of the employee.",
+      "timer": null,
+      "trigger": "AbsenceEpisode.startDate",
+      "completion": "date a contact pattern was agreed with the worker",
+      "counting": "no time limit published; dates recorded only"
+    },
+    {
+      "code": "sustained-return-check",
+      "principle": "Plan for sustained return",
+      "sourceText": "Sustained return measured at 6 months, not day one.",
+      "timer": "6 months",
+      "trigger": "ReturnToWorkOutcome.rtwDate",
+      "completion": "date the 26-week status was recorded (ReturnToWorkOutcome.sustainedAt, checkpointWeeks 26)",
+      "counting": "PROPOSED: 26 weeks (182 calendar days) after rtwDate, matching the existing OWHS recommended checkpoint"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "codelist": "uk-measure",
+  "version": "0.1.0",
+  "anchor": "Measures named, but not defined, in Keep Britain Working: a national growth opportunity, September 2026 (GOV.UK, updated 9 October 2026); every definition is an OWHS proposal",
+  "notes": "PROPOSED by RFC 0003, profile-scoped (owhs-uk-measures). The government has named these measures and has not published definitions. Every definition is an OWHS proposal, labelled as such in rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.md. These codes are deliberately not in the reserved whiu: namespace. When the Workplace Health Intelligence Unit publishes its own definitions, this list is deprecated in their favour.",
+  "values": [
+    {
+      "code": "absence-rate",
+      "label": "Sickness absence rate (percentage of working hours lost)",
+      "namedBy": "WHIU 'Common measures' row: 'absence'",
+      "definitionStatus": "proposed"
+    },
+    {
+      "code": "absence-days-per-worker",
+      "label": "Working days lost to sickness absence per worker",
+      "namedBy": "companion to absence-rate",
+      "definitionStatus": "proposed"
+    },
+    {
+      "code": "sustained-return-26wk",
+      "label": "Sustained return to work at 26 weeks",
+      "namedBy": "WHIU 'Common measures' row: 'sustained return'; commitments table: 'Sustained return measured at 6 months, not day one.'",
+      "definitionStatus": "proposed"
+    },
+    {
+      "code": "retention-26wk",
+      "label": "Retention at 26 weeks after a long absence began",
+      "namedBy": "WHIU 'Common measures' row: 'retention'",
+      "definitionStatus": "proposed"
+    },
+    {
+      "code": "health-related-exit-rate",
+      "label": "Health-related exits per 1,000 workers",
+      "namedBy": "'the measures that matter: sustained returns to work, health-related exits, disability participation and the outcomes of support'",
+      "definitionStatus": "proposed"
+    },
+    {
+      "code": "disability-participation",
+      "label": "Share of the workforce who have told the employer they are disabled",
+      "namedBy": "WHIU 'Common measures' row: 'disability participation'",
+      "definitionStatus": "proposed",
+      "floor": 10
+    },
+    {
+      "code": "disability-declaration-rate",
+      "label": "Share of the workforce who answered the disability question",
+      "namedBy": "companion to disability-participation",
+      "definitionStatus": "proposed"
+    },
+    {
+      "code": "disability-retention-12m",
+      "label": "Twelve-month retention of workers who have told the employer they are disabled",
+      "namedBy": "commitments table: 'Participation and retention measured annually, using common definitions.'",
+      "definitionStatus": "proposed",
+      "floor": 10
+    },
+    {
+      "code": "work-ability",
+      "label": "Group work ability score from a named instrument",
+      "namedBy": "WHIU 'Common measures' row: 'work ability'",
+      "definitionStatus": "proposed-shape-only"
+    },
+    {
+      "code": "commitment-met-rate",
+      "label": "Share of due commitment events met on time, per commitment code",
+      "namedBy": "the commitments table in the September 2026 update",
+      "definitionStatus": "proposed"
+    }
+  ]
+}

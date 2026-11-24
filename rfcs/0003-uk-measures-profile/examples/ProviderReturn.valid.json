@@ -1,0 +1,250 @@
+{
+  "returnId": "pr-2026Q3-example-0001",
+  "orgId": "org-example-0042",
+  "sizeBand": "medium",
+  "provider": {
+    "providerRef": "provider-example-oh-01",
+    "serviceType": "occupational-health",
+    "entitlementId": "ent-example-0007"
+  },
+  "periodStart": "2026-07-01",
+  "periodEnd": "2026-09-30",
+  "eligibleHeadcount": 184,
+  "minimumGroupSize": 5,
+  "suppressionRule": "owhs-mgs@0.1.0",
+  "measurementContext": {
+    "producingSystem": "example-case-system 1.0",
+    "countBasis": "distinct-people",
+    "knownLimitations": "Synthetic worked example. All figures are invented. Work outcomes are known only where the employer told the provider."
+  },
+  "rows": [
+    {
+      "metricCode": "people-using",
+      "unit": "people",
+      "base": 184,
+      "n": 21,
+      "value": 21,
+      "suppressed": false
+    },
+    {
+      "metricCode": "utilisation-rate",
+      "unit": "percent",
+      "base": 184,
+      "n": 21,
+      "value": 11.4,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "unit": "people",
+      "base": 184,
+      "n": 17,
+      "value": 17,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "oh-referral-reason",
+        "code": "long-term-absence"
+      },
+      "unit": "people",
+      "base": 17,
+      "n": 6,
+      "value": 6,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "oh-referral-reason",
+        "code": "return-to-work"
+      },
+      "unit": "people",
+      "base": 17,
+      "n": 5,
+      "value": 5,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "oh-referral-reason",
+        "code": "combined",
+        "combinedCodes": [
+          "adjustments-advice",
+          "short-term-frequent",
+          "fitness-for-task"
+        ]
+      },
+      "unit": "people",
+      "base": 17,
+      "n": 6,
+      "value": 6,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "access-route",
+        "code": "manager"
+      },
+      "unit": "people",
+      "base": 17,
+      "n": 9,
+      "value": 9,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "access-route",
+        "code": "combined",
+        "combinedCodes": [
+          "hr",
+          "self-referral"
+        ]
+      },
+      "unit": "people",
+      "base": 17,
+      "n": 8,
+      "value": 8,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "construct-domain",
+        "code": "musculoskeletal"
+      },
+      "unit": "people",
+      "base": 17,
+      "n": 7,
+      "value": 7,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "construct-domain",
+        "code": "mental-health"
+      },
+      "unit": "people",
+      "base": 17,
+      "n": 5,
+      "value": 5,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "construct-domain",
+        "code": "physical-health"
+      },
+      "unit": "people",
+      "base": 17,
+      "suppressed": true,
+      "suppressionReason": "below-floor"
+    },
+    {
+      "metricCode": "cases-opened",
+      "breakdown": {
+        "list": "construct-domain",
+        "code": "demands"
+      },
+      "unit": "people",
+      "base": 17,
+      "suppressed": true,
+      "suppressionReason": "below-floor"
+    },
+    {
+      "metricCode": "first-contact-working-days-median",
+      "unit": "working-days",
+      "n": 17,
+      "value": 4,
+      "suppressed": false
+    },
+    {
+      "metricCode": "engaged-within-10wd-rate",
+      "unit": "percent",
+      "base": 17,
+      "n": 12,
+      "value": 70.6,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-closed",
+      "unit": "people",
+      "n": 14,
+      "value": 14,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-closed",
+      "breakdown": {
+        "list": "fitness-opinion",
+        "code": "fit-with-adjustments"
+      },
+      "unit": "people",
+      "base": 14,
+      "n": 8,
+      "value": 8,
+      "suppressed": false
+    },
+    {
+      "metricCode": "cases-closed",
+      "breakdown": {
+        "list": "fitness-opinion",
+        "code": "fit"
+      },
+      "unit": "people",
+      "base": 14,
+      "suppressed": true,
+      "suppressionReason": "below-floor"
+    },
+    {
+      "metricCode": "cases-closed",
+      "breakdown": {
+        "list": "fitness-opinion",
+        "code": "unfit"
+      },
+      "unit": "people",
+      "base": 14,
+      "suppressed": true,
+      "suppressionReason": "below-floor"
+    },
+    {
+      "metricCode": "absent-at-referral",
+      "unit": "people",
+      "base": 17,
+      "n": 11,
+      "value": 11,
+      "suppressed": false
+    },
+    {
+      "metricCode": "returned-to-work",
+      "unit": "people",
+      "base": 11,
+      "n": 6,
+      "value": 6,
+      "suppressed": false
+    },
+    {
+      "metricCode": "sustained-return-26wk",
+      "unit": "people",
+      "cohortStart": "2026-01-01",
+      "cohortEnd": "2026-03-31",
+      "base": 9,
+      "suppressed": true,
+      "suppressionReason": "below-floor"
+    },
+    {
+      "metricCode": "outcome-unknown",
+      "unit": "people",
+      "base": 14,
+      "n": 0,
+      "value": 0,
+      "suppressed": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "codelist": "commitment-status",
+  "version": "0.1.0",
+  "anchor": "OWHS proposal (RFC 0003); status of a CommitmentEvent",
+  "notes": "'declined-by-worker' and 'not-applicable' are never counted as missed. They are reported as their own counts.",
+  "values": [
+    {
+      "code": "open",
+      "label": "Not yet due and not yet done"
+    },
+    {
+      "code": "met",
+      "label": "Done on or before the due date"
+    },
+    {
+      "code": "late",
+      "label": "Done after the due date"
+    },
+    {
+      "code": "not-done",
+      "label": "Due date passed and not done"
+    },
+    {
+      "code": "declined-by-worker",
+      "label": "Offered and declined by the worker"
+    },
+    {
+      "code": "not-applicable",
+      "label": "Did not apply (for example the absence ended before the commitment fell due)"
+    }
+  ]
+}

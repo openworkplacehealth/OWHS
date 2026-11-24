@@ -1,0 +1,404 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openworkplacehealth.org/rfcs/0003/schemas/ProviderReturn.json",
+  "title": "OWHS ProviderReturn (proposed by RFC 0003, not part of any release)",
+  "description": "PROPOSED new record type. What a workplace health provider sends one employer for one period, at group level only. No individual records, no direct identifiers, no clinical content. The per-row parts of the minimum group size rule (owhs-mgs@0.1.0) are enforced in schema; the cross-row parts are Level 3 checks that no tool here implements.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "returnId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "orgId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {
+        "pattern": "\\s"
+      },
+      "description": "Opaque employer reference (Organisation.orgId)"
+    },
+    "sizeBand": {
+      "type": "string",
+      "enum": [
+        "micro",
+        "small",
+        "medium",
+        "large"
+      ],
+      "$comment": "codelist:org-size-band@0.1.1"
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "providerRef",
+        "serviceType"
+      ],
+      "properties": {
+        "providerRef": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "not": {
+            "pattern": "\\s"
+          }
+        },
+        "serviceType": {
+          "type": "string",
+          "enum": [
+            "EAP",
+            "occupational-health",
+            "GIP",
+            "PMI",
+            "cash-plan",
+            "MSK-service",
+            "wellbeing-intervention",
+            "other"
+          ],
+          "$comment": "codelist:provider-service-type@0.1.0"
+        },
+        "entitlementId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "not": {
+            "pattern": "\\s"
+          },
+          "description": "BenefitEntitlement reference, where the employer holds one"
+        }
+      }
+    },
+    "periodStart": {
+      "type": "string",
+      "format": "date"
+    },
+    "periodEnd": {
+      "type": "string",
+      "format": "date"
+    },
+    "eligibleHeadcount": {
+      "type": "integer",
+      "minimum": 5,
+      "description": "People entitled to use the service during the period. A return cannot be made for fewer than five; pool or combine instead."
+    },
+    "minimumGroupSize": {
+      "type": "integer",
+      "minimum": 5,
+      "description": "The floor applied to every row. Five, or higher if the producer chooses. Never lower."
+    },
+    "suppressionRule": {
+      "const": "owhs-mgs@0.1.0",
+      "$comment": "rfcs/0003-uk-measures-profile/owhs-mgs-0.1.0.md"
+    },
+    "measurementContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producingSystem",
+        "countBasis"
+      ],
+      "properties": {
+        "producingSystem": {
+          "type": "string",
+          "minLength": 1
+        },
+        "countBasis": {
+          "const": "distinct-people",
+          "$comment": "contacts, calls and sessions are not accepted as a count basis"
+        },
+        "knownLimitations": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "metricCode": {
+            "type": "string",
+            "enum": [
+              "people-using",
+              "utilisation-rate",
+              "cases-opened",
+              "first-contact-working-days-median",
+              "engaged-within-10wd-rate",
+              "cases-closed",
+              "absent-at-referral",
+              "returned-to-work",
+              "sustained-return-26wk",
+              "outcome-unknown"
+            ],
+            "$comment": "codelist:provider-return-metric@0.1.0"
+          },
+          "breakdown": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "list",
+              "code"
+            ],
+            "properties": {
+              "list": {
+                "type": "string",
+                "enum": [
+                  "access-route",
+                  "construct-domain",
+                  "oh-referral-reason",
+                  "absence-reason",
+                  "fitness-opinion",
+                  "rtw-adjustment",
+                  "rtw-outcome"
+                ],
+                "$comment": "an OWHS core code list, at the version the v0.2 schemas pin: absence-reason@0.2.0; the others @0.1.0"
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "$comment": "a code from the named list, or 'combined'; resolved at conformance Level 2",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "combinedCodes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                },
+                "minItems": 2,
+                "uniqueItems": true,
+                "$comment": "the codes merged into this row"
+              }
+            },
+            "allOf": [
+              {
+                "$comment": "a combined row must list what was combined",
+                "if": {
+                  "properties": {
+                    "code": {
+                      "const": "combined"
+                    }
+                  },
+                  "required": [
+                    "code"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "combinedCodes"
+                  ]
+                },
+                "else": {
+                  "not": {
+                    "required": [
+                      "combinedCodes"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "people",
+              "percent",
+              "working-days"
+            ]
+          },
+          "cohortStart": {
+            "type": "string",
+            "format": "date",
+            "$comment": "for outcome metrics measured on an earlier cohort"
+          },
+          "cohortEnd": {
+            "type": "string",
+            "format": "date"
+          },
+          "base": {
+            "type": "integer",
+            "minimum": 5,
+            "$comment": "MGS: the group the figure is a share of, in distinct people; never below the floor"
+          },
+          "n": {
+            "anyOf": [
+              {
+                "const": 0
+              },
+              {
+                "type": "integer",
+                "minimum": 5
+              }
+            ],
+            "$comment": "MGS: distinct people the figure is computed from; zero, or at least the floor (the envelope floor may be higher than 5; that is a Level 3 check)"
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0
+          },
+          "suppressed": {
+            "type": "boolean",
+            "$comment": "P5: whether the value was withheld"
+          },
+          "suppressionReason": {
+            "type": "string",
+            "enum": [
+              "below-floor",
+              "safeguarding",
+              "low-completion"
+            ],
+            "$comment": "codelist:suppression-reason@0.1.0"
+          }
+        },
+        "required": [
+          "metricCode",
+          "unit",
+          "suppressed"
+        ],
+        "allOf": [
+          {
+            "$comment": "MGS refuse-don't-hide: a suppressed row carries a reason and carries neither the value nor n",
+            "if": {
+              "properties": {
+                "suppressed": {
+                  "const": true
+                }
+              },
+              "required": [
+                "suppressed"
+              ]
+            },
+            "then": {
+              "required": [
+                "suppressionReason"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "value"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "n"
+                    ]
+                  }
+                ]
+              }
+            },
+            "else": {
+              "required": [
+                "value",
+                "n"
+              ],
+              "not": {
+                "required": [
+                  "suppressionReason"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "ext": {
+      "type": "object",
+      "$comment": "Extension namespaces and values are structurally checked. The named identifier keys are prohibited recursively; OHEpisode also prohibits its named clinical-content keys recursively. This is not detection of identifiers or clinical meaning hidden in allowed keys or values. All extensions remain subject to P1-P5 and their applicable profile. A core-only pass does not establish profile or Level 3 conformance.",
+      "propertyNames": {
+        "pattern": "^owhs-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionObject"
+      }
+    }
+  },
+  "required": [
+    "returnId",
+    "orgId",
+    "provider",
+    "periodStart",
+    "periodEnd",
+    "eligibleHeadcount",
+    "minimumGroupSize",
+    "suppressionRule",
+    "measurementContext",
+    "rows"
+  ],
+  "allOf": [
+    {
+      "$comment": "GROUP LEVEL ONLY: no individual records or pseudonyms in a provider return",
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "pseudonymId"
+            ]
+          },
+          {
+            "required": [
+              "workers"
+            ]
+          },
+          {
+            "required": [
+              "cases"
+            ]
+          },
+          {
+            "required": [
+              "episodes"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "owhsExtensionObject": {
+      "type": "object",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "name",
+            "nino",
+            "email",
+            "dateOfBirth",
+            "address"
+          ]
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/owhsExtensionValue"
+      }
+    },
+    "owhsExtensionValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owhsExtensionValue"
+          }
+        },
+        {
+          "$ref": "#/$defs/owhsExtensionObject"
+        }
+      ]
+    }
+  }
+}

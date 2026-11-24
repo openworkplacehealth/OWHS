@@ -1,0 +1,188 @@
+{
+  "what": "RFC 0003 proposal artefacts run through the repository's own reference validator (Level 1), at the head of this branch.",
+  "validator": "tools/validate.py, with OWHS_ASSERT_NO_NETWORK=1",
+  "runs": [
+    {
+      "command": "python tools/validate.py rfcs/0003-uk-measures-profile/schemas/ProviderReturn.json rfcs/0003-uk-measures-profile/examples/ProviderReturn.valid.json",
+      "expected": "valid",
+      "exit": 0,
+      "verdict_matches_name": true,
+      "errors": 0,
+      "output": [
+        "VALID"
+      ]
+    },
+    {
+      "command": "python tools/validate.py rfcs/0003-uk-measures-profile/schemas/ProviderReturn.json rfcs/0003-uk-measures-profile/examples/ProviderReturn.invalid.json",
+      "expected": "invalid",
+      "exit": 1,
+      "verdict_matches_name": true,
+      "errors": 7,
+      "output": [
+        "[additionalProperties] <root>: Additional properties are not allowed ('cases' was unexpected)",
+        "[not] <root>: {'returnId': 'pr-BAD', 'orgId': 'org-example-0042', 'provider': {'providerRef': 'provider-example-oh-01', 'serviceType': 'occupational-health'}, 'periodStart': '2026-07-01', 'periodEnd': '2026-09-30', 'eligibleHeadcount': 184, 'minimumGroupSize': 3, 'suppressionRule': 'owhs-mgs@0.1.0', 'measurementContext': {'producingSystem': 'example-case-system 1.0', 'countBasis': 'contacts'}, 'cases': [{'pseudonymId': 'owhs:pseudo:a1b2c3d4e5f60718', 'fitnessOpinion': 'unfit'}], 'rows': [{'metricCode': 'cases-opened', 'breakdown': {'list': 'oh-referral-reason', 'code': 'fitness-for-task'}, 'unit': 'people', 'base': 17, 'n': 3, 'value': 3, 'suppressed': False}, {'metricCode': 'cases-closed', 'breakdown': {'list': 'fitness-opinion', 'code': 'unfit'}, 'unit': 'people', 'base': 14, 'n': 2, 'value': 2, 'suppressed': True, 'suppressionReason': 'below-floor'}]} should not be valid under {'anyOf': [{'required': ['pseudonymId']}, {'required': ['workers']}, {'required': ['cases']}, {'required': ['episodes']}]}",
+        "[const] measurementContext/countBasis: 'distinct-people' was expected",
+        "[minimum] minimumGroupSize: 3 is less than the minimum of 5",
+        "[anyOf] rows/0/n: 3 is not valid under any of the given schemas",
+        "[not] rows/1: {'metricCode': 'cases-closed', 'breakdown': {'list': 'fitness-opinion', 'code': 'unfit'}, 'unit': 'people', 'base': 14, 'n': 2, 'value': 2, 'suppressed': True, 'suppressionReason': 'below-floor'} should not be valid under {'anyOf': [{'required': ['value']}, {'required': ['n']}]}",
+        "[anyOf] rows/1/n: 2 is not valid under any of the given schemas"
+      ]
+    },
+    {
+      "command": "python tools/validate.py rfcs/0003-uk-measures-profile/schemas/CommitmentEvent.json rfcs/0003-uk-measures-profile/examples/CommitmentEvent.valid.json",
+      "expected": "valid",
+      "exit": 0,
+      "verdict_matches_name": true,
+      "errors": 0,
+      "output": [
+        "VALID"
+      ]
+    },
+    {
+      "command": "python tools/validate.py rfcs/0003-uk-measures-profile/schemas/CommitmentEvent.json rfcs/0003-uk-measures-profile/examples/CommitmentEvent.invalid.json",
+      "expected": "invalid",
+      "exit": 1,
+      "verdict_matches_name": true,
+      "errors": 8,
+      "output": [
+        "[additionalProperties] <root>: Additional properties are not allowed ('notes' was unexpected)",
+        "[required] <root>: 'orgId' is a required property",
+        "[required] <root>: 'sourceProvenance' is a required property",
+        "[not] <root>: {'eventId': 'ce-BAD', 'pseudonymId': 'EMP-Example-Worker', 'commitmentCode': 'welfare-call', 'triggerDate': '2026-03-02', 'status': 'met', 'notes': 'Rang the worker at home, said their back was worse'} should not be valid under {'anyOf': [{'required': ['notes']}, {'required': ['comment']}, {'required': ['reason']}, {'required': ['diagnosis']}, {'required': ['clinicalCauseCode']}, {'required': ['planText']}]}",
+        "[required] <root>: 'completedDate' is a required property",
+        "[required] <root>: 'dueDate' is a required property",
+        "[enum] commitmentCode: 'welfare-call' is not one of ['joining-conversation', 'issue-conversation', 'stay-in-work-plan', 'adjustment-agreed', 'adjustment-in-place', 'absence-contact', 'return-plan', 'provision-engaged', 'touchpoints-agreed', 'sustained-return-check']",
+        "[pattern] pseudonymId: 'EMP-Example-Worker' does not match '^owhs:pseudo:[0-9a-f]{16,64}$'"
+      ]
+    },
+    {
+      "command": "python tools/validate.py schemas/v0.2/AggregateReport.json rfcs/0003-uk-measures-profile/examples/AggregateReport.uk-absence-rate-by-reason.valid.json --profile rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.json",
+      "expected": "valid",
+      "exit": 0,
+      "verdict_matches_name": true,
+      "errors": 0,
+      "output": [
+        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9))"
+      ]
+    },
+    {
+      "command": "python tools/validate.py schemas/v0.2/AggregateReport.json rfcs/0003-uk-measures-profile/examples/AggregateReport.uk-absence-rate.valid.json --profile rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.json",
+      "expected": "valid",
+      "exit": 0,
+      "verdict_matches_name": true,
+      "errors": 0,
+      "output": [
+        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9))"
+      ]
+    },
+    {
+      "command": "python tools/validate.py schemas/v0.2/AggregateReport.json rfcs/0003-uk-measures-profile/examples/AggregateReport.uk-disability-n7-suppressed.valid.json --profile rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.json",
+      "expected": "valid",
+      "exit": 0,
+      "verdict_matches_name": true,
+      "errors": 0,
+      "output": [
+        "VALID (profiles checked: owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9))"
+      ]
+    },
+    {
+      "command": "python tools/validate.py schemas/v0.2/AggregateReport.json rfcs/0003-uk-measures-profile/examples/AggregateReport.uk-disability-n7-unsuppressed.invalid.json --profile rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.json",
+      "expected": "invalid",
+      "exit": 1,
+      "verdict_matches_name": true,
+      "errors": 1,
+      "output": [
+        "[profile:owhs-uk-measures@0.1.0] suppressed: True was expected",
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
+      ]
+    },
+    {
+      "command": "python tools/validate.py schemas/v0.2/AggregateReport.json rfcs/0003-uk-measures-profile/examples/AggregateReport.uk-disability-unit-level.invalid.json --profile rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.json",
+      "expected": "invalid",
+      "exit": 1,
+      "verdict_matches_name": true,
+      "errors": 1,
+      "output": [
+        "[profile:owhs-uk-measures@0.1.0] level: 'org' was expected",
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
+      ]
+    },
+    {
+      "command": "python tools/validate.py schemas/v0.2/AggregateReport.json rfcs/0003-uk-measures-profile/examples/AggregateReport.uk-no-suppression-rule.invalid.json --profile rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.json",
+      "expected": "invalid",
+      "exit": 1,
+      "verdict_matches_name": true,
+      "errors": 1,
+      "output": [
+        "[profile:owhs-uk-measures@0.1.0] <root>: 'ext' is a required property",
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
+      ]
+    },
+    {
+      "command": "python tools/validate.py schemas/v0.2/AggregateReport.json rfcs/0003-uk-measures-profile/examples/AggregateReport.uk-unknown-metric.invalid.json --profile rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.json",
+      "expected": "invalid",
+      "exit": 1,
+      "verdict_matches_name": true,
+      "errors": 1,
+      "output": [
+        "[profile:owhs-uk-measures@0.1.0] metricCode: 'absence-rate-fte' is not one of ['absence-rate', 'absence-days-per-worker', 'sustained-return-26wk', 'retention-26wk', 'health-related-exit-rate', 'disability-participation', 'disability-declaration-rate', 'disability-retention-12m', 'work-ability', 'commitment-met-rate']",
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
+      ]
+    },
+    {
+      "command": "python tools/validate.py schemas/v0.2/AggregateReport.json rfcs/0003-uk-measures-profile/examples/AggregateReport.uk-work-ability-not-instrument.invalid.json --profile rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.json",
+      "expected": "invalid",
+      "exit": 1,
+      "verdict_matches_name": true,
+      "errors": 1,
+      "output": [
+        "[profile:owhs-uk-measures@0.1.0] measureKind: 'instrument' was expected",
+        "[profile] owhs-uk-measures@0.1.0 (envelope sha256 189ede73d915bc7088d1033fa2ace57083931af900e85e8bf04c08d4ad6e97c9) checked"
+      ]
+    }
+  ],
+  "level2_codes_in_worked_provider_return": "every breakdown code exists in the core list it names",
+  "owhs_mgs_cross_row_checks_on_worked_provider_return": [
+    {
+      "metric": "cases-opened",
+      "list": "oh-referral-reason",
+      "total": 17,
+      "shown": 17,
+      "withheld_rows": 0,
+      "hidden_remainder": 0,
+      "R7_ok": true
+    },
+    {
+      "metric": "cases-opened",
+      "list": "access-route",
+      "total": 17,
+      "shown": 17,
+      "withheld_rows": 0,
+      "hidden_remainder": 0,
+      "R7_ok": true
+    },
+    {
+      "metric": "cases-opened",
+      "list": "construct-domain",
+      "total": 17,
+      "shown": 12,
+      "withheld_rows": 2,
+      "hidden_remainder": 5,
+      "R7_ok": true
+    },
+    {
+      "metric": "cases-closed",
+      "list": "fitness-opinion",
+      "total": 14,
+      "shown": 8,
+      "withheld_rows": 2,
+      "hidden_remainder": 6,
+      "R7_ok": true
+    }
+  ],
+  "not_checked": [
+    "Level 2 for the AggregateReport and CommitmentEvent examples beyond their enums",
+    "Level 3 for anything; no tool in the repository verifies Level 3",
+    "R5 and R7 across nested groups or across time"
+  ]
+}

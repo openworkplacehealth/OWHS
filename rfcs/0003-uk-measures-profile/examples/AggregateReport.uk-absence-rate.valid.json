@@ -1,0 +1,22 @@
+{
+  "reportId": "rep-uk-1",
+  "orgId": "org-example-0042",
+  "level": "org",
+  "periodStart": "2025-10-01",
+  "periodEnd": "2026-09-30",
+  "n": 184,
+  "headcount": 184,
+  "eligibleN": 184,
+  "completionRate": 1.0,
+  "metricCode": "absence-rate",
+  "measureKind": "other",
+  "releaseCategory": "ordinary",
+  "value": 3.1,
+  "suppressed": false,
+  "contextId": "ctx-2026q3",
+  "ext": {
+    "owhs-uk-measures": {
+      "suppressionRule": "owhs-mgs@0.1.0"
+    }
+  }
+}

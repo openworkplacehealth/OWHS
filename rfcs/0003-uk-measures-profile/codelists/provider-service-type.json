@@ -1,0 +1,48 @@
+{
+  "codelist": "provider-service-type",
+  "version": "0.1.0",
+  "anchor": "OWHS proposal (RFC 0003); type of service a ProviderReturn describes",
+  "notes": "Where a code exists in benefit-product@0.1.0 the same code is used. 'occupational-health' has no benefit-product code; see RFC 0003 section 6, gap 1.",
+  "values": [
+    {
+      "code": "EAP",
+      "label": "Employee assistance programme",
+      "benefitProduct": "EAP"
+    },
+    {
+      "code": "occupational-health",
+      "label": "Occupational health service",
+      "benefitProduct": null
+    },
+    {
+      "code": "GIP",
+      "label": "Group income protection, including early intervention and rehabilitation services",
+      "benefitProduct": "GIP"
+    },
+    {
+      "code": "PMI",
+      "label": "Private medical insurance",
+      "benefitProduct": "PMI"
+    },
+    {
+      "code": "cash-plan",
+      "label": "Health cash plan",
+      "benefitProduct": "cash-plan"
+    },
+    {
+      "code": "MSK-service",
+      "label": "MSK or physiotherapy service",
+      "benefitProduct": "MSK-service"
+    },
+    {
+      "code": "wellbeing-intervention",
+      "label": "Wellbeing intervention or programme",
+      "benefitProduct": "wellbeing-intervention"
+    },
+    {
+      "code": "other",
+      "label": "Other workplace health service",
+      "benefitProduct": "other"
+    }
+  ]
+}

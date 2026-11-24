@@ -1,0 +1,235 @@
+{
+  "profile_id": "owhs-uk-measures",
+  "version": "0.1.0",
+  "description": "PROPOSED by RFC 0003; not released. Definitions for the workforce health measures named in the UK government's published Keep Britain Working documents, as AggregateReport metric codes. Narrows the core only: metricCode to the uk-measure list, the three disability measures to organisation level, disability-participation and disability-retention-12m withheld when n is nine or fewer (n is, by the core definition, the distinct people contributing to the estimate: for disability-participation that is the people who answered the question, not the number who said they are disabled; for disability-retention-12m it is the people who said yes a year earlier, so there the ten falls on disabled people), disability-declaration-rate left at the core floor of five, work ability to instrument-sourced results, and a declared minimum group size rule under ext.owhs-uk-measures. Definitions are in rfcs/0003-uk-measures-profile/owhs-uk-measures-0.1.0.md.",
+  "core_schema_ids": [
+    "https://openworkplacehealth.org/schemas/v0.2/AggregateReport.json"
+  ],
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": [
+      "ext"
+    ],
+    "properties": {
+      "metricCode": {
+        "enum": [
+          "absence-rate",
+          "absence-days-per-worker",
+          "sustained-return-26wk",
+          "retention-26wk",
+          "health-related-exit-rate",
+          "disability-participation",
+          "disability-declaration-rate",
+          "disability-retention-12m",
+          "work-ability",
+          "commitment-met-rate"
+        ],
+        "$comment": "codelist:uk-measure@0.1.0"
+      },
+      "ext": {
+        "type": "object",
+        "required": [
+          "owhs-uk-measures"
+        ],
+        "properties": {
+          "owhs-uk-measures": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "suppressionRule"
+            ],
+            "properties": {
+              "suppressionRule": {
+                "const": "owhs-mgs@0.1.0"
+              },
+              "breakdown": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "list",
+                  "code"
+                ],
+                "properties": {
+                  "list": {
+                    "enum": [
+                      "absence-reason"
+                    ],
+                    "$comment": "codelist:absence-reason@0.2.0"
+                  },
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  }
+                }
+              },
+              "cohortStart": {
+                "type": "string",
+                "format": "date"
+              },
+              "cohortEnd": {
+                "type": "string",
+                "format": "date"
+              },
+              "commitmentCode": {
+                "enum": [
+                  "joining-conversation",
+                  "issue-conversation",
+                  "stay-in-work-plan",
+                  "adjustment-agreed",
+                  "adjustment-in-place",
+                  "absence-contact",
+                  "return-plan",
+                  "provision-engaged",
+                  "touchpoints-agreed",
+                  "sustained-return-check"
+                ],
+                "$comment": "codelist:uk-commitment@0.1.0"
+              }
+            }
+          }
+        }
+      }
+    },
+    "allOf": [
+      {
+        "$comment": "disability measures: organisation level only",
+        "if": {
+          "properties": {
+            "metricCode": {
+              "enum": [
+                "disability-participation",
+                "disability-retention-12m",
+                "disability-declaration-rate"
+              ]
+            }
+          },
+          "required": [
+            "metricCode"
+          ]
+        },
+        "then": {
+          "properties": {
+            "level": {
+              "const": "org"
+            }
+          }
+        }
+      },
+      {
+        "$comment": "disability-participation and disability-retention-12m: withheld when n is nine or fewer. The test is on n, by the core definition the distinct people contributing to the estimate. For disability-participation n is the people who answered, not the number of disabled people; that count is held to zero or at least five only by owhs-mgs R4, a Level 3 rule no tool checks. For disability-retention-12m n is the people who said yes a year earlier, so there the ten is a floor on disabled people. disability-declaration-rate keeps the core floor of five",
+        "if": {
+          "properties": {
+            "metricCode": {
+              "enum": [
+                "disability-participation",
+                "disability-retention-12m"
+              ]
+            },
+            "n": {
+              "maximum": 9
+            }
+          },
+          "required": [
+            "metricCode",
+            "n"
+          ]
+        },
+        "then": {
+          "properties": {
+            "suppressed": {
+              "const": true
+            }
+          }
+        }
+      },
+      {
+        "$comment": "work ability is asked, not read from records: the result comes from a named instrument",
+        "if": {
+          "properties": {
+            "metricCode": {
+              "const": "work-ability"
+            }
+          },
+          "required": [
+            "metricCode"
+          ]
+        },
+        "then": {
+          "properties": {
+            "measureKind": {
+              "const": "instrument"
+            }
+          }
+        }
+      },
+      {
+        "$comment": "a commitment-met rate names its commitment; no other measure carries one",
+        "if": {
+          "properties": {
+            "metricCode": {
+              "const": "commitment-met-rate"
+            }
+          },
+          "required": [
+            "metricCode"
+          ]
+        },
+        "then": {
+          "properties": {
+            "ext": {
+              "properties": {
+                "owhs-uk-measures": {
+                  "required": [
+                    "commitmentCode"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "ext": {
+              "properties": {
+                "owhs-uk-measures": {
+                  "not": {
+                    "required": [
+                      "commitmentCode"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "$comment": "a breakdown by absence reason applies to the absence measures only",
+        "if": {
+          "properties": {
+            "ext": {
+              "properties": {
+                "owhs-uk-measures": {
+                  "required": [
+                    "breakdown"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "metricCode": {
+              "enum": [
+                "absence-rate",
+                "absence-days-per-worker"
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}
