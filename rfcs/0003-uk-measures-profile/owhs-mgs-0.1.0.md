@@ -1,6 +1,6 @@
 # The OWHS minimum group size rule (`owhs-mgs`)
 
-**Status:** proposed by [RFC 0003](../0003-uk-measures-profile.md). Open for comment from 23 November 2026 to 8 January 2027, not released. UK English. CC-BY 4.0.
+**Status:** proposed by [RFC 0003](../0003-uk-measures-profile.md). Open for comment; comment window 30 November 2026 to 8 January 2027. Not released. UK English. CC-BY 4.0.
 
 **Cite as:** Open Workplace Health Standard, *Minimum group size rule* (`owhs-mgs@0.1.0`), draft of 15 November 2026.
 
@@ -43,7 +43,7 @@ Merging is preferred where the merged group still means something, because the r
 
 **R7. No working it out.** A withheld figure must not be recoverable from what is shown.
 - *Within a table.* If a total and all but one of its parts are shown, the missing part is the difference. Withhold a second part or merge until every hidden remainder is at least five.
-- *Across overlapping groups.* Do not publish figures for two groups where one sits inside the other and the difference is one to four people (a department of 30 and the same department without its team of three).
+- *Across nested groups.* Do not publish figures for two groups where one sits inside the other and the difference is one to four people (a department of 30 and the same department without its team of three).
 - *Across time.* Do not publish the same figure for two periods where the people who joined or left the group between them number one to four and the figure moves with them.
 
 **R8. Refuse, do not hide.** A conformant producer does not send the withheld number in a hidden field, a tooltip, an export or a footnote. The schema makes a withheld row that still carries its value invalid.

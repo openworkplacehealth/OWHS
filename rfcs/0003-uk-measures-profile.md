@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Status | Open for comment |
-| Comment window | 23 November 2026 to 8 January 2027 |
+| Comment window | 30 November 2026 to 8 January 2027 |
 | Comment thread | [issue #ISSUE_NUMBER_TBC](https://github.com/openworkplacehealth/OWHS/issues/ISSUE_NUMBER_TBC) |
 | Affects | A new profile `owhs-uk-measures` 0.1.0 over the v0.2 `AggregateReport`; a new named rule `owhs-mgs` 0.1.0; two proposed new record types, `CommitmentEvent` and `ProviderReturn`; five new code lists |
 | Breaking | No. Nothing in the core is changed, renamed or withdrawn. The profile only narrows `AggregateReport`; the record types and code lists are additions |

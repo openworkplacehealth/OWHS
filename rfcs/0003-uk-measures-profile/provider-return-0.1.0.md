@@ -1,6 +1,6 @@
 # Proposed record type `ProviderReturn` 0.1.0: what a provider sends an employer each quarter
 
-**Status:** proposed by [RFC 0003](../0003-uk-measures-profile.md) as a new core record type. Open for comment from 23 November 2026 to 8 January 2027, not released. Not endorsed by any government department, provider body or insurer. UK English. Spec text CC-BY 4.0; schema, code lists and examples Apache-2.0.
+**Status:** proposed by [RFC 0003](../0003-uk-measures-profile.md) as a new core record type. Open for comment; comment window 30 November 2026 to 8 January 2027. Not released. Not endorsed by any government department, provider body or insurer. UK English. Spec text CC-BY 4.0; schema, code lists and examples Apache-2.0.
 
 **What this is.** A common shape for the report an employee assistance programme, an occupational health provider or an insurer sends an employer: who used the service, what for in broad groups, how quickly, and what happened to their work, all at group level. One schema, one worked example, one command to check a file.
 

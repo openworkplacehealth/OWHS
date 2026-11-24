@@ -183,6 +183,6 @@
   "not_checked": [
     "Level 2 for the AggregateReport and CommitmentEvent examples beyond their enums",
     "Level 3 for anything; no tool in the repository verifies Level 3",
-    "R5 and R7 across overlapping groups or across time"
+    "R5 and R7 across nested groups or across time"
   ]
 }
